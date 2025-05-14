@@ -1,0 +1,263 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Basketball</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="playmCheckbox"> Player M</label><br>
+    <label><input type="checkbox" id="playfCheckbox"> Player F</label><br>
+    <label><input type="checkbox" id="courtCheckbox"> Olympic court</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Fast Break – Swap the contested category for another of your choice.",
+"Three-Point Buzzer Beater – Add +5 points to the contested attribute.",
+"Dunk Contest Winner – If you are losing, swap your card for another from your deck.",
+"Magical Assist – Reveal your opponent's card before choosing the category.",
+"Iron Defense – Nullify your opponent's play and play again.",
+"Technical Foul – The opponent loses 3 points in the contested attribute.",
+"Serious Injury – The opponent loses the card they played and must draw another.",
+"Refereeing Error – You choose a card from your opponent's hand to be discarded.",
+"Ejected from the Game – The opponent skips the next round.",
+"Dead Zone – The opponent cannot use action cards in the next turn.",
+"Overtime – In case of a of a tie, compare a second attribute.",
+"Team Request – Take a card from the discard pile and exchange it for one from your hand.",
+"Hostile Fans – The opponent can only play with the next card they drew, without exchanging it.",
+"Olympic Gold – If the card you played has already won a gold medal, +5 points to the attribute.",
+"Undefeated Champion – If the team on the card has never lost an Olympic final, +3 points to the attribute.",];
+  
+const playm = [
+{name: "Alperen Şengün (Turkey)", attributes: {Height: "211 cm (6'11)", PPG: "15.0+", APG: "4.0+", RPG: "9.0+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Andrei Kirilenko (Russia)", attributes: {Height: "206 cm (6'9)", PPG: "11.8", APG: "2.7", RPG: "5.5", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Andrew Wiggins (Canada)", attributes: {Height: "201 cm (6'7)", PPG: "19.1", APG: "2.3", RPG: "4.5", "Championships Won": 1, "MVP Awards": 0}},
+{name: "Arvydas Sabonis (Lithuania)", attributes: {Height: "221 cm (7'3)", PPG: "12.0", APG: "2.1", RPG: "7.3", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Ben Simmons (Australia)", attributes: {Height: "208 cm (6'10)", PPG: "14.3", APG: "7.2", RPG: "7.8", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Bennedict Mathurin (Canada)", attributes: {Height: "198 cm (6'6)", PPG: "16.0+", APG: "2.0+", RPG: "4.5+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Bogdan Bogdanović (Serbia)", attributes: {Height: "198 cm (6'6)", PPG: "14.2", APG: "3.3", RPG: "3.4", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Dejan Bodiroga (Serbia)", attributes: {Height: "205 cm (6'9)", PPG: "15.0", APG: "3.2", RPG: "5.2", "Championships Won": "3 (EuroLeague)", "MVP Awards": 0}},
+{name: "Detlef Schrempf (Germany)", attributes: {Height: "206 cm (6'9)", PPG: "13.9", APG: "3.4", RPG: "6.2", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Dirk Nowitzki (Germany)", attributes: {Height: "213 cm (7'0)", PPG: "20.7", APG: "2.4", RPG: "7.5", "Championships Won": 1, "MVP Awards": 1}},
+{name: "Domantas Sabonis (Lithuania)", attributes: {Height: "211 cm (6'11)", PPG: "18.0+", APG: "6.5+", RPG: "12.0+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Dražen Petrović (Croatia)", attributes: {Height: "196 cm (6'5)", PPG: "15.4", APG: "2.4", RPG: "2.3", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Franz Wagner (Germany)", attributes: {Height: "206 cm (6'9)", PPG: "18.0+", APG: "3.5+", RPG: "6.0+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Giannis Antetokounmpo (Greece)", attributes: {Height: "211 cm (6'11)", PPG: "22.6", APG: "4.7", RPG: "9.6", "Championships Won": 1, "MVP Awards": 2}},
+{name: "Hakeem Olajuwon (Nigeria, played for USA)", attributes: {Height: "213 cm (7'0)", PPG: "21.8", APG: "2.5", RPG: "11.1", "Championships Won": 2, "MVP Awards": 1}},
+{name: "Jamal Murray (Canada)", attributes: {Height: "193 cm (6'4)", PPG: "18.0+", APG: "4.5+", RPG: "4.0+", "Championships Won": 1, "MVP Awards": 0}},
+{name: "Joel Embiid (Cameroon, played for France & USA)", attributes: {Height: "213 cm (7'0)", PPG: "27.2", APG: "4.3", RPG: "11.2", "Championships Won": 0, "MVP Awards": 1}},
+{name: "Jonas Valančiūnas (Lithuania)", attributes: {Height: "213 cm (7'0)", PPG: "14.5+", APG: "1.8+", RPG: "10.5+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Josh Giddey (Australia)", attributes: {Height: "203 cm (6'8)", PPG: "14.0+", APG: "6.5+", RPG: "7.5+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Kristaps Porziņģis (Latvia)", attributes: {Height: "221 cm (7'3)", PPG: "19.6", APG: "1.8", RPG: "7.9", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Leandro Barbosa (Brazil)", attributes: {Height: "191 cm (6'3)", PPG: "10.6", APG: "2.1", RPG: "2.0", "Championships Won": 1, "MVP Awards": 0}},
+{name: "LeBron James (USA)", attributes: {Height: "206 cm (6'9)", PPG: "27.2", APG: "7.3", RPG: "7.5", "Championships Won": 4, "MVP Awards": 4}},
+{name: "Luka Dončić (Slovenia)", attributes: {Height: "201 cm (6'7)", PPG: "27.0", APG: "8.0", RPG: "8.6", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Manu Ginóbili (Argentina)", attributes: {Height: "198 cm (6'6)", PPG: "13.3", APG: "3.8", RPG: "3.5", "Championships Won": 4, "MVP Awards": 0}},
+{name: "Michael Jordan (USA)", attributes: {Height: "198 cm (6'6)", PPG: "30.1", APG: "5.3", RPG: "6.2", "Championships Won": 6, "MVP Awards": 5}},
+{name: "Nikola Jokić (Serbia)", attributes: {Height: "211 cm (6'11)", PPG: "20.2", APG: "6.9", RPG: "10.5", "Championships Won": 1, "MVP Awards": 2}},
+{name: "Oscar Schmidt (Brazil)", attributes: {Height: "205 cm (6'9)", PPG: "28.0+", APG: "2.5+", RPG: "6.5+", "Championships Won": "multiple international titles", "MVP Awards": 0}},
+{name: "Patrick Ewing (Jamaica, played for USA)", attributes: {Height: "213 cm (7'0)", PPG: "21.0", APG: "1.9", RPG: "9.8", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Pau Gasol (Spain)", attributes: {Height: "213 cm (7'0)", PPG: "17.0", APG: "3.2", RPG: "9.2", "Championships Won": 2, "MVP Awards": 0}},
+{name: "Peja Stojaković (Serbia)", attributes: {Height: "206 cm (6'9)", PPG: "17.0", APG: "1.8", RPG: "4.7", "Championships Won": 1, "MVP Awards": 0}},
+{name: "Ricky Rubio (Spain)", attributes: {Height: "188 cm (6'2)", PPG: "11.1", APG: "7.6", RPG: "4.2", "Championships Won": 0, "MVP Awards": 0}},
+{name: "RJ Barrett (Canada)", attributes: {Height: "198 cm (6'6)", PPG: "18.0+", APG: "3.0+", RPG: "5.0+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Shai Gilgeous-Alexander (Canada)", attributes: {Height: "198 cm (6'6)", PPG: "25.0+", APG: "6.0+", RPG: "5.0+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Steve Nash (Canada)", attributes: {Height: "191 cm (6'3)", PPG: "14.3", APG: "8.5", RPG: "3.0", "Championships Won": 0, "MVP Awards": 2}},
+{name: "Tony Parker (France)", attributes: {Height: "188 cm (6'2)", PPG: "15.5", APG: "5.6", RPG: "2.7", "Championships Won": 4, "MVP Awards": 0}},
+{name: "Usman Garuba (Spain)", attributes: {Height: "203 cm (6'8)", PPG: "5.0+", APG: "1.5+", RPG: "6.0+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Vlade Divac (Serbia)", attributes: {Height: "216 cm (7'1)", PPG: "11.8", APG: "3.1", RPG: "8.2", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Yao Ming (China)", attributes: {Height: "229 cm (7'6)", PPG: "19.0", APG: "1.6", RPG: "9.2", "Championships Won": 0, "MVP Awards": 0}},
+  ];
+
+  const playf = [
+   
+{name: "A’ja Wilson (USA)", attributes: {Height: "193 cm (6'4)", PPG: "19.0+", APG: "2.3+", RPG: "9.3+", "Championships Won": 1, "MVP Awards": 2}},
+{name: "Alba Torrens (Spain)", attributes: {Height: "191 cm (6'3)", PPG: "12.3", APG: "3.2", RPG: "4.2", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Aliyah Boston (USA)", attributes: {Height: "196 cm (6'5)", PPG: "13.0+", APG: "2.1+", RPG: "9.2+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Angel Reese (USA)", attributes: {Height: "191 cm (6'3\")", PPG: "13.6", APG: "1.9", RPG: "13.1", "Championships Won": 1, "MVP Awards": 0}},
+{name: "Astou Ndour (Spain, Senegalese-born)", attributes: {Height: "196 cm (6'5)", PPG: "10.0+", APG: "1.2+", RPG: "6.5+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Azzi Fudd", attributes: {Height: "180 cm (5'11\")", PPG: "13.6", APG: "1.8", RPG: "2.0", "Championships Won": 1, "MVP Awards": 1}},
+{name: "Becky Hammon (Rússia)", attributes: {Height: "168 cm (5'6)", PPG: "13.0", APG: "3.8", RPG: "2.5", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Breanna Stewart (USA)", attributes: {Height: "193 cm (6'4)", PPG: "20.0+", APG: "3.5+", RPG: "8.5+", "Championships Won": 2, "MVP Awards": 2}},
+{name: "Cappie Pondexter (USA)", attributes: {Height: "175 cm (5'9)", PPG: "16.4", APG: "3.8", RPG: "3.7", "Championships Won": 2, "MVP Awards": 0}},
+{name: "Cheryl Miller (USA)", attributes: {Height: "188 cm (6'2)", PPG: "23.6", APG: "3.2", RPG: "12.0"}},
+{name: "Cynthia Cooper (USA)", attributes: {Height: "173 cm (5'8)", PPG: "21.0", APG: "4.9", RPG: "3.3", "Championships Won": 4, "MVP Awards": 2}},
+{name: "Diana Taurasi (USA)", attributes: {Height: "183 cm (6'0)", PPG: "19.3", APG: "4.3", RPG: "4.0", "Championships Won": 3, "MVP Awards": 1}},
+{name: "Elena Delle Donne (USA)", attributes: {Height: "196 cm (6'5)", PPG: "19.7", APG: "2.0", RPG: "6.9", "Championships Won": 1, "MVP Awards": 2}},
+{name: "Han Xu (China)", attributes: {Height: "206 cm (6'9)", PPG: "9.0+", APG: "1.5+", RPG: "5.5+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Hana Horáková (Czech Republic)", attributes: {Height: "182 cm (6'0)", PPG: "12.0", APG: "5.5", RPG: "4.1", "Championships Won": 0, "MVP Awards": "1 (FIBA)"}},
+{name: "Harmoni Turner (USA)", attributes: {Height: "170 cm (5'7)", PPG: "13.0+", APG: "4.5+", RPG: "3.0+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Hortência Marcari (Brazil)", attributes: {Height: "175 cm (5'9)", PPG: "24.0", APG: "3.5", RPG: "4.5", "Championships Won": "Mundial FIBA 1", "MVP Awards": 0}},
+{name: "Janeth Arcain (Brazil)", attributes: {Height: "180 cm (5'11)", PPG: "11.4", APG: "2.0", RPG: "3.3", "Championships Won": 4, "MVP Awards": 0}},
+{name: "Jillian Hayes (EUA)", attributes: {Altura: "185 cm (6'1\")", PPG: "15.7", APG: "1.6", RPG: "9.5", "Campeonatos Vencidos": 0, "Prêmios MVP": 0}},
+{name: "Katie Smith (USA)", attributes: {Height: "180 cm (5'11)", PPG: "13.4", APG: "2.6", RPG: "2.7", "Championships Won": 2, "MVP Awards": 0}},
+{name: "Kelsey Plum (USA)", attributes: {Height: "173 cm (5'8)", PPG: "15.0+", APG: "4.0+", RPG: "3.0+", "Championships Won": 1, "MVP Awards": 0}},
+{name: "Lauren Jackson (Australia)", attributes: {Height: "196 cm (6'5)", PPG: "18.9", APG: "1.4", RPG: "7.7", "Championships Won": 2, "MVP Awards": 3}},
+{name: "Lisa Leslie (USA)", attributes: {Height: "196 cm (6'5)", PPG: "17.3", APG: "2.3", RPG: "9.1", "Championships Won": 2, "MVP Awards": 3}},
+{name: "Marine Johannès (France)", attributes: {Height: "178 cm (5'10)", PPG: "11.5+", APG: "4.3+", RPG: "2.5+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Olivia Époupa (France)", attributes: {Height: "165 cm (5'5)", PPG: "9.0+", APG: "4.5+", RPG: "5.2+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Paige Bueckers", attributes: {Height: "183 cm (6'0\")", PPG: "19.8", APG: "4.7", RPG: "4.4", "Championships Won": 1, "MVP Awards": 3}},
+{name: "Penny Taylor (Australia)", attributes: {Height: "185 cm (6'1)", PPG: "13.0", APG: "3.1", RPG: "4.0", "Championships Won": 3, "MVP Awards": 0}},
+{name: "Rhyne Howard (USA)", attributes: {Height: "188 cm (6'2)", PPG: "16.0+", APG: "3.2+", RPG: "4.8+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Sabrina Ionescu (USA)", attributes: {Height: "180 cm (5'11)", PPG: "18.0+", APG: "6.5+", RPG: "6.5+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Sandrine Gruda (France)", attributes: {Height: "193 cm (6'4)", PPG: "10.1", APG: "1.2", RPG: "4.5", "Championships Won": 1, "MVP Awards": 0}},
+{name: "Sarah Strong", attributes: {Height: "188 cm (6'2\")", PPG: "16.4", APG: "3.6", RPG: "8.9", "Championships Won": 1, "MVP Awards": 1}},
+{name: "Satou Sabally (Germany)", attributes: {Height: "193 cm (6'4)", PPG: "15.5+", APG: "4.0+", RPG: "7.8+", "Championships Won": 0, "MVP Awards": 0}},
+{name: "Sheryl Swoopes (USA)", attributes: {Height: "183 cm (6'0)", PPG: "15.0", APG: "3.2", RPG: "4.9", "Championships Won": 4, "MVP Awards": 3}},
+{name: "Sonja Vasić (Serbia)", attributes: {Height: "188 cm (6'2)", PPG: "12.5", APG: "3.0", RPG: "5.0", "Championships Won": 0, "MVP Awards": "1 (FIBA)"}},
+{name: "Sue Bird (USA)", attributes: {Height: "175 cm (5'9)", PPG: "11.7", APG: "5.6", RPG: "2.5", "Championships Won": 4, "MVP Awards": 0}},
+{name: "Sydney Carter (USA)", attributes: {Height: "170 cm (5'7\")", PPG: "2.9", APG: "1.3", RPG: "1.0", "Championships Won": 1, "MVP Awards": 0}},
+{name: "Tamika Catchings (USA)", attributes: {Height: "185 cm (6'1)", PPG: "16.1", APG: "3.3", RPG: "7.3", "Championships Won": 1, "MVP Awards": 1}},
+{name: "Teresa Edwards (USA)", attributes: {Height: "175 cm (5'9)", PPG: "12.0+", APG: "3.0+", RPG: "3.5+"}},
+{name: "Yao Lijun (China)", attributes: {Height: "195 cm (6'5)", PPG: "16.5", APG: "2.1", RPG: "8.7", "Championships Won": 0, "MVP Awards": 0}},
+  ];
+
+
+const court = [
+    {name: "Berlin Sportpalast (Germany)", attributes: {City: "Berlin, Germany", Year: "1936 (first men's Olympic final)", Capacity: "~8,000", "Iconic Match": "USA 19-8 Canada (played in the rain on clay court)", "Gold Medal Winner": "USA", "Unique Feature": "First Olympic court, played outdoors in a mud puddle!"}},
+{name: "Wembley Arena (United Kingdom)", attributes: {City: "London, UK", Year: 1948, Capacity: "12,500", "Iconic Match": "USA 65-21 France", "Gold Medal Winner": "USA", "Unique Feature": "First indoor final, originally used for sports such as boxing and figure skating."}},
+{name: "Ginásio do Maracanãzinho (Brazil)", attributes: {City: "Rio de Janeiro, Brazil", Year: 2016, Capacity: "16,000", "Iconic Match": "USA 96-66 Serbia (men)", "Gold Medal Winner": "USA", "Unique Feature": "Famous for hosting volleyball competitions, it was renovated to host the basketball finals."}},
+{name: "Palacio de los Deportes (Mexico)", attributes: {City: "Mexico City, Mexico", Year: 1968, Capacity: "20,000", "Iconic Match": "USA 65-50 Yugoslavia", "Gold Medal Winner": "USA", "Unique Feature": "First Olympic final played in Latin America!"}},
+{name: "Olympic Basketball Arena (United Kingdom)", attributes: {City: "London, UK", Year: 2012, Capacity: "12,000", "Iconic Match": "USA 107-100 Spain (Men's)", "Gold Medal Winner": "USA", "Unique Feature": "Temporary structure dismantled after the Games."}},
+{name: "Wukesong Arena (China)", attributes: {City: "Beijing, China", Year: 2008, Capacity: "18,000", "Iconic Match": "USA 118-107 Spain (Men's)", "Gold Medal Winner": "USA", "Unique Feature": "Home of the legendary 'Redeem Team' featuring Kobe, LeBron and Wade."}},
+{name: "Sydney SuperDome (Australia)", attributes: {City: "Sydney, Australia", Year: 2000, Capacity: "21,000", "Iconic Match": "USA 85-75 France (men)", "Gold Medal Winner": "USA", "Unique Feature": "Largest indoor arena in Australia, now called Qudos Bank Arena."}},
+{name: "Georgia Dome (USA)", attributes: {City: "Atlanta, USA", Year: 1996, Capacity: "35,000", "Iconic Match": "USA 95-69 Yugoslavia (men)", "Gold Medal Winner": "USA", "Unique Feature": "Largest attendance in history for an Olympic basketball final!"}},
+{name: "Pavelló Olímpic de Badalona (Spain)", attributes: {City: "Barcelona, ​​Spain", Year: 1992, Capacity: "12,500", "Iconic Match": "USA 117-85 Croatia", "Gold Medal Winner": "USA (Dream Team)", "Unique Feature": "Home to the greatest basketball team in history, the Dream Team of Jordan, Magic and Bird."}},
+{name: "Indoor Stadium Huamark (Thailand)", attributes: {City: "Bangkok, Thailand", Year: "1976 (women)", Capacity: "15,000", "Iconic Match": "USA 83-67 USSR", "Gold Medal Winner": "USA", "Unique Feature": "First women's Olympic final!"}},
+{name: "Saitama Super Arena (Japan)", attributes: {City: "Saitama, Japan", Year: "2021 (Tokyo 2020)", Capacity: "21,000", "Iconic Match": "USA 87-82 France (men)", "Gold Medal Winner": "USA", "Unique Feature": "Games played without spectators due to the COVID-19 pandemic."}},
+  ];
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playmCheckbox').checked) selectedCards.push(...playm);
+    if (document.getElementById('playfCheckbox').checked) selectedCards.push(...playf);
+    if (document.getElementById('courtCheckbox').checked) selectedCards.push(...court);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

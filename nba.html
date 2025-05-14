@@ -1,0 +1,213 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">NBA</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;" >Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  <!-- Action Section -->
+  <div style="margin-top: 20px;">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div style="margin-bottom: 20px;">
+        <h3>Action</h3>
+        <p id="actionResult" style="color: white;">-</p>
+        <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+    "Buzzer Beater: You can immediately play an additional attack card, ignoring any defense from the opponent.",
+"Injury Timeout: Choose one of the opponent’s player cards; that player is out for 2 turns and cannot be used.",
+"Clutch Play: Double the attack value of your next player card. If it’s a “Superstar” card, draw an additional card from your deck.",
+"Double Technical: Both players must discard one card from their hand.",
+"Home Court Advantage: Add +3 to any defensive card you play in the next two rounds.",
+"Fast Break: Draw two extra cards. You can immediately play one attack card.",
+"Fan Ejection: Choose one player card from the opponent’s side of the court. That player is ejected and removed from the game.",
+"Trade Deadline: Swap one of your player cards with an opponent's player card of equal or lesser value.",
+"Hot Streak: For the next three turns, all your attack cards gain an additional +2.",
+"All-Star Weekend: Skip this round for both players, and each player draws three extra cards.",
+"Overtime: The current round does not end until both players play an additional attack card. Defense cards have no effect this round.",
+"Defensive Lockdown: All opponent’s attack cards are reduced by -3 for the next two turns.",
+"6th Man Energy: You can play an extra player card from your hand this turn, and it gains +2 attack.",
+"Coaching Challenge: Cancel the effect of the last card played by the opponent.",
+"Broken Ankle: The opponent’s next attack is reduced by -5. If it’s a “Crossover” play, it’s negated entirely.",
+"MVP Performance: Choose one of your player cards on the field. Its attack or defense value is doubled for the next turn.",
+"Momentum Shift: Swap all the cards on your side of the court with new cards from your hand.",
+"Slam Dunk Contest: Both players must reveal one player card from their hand. The card with the highest attack value wins, and that player can immediately play the card for free.",
+"Crowd Hype: For the next turn, all of your attack cards gain +3 due to crowd energy.",
+"Full-Court Press: The opponent must discard one random card from their hand."
+  ];
+  
+  const cards = [
+    {name: "Coach: Chuck Daly", attributes: {Wins: 7, Championships: 2, Longevity: 8, Tactics: 9, "Player Development": 7, "Playoff Performance": 8}},
+{name: "Coach: Doc Rivers", attributes: {Wins: 8, Championships: 1, Longevity: 9, Tactics: 8, "Player Development": 7, "Playoff Performance": 7}},
+{name: "Coach: Erik Spoelstra", attributes: {Wins: 8, Championships: 2, Longevity: 7, Tactics: 9, "Player Development": 9, "Playoff Performance": 8}},
+{name: "Coach: Gregg Popovich", attributes: {Wins: 10, Championships: 5, Longevity: 10, Tactics: 10, "Player Development": 10, "Playoff Performance": 9}},
+{name: "Coach: Jerry Sloan", attributes: {Wins: 9, Championships: 0, Longevity: 10, Tactics: 8, "Player Development": 8, "Playoff Performance": 7}},
+{name: "Coach: Larry Brown", attributes: {Wins: 8, Championships: 1, Longevity: 9, Tactics: 9, "Player Development": 8, "Playoff Performance": 7}},
+{name: "Coach: Pat Riley", attributes: {Wins: 9, Championships: 5, Longevity: 9, Tactics: 9, "Player Development": 8, "Playoff Performance": 9}},
+{name: "Coach: Phil Jackson", attributes: {Wins: 10, Championships: 10, Longevity: 9, Tactics: 9, "Player Development": 8, "Playoff Performance": 10}},
+{name: "Coach: Red Auerbach", attributes: {Wins: 8, Championships: 10, Longevity: 8, Tactics: 9, "Player Development": 8, "Playoff Performance": 10}},
+{name: "Coach: Steve Kerr", attributes: {Wins: 7, Championships: 9, Longevity: 6, Tactics: 8, "Player Development": 8, "Playoff Performance": 9}},
+{name: "Player: Allen Iverson", attributes: {Points: 9, Assists: 7, Rebounds: 5, Defense: 7, "3-Point Shooting": 6, Championships: 0}},
+{name: "Player: Anthony Davis", attributes: {Points: 9, Assists: 3, Rebounds: 9, Defense: 9, "3-Point Shooting": 6, Championships: 1}},
+{name: "Player: Ben Wallace", attributes: {Points: 5, Assists: 2, Rebounds: 9, Defense: 10, "3-Point Shooting": 1, Championships: 1}},
+{name: "Player: Carmelo Anthony", attributes: {Points: 9, Assists: 3, Rebounds: 7, Defense: 6, "3-Point Shooting": 7, Championships: 0}},
+{name: "Player: Charles Barkley", attributes: {Points: 9, Assists: 5, Rebounds: 10, Defense: 7, "3-Point Shooting": 6, Championships: 0}},
+{name: "Player: Chris Paul", attributes: {Points: 8, Assists: 9, Rebounds: 4, Defense: 9, "3-Point Shooting": 7, Championships: 0}},
+{name: "Player: Dirk Nowitzki", attributes: {Points: 9, Assists: 4, Rebounds: 8, Defense: 6, "3-Point Shooting": 8, Championships: 1}},
+{name: "Player: Dwight Howard", attributes: {Points: 8, Assists: 2, Rebounds: 10, Defense: 10, "3-Point Shooting": 2, Championships: 1}},
+{name: "Player: Dwyane Wade", attributes: {Points: 8, Assists: 7, Rebounds: 6, Defense: 8, "3-Point Shooting": 5, Championships: 3}},
+{name: "Player: Gary Payton", attributes: {Points: 8, Assists: 7, Rebounds: 5, Defense: 10, "3-Point Shooting": 6, Championships: 1}},
+{name: "Player: Giannis Antetokounmpo", attributes: {Points: 9, Assists: 6, Rebounds: 9, Defense: 9, "3-Point Shooting": 6, Championships: 1}},
+{name: "Player: Hakeem Olajuwon", attributes: {Points: 9, Assists: 4, Rebounds: 9, Defense: 10, "3-Point Shooting": 3, Championships: 2}},
+{name: "Player: James Harden", attributes: {Points: 10, Assists: 9, Rebounds: 6, Defense: 5, "3-Point Shooting": 8, Championships: 0}},
+{name: "Player: Jason Kidd", attributes: {Points: 7, Assists: 10, Rebounds: 7, Defense: 9, "3-Point Shooting": 6, Championships: 1}},
+{name: "Player: Joel Embiid", attributes: {Points: 9, Assists: 4, Rebounds: 9, Defense: 8, "3-Point Shooting": 6, Championships: 0}},
+{name: "Player: John Stockton", attributes: {Points: 7, Assists: 10, Rebounds: 4, Defense: 9, "3-Point Shooting": 6, Championships: 0}},
+{name: "Player: Julius Erving (Dr. J)", attributes: {Points: 9, Assists: 6, Rebounds: 8, Defense: 7, "3-Point Shooting": 4, Championships: 1}},
+{name: "Player: Kareem Abdul-Jabbar", attributes: {Points: 10, Assists: 6, Rebounds: 9, Defense: 9, "3-Point Shooting": 4, Championships: 6}},
+{name: "Player: Karl Malone", attributes: {Points: 10, Assists: 4, Rebounds: 9, Defense: 8, "3-Point Shooting": 3, Championships: 0}},
+{name: "Player: Kawhi Leonard", attributes: {Points: 8, Assists: 5, Rebounds: 7, Defense: 10, "3-Point Shooting": 7, Championships: 2}},
+{name: "Player: Kevin Durant", attributes: {Points: 9, Assists: 6, Rebounds: 7, Defense: 8, "3-Point Shooting": 8, Championships: 2}},
+{name: "Player: Kobe Bryant", attributes: {Points: 9, Assists: 6, Rebounds: 7, Defense: 9, "3-Point Shooting": 7, Championships: 5}},
+{name: "Player: Larry Bird", attributes: {Points: 9, Assists: 8, Rebounds: 9, Defense: 7, "3-Point Shooting": 8, Championships: 3}},
+{name: "Player: LeBron James", attributes: {Points: 10, Assists: 9, Rebounds: 8, Defense: 9, "3-Point Shooting": 7, Championships: 4}},
+{name: "Player: Magic Johnson", attributes: {Points: 8, Assists: 10, Rebounds: 8, Defense: 7, "3-Point Shooting": 6, Championships: 5}},
+{name: "Player: Manu Ginóbili", attributes: {Points: 8, Assists: 5, Rebounds: 4, Defense: 7, "3-Point Shooting": 8, Championships: 4}},
+{name: "Player: Michael Jordan", attributes: {Points: 10, Assists: 7, Rebounds: 7, Defense: 10, "3-Point Shooting": 6, Championships: 6}},
+{name: "Player: Nikola Jokić", attributes: {Points: 9, Assists: 9, Rebounds: 9, Defense: 6, "3-Point Shooting": 7, Championships: 1}},
+{name: "Player: Oscar Robertson", attributes: {Points: 9, Assists: 9, Rebounds: 8, Defense: 7, "3-Point Shooting": 5, Championships: 1}},
+{name: "Player: Patrick Ewing", attributes: {Points: 8, Assists: 4, Rebounds: 9, Defense: 9, "3-Point Shooting": 4, Championships: 0}},
+{name: "Player: Paul Pierce", attributes: {Points: 9, Assists: 4, Rebounds: 6, Defense: 7, "3-Point Shooting": 8, Championships: 1}},
+{name: "Player: Ray Allen", attributes: {Points: 8, Assists: 3, Rebounds: 5, Defense: 6, "3-Point Shooting": 10, Championships: 2}},
+{name: "Player: Reggie Miller", attributes: {Points: 9, Assists: 3, Rebounds: 4, Defense: 6, "3-Point Shooting": 9, Championships: 0}},
+{name: "Player: Russell Westbrook", attributes: {Points: 9, Assists: 9, Rebounds: 8, Defense: 7, "3-Point Shooting": 5, Championships: 0}},
+{name: "Player: Shaquille O’Neal", attributes: {Points: 10, Assists: 5, Rebounds: 10, Defense: 8, "3-Point Shooting": 1, Championships: 4}},
+{name: "Player: Stephen Curry", attributes: {Points: 9, Assists: 8, Rebounds: 5, Defense: 6, "3-Point Shooting": 10, Championships: 4}},
+{name: "Player: Steve Nash", attributes: {Points: 8, Assists: 10, Rebounds: 4, Defense: 6, "3-Point Shooting": 8, Championships: 0}},
+{name: "Player: Tim Duncan", attributes: {Points: 8, Assists: 5, Rebounds: 10, Defense: 10, "3-Point Shooting": 3, Championships: 5}},
+{name: "Player: Tony Parker", attributes: {Points: 8, Assists: 7, Rebounds: 3, Defense: 6, "3-Point Shooting": 5, Championships: 4}},
+{name: "Player: Tracy McGrady", attributes: {Points: 9, Assists: 5, Rebounds: 6, Defense: 7, "3-Point Shooting": 7, Championships: 0}},
+{name: "Player: Wilt Chamberlain", attributes: {Points: 10, Assists: 7, Rebounds: 10, Defense: 8, "3-Point Shooting": 2, Championships: 2}},
+{name: "Stadium: American Airlines Arena (Miami Heat)", attributes: {Capacity: 8, Atmosphere: 8, History: 7, Design: 9, "Home Advantage": 9, Location: 9}},
+{name: "Stadium: Barclays Center (Brooklyn Nets)", attributes: {Capacity: 8, Atmosphere: 8, History: 6, Design: 9, "Home Advantage": 8, Location: 9}},
+{name: "Stadium: Chase Center (Golden State Warriors)", attributes: {Capacity: 8, Atmosphere: 9, History: 7, Design: 9, "Home Advantage": 9, Location: 9}},
+{name: "Stadium: Fiserv Forum (Milwaukee Bucks)", attributes: {Capacity: 8, Atmosphere: 9, History: 7, Design: 9, "Home Advantage": 9, Location: 7}},
+{name: "Stadium: Madison Square Garden (New York Knicks)", attributes: {Capacity: 8, Atmosphere: 10, History: 10, Design: 8, "Home Advantage": 7, Location: 10}},
+{name: "Stadium: Smoothie King Center (New Orleans Pelicans)", attributes: {Capacity: 7, Atmosphere: 7, History: 6, Design: 8, "Home Advantage": 7, Location: 8}},
+{name: "Stadium: Staples Center (Los Angeles Lakers / Los Angeles Clippers)", attributes: {Capacity: 9, Atmosphere: 9, History: 9, Design: 8, "Home Advantage": 8, Location: 9}},
+{name: "Stadium: TD Garden (Boston Celtics)", attributes: {Capacity: 9, Atmosphere: 9, History: 10, Design: 7, "Home Advantage": 9, Location: 8}},
+{name: "Stadium: United Center (Chicago Bulls)", attributes: {Capacity: 10, Atmosphere: 9, History: 9, Design: 8, "Home Advantage": 8, Location: 8}},
+{name: "Stadium: Wells Fargo Center (Philadelphia 76ers)", attributes: {Capacity: 9, Atmosphere: 8, History: 8, Design: 7, "Home Advantage": 8, Location: 8}},
+];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [...cards]; // Clone the cards array
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and display result
+  function shuffleAction() {
+    const randomAction = actions[Math.floor(Math.random() * actions.length)];
+    document.getElementById('actionResult').textContent = randomAction;
+  }
+
+  // Event listeners for the Shuffle Action button
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleAction();
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Shuffle and display cards, but don't shuffle actions
+  });
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 80px; /* Aligned with height for proper vertical centering */
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 80px; /* Aligned with height for proper vertical centering */
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

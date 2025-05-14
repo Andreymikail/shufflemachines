@@ -1,0 +1,146 @@
+<!-- HTML Structure -->
+<div>
+  <label for="deckChoice">Choose Deck:</label>
+  <select id="deckChoice">
+    <option value="major">Major Arcana</option>
+    <option value="minor">Minor Arcana</option>
+  </select>
+</div>
+<br>
+<button id="drawTarotButton" class="round-button">Shuffle</button>
+
+<div id="tarotResult"></div>
+
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('drawTarotButton').addEventListener('click', function() {
+      const deckChoice = document.getElementById('deckChoice').value;
+
+      const majorArcana = {
+        "The Fool": "New beginnings, optimism, trust in life",
+        "The Magician": "Action, the power to manifest",
+        "The High Priestess": "Inaction, going within, the subconscious",
+        "The Empress": "Abundance, nurturing, fertility, life in bloom!",
+        "The Emperor": "Structure, stability, rules and power",
+        "The Hierophant": "Institutions, tradition, society and its rules",
+        "The Lovers": "Sexuality, passion, choice, uniting",
+        "The Chariot": "Movement, progress, integration",
+        "Strength": "Courage, subtle power, integration of animal self",
+        "The Hermit": "Meditation, solitude, consciousness",
+        "Wheel of Fortune": "Cycles, change, ups and downs",
+        "Justice": "Fairness, equality, balance",
+        "The Hanged Man": "Surrender, new perspective, enlightenment",
+        "Death": "The end of something, change, the impermeability of all things",
+        "Temperance": "Balance, moderation, being sensible",
+        "The Devil": "Destructive patterns, addiction, giving away your power",
+        "The Tower": "Collapse of stable structures, release, sudden insight",
+        "The Star": "Hope, calm, a good omen!",
+        "The Moon": "Mystery, the subconscious, dreams",
+        "The Sun": "Success, happiness, all will be well",
+        "Judgement": "Rebirth, a new phase, inner calling",
+        "The World": "Completion, wholeness, attainment, celebration of life"
+      };
+
+      const minorArcana = {
+        "Ace of Cups": "Emotional force, intuition, intimacy, love",
+        "Two of Cups": "Connection, truce, attraction, love",
+        "Three of Cups": "Friendship, community, happiness",
+        "Four of Cups": "Apathy, contemplation, disconnection",
+        "Five of Cups": "Loss, regret, disappointment",
+        "Six of Cups": "Nostalgia, memories, childhood",
+        "Seven of Cups": "Illusion, imagination, unrealistic desires",
+        "Eight of Cups": "Abandonment, withdrawal, moving on",
+        "Nine of Cups": "Satisfaction, emotional contentment",
+        "Ten of Cups": "Happiness, emotional fulfillment, harmony",
+        "Page of Cups": "Imagination, creativity, a childlike nature",
+        "Knight of Cups": "Romance, adventure, following ones heart",
+        "Queen of Cups": "Compassion, calm, comfort",
+        "King of Cups": "Emotionally balanced, compassionate, diplomatic",
+        "Ace of Swords": "Mental clarity, breakthroughs, new ideas",
+        "Two of Swords": "Indecision, choices, stalemate",
+        "Three of Swords": "Heartbreak, separation, grief",
+        "Four of Swords": "Rest, restoration, contemplation",
+        "Five of Swords": "Conflict, tension, defeat",
+        "Six of Swords": "Transition, moving on, acceptance",
+        "Seven of Swords": "Deception, trickery, turning a blind eye",
+        "Eight of Swords": "Imprisonment, restriction, self-imposed limitations",
+        "Nine of Swords": "Anxiety, worry, nightmares",
+        "Ten of Swords": "Painful endings, deep wounds, betrayal",
+        "Page of Swords": "Curiosity, mental agility, new ideas",
+        "Knight of Swords": "Ambition, action, driven to succeed",
+        "Queen of Swords": "Perceptiveness, clear-mindedness, complexity",
+        "King of Swords": "Intellectual power, truth, authority",
+        "Ace of Pentacles": "Manifestation, prosperity, new opportunities",
+        "Two of Pentacles": "Balance, adaptability, time management",
+        "Three of Pentacles": "Teamwork, collaboration, learning",
+        "Four of Pentacles": "Security, conservation, control",
+        "Five of Pentacles": "Isolation, insecurity, worry",
+        "Six of Pentacles": "Generosity, charity, sharing wealth",
+        "Seven of Pentacles": "Long-term view, sustainable results, perseverance",
+        "Eight of Pentacles": "Apprenticeship, skill development, mastery",
+        "Nine of Pentacles": "Abundance, luxury, self-sufficiency",
+        "Ten of Pentacles": "Wealth, inheritance, long-term success",
+        "Page of Pentacles": "Manifestation, financial opportunity, new job",
+        "Knight of Pentacles": "Hard work, productivity, routine",
+        "Queen of Pentacles": "Practical, creature comforts, financial security",
+        "King of Pentacles": "Wealth, business, leadership, security",
+        "Ace of Wands": "Inspiration, new opportunities, growth, potential",
+        "Two of Wands": "Future planning, progress, decisions, discovery",
+        "Three of Wands": "Preparation, foresight, enterprise, expansion",
+        "Four of Wands": "Celebration, harmony, marriage, home, community",
+        "Five of Wands": "Conflict, disagreements, competition, tension, diversity",
+        "Six of Wands": "Success, public recognition, progress, self-confidence",
+        "Seven of Wands": "Challenge, competition, protection, perseverance",
+        "Eight of Wands": "Movement, fast-paced change, action, alignment",
+        "Nine of Wands": "Resilience, courage, persistence, test of faith, boundaries",
+        "Ten of Wands": "Burden, extra responsibility, hard work, completion",
+        "Page of Wands": "Inspiration, ideas, discovery, limitless potential, free spirit",
+        "Knight of Wands": "Energy, passion, inspired action, adventure, impulsiveness",
+        "Queen of Wands": "Courage, confidence, independence, social butterfly, determination",
+        "King of Wands": "Natural-born leader, vision, entrepreneur, honour"
+      };
+
+      const tarotDeck = deckChoice === "major" ? majorArcana : minorArcana;
+      const tarotCards = Object.keys(tarotDeck);
+      tarotCards.sort(() => Math.random() - 0.5);
+
+      const result = {
+        Past: { card: tarotCards[0], description: tarotDeck[tarotCards[0]] },
+        Present: { card: tarotCards[1], description: tarotDeck[tarotCards[1]] },
+        Future: { card: tarotCards[2], description: tarotDeck[tarotCards[2]] }
+      };
+
+      // Display the drawn cards with their descriptions
+      document.getElementById('tarotResult').innerHTML = `
+        <h3>Past: ${result.Past.card}</h3>
+        <p>${result.Past.description}</p>
+        <h3>Present: ${result.Present.card}</h3>
+        <p>${result.Present.description}</p>
+        <h3>Future: ${result.Future.card}</h3>
+        <p>${result.Future.description}</p>
+      `;
+    });
+  });
+</script>
+
+<!-- CSS for the Round Button -->
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 60px; /* Align text vertically */
+    transition: background-color 0.3s;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+</style>

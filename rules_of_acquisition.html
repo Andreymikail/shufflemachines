@@ -1,0 +1,360 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Rules of Acquisition</h2>
+  
+  <!-- Elements per page selection -->
+  <div>
+    <label for="elementsPerPage" style="color: white;">Rules per Page:</label><br>
+    <input type="number" id="elementsPerPage" value="5"><br><br>
+  </div>
+
+  <!-- Shuffle Button -->
+  <button id="shuffleButton" class="round-button">Shuffle</button>
+
+  <!-- Rules Display -->
+  <div id="rulesContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const rulesOfAcquisition = [
+    "Rule 1: Once you have their money, you never give it back.",
+"Rule 2: The best deal is the one that brings the most profit.",
+"Rule 3: Never spend more for an acquisition than you have to.",
+"Rule 5: Always exaggerate your profits.",
+"Rule 6: Never allow family to stand in the way of opportunity.",
+"Rule 7: Keep your ears open.",
+"Rule 8: Small print leads to large profits.",
+"Rule 9: Opportunity plus instinct equals profit.",
+"Rule 10: Greed is eternal.",
+"Rule 11: It’s never too early to suck up to the boss.",
+"Rule 12: Never ask when you can take.",
+"Rule 13: Anything worth doing is worth doing for money.",
+"Rule 14: A wise man can hear profit in the wind.",
+"Rule 15: Don’t lie too often—others won’t trust you.",
+"Rule 16: Never trust a man wearing a better suit than your own.",
+"Rule 17: The riskier the road, the greater the profit.",
+"Rule 18: The bigger the smile, the sharper the knife.",
+"Rule 19: Everything is for sale, even friendship.",
+"Rule 20: Never place friendship above profit.",
+"Rule 21: Never insult a Ferengi’s mother—insult something he cares about instead.",
+"Rule 22: Profit is its own reward.",
+"Rule 23: Treat people in your debt like family: exploit them.",
+"Rule 24: Never begin a business negotiation on an empty stomach.",
+"Rule 25: Fear makes a good business partner.",
+"Rule 26: The justification for profit is profit.",
+"Rule 27: A Ferengi without profit is no Ferengi at all.",
+"Rule 28: When the boss is wrong, tell him.",
+"Rule 29: Never make fun of a Ferengi's mother.",
+"Rule 30: Business is war.",
+"Rule 31: Free advice is seldom cheap.",
+"Rule 32: Nothing is more important than your health, except for your money.",
+"Rule 33: There’s no such thing as a free lunch.",
+"Rule 34: Always know what you're buying.",
+"Rule 35: War is good for business.",
+"Rule 36: Peace is good for business.",
+"Rule 37: Money talks, but having too much screams greed.",
+"Rule 38: Never admit a mistake if there’s someone else to blame.",
+"Rule 39: Don’t share your profits with anyone who didn’t contribute to the acquisition.",
+"Rule 40: Know your enemies but do business with them anyway.",
+"Rule 41: Never mix family with business.",
+"Rule 42: Friends are the real enemies; keep them close.",
+"Rule 43: Never trust someone unwilling to exploit you.",
+"Rule 44: Always inspect what you expect.",
+"Rule 45: Loyalty can be bought but should be carefully budgeted.",
+"Rule 46: Don't start a fight, but if one begins, make sure you profit.",
+"Rule 47: Seek out new opportunities, but always charge an entry fee.",
+"Rule 48: Risk is the currency of business—spend it wisely.",
+"Rule 49: Don’t just sell; upsell.",
+"Rule 50: Charity is a form of advertising—make sure you get credit.",
+"Rule 51: A Ferengi's word is as binding as the size of his bribe.",
+"Rule 52: Always plan for the next deal before closing the first.",
+"Rule 53: Offer too little and you may miss the deal; offer too much and you’ve lost the profit.",
+"Rule 54: Never let emotions interfere with profit.",
+"Rule 55: Don’t negotiate for what you can take by force.",
+"Rule 56: Profits are like rules—they’re meant to be broken.",
+"Rule 57: The early worm gets the deal.",
+"Rule 58: A lost customer is an opportunity for a competitor.",
+"Rule 59: The best contracts are the ones that benefit you both.",
+"Rule 60: Don’t overpromise unless you can oversell.",
+"Rule 61: Never forget where your money comes from.",
+"Rule 62: Never allow someone to owe you without charging interest.",
+"Rule 63: Trust is the first step to bankruptcy.",
+"Rule 64: A closed deal is worth more than a thousand opportunities.",
+"Rule 65: Profit has no loyalty but to itself.",
+"Rule 66: Time is money, and wasting it is a crime.",
+"Rule 67: You can’t buy happiness, but you can certainly sell it.",
+"Rule 68: Only fools make enemies when they could be making profits.",
+"Rule 69: Never take a deal for granted.",
+"Rule 70: Always keep an eye on the competition.",
+"Rule 71: A good deal is only as good as its margin.",
+"Rule 72: The customer is always right... unless it costs you.",
+"Rule 73: The best negotiation is the one you don’t pay for.",
+"Rule 74: Every problem has a price.",
+"Rule 75: Market share is only good if you own the market.",
+"Rule 76: A bribe is an investment in goodwill.",
+"Rule 77: Never let a competitor know what you truly value.",
+"Rule 78: In business, nothing is personal.",
+"Rule 79: Never underestimate the power of a well-timed lie.",
+"Rule 80: Patience is profit in disguise.",
+"Rule 81: Time is money, but leverage is everything.",
+"Rule 82: Sell first, question later.",
+"Rule 83: Always exploit opportunity, even in friendship.",
+"Rule 84: New opportunities often come from old mistakes.",
+"Rule 85: Never leave a debt unpaid—but always leave room for interest.",
+"Rule 86: Don’t worry about the losses—focus on the next acquisition.",
+"Rule 87: Competition is the enemy; collaboration is the bait.",
+"Rule 88: Always be willing to sell... at the right price.",
+"Rule 89: The best customers are repeat customers.",
+"Rule 90: It’s not who you know, but how much they owe you.",
+"Rule 91: Keep your investments close and your customers closer.",
+"Rule 92: Always ask for more than you're willing to take.",
+"Rule 93: It’s not enough to win; you must be seen winning.",
+"Rule 94: The road to success is paved with others’ failures.",
+"Rule 95: You can never have too many assets.",
+"Rule 96: The more you risk, the greater your reward... unless you lose.",
+"Rule 97: Always leave room for negotiation, but never show your hand.",
+"Rule 98: Protect your investment above all else.",
+"Rule 99: There's no such thing as overcharging—just creative pricing.",
+"Rule 100: Profits are the most important acquisition of all.",
+"Rule 101: A contract is only as binding as your ability to enforce it.",
+"Rule 102: Keep one hand on your profits, and the other on your competition.",
+"Rule 103: The best defense is a strong offense… with a price tag.",
+"Rule 104: Always negotiate from a position of strength, even if it’s borrowed.",
+"Rule 105: The secret to wealth is controlling the supply.",
+"Rule 106: What’s yours is yours, and what’s theirs is negotiable.",
+"Rule 107: Goodwill is a resource, but it has an expiration date.",
+"Rule 108: A shrewd partner is better than a foolish enemy.",
+"Rule 109: In business, there are no friends, only future deals.",
+"Rule 110: Never confuse a bad deal with a learning opportunity.",
+"Rule 111: A Ferengi without leverage is a Ferengi without profit.",
+"Rule 112: Never invest in something that can’t pay dividends.",
+"Rule 113: Always have an exit strategy.",
+"Rule 114: If it’s worth doing, it’s worth doing in secret.",
+"Rule 115: Diversify your assets, but consolidate your control.",
+"Rule 116: When in doubt, raise the price.",
+"Rule 117: Never sign a contract you didn’t write.",
+"Rule 118: Profit is measured not by what you gain, but by what others lose.",
+"Rule 119: A rich Ferengi never takes no for an answer.",
+"Rule 120: The surest way to defeat a rival is to buy them out.",
+"Rule 121: Never negotiate with someone who has nothing to lose.",
+"Rule 122: The customer pays for convenience, even when it’s inconvenient.",
+"Rule 123: Never leave a paper trail you can’t sell.",
+"Rule 124: When opportunity knocks, sell it the door.",
+"Rule 125: The best price is the one they don’t know they paid.",
+"Rule 126: Never show all your cards unless you’ve stacked the deck.",
+"Rule 127: Always offer an alternative… at a higher price.",
+"Rule 128: Competition breeds innovation, but innovation kills profits.",
+"Rule 129: The cost of maintaining power is less than the cost of losing it.",
+"Rule 130: Business partnerships are only temporary.",
+"Rule 131: Every setback is an opportunity to renegotiate.",
+"Rule 132: The fine print hides the real profit.",
+"Rule 133: It’s better to owe than to be owed.",
+"Rule 134: The only thing more valuable than money is information.",
+"Rule 135: Always have a backup plan, and a backup to your backup.",
+"Rule 136: A penny saved is a penny someone else didn’t earn.",
+"Rule 137: In business, failure is an opportunity for someone else’s success.",
+"Rule 138: Debt is a tool, but don’t become the tool of your debt.",
+"Rule 139: The best asset is the one you don’t have to pay for.",
+"Rule 140: A contract without loopholes isn’t worth signing.",
+"Rule 141: Never sell a product without creating a need for it first.",
+"Rule 142: The richest Ferengi is the one who owns time.",
+"Rule 143: Every negotiation is a battle—never let your guard down.",
+"Rule 144: Always bet on yourself… after betting against the competition.",
+"Rule 145: Never pass up an opportunity to collect on a favor.",
+"Rule 146: The key to survival is knowing when to sell out.",
+"Rule 147: Make your competition’s weakness your strength.",
+"Rule 148: Be the first to offer a solution, but charge for it later.",
+"Rule 149: Keep your profits safe, but never let them stagnate.",
+"Rule 150: There’s no such thing as a bad investment, only a bad investor.",
+"Rule 151: Never underestimate the power of a rumor.",
+"Rule 152: If you can’t beat them, sell them something they need to beat you.",
+"Rule 153: The biggest opportunities come in the smallest packages.",
+"Rule 154: Always assume someone’s listening, and charge them for the privilege.",
+"Rule 155: When the going gets tough, the tough raise their prices.",
+"Rule 156: Never do business without a signed contract, unless you can void it.",
+"Rule 157: The more desperate they are, the more you can charge.",
+"Rule 158: The best deals are made behind closed doors.",
+"Rule 159: Always leave something on the table... for the next deal.",
+"Rule 160: A good Ferengi makes money; a great Ferengi makes others make money for him.",
+"Rule 161: Never let the fear of losing stop you from winning.",
+"Rule 162: If you're not the best, make sure they think you are.",
+"Rule 163: Always take credit for someone else’s hard work—if you can sell it.",
+"Rule 164: Greed may be eternal, but patience isn’t.",
+"Rule 165: It’s not enough to have money; you must appear to have more.",
+"Rule 166: Never let sentimentality get in the way of a deal.",
+"Rule 167: If you’re not selling, you’re buying—and losing.",
+"Rule 168: There's no profit in honesty, only in plausible deniability.",
+"Rule 169: Trust no one, but make them think you do.",
+"Rule 170: Always offer a warranty, but never honor it.",
+"Rule 171: The harder they negotiate, the more you can charge.",
+"Rule 172: It’s better to be feared than loved, but both cost the same.",
+"Rule 173: In business, the only sin is failing to make a profit.",
+"Rule 174: Never forget who helped you get to the top—so you can step over them.",
+"Rule 175: If you're in control, you’re not charging enough.",
+"Rule 176: Every transaction is a test—always aim to pass with profit.",
+"Rule 177: A Ferengi’s word is his bond, but bonds can be bought.",
+"Rule 178: Never reveal your true intentions unless it profits you.",
+"Rule 179: A lost customer today is a returning customer tomorrow—with interest.",
+"Rule 180: If they don’t trust you, raise the price until they do.",
+"Rule 181: It’s not the deal that matters; it’s how much you can sell the deal for.",
+"Rule 182: A good investment today is a profitable regret tomorrow.",
+"Rule 183: Information is free, but access to it is not.",
+"Rule 184: The fastest route to profit is through someone else’s misfortune.",
+"Rule 185: Never trust a discount unless you're the one offering it.",
+"Rule 186: Be cautious with promises, but generous with loopholes.",
+"Rule 187: If a deal seems too good to be true, raise the price until it’s not.",
+"Rule 188: Control the narrative, and you control the market.",
+"Rule 189: Always assume there’s another buyer willing to pay more.",
+"Rule 190: In the end, profit is the only metric that matters.",
+"Rule 191: Negotiation is an art, but profit is a science.",
+"Rule 192: If you can’t raise the price, raise the stakes.",
+"Rule 193: The best business is repeat business, especially if it costs them more.",
+"Rule 194: There’s no such thing as a monopoly—just a business well-run.",
+"Rule 195: The truth is negotiable, but the price isn’t.",
+"Rule 196: Never give more than you're willing to take.",
+"Rule 197: Every product has a buyer, but not every buyer has a price.",
+"Rule 198: The secret to success is always being in the right place—with a price.",
+"Rule 199: Make your competition your partners—until they can’t compete.",
+"Rule 200: Profit isn’t just the goal—it’s the method.",
+"Rule 201: The only thing more valuable than profit is the ability to create more of it.",
+"Rule 202: Always ask for more than you're willing to accept.",
+"Rule 203: Never outshine the boss—unless you can sell it.",
+"Rule 204: A Ferengi's strength is measured by the size of his profit margin.",
+"Rule 205: Never rely on luck when leverage works better.",
+"Rule 206: The best insurance is a well-placed bribe.",
+"Rule 207: Never pass up an opportunity to remind others of their debts.",
+"Rule 208: When times are tough, raise prices—supply and demand.",
+"Rule 209: Only the foolish leave a deal unfinished.",
+"Rule 210: Always position yourself as indispensable, then raise your fee.",
+"Rule 211: Time spent not making profit is time wasted.",
+"Rule 212: Always know your competition’s weaknesses better than they do.",
+"Rule 213: If they can't pay in cash, accept assets.",
+"Rule 214: The best deals are the ones made with someone else’s money.",
+"Rule 215: Never sell a product when you can sell a service.",
+"Rule 216: A Ferengi’s mind is his most valuable asset—until it’s out of ideas.",
+"Rule 217: If you can’t own the product, own the market.",
+"Rule 218: The value of a promise is in its ability to be broken profitably.",
+"Rule 219: Every closed door is a negotiation waiting to happen.",
+"Rule 220: If they’re not asking questions, raise the price.",
+"Rule 221: Debt is a tool—use it wisely.",
+"Rule 222: Always have a contingency plan... or three.",
+"Rule 223: Trust is expensive; keep your prices low.",
+"Rule 224: Never settle for a percentage when you can own it all.",
+"Rule 225: The value of knowledge is in its scarcity.",
+"Rule 226: Always sell them what they want, but give them what they need... at a premium.",
+"Rule 227: Never build something you can’t sell later.",
+"Rule 228: Competition can be a customer, if the price is right.",
+"Rule 229: Never assume loyalty unless it’s bought and paid for.",
+"Rule 230: Everything has a price, especially loyalty.",
+"Rule 231: Only a fool offers a discount before the deal is made.",
+"Rule 232: Never fear the unknown—exploit it.",
+"Rule 233: The customer is always right... when it’s profitable.",
+"Rule 234: The best negotiation is the one where they pay to lose.",
+"Rule 235: Keep your competitors close and their customers closer.",
+"Rule 236: It’s not what you sell, it’s what they believe they’re buying.",
+"Rule 237: Never enter a bidding war you can't win—unless you’re selling the war.",
+"Rule 238: Always appear humble when collecting profits.",
+"Rule 239: If they can't afford it, make them believe they can.",
+"Rule 240: Never pay more than half the value of what you want.",
+"Rule 241: The key to victory is never showing defeat.",
+"Rule 242: Be the first to the market, and the last to leave.",
+"Rule 243: Never tell them how much it costs unless you're doubling the price.",
+"Rule 244: A bribe well-placed is worth its weight in gold.",
+"Rule 245: Let others take the risks; you take the rewards.",
+"Rule 246: Keep your friends in your debt and your enemies in your pocket.",
+"Rule 247: Always sell the dream, even if the reality costs more.",
+"Rule 248: Be generous with promises but stingy with fulfillment.",
+"Rule 249: Only a fool leaves money on the table.",
+"Rule 250: Always charge for experience—yours and theirs.",
+"Rule 251: Never let a crisis go unexploited.",
+"Rule 252: In negotiations, silence is golden—and profitable.",
+"Rule 253: Make sure you’re selling before they realize they’re buying.",
+"Rule 254: Always follow up on a missed payment, with interest.",
+"Rule 255: What’s free today will cost them tomorrow.",
+"Rule 256: A bad deal is still better than no deal—if you can flip it later.",
+"Rule 257: Always have someone else to blame when the deal goes bad.",
+"Rule 258: Don’t waste time on loyalty when profits are at stake.",
+"Rule 259: A Ferengi without ambition is a Ferengi without profit.",
+"Rule 260: Always have a monopoly on something.",
+"Rule 261: Never trust someone who doesn’t want to make a profit.",
+"Rule 262: If the profit margin is thin, increase the volume.",
+"Rule 263: Business is never personal, but personal costs extra.",
+"Rule 264: The best secrets are the ones you sell, but never fully disclose.",
+"Rule 265: The biggest risk is not taking enough.",
+"Rule 266: Always keep a competitor guessing, especially when you're winning.",
+"Rule 267: If it’s too easy, you’re not charging enough.",
+"Rule 268: Always deliver on promises—just not all at once.",
+"Rule 269: When in doubt, sell it.",
+"Rule 270: Reputation is everything—until you can sell it for more.",
+"Rule 271: The more desperate they are, the higher the price.",
+"Rule 272: Always control the supply, and you’ll control the demand.",
+"Rule 273: A good Ferengi knows when to walk away—and when to double down.",
+"Rule 274: Never let your conscience get in the way of a good deal.",
+"Rule 275: In a crowded market, find a niche and exploit it.",
+"Rule 276: There’s no such thing as over-leverage, only under-planning.",
+"Rule 277: Every loss is just an opportunity to recalculate.",
+"Rule 278: Never offer a price that can’t be raised later.",
+"Rule 279: If they can’t afford it, find someone who can.",
+"Rule 280: Always be prepared to walk away, but never leave empty-handed.",
+"Rule 281: The best deals are the ones that keep paying.",
+"Rule 282: A secret held too long loses its value.",
+"Rule 283: Never let your guard down, especially when the profit is rolling in.",
+"Rule 284: A fast profit is good, but a long-term profit is better.",
+"Rule 285: The first step to control is knowing what to sell."
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to shuffle and display paginated rules
+  function shuffleRules() {
+    const shuffledRules = shuffleArray(rulesOfAcquisition);
+    const elementsPerPage = parseInt(document.getElementById('elementsPerPage').value, 10);
+    displayPaginatedRules(shuffledRules, elementsPerPage);
+  }
+
+  // Function to display paginated rules
+  function displayPaginatedRules(rules, elementsPerPage) {
+    const rulesContainer = document.getElementById('rulesContainer');
+    rulesContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < rules.length; i += elementsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+      pageDiv.innerHTML = `<h3>Page ${(i / elementsPerPage) + 1}</h3><p>${rules.slice(i, i + elementsPerPage).join('<br>')}</p>`;
+      rulesContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Event listener for the Shuffle button
+  document.getElementById('shuffleButton').addEventListener('click', shuffleRules);
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

@@ -1,0 +1,869 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Rock</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="playersCheckbox"> Players</label><br>
+    <label><input type="checkbox" id="instrumentsCheckbox"> Instruments</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    <br><br>
+    <div style="margin-bottom: 20px;">
+      <h3>Rules</h3>
+      <p id="rulesResult" style="color: white;">-</p>
+      <button id="shuffleRulesButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+  "Power Chord: Your next attack gains +4 power. The raw energy of a power chord electrifies your move.",
+"Guitar Solo: Play an additional attack card from your hand immediately with a +3 bonus. If it’s a “Rock Legend” card, it gains +5 instead.",
+"Stage Dive: Skip your turn, but heal 5 points of damage as the crowd catches you. You gain one extra card as a bonus for the daring move.",
+"Amplified Sound: Double the effect of your next card, whether it’s attack or defense. The amplifier cranks everything to the max!",
+"Mosh Pit Mayhem: Both players must discard one random card from their hand, representing the chaotic energy of the mosh pit.",
+"Encore!: After completing your turn, play another card immediately. If it’s a Musician or Band card, it gains +3 power for the extra performance.",
+"Broken Strings: Choose one of the opponent’s attack cards and reduce its value by -4, as their guitar breaks mid-song.",
+"Crowd Surf: Draw two additional cards. You can immediately play one of them, as the crowd lifts you to new heights.",
+"Heavy Metal Riff: Your attack gains +6 if played by a “Metal” or “Hard Rock” card. The crushing riff hits the opponent hard.",
+"Pyrotechnics Show: All your attack cards for the next two turns gain +2, as the dazzling pyrotechnics fire up the crowd.",
+"Battle of the Bands: Both players reveal a Band card from their hand. The card with the higher attack value wins and gains +5. The losing card is discarded.",
+"Shredding Solo: Double the attack of your next Guitarist card. If it’s a Rock Legend, draw one additional card.",
+"Backstage Pass: Skip your turn to search your deck for any Musician card and add it to your hand. Then shuffle your deck.",
+"Rockstar Entrance: Play any card from your hand without cost or limitations. If it’s a Rock Legend, gain +3 attack for the next turn.",
+"Drum Solo: Gain +5 defense for this round, as the driving rhythm shields you from attacks.",
+"Fender Bender: Choose one of the opponent’s Guitarist cards. That card loses -4 attack for the next two turns as their guitar gets wrecked mid-performance.",
+"Tour Bus Breakdown: Both players must discard one Band card from their hand or field, representing a canceled tour.",
+"Power Ballad: Heal 6 points of damage as the emotional power of the ballad restores your energy. Draw one additional card as inspiration strikes.",
+"Headbanging Frenzy: Your next two attack cards gain +3. If either of them is from a Metal or Hard Rock band, they gain an additional +2.",
+"Stage Fright: Choose one of the opponent’s Musician cards. That card cannot attack during their next turn."  
+  ];
+
+  const rules = [
+    `Classic
+A: A5 - D5 - E5 - A5
+A Major (A, B, C#, D, E, F#, G#)
+D Mixolydian (D, E, F#, G, A, B, C)
+E Mixolydian (E, F#, G#, A, B, C#, D)
+B: C5 - G5 - F5 - G5
+C Mixolydian (C, D, E, F, G, A, Bb)
+G Mixolydian (G, A, B, C, D, E, F)
+F Mixolydian (F, G, A, Bb, C, D, Eb)`,
+`Classic
+A: Em - G - D - C
+Em (E, F#, G, A, B, C, D), 
+G Major (G, A, B, C, D, E, F#)
+D Mixolydian (D, E, F#, G, A, B, C)
+B: F - Bb - Gm - C
+F Major (F, G, A, Bb, C, D, E)
+Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+Gm (G, A, Bb, C, D, Eb, F)`,
+`Heavy
+A: B5 - E5 - F#5 - B5
+B Mixolydian (B, C#, D#, E, F#, G#, A)
+E Mixolydian (E, F#, G#, A, B, C#, D)
+F# Mixolydian (F#, G#, A#, B, C#, D#, E)
+B: C#m - A - E - B
+C#m (C#, D#, E, F#, G#, A, B)
+A Major (A, B, C#, D, E, F#, G#)
+E Mixolydian (E, F#, G#, A, B, C#, D)`,
+`Blues
+A: E7 - A7 - B7 - E7
+E Mixolydian (E, F#, G#, A, B, C#, D)
+A Mixolydian (A, B, C#, D, E, F#, G)
+B Mixolydian (B, C#, D#, E, F#, G#, A)
+B: D7 - G7 - C7 - G7
+D Mixolydian (D, E, F#, G, A, B, C)
+G Mixolydian (G, A, B, C, D, E, F)
+C Mixolydian (C, D, E, F, G, A, Bb)`,
+`Classic
+A: D - A - Bm - G
+D Major (D, E, F#, G, A, B, C#)
+A Mixolydian (A, B, C#, D, E, F#, G)
+Bm (B, C#, D, E, F#, G, A)
+B: F#m - E - A - D
+F#m (F#, G#, A, B, C#, D, E)
+E Mixolydian (E, F#, G#, A, B, C#, D)
+A Major (A, B, C#, D, E, F#, G#)`,
+`Garage
+A: G5 - C5 - D5 - G5
+G Mixolydian (G, A, B, C, D, E, F)
+C Mixolydian (C, D, E, F, G, A, Bb)
+D Mixolydian (D, E, F#, G, A, B, C)
+B: F5 - Bb5 - C5 - F5
+F Mixolydian (F, G, A, Bb, C, D, Eb)
+Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+C Mixolydian (C, D, E, F, G, A, Bb)`,
+`Indie
+A: Am - F - C - G
+Am (A, B, C, D, E, F, G)
+F Major (F, G, A, Bb, C, D, E)
+C Major (C, D, E, F, G, A, B)
+G Mixolydian (G, A, B, C, D, E, F)
+B: Em - G - D - C
+Em (E, F#, G, A, B, C, D)
+G Major (G, A, B, C, D, E, F#)
+D Mixolydian (D, E, F#, G, A, B, C)`,
+`Prog
+A: E - B - C#m - A
+E Mixolydian (E, F#, G#, A, B, C#, D)
+B Mixolydian (B, C#, D#, E, F#, G#, A)
+C#m (C#, D#, E, F#, G#, A, B), A Major (A, B, C#, D, E, F#, G#)
+B: D - A - Bm - F#
+D Major (D, E, F#, G, A, B, C#)
+A Mixolydian (A, B, C#, D, E, F#, G)
+Bm (B, C#, D, E, F#, G, A), F#m (F#, G#, A, B, C#, D, E)`,
+`Hard
+A: E5 - G5 - A5 - E5
+E minor (E, F#, G, A, B, C, D)
+G Major (G, A, B, C, D, E, F#)
+A Dorian (A, B, C, D, E, F#, G)
+B: B5 - D5 - A5 - E5
+B minor (B, C#, D, E, F#, G, A)
+D Major (D, E, F#, G, A, B, C#)
+A Mixolydian (A, B, C#, D, E, F#, G)`,
+`Psychedelic
+A: C - Bb - F - G
+C Mixolydian (C, D, E, F, G, A, Bb)
+Bb Major (Bb, C, D, Eb, F, G, A)
+F Dorian (F, G, Ab, Bb, C, D, Eb)
+G Mixolydian (G, A, B, C, D, E, F)
+B: Eb - F - Gm - Bb
+Eb Major (Eb, F, G, Ab, Bb, C, D)
+F Mixolydian (F, G, A, Bb, C, D, Eb)
+Gm (G, A, Bb, C, D, Eb, F)`,
+`Punk
+A: A5 - D5 - E5 - A5
+A Mixolydian (A, B, C#, D, E, F#, G)
+D Major (D, E, F#, G, A, B, C#)
+E Mixolydian (E, F#, G#, A, B, C#, D)
+B: F5 - Bb5 - C5 - F5
+F Mixolydian (F, G, A, Bb, C, D, Eb)
+Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+C Mixolydian (C, D, E, F, G, A, Bb)`,
+`Grunge
+A: Em - G - C - A
+Em (E, F#, G, A, B, C, D)
+G Major (G, A, B, C, D, E, F#)
+C Major (C, D, E, F, G, A, B)
+A Mixolydian (A, B, C#, D, E, F#, G)
+B: D - F - A - C
+D Mixolydian (D, E, F#, G, A, B, C)
+F Major (F, G, A, Bb, C, D, E)
+A minor (A, B, C, D, E, F, G)
+C Mixolydian (C, D, E, F, G, A, Bb)`,
+`Classic
+A: G - D - C - G
+G Major (G, A, B, C, D, E, F#)
+D Mixolydian (D, E, F#, G, A, B, C)
+C Major (C, D, E, F, G, A, B)
+B: Am - C - G - D
+Am (A, B, C, D, E, F, G)
+C Major (C, D, E, F, G, A, B)
+G Major (G, A, B, C, D, E, F#)`,
+`Altenative
+A: F#m - A - D - E
+F#m (F#, G#, A, B, C#, D, E)
+A Major (A, B, C#, D, E, F#, G#)
+D Major (D, E, F#, G, A, B, C#)
+B: Bm - G - D - F#m
+Bm (B, C#, D, E, F#, G, A)
+G Major (G, A, B, C, D, E, F#)
+D Major (D, E, F#, G, A, B, C#)
+F#m (F#, G#, A, B, C#, D, E)`,
+`Post
+A: C - G - Am - F
+C Major (C, D, E, F, G, A, B)
+G Major (G, A, B, C, D, E, F#)
+Am (A, B, C, D, E, F, G)
+F Major (F, G, A, Bb, C, D, E)
+B: Dm - Bb - F - C
+Dm (D, E, F, G, A, Bb, C)
+Bb Major (Bb, C, D, Eb, F, G, A)
+F Major (F, G, A, Bb, C, D, E)
+C Major (C, D, E, F, G, A, B)`,
+`Heavy
+A: E5 - G5 - A5 - C5
+E minor (E, F#, G, A, B, C, D)
+G Major (G, A, B, C, D, E, F#)
+A Dorian (A, B, C, D, E, F#, G)
+C Mixolydian (C, D, E, F, G, A, Bb)
+B: D5 - C5 - G5 - A5
+D minor (D, E, F, G, A, Bb, C)
+C Major (C, D, E, F, G, A, B)
+G Mixolydian (G, A, B, C, D, E, F)`,
+`Blues
+A: A7 - D7 - E7 - A7
+A Mixolydian (A, B, C#, D, E, F#, G)
+D Mixolydian (D, E, F#, G, A, B, C)
+E Mixolydian (E, F#, G#, A, B, C#, D)
+B: G7 - C7 - D7 - G7
+G Mixolydian (G, A, B, C, D, E, F)
+C Mixolydian (C, D, E, F, G, A, Bb)
+D Mixolydian (D, E, F#, G, A, B, C)`,
+`Pop
+A: C - G - Am - F
+C Major (C, D, E, F, G, A, B)
+G Major (G, A, B, C, D, E, F#)
+Am (A, B, C, D, E, F, G)
+F Major (F, G, A, Bb, C, D, E)
+B: Em - D - G - C
+Em (E, F#, G, A, B, C, D)
+D Mixolydian (D, E, F#, G, A, B, C)
+G Major (G, A, B, C, D, E, F#)
+C Major (C, D, E, F, G, A, B)`,
+`Psychedelic
+A: Em - F - G - D
+Em (E, F#, G, A, B, C, D)
+F Lídio (F, G, A, B, C, D, E)
+G Mixolydian (G, A, B, C, D, E, F)
+D Mixolydian (D, E, F#, G, A, B, C)
+B: A - C - G - D
+A minor (A, B, C, D, E, F, G)
+C Major (C, D, E, F, G, A, B)
+G Major (G, A, B, C, D, E, F#)
+D Mixolydian (D, E, F#, G, A, B, C)`,
+`Southern
+A: D - C - G - D
+D Mixolydian (D, E, F#, G, A, B, C)
+C Major (C, D, E, F, G, A, B)
+G Major (G, A, B, C, D, E, F#)
+B: A - G - D - A
+A Mixolydian (A, B, C#, D, E, F#, G)
+G Major (G, A, B, C, D, E, F#)
+D Major (D, E, F#, G, A, B, C#)`    
+  ];  
+const players = [
+
+{name: "Bass Player: André X (The Gothic Pulse Engineer)", attributes: {"Technical Skill": 83, "Stage Presence": 85, Popularity: 75, Legacy: 88, Innovation: 90, "Special Ability": "Brasília Dissonance – Gains +10 to Innovation and Sonic Impact when performing post-punk or darkwave sets, crafting atmospheric basslines that warp enemy focus and anchor avant-garde formations."}},
+{name: "Bass Player: Bi Ribeiro (The Groove Architect)", attributes: {"Technical Skill": 85, "Stage Presence": 88, Popularity: 90, Legacy: 92, Innovation: 87, "Special Ability": "Brasília Pulse – Gains +10 to Stage Presence and Legacy when performing in rock or reggae-infused battles, laying down steady, infectious grooves that strengthen team synergy and disrupt enemy rhythm."}},
+{name: "Bass Player: Billy Sheehan (Mr. Big, David Lee Roth)", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 85, Legacy: 85, Innovation: 90, "Special Ability": "Shy Boy – Increases Technical Skill by +10 in any virtuoso or shredding duel."}},
+{name: "Bass Player: Canisso (The Brazilian Punk Groove Master)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 90, Legacy: 88, Innovation: 85, "Special Ability": "Crazy Beauty – Gains +10 to Groove and Stage Energy in punk rock and alternative battles, driving the rhythm forward with relentless attitude and infectious basslines."}},
+{name: "Bass Player: Carol Kaye (The Groove Architectress)", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 90, Legacy: 100, Innovation: 90, "Special Ability": "Wrecking Groove – Carol unleashes precision bass lines that boost ally coordination and lower enemy agility. In pop, soul, or surf rock battles, her Technical Skill and Legacy increase by +10, creating an unstoppable rhythmic foundation."}},
+{name: "Bass Player: Chris Squire (Yes)", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Roundabout – Gains +10 to innovation in any progressive rock showdown."}},
+{name: "Bass Player: Cliff Burton (Metallica)", attributes: {"Technical Skill": 95, "Stage Presence": 90, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "For Whom the Bell Tolls – Boosts Technical Skill by +10 in any heavy metal showdown."}},
+{name: "Bass Player: Dee Dee Ramone (The Punk Catalyst)", attributes: {"Technical Skill": 80, "Stage Presence": 95, Popularity: 90, Legacy: 100, Innovation: 90, "Special Ability": "1-2-3-4 Fury – Gains +10 to Speed and +10 to Stage Energy when delivering high-octane punk rock, unleashing relentless bass lines that fuel allies and overwhelm opponents with raw intensity."}},
+{name: "Bass Player: Dengue (Nação Zumbi)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Mangue Groove Pulse – Connects rhythms organic and urban, adding +10 Innovation and +10 Technique to any alternative rock, funk or world music battle. Their grooves create an irresistible rhythmic foundation, transforming any performance into a hypnotic and visceral experience."}},
+{name: "Bass Player: Duff McKagan (Guns N' Roses)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 90, Legacy: 85, Innovation: 80, "Special Ability": "Sweet Child O' Mine – Gains +10 to Stage Presence after winning a hard rock duel."}},
+{name: "Bass Player: Flea (Red Hot Chili Peppers)", attributes: {"Technical Skill": 95, "Stage Presence": 100, Popularity: 95, Legacy: 90, Innovation: 90, "Special Ability": "Give It Away – Increases Stage Presence by +10 in any funk-rock battle."}},
+{name: "Bass Player: Geddy Lee (Rush)", attributes: {"Technical Skill": 100, "Stage Presence": 90, Popularity: 90, Legacy: 100, Innovation: 95, "Special Ability": "YYZ – Boosts Technical Skill by +10 in any progressive rock showdown."}},
+{name: "Bass Player: Geezer Butler (Black Sabbath)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Paranoid – Increases Technical Skill by +10 in any heavy metal or doom metal showdown."}},
+{name: "Bass Player: Gene Simmons (KISS)", attributes: {"Technical Skill": 80, "Stage Presence": 100, Popularity: 95, Legacy: 90, Innovation: 80, "Special Ability": "Rock and Roll All Nite – Increases Stage Presence by +10 in any hard rock or glam rock battle."}},
+{name: "Bass Player: Gerald Casale (Devolution Prophet)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 85, Legacy: 95,"Innovation": 98, "Special Ability": "Whip It Into Shape – Increases allies’ tempo and precision while causing enemies to lose coordination through erratic, unpredictable rhythms."}},
+{name: "Bass Player: Hiro Yamamoto (The Subsonic Alchemist)", attributes: {"Technical Skill": 80, "Stage Presence": 75, Popularity: 78, Legacy: 85, Innovation: 88, "Special Ability": "Ultrasound Collapse – Disrupts enemy harmonics and amplifies low-frequency attacks, increasing team heaviness by +10 in grunge or alt-rock scenarios."}},
+{name: "Bass Player: Jack Bruce (Cream)", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Sunshine of Your Love – Gains +10 to legacy when battling classic rock bassists."}},
+{name: "Bass Player: Jaco Pastorius (Weather Report, Solo)", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 85, Legacy: 95, Innovation: 100, "Special Ability": "Portrait of Tracy – Boosts innovation by +10 in any fusion or jazz battle."}},
+{name: "Bass Player: John Entwistle (The Who)", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Baba O'Riley – Increases Technical Skill by +10 when battling rock bass legends."}},
+{name: "Bass Player: John Lodge (The Symphonic Pioneer)", attributes: {"Technical Skill": 85, "Stage Presence": 85, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Nights in White Basslines – Gains +10 to Melodic Depth and Orchestral Fusion when performing progressive or symphonic rock, empowering allies with harmonic complexity and mesmerizing opponents with lush musical arrangements."}},
+{name: "Bass Player: John McVie (The Silent Anchor)", attributes: {"Technical Skill": 85, "Stage Presence": 80, Popularity: 90, Legacy: 95, Innovation: 80, "Special Ability": "Rumours Groove – Gains +10 to Band Synergy and Dynamic Control when playing in classic formations, stabilizing allies and disorienting opponents with discreet but unshakable grooves."}},
+{name: "Bass Player: John Paul Jones (Led Zeppelin)", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 95, Legacy: 100, Innovation: 90, "Special Ability": "Ramble On – Gains +10 to legacy when battling classic rock bassists."}},
+{name: "Bass Player: Krist Novoselic (The Grunge Anchor)", attributes: {"Technical Skill": 80, "Stage Presence": 90, Popularity: 95, Legacy: 90, Innovation: 85, "Special Ability": "Teen Spirit Shockwave – Gains +10 to Alternative Rock Impact and Chaos Factor when executing explosive bass lines, empowering allies with pure energy and destabilizing opponents with unpredictable presence."}},
+{name: "Bass Player: Lan Hill (The Bass Visionary)", attributes: {"Technical Skill": 88, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "Deep Flow – Gains +10 to Groove and Harmonic Layering when performing fusion-driven or experimental basslines, creating hypnotic lines that amplify the synergy of allies and destabilize the rhythm of opponents."}},
+{name: "Bass Player: Lee Rocker (The Rockabilly Thunder)", attributes: {"Technical Skill": 90, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Slap Attack – Gains +10 to Upright Bass Precision and Rhythmic Drive when performing rockabilly or swing, increasing the rhythmic cohesion of allies and disorienting opponents with fast and acrobatic grooves."}},
+{name: "Bass Player: Les Claypool (Primus)", attributes: {"Technical Skill": 100, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 100, "Special Ability": "Jerry Was a Race Car Driver – Gains +10 to innovation in any avant-garde or alternative rock duel."}},
+{name: "Bass Player: Melissa Auf der Maur (The Alternative Thunder)", attributes: {"Technical Skill": 85, "Stage Presence": 95, Popularity: 80, Legacy: 85, Innovation: 88, "Special Ability": "Wall of Fuzz – Gains +10 to Raw Power and Sonic Impact when delivering heavy, atmospheric bass lines, reinforcing ally momentum and destabilizing opponents with grungy overdrive."}},
+{name: "Bass Player: Mike Dirnt (The Pop-Punk Engine)", attributes: {"Technical Skill": 85, "Stage Presence": 92, Popularity: 95, Legacy: 90, Innovation: 85, "Special Ability": "Basket Groove – Gains +10 to Stamina and Consistency when performing pop-punk or alt-rock anthems, maintaining pulse and rallying allies with solid, energetic backbones."}},
+{name: "Bass Player: Mingau (The Punk Groove Machine)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 88, Legacy: 85, Innovation: 80, "Special Ability": "Speed Riff Surge – Gains +10 to Punk Energy and Rhythmic Precision when playing fast-paced, aggressive basslines, generating a sonic force that fuels the crowd and amplifies the intensity of his bandmates."}},
+{name: "Bass Player: Mohini Dey (The Fusion Storm)", attributes: {"Technical Skill": 100, "Stage Presence": 90, Popularity: 85, Legacy: 88, Innovation: 95, "Special Ability": "Thunder Groove – Gains +10 to Improvisation and Complexity during jazz, rock or fusion battles, creating unpredictable rhythmic surges that boost ally sync and destabilize enemy flow."}},
+{name: "Bass Player: Paul Denman (The Smooth Groove Master)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 85, Legacy: 85, Innovation: 88, "Special Ability": "Smooth Operator Groove – Gains +10 to Groove Precision and Rhythmic Elegance when performing soulful bass lines, enhancing ally cohesion with silky rhythms and distracting opponents through sophisticated syncopation."}},
+{name: "Bass Player: Paul McCartney (The Beatles)", attributes: {"Technical Skill": 85, "Stage Presence": 85, Popularity: 100, Legacy: 100, Innovation: 95, "Special Ability": "Come Together – Restores 10 points to any stat after winning a classic rock duel."}},
+{name: "Bass Player: Paul Simonon (The Bass Striker)", attributes: {"Technical Skill": 85, "Stage Presence": 98, Popularity: 90, Legacy: 95, Innovation: 88, "Special Ability": "London Calling Smash – Paul performs a destructive bass strike, dealing massive damage to all enemies in a direct hit. In punk or reggae battles, your Stage Presence increases by +10, intimidating opponents and inspiring allies."}},
+{name: "Bass Player: Peter Hook (Joy Division, New Order)", attributes: {"Technical Skill": 85, "Stage Presence": 80, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Love Will Tear Us Apart – Gains +10 to innovation in any post-punk or new wave battle."}},
+{name: "Bass Player: Rex Brown (The Metal Groove Titan)", attributes: {"Technical Skill": 90, "Stage Presence": 88, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Cowboys From Hell – Gains +10 to Groove Density and Riff Locking when performing heavy metal anthems, anchoring allies with sheer weight and cutting through opponents' resistance with crushing bass lines."}},
+{name: "Bass Player: Rob Meira (The Rhythmic Sculptor)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 88, Legacy: 90, Innovation: 86, "Special Ability": "Urban Flow – Gains +10 to Groove Consistency and Stage Energy when blending rock, reggae, and alternative influences, creating solid rhythmic foundations that connect allies and disorient adversaries."}},
+{name: "Bass Player: Robert Trujillo (The Thunder Groover)", attributes: {"Technical Skill": 95, "Stage Presence": 95, Popularity: 90, Legacy: 92, Innovation: 88, "Special Ability": "Bass Avalanche – Gains +10 to Groove and Endurance when executing aggressive, high-energy basslines, creating sound waves that crush the resistance of opponents and propel allies forward."}},
+{name: "Bass Player: Roger Waters (Pink Floyd)", attributes: {"Technical Skill": 85, "Stage Presence": 85, Popularity: 95, Legacy: 100, Innovation: 90, "Special Ability": "Another Brick in the Wall – Restores 10 points of any stat after winning a conceptual or progressive battle."}},
+{name: "Bass Player: Sid Vicious (The Anarchy Bassman)", attributes: {"Technical Skill": 70, "Stage Presence": 100, Popularity: 95, Legacy: 90, Innovation: 85, "Special Ability": "Punk Chaos – Gains +10 to Stage Disruption and Crowd Control when performing in high-energy punk battles, destabilizing opponents with chaotic presence and strengthening allies with pure rebellion."}},
+{name: "Bass Player: Steve Harris (Iron Maiden)", attributes: {"Technical Skill": 95, "Stage Presence": 90, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "The Trooper – Boosts Technical Skill by +10 in any heavy metal battle."}},
+{name: "Bass Player: Sting (The Police)", attributes: {"Technical Skill": 85, "Stage Presence": 85, Popularity: 95, Legacy: 90, Innovation: 90, "Special Ability": "Every Breath You Take – Gains +10 to popularity after winning a pop-rock or new wave battle."}},
+{name: "Bass Player: Tal Wilkenfeld (The Virtuoso Grooveweaver)", attributes: {"Technical Skill": 98, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 92, "Special Ability": "Jazz Fusion Flow – Increases +10 to Technique and Improvisation during progressive solos and experimental jams, synchronizing allies and disorienting opponents with dynamic and unexpected bass lines."}},
+{name: "Bass Player: Tim Commerford (The Groove Enforcer)", attributes: {"Technical Skill": 95, "Stage Presence": 92, Popularity: 88, Legacy: 93, Innovation: 90, "Special Ability": "Bulls on Parade – Tim summons pulsating bass lines that create a shockwave, destabilizing enemies and increasing the damage of allied attacks for two rounds. In funk rock or rap metal battles, Tim gains +10 Technical Skill and resistance to attacks."}},
+{name: "Bass Player: Tina Weymouth (Talking Heads, Tom Tom Club – The Groove Architectress)", attributes: {"Technical Skill": 88, "Stage Presence": 85, Popularity: 90, Legacy: 95, Innovation: 95, "Special Ability": "Genius of Groove – Gains +10 to Versatility and Rhythmic Control when blending funk, new wave, and art rock, boosting team agility and disorienting opponents with offbeat charm."}},
+{name: "Bass Player: Tony Levin (The Progressive Anchor – USA)", attributes: {"Technical Skill": 98, "Stage Presence": 85, Popularity: 80, Legacy: 95, Innovation: 100, "Special Ability": "Stick Shift – Unleashes the Chapman Stick’s full potential, doubling team groove and neutralizing rhythmic interference in progressive rock duels."}},
+{name: "Bass Player: Victor Wooten (Béla Fleck and the Flecktones)", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 80, Legacy: 85, Innovation: 95, "Special Ability": "Amazing Grace – Boosts Technical Skill by +10 when facing jazz-fusion or experimental bassists."}},
+{name: "Bass Player: Victoria De Angelis (The Electric Rebel)", attributes: {"Technical Skill": 85, "Stage Presence": 95, Popularity: 95, Legacy: 85, Innovation: 90, "Special Ability": "Glam Strut – Gains +10 to Stage Energy and Groove Power when delivering high-voltage rock performances, amplifying the charisma of allies and destabilizing opponents with magnetic confidence."}},
+{name: "Drummer: Alex Van Halen (The Thunder Architect – Van Halen)", attributes: {"Technical Skill": 90, "Stage Presence": 95, Popularity: 90, Legacy: 88, Innovation: 87, "Special Ability": "Hot for Rhythm – Unleashes a double-bass-driven fury that boosts ally tempo and overwhelms slower enemies in arena rock duels."}},
+{name: "Drummer: Bacalhau (The Groove Thunder)", attributes: {"Technical Skill": 90, "Stage Presence": 95, Popularity: 85, Legacy: 85, Innovation: 85, "Special Ability": "Insane Rhythm – Gains +10 to Groove and Endurance when performing high-energy punk and alternative rock, driving the band with relentless beats that shake opponents."}},
+{name: "Drummer: Bill Bruford (The Polyrhythmic Oracle – Yes / King Crimson)", attributes: {"Technical Skill": 98, "Stage Presence": 85, Popularity: 80, Legacy: 90, Innovation: 95, "Special Ability": "Fracture Mind – Rewrites rhythmic structure in real-time, confusing enemy patterns and increasing ally improvisation by +10 in progressive battles."}},
+{name: "Drummer: Bill Ward (Black Sabbath)", attributes: {"Technical Skill": 85, "Stage Presence": 85, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "War Pigs – Gains +10 to legacy in any heavy metal or doom metal battle."}},
+{name: "Drummer: Brad Wilk (The Groove Hammer)", attributes: {"Technical Skill": 92, "Stage Presence": 90, Popularity: 88, Legacy: 90, Innovation: 85, "Special Ability": "Killing in the Name – Brad unleashes an explosive beat that interrupts enemy actions, forcing them to lose a round. In rap metal or alternative battles, Brad gains +10 Stage Presence, increasing synergy with allies and intensifying his attacks."}},
+{name: "Drummer: Carter Beauford (Dave Matthews Band)", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 85, Legacy: 85, Innovation: 90, "Special Ability": "Crash Into Me – Gains +10 to Technical Skill in any jam band or alternative rock showdown."}},
+{name: "Drummer: Chad Smith (Red Hot Chili Peppers)", attributes: {"Technical Skill": 90, "Stage Presence": 90, Popularity: 90, Legacy: 85, Innovation: 85, "Special Ability": "Give It Away – Gains +10 to Stage Presence in any funk-rock or alternative rock duel."}},
+{name: "Drummer: Charlie Watts (The Timeless Groove – The Rolling Stones)", attributes: {"Technical Skill": 85, "Stage Presence": 80, Popularity: 95, Legacy: 100, Innovation: 80, "Special Ability": "Satisfaction Beat – Gains +10 to Groove and Consistency in any rock or blues-based battle, maintaining flawless rhythm while neutralizing chaotic enemy attacks."}},
+{name: "Drummer: Clem Burke (Blondie)", attributes: {"Technical Skill": 90, "Stage Presence": 90, Popularity: 80, Legacy: 88, Innovation: 85, "Special Ability": "Heart of Glass Beat – Unleashes a percussive blitz that boosts tempo and energy for all allies in punk, pop, or new wave battles, confusing enemies with rhythmic versatility."}},
+{name: "Drummer: Danny Carey (Tool)", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Lateralus – Boosts Technical Skill by +10 in any progressive or experimental rock showdown."}},
+{name: "Drummer: Dave Grohl (Nirvana, Foo Fighters)", attributes: {"Technical Skill": 90, "Stage Presence": 95, Popularity: 100, Legacy: 95, Innovation: 90, "Special Ability": "Smells Like Teen Spirit – Restores 10 points to any stat after a grunge or alternative rock duel."}},
+{name: "Drummer: Don Henley (The Melodic Timekeeper)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 95, Legacy: 95, Innovation: 85, "Special Ability": "Hotel California Flow – Gains +10 to Vocal Drumming and Melodic Timing when performing soft rock or country rock, keeping allies in rhythm and distracting opponents with smooth harmonies and surgical precision."}},
+{name: "Drummer: Frank Ferrer (The Relentless Pulse)", attributes: {"Technical Skill": 88, "Stage Presence": 90, Popularity: 85, Legacy: 80, Innovation: 82, "Special Ability": "Rocket Rhythm – Gains +10 to Endurance and Precision when performing in hard rock or arena rock settings, reinforcing the rhythm section with unstoppable drive."}},
+{name: "Drummer: Fred Armisen (The Rhythmic Comedian)", attributes: {"Technical Skill": 80, "Stage Presence": 100, Popularity: 90, Legacy: 85, Innovation: 90, "Special Ability": "Parody Groove – Gains +10 to Stylistic Adaptability and Audience Control when performing across multiple genres, confusing opponents with sudden style changes and maintaining allies always in rhythm."}},
+{name: "Drummer: Ginger Baker (Cream)", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "White Room – Boosts Technical Skill by +10 in any blues rock or hard rock battle."}},
+{name: "Drummer: Greyson Nekrutman (The Swinging Thunderstorm)", attributes: {"Technical Skill": 95, "Stage Presence": 90, Popularity: 80, Legacy: 85, Innovation: 90, "Special Ability": "Hyper-Speed ​​Swing – Gains +10 to Speed ​​and Precision when executing blistering fast jazz or big band grooves, leaving allies and opponents accelerated no time to react."}},
+{name: "Drummer: Gutje Woortman (The Fusion Flowmaster)", attributes: {"Technical Skill": 92, "Stage Presence": 80, Popularity: 70, Legacy: 85, Innovation: 88, "Special Ability": "Groove Spiral – Gutje triggers a polyrhythmic flow that boosts ally improvisation and destabilizes enemy coordination. In jazz, MPB, or fusion battles, his Versatility rises by +10."}},
+{name: "Drummer: Igor Cavalera (Sepultura/Cavalera Conspiracy)" , attributes: {"Technical Skill": 95, "Stage Presence": 90, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Roots Thunder – Awakens powerful tribal rhythms that increase +15 Stage Presence and +10 Technical Skill during extreme metal or world music fusion performances. Can invoke an ancient percussive ritual, destabilizing enemies and empowering allies with a brutal, hypnotic beat."}},
+{name: "Drummer: Jason Bonham (The Thunderborn Legacy)" , attributes: {"Technical Skill": 92, "Stage Presence": 95, Popularity: 90, Legacy: 98, Innovation: 85, "Special Ability": "Zeppelin’s Echo – Jason channels the spirit of classic hard rock, gaining +15 Stage Presence and +10 Groove Power during epic solos and tributes to his father’s legacy. His explosive playing can unsettle enemies and empower allies with a wave of sonic impact."}},
+{name: "Drummer: Jayda Hansen (The Rhythmic Dynamo – Canada)", attributes: {"Technical Skill": 88, "Stage Presence": 90, Popularity: 85, Legacy: 80, Innovation: 85, "Special Ability": "Percussive Pulse – Amplifies the energy of performances, boosting team morale and synchronizing rhythms for enhanced impact."}},
+{name: "Drummer: Jim Keltner", attributes: {"Technical Skill": 90, "Stage Presence": 75, Popularity: 80, Legacy: 90, Innovation: 85, "Special Ability": "Studio Chameleon – Adapts instantly to any genre, granting +10 to Groove and Sync when supporting legendary artists in studio-based battles."}},
+{name: "Drummer: João Barone (The Thunder of the Tropics)", attributes: {"Technical Skill": 88, "Stage Presence": 90, Popularity: 87, Legacy: 92, Innovation: 89, "Special Ability": "Maracatu Blitz – Gains +10 to Innovation and Technical Skill when blending rock with Brazilian rhythms, creating complex and dynamic grooves that disorient opponents and boost ally performance."}},
+{name: "Drummer: John Bonham (Led Zeppelin)", attributes: {"Technical Skill": 100, "Stage Presence": 90, Popularity: 100, Legacy: 100, Innovation: 90, "Special Ability": "Moby Dick – Gains +10 Technical Skill in any classic rock or hard rock duel."}},
+{name: "Drummer: John Densmore (The Shamanic Groove Master)", attributes: {"Technical Skill": 88, "Stage Presence": 90, Popularity: 85, Legacy: 92, Innovation: 94, "Special Ability": "Riders on the Storm – John Densmore’s jazz-infused drumming creates unpredictable rhythm shifts, disorienting enemies while boosting allies’ creativity and evasion."}},
+{name: "Drummer: John Dolmayan (The Rhythmic Storm – System of a Down)", attributes: {"Technical Skill": 92, "Stage Presence": 90, Popularity: 85, Legacy: 88, Innovation: 90, "Special Ability": "Toxic Beats – Blasts opponents with hyperactive fills and off-beat grooves, disrupting their formation and doubling team synergy for 2 turns."}},
+{name: "Drummer: Karen Carpenter (The Velvet Metronome)", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 98, Legacy: 100, Innovation: 87, "Special Ability": "Close to You – Karen creates a delicate yet steady rhythm, healing allies with each beat and neutralizing negative effects. In soft rock or pop battles, her Technical Skill increases by +10, allowing for need strikes that restore team morale."}},
+{name: "Drummer: Keith Moon (The Who)", attributes: {"Technical Skill": 95, "Stage Presence": 100, Popularity: 95, Legacy: 95, Innovation: 90, "Special Ability": "Baba O'Riley – Gains +10 Stage Presence when battling rock legends from the 60s and 70s."}},
+{name: "Drummer: Kiko Meira (The Thunder Alchemist)", attributes: {"Technical Skill": 85, "Stage Presence": 88, Popularity: 85, Legacy: 90, Innovation: 88, "Special Ability": "Percussive Storm – Gains +10 to Groove Power and Rhythmic Intensity when performing high-energy rock or alternative sets, creating a wall of sound that empowers allies and destabilizes opponents with relentless beats."}},
+{name: "Drummer: Lars Ulrich (Metallica)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 95, Legacy: 90, Innovation: 80, "Special Ability": "Master of Puppets – Increases Stage Presence by +10 in any heavy metal battle."}},
+{name: "Drummer: Marky Ramone (Ramones)", attributes: {"Technical Skill": 80, "Stage Presence": 90, Popularity: 95, Legacy: 95, Innovation: 80, "Special Ability": "Blitzkrieg Beat – Increases Speed and Ally Attack Power by +10 in any punk rock battle, destabilizing enemies with relentless rhythm."}},
+{name: "Drummer: Matt Cameron (Soundgarden, Pearl Jam)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 90, Legacy: 85, Innovation: 85, "Special Ability": "Black Hole Sun – Restores 10 points to any stat after winning a grunge or alternative rock battle."}},
+{name: "Drummer: Meg White (The Raw Minimalist)", attributes: {"Technical Skill": 75, "Stage Presence": 90, Popularity: 90, Legacy: 90, Innovation: 85, "Special Ability": "Seven Nation Strike – Gains +10 to Stage Presence and Rhythmic Power when delivering primal, stripped-down beats, amplifying the emotional impact of the performance and unsettling opponents with brutal simplicity."}},
+{name: "Drummer: Mitch Mitchell (The Jimi Hendrix Experience)", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "Fire – Boosts Technical Skill by +10 when battling in psychedelic rock or blues rock showdowns."}},
+{name: "Drummer: Neil Peart (Rush)", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 90, Legacy: 100, Innovation: 95, "Special Ability": "Tom Sawyer – Boosts innovation by +10 in progressive rock showdowns."}},
+{name: "Drummer: Nick Mason (Pink Floyd)", attributes: {"Technical Skill": 85, "Stage Presence": 80, Popularity: 95, Legacy: 95, Innovation: 90, "Special Ability": "Time – Gains +10 to legacy when battling progressive rock or conceptual rock drummers."}},
+{name: "Drummer: Pete Best", attributes: {"Technical Skill": 75, "Stage Presence": 80, Popularity: 70, Legacy: 85, Innovation: 70, "Special Ability": "Beat Before the Boom – Gains +10 to Legacy when in any early rock 'n roll or Merseybeat battle, evoking the raw energy of the Beatles' formative days."}},
+{name: "Drummer: Peter Criss (The Catman of Rock)", attributes: {"Technical Skill": 85, "Stage Presence": 95, Popularity: 90, Legacy: 90, Innovation: 80, "Special Ability": "Beth’s Redemption – Peter can instantly restore +10 morale to all allies after a close battle. In classic rock or glam rock duels, his Stage Presence gains +10, boosting audience engagement and disrupting enemy focus."}},
+{name: "Drummer: Phil Collins (Genesis, Solo)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 95, Legacy: 90, Innovation: 90, "Special Ability": "In the Air Tonight – Gains +10 to innovation in any progressive rock or pop-rock battle."}},
+{name: "Drummer: Phil Rudd (AC/DC)", attributes: {"Technical Skill": 85, "Stage Presence": 85, Popularity: 90, Legacy: 90, Innovation: 75, "Special Ability": "Back in Black – Gains +10 to Stage Presence in any hard rock duel."}},
+{name: "Drummer: Pupilo (Nação Zumbi)", attributes: {"Technical Skill": 95, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Maracatu Groove Master – Amplifies percussive rhythms with hypnotic cadences. During any alternative or experimental music performance, grant +10 Technique and +10 Innovation to the entire team, creating powerful and complex beats."}},
+{name: "Drummer: Raja Meissner (The Metal Pulse)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 88, Legacy: 80, Innovation: 85, "Special Ability": "Blind Fury – Increases Stage Presence by +10 when performing extreme metal covers, disorienting opponents with precision and intensity."}},
+{name: "Drummer: Rick Buckler (The Mod Timekeeper)", attributes: {"Technical Skill": 85, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Mod Revolution – Gains +10 to Speed ​​and Precision when performing high-energy rock or punk-infused beats, propelling allies with fast-paced beats and destabilizing opponents with non-stop rhythmic attacks."}},
+{name: "Drummer: Ringo Starr (The Beatles)", attributes: {"Technical Skill": 80, "Stage Presence": 85, Popularity: 100, Legacy: 100, Innovation: 85, "Special Ability": "Come Together – Gains +10 legacy after winning any classic rock duel."}},
+{name: "Drummer: Slim Jim Phantom (The Rockabilly Speedster)", attributes: {"Technical Skill": 85, "Stage Presence": 95, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Stray Cat Shuffle – Gains +10 to Speed ​​and Upright Groove when playing rockabilly or swing, propelling allies with pulsating beats and leaving opponents without rhythmic stability."}},
+{name: "Drummer: Stewart Copeland (The Police)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 90, Legacy: 90, Innovation: 95, "Special Ability": "Message in a Bottle – Boosts innovation by +10 in any new wave or post-punk showdown."}},
+{name: "Drummer: Taylor Hawkins (The Arena Thunderstorm)", attributes: {"Technical Skill": 95, "Stage Presence": 100, Popularity: 95, Legacy: 90, Innovation: 85, "Special Ability": "Monkey Wrench Fury – Gains +10 to Speed ​​and Stamina when performing high-energy rock anthems, boosting allies' morale and overwhelming opponents with an unstoppable rhythmic storm."}},
+{name: "Drummer: Terry Bozzio (Frank Zappa, Missing Persons)", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 80, Legacy: 90, Innovation: 100, "Special Ability": "The Black Page – Boosts innovation by +10 when facing experimental or avant-garde drummers."}},
+{name: "Drummer: Thiaguinho Silva (The Afrobeat Catalyst)", attributes: {"Technical Skill": 90, "Stage Presence": 90, Popularity: 85, Legacy: 88, Innovation: 92, "Special Ability": "Ogun Pulse – Calls upon ancestral rhythms to infuse the battlefield with power. Gains +10 to Groove and Resilience in funk, Afrobeat, or hybrid rhythm clashes, amplifying energy and movement for the entire team."}},
+{name: "Drummer: Tommy Lee (Mötley Crüe)", attributes: {"Technical Skill": 85, "Stage Presence": 100, Popularity: 90, Legacy: 85, Innovation: 80, "Special Ability": "Dr. Feelgood – Increases Stage Presence by +10 in any glam rock or hard rock showdown."}},
+{name: "Drummer: Topper Headon (The Beat Chameleon – The Clash)", attributes: {"Technical Skill": 90, "Stage Presence": 80, Popularity: 85, Legacy: 88, Innovation: 87, "Special Ability": "London Calling – Adds +10 to Versatility when blending punk, funk, reggae, and rock in rhythm battles."}},
+{name: "Drummer: Tosh Peterson (The Genre Shapeshifter)", attributes: {"Technical Skill": 92, "Stage Presence": 95, "Popularity": 90, "Legacy": 85, "Innovation": 93, "Special Ability": "Rhythm Warp – Adapts to any musical style instantly, granting +10 to Technical Skill and Stage Presence during genre-spanning performances."}},
+{name: "Drummer: Travis Barker (Blink-182)", attributes: {"Technical Skill": 90, "Stage Presence": 90, Popularity: 95, Legacy: 85, Innovation: 85, "Special Ability": "All the Small Things – Gains +10 to Stage Presence in any pop-punk or punk rock duel."}},
+{name: "Drummer: Tré Cool (The Punk Jester)", attributes: {"Technical Skill": 85, "Stage Presence": 95, Popularity: 95, Legacy: 90, Innovation: 85, "Special Ability": "Insomniac Fury – Gains +10 to Precision and Chaos during fast-paced punk or alt-rock battles, unleashing unorthodox fills that surprise enemies and energize allies with rebellious rhythm."}},
+{name: "Drummer: Vinnie Paul (The Groove Metal Titan)", attributes: {"Technical Skill": 90, "Stage Presence": 90, Popularity: 95, Legacy: 95, Innovation: 90, "Special Ability": "Cowboys from Groove – Gains +10 to Double Kick Precision and Heavy Groove when performing metal anthems, making allies more aggressive and crushing opponents with devastating beats."}},
+{name: "Guitarist: Ace Frehley (The Spaceman – KISS)", attributes: {"Technical Skill": 88, "Stage Presence": 95, Popularity: 90, Legacy: 90, Innovation: 85, "Special Ability": "Shock Me Solo – Gains +10 to Stage Presence and Attack Power when delivering high-voltage solos, electrifying allies and stunning enemies with cosmic energy and flamboyant showmanship."}},
+{name: "Guitarist: Adrian Belew (The Sonic Chameleon – USA)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 80, Legacy: 90, Innovation: 100, "Special Ability": "Elephant Talk – Unleashes a barrage of experimental tones and vocal-infused riffs, lowering enemy accuracy and disrupting conventional rhythms."}},
+{name: "Guitarist: Al Di Meola (The Jazz Fusion Virtuoso)", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 80, Legacy: 95, Innovation: 95, "Special Ability": "Elegant Gypsy Fury – Gains +10 to Speed ​​and Precision when executing lightning-fast fusion solos, leaving bewildering opponents with his impeccable technique and propelling allies with sophisticated grooves."}},
+{name: "Guitarist: Albert King", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 80, Legacy: 90, Innovation: 85, "Special Ability": "Born Under a Bad Sign – Boosts Technical Skill by +10 in blues showdowns."}},
+{name: "Guitarist: Alex Lifeson (Rush)", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Limelight – Boosts legacy by +10 when battling in progressive rock showdowns."}},
+{name: "Guitarist: Alvin Lee (The Speed Demon)", attributes: {"Technical Skill": 95, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Woodstock Lightning – Gains +10 to Speed and Precision when delivering high-velocity blues-rock solos, overwhelming opponents with rapid-fire licks and raw intensity."}},
+{name: "Guitarist: Angus Young (AC/DC)", attributes: {"Technical Skill": 85, "Stage Presence": 100, Popularity: 95, Legacy: 95, Innovation: 80, "Special Ability": "Highway to Hell – Gains +10 to Stage Presence when battling hard rock guitarists."}},
+{name: "Guitarist: Billy Corgan (The Smashing Pumpkins)", attributes: {"Technical Skill": 85, "Stage Presence": 85, Popularity: 90, Legacy: 85, Innovation: 85, "Special Ability": "1979 – Gains +10 to popularity in any alternative rock battle."}},
+{name: "Guitarist: Billy Gibbons (ZZ Top)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 85, Legacy: 85, Innovation: 80, "Special Ability": "La Grange – Boosts Technical Skill by +10 when battling in blues or southern rock showdowns."}},
+{name: "Guitarist: Billy Morrison (The Punk Showman)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 80, Legacy: 85, Innovation: 80, "Special Ability": "Anarchy Riff – Gains +10 to Stage Presence and Raw Power when performing high-energy punk and hard rock, boosting ally aggression while destabilizing enemy focus."}},
+{name: "Guitarist: Bob Casale (New Wave Architect)", attributes: {"Technical Skill": 88, "Stage Presence": 85, Popularity: 87, Legacy: 90, Innovation: 95, "Special Ability": "Mechanical Precision – Executes razor-sharp, robotic rhythms that reinforce team cohesion, maximizing synchronization and overwhelming opponents with sonic efficiency."}},
+{name: "Guitarist: Bob Weir (The Cosmic Cowboy)", attributes: {"Powerful Vocals": 80, "Stage Presence": 95, Popularity: 85, Legacy: 100, Innovation: 90, "Special Ability": "Deadhead Groove – Increases ally endurance by +10 and extends battle duration, summoning waves of improvisational jams that wear down opponents over time."}},
+{name: "Guitarist: Bonnie Raitt (The Slide Empress)", attributes: {"Technical Skill": 92, "Stage Presence": 88, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Silver Slide – Cuts through enemy defense with soulful licks, reducing their Versatility by -10."}},
+{name: "Guitarist: Brian Baker (The Punk General)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 80, Legacy: 90, Innovation: 83, "Special Ability": "Punk Battalion – Boosts entire team’s speed and attack power by +10 during fast-paced battles, delivering raw, relentless riffs that break through defenses."}},
+{name: "Guitarist: Brian Jones (The Sonic Alchemist – The Rolling Stones)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 90, Legacy: 100, Innovation: 95, "Special Ability": "Paint It Exotic – Gains +10 to Innovation and Multi-Instrumental Mastery when incorporating non-traditional rock instruments, reshaping the battlefield with unexpected sonic textures."}},
+{name: "Guitarist: Brian May (Queen)", attributes: {"Technical Skill": 95, "Stage Presence": 90, Popularity: 95, Legacy: 100, Innovation: 95, "Special Ability": "Bohemian Rhapsody – Gains +10 to any stat when battling classic rock icons."}},
+{name: "Guitarist: Buckethead", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 80, Legacy: 85, Innovation: 95, "Special Ability": "Soothsayer – Boosts innovation by +10 in any experimental or instrumental battle."}},
+{name: "Guitarist: Carlos Santana", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 90, Legacy: 90, Innovation: 90, "Special Ability": "Black Magic Woman – Gains +10 to Technical Skill when facing blues or Latin-inspired guitarists."}},
+{name: "Guitarist: Carlos Stein (Os Inconfundíveis Riffs do Rock Gaúcho)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 88, "Special Ability": "Surfer of Lake Paranoá – Gains +10 to Groove and Stage Energy in Brazilian rock and pop battles, delivering signature riffs that ignite the crowd and drive the rhythm forward."}},
+{name: "Guitarist: Chuck Berry", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 95, Legacy: 100, Innovation: 90, "Special Ability": "Johnny B. Goode – Gains +10 legacy in any rock 'n' roll showdown."}},
+{name: "Guitarist: Dave Mason (The Melodic Voyager)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Feelin' Alright – Gains +10 to Genre Fusion and Melodic Improvisation when blending folk, rock, and blues, creating smooth solos that lift allies and leave opponents trapped in hypnotic grooves."}},
+{name: "Guitarist: Dave Navarro (The Dark Virtuoso)", attributes: {"Technical Skill": 90, "Stage Presence": 95, Popularity: 85, Legacy: 88, Innovation: 87, "Special Ability": "Ritual of Strings – Gains +10 to Stage Presence and Technical Skill when blending alternative rock with metal or psychedelic influences, overwhelming opponents with haunting solos."}},
+{name: "Guitarist: David Gilmour (Pink Floyd)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Comfortably Numb – Increases technical skill by +10 when facing progressive rock guitarists."}},
+{name: "Guitarist: David Roback (The Psychedelic Shadow)", attributes: {"Technical Skill": 85,"Stage Presence": 80,Popularity: 85,Legacy: 90,Innovation: 90,"Special Ability": "Fade Into Sound – Gains +10 to Atmospheric Guitar Textures and Dreamlike Melodies when performing psychedelic or alternative rock, involving allies in a sonic mist and disorienting opponents with ethereal chords."}},
+{name: "Guitarist: Derek Trucks (The Slide Virtuoso)", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 80, Legacy: 90, Innovation: 92, "Special Ability": "Soulful Slide – Gains +10 to Expression and Sustain when performing slide solos, creating transcendent melodies that enhance ally cohesion and overwhelm opponents with emotion."}},
+{name: "Guitarist: Dick Dale (The King of Surf Thunder)", attributes: {"Technical Skill": 95, "Stage Presence": 95, Popularity: 85, Legacy: 100, Innovation: 95, "Special Ability": "Miserlou Wave – Gains +10 to Speed ​​and Attack Power when delivering rapid-fire tremolo picking, creating a sonic tsunami that disorientates opponents and boosts allies."}},
+{name: "Guitarist: Dimebag Darrell (Pantera)", attributes: {"Technical Skill": 95, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Cowboys from Hell – Boosts Technical Skill by +10 when facing heavy metal guitarists."}},
+{name: "Guitarist: Donita Sparks (The Riot Riff Queen)", attributes: {"Technical Skill": 85, "Stage Presence": 95, Popularity: 85, Legacy: 88, Innovation: 90, "Special Ability": "Rebel Feedback – Gains +10 to Stage Dominance and Distortion Power when performing punk or riot grrrl anthems, stunning enemies with raw energy and fearless presence."}},
+{name: "Guitarist: Duane Allman (The Allman Brothers Band)", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Whipping Post – Increases legacy by +10 when battling in Southern rock or blues rock duels."}},
+{name: "Guitarist: Duke Erickson (The Sonic Architect – Garbage)", attributes: {"Technical Skill": 85, "Stage Presence": 80, Popularity: 85, Legacy: 88, Innovation: 90, "Special Ability": "Industrial Pulse – Weakens enemy rhythm by distorting time signatures and enhancing ally layering with dark textures."}},
+{name: "Guitarist: Ed O’Brien (The Sonic Architect)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Ambient Resonance – Gains +10 to Textural Layering and Atmospheric Soundscapes when exploring experimental effects, creating hypnotic soundscapes that empower allies and disorient opponents."}},
+{name: "Guitarist: Eddie Van Halen", attributes: {"Technical Skill": 100, "Stage Presence": 90, Popularity: 95, Legacy: 95, Innovation: 100, "Special Ability": "Eruption – Increases Technical Skill by +15 in any shredding duel."}},
+{name: "Guitarist: Edgard Scandurra (The Brazilian Axe Master)", attributes: {"Technical Skill": 92, "Stage Presence": 88, Popularity: 82, Legacy: 87, Innovation: 90, "Special Ability": "Guitar of the Tropics – Gains +10 to Innovation and Technical Skill when fusing rock with Brazilian rhythms, creating unpredictable patterns that confuse and counter enemies."}},
+{name: "Guitarist: Eric Clapton", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 95, Legacy: 95, Innovation: 90, "Special Ability": "Layla – Reduces opponent's innovation by -10 after a blues showdown."}},
+{name: "Guitarist: Fernando Deluqui", attributes: {"Technical Skill": 90, "Stage Presence": 88, Popularity: 85, Legacy: 87, Innovation: 85, "Special Ability": "Ritmo Extremo – Gains +10 to Groove Fluidity and Sonic Adaptability when fusing rock with Latin rhythms, enhancing allies' synergy and destabilizing opponents with infectious riffs."}},
+{name: "Guitarist: Frank Zappa", attributes: {"Technical Skill": 95, "Stage Presence": 80, Popularity: 85, Legacy: 95, Innovation: 100, "Special Ability": "Peaches en Regalia – Boosts innovation by +10 when facing experimental or avant-garde guitarists."}},
+{name: "Guitarist: Gary Moore", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 80, Legacy: 85, Innovation: 85, "Special Ability": "Still Got the Blues – Increases Technical Skill by +10 when facing blues or hard rock guitarists."}},
+{name: "Guitarist: George Harrison (The Beatles)", attributes: {"Technical Skill": 85, "Stage Presence": 80, Popularity: 95, Legacy: 100, Innovation: 90, "Special Ability": "While My Guitar Gently Weeps – Adds +10 to legacy when facing any rock icon from the 60s."}},
+{name: "Guitarist: Grace Bowers (The Southern Phenom)", attributes: {"Technical Skill": 87, "Stage Presence": 90, Popularity: 80, Legacy: 75, Innovation: 85, "Special Ability": "Youthquake Riff – Overloads the arena with raw talent, causing enemy Stage Presence to drop by -10 for emerging duels."}},
+{name: "Guitarist: Gustavo Corsi (The Brazilian Groove Shredder)", attributes: {"Technical Skill": 85, "Stage Presence": 82, Popularity: 75, Legacy: 78, Innovation: 80, "Special Ability": "Tropical Distortion – Infuses rhythmic complexity to allies, disrupting enemy flow with syncopated attacks."}},
+{name: "Guitarist: Ian Astbury", attributes: {"Technical Skill": 80, "Stage Presence": 95, Popularity: 85, Legacy: 85, Innovation: 80, "Special Ability": "Fire Woman Ritual – Gains +10 to Stage Presence and Vocal Power when channeling tribal rhythms and hard rock energy, overwhelming opponents with hypnotic intensity."}},
+{name: "Guitarist: Jack White (The Sonic Alchemist)", attributes: {"Technical Skill": 92, "Stage Presence": 95, Popularity: 90, Legacy: 88, Innovation: 98, "Special Ability": "Seven Nation Surge – Jack summons a devastating riff that echoes across the battlefield, increasing his Attack by +15 and destabilizing enemies with each repetition. In blues or garage rock battles, Jack gains +10 Stage Presence."}},
+{name: "Guitarist: James Hetfield (Metallica)", attributes: {"Technical Skill": 85, "Stage Presence": 95, Popularity: 95, Legacy: 95, Innovation: 85, "Special Ability": "Enter Sandman – Gains +10 Stage Presence in thrash or heavy metal duels."}},
+{name: "Guitarist: Jeff Beck", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 85, Legacy: 95, Innovation: 95, "Special Ability": "Beck’s Bolero – Gains +10 to Technical Skill in any instrumental rock duel."}},
+{name: "Guitarist: Jerry Cantrell (The Grunge Architect)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Dirt Riff – Gains +10 to Harmonic Depth and Melodic Darkness when performing heavy, haunting riffs, disorienting opponents with grunge-infused atmospheres."}},
+{name: "Guitarist: Jimi Hendrix", attributes: {"Technical Skill": 100, "Stage Presence": 95, Popularity: 100, Legacy: 100, Innovation: 100, "Special Ability": "Purple Haze – Increases technical skill by +10 when facing any rock legend."}},
+{name: "Guitarist: Jimmy Page (Led Zeppelin)", attributes: {"Technical Skill": 95, "Stage Presence": 90, Popularity: 95, Legacy: 100, Innovation: 90, "Special Ability": "Stairway to Heaven – Restores 10 points to any stat after a victory in a classic rock showdown."}},
+{name: "Guitarist: Joe Perry (Aerosmith)", attributes: {"Technical Skill": 90, "Stage Presence": 95, Popularity: 95, Legacy: 90, Innovation: 85, "Special Ability": "Dream On – Gains +10 in Stage Presence after winning a classic rock showdown."}},
+{name: "Guitarist: Joe Satriani", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Surfing with the Alien – Boosts innovation by +10 in any instrumental guitar showdown."}},
+{name: "Guitarist: Joe Walsh (The Rock Maverick)", attributes: {"Technical Skill": 90, "Stage Presence": 95, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Life’s Been Good – Gains +10 to Improvisation and Groove when performing bluesy, storytelling solos, disrupting opponents with unpredictable phrasing and laid-back precision."}},
+{name: "Guitarist: John Densmore (The Jazz-Rock Mystic)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Break On Through – Gains +10 to Rhythmic Adaptability and Dynamic Control when exploring jazz and world music patterns, creating unpredictable changes that confuse opponents and energize allies."}},
+{name: "Guitarist: John Frusciante (Red Hot Chili Peppers)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 90, Legacy: 85, Innovation: 90, "Special Ability": "Californication – Boosts innovation by +10 in any alternative rock showdown."}},
+{name: "Guitarist: John Mayer (The Smooth String Sorcerer)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 92, Legacy: 88, Innovation: 85, "Special Ability": "Gravity Shift – Adds +10 to Versatility when dueling across blues, pop, and soul territories."}},
+{name: "Guitarist: John Petrucci (Dream Theater)", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "Metropolis Pt. 1 – Gains +10 in Technical Skill when facing progressive metal guitarists."}},
+{name: "Guitarist: Johnny Marr (The Smiths)", attributes: {"Technical Skill": 85, "Stage Presence": 80, Popularity: 80, Legacy: 90, Innovation: 90, "Special Ability": "This Charming Man – Adds +10 to innovation when facing indie or alternative rock guitarists."}},
+{name: "Guitarist: Johnny Winter", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 80, Legacy: 90, Innovation: 85, "Special Ability": "Rock and Roll, Hoochie Koo – Gains +10 to Technical Skill when facing blues or rock guitarists."}},
+{name: "Guitarist: Jorma Kaukonen (The Psychedelic Fingerpicker)", attributes: {"Technical Skill": 90, "Stage Presence": 80, Popularity: 75, Legacy: 90, Innovation: 90, "Special Ability": "Embryonic Journey – Gains +10 to Fingerstyle Mastery and Improvisation when blending folk blues with psychedelic rock, creating landscapes sounds that hypnotize opponents and strengthen allies."}},
+{name: "Guitarist: Keith Richards (The Rolling Stones)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 95, Legacy: 100, Innovation: 80, "Special Ability": "Satisfaction – Gains +10 legacy when battling any classic rock guitarists."}},
+{name: "Guitarist: Kerry King (Slayer)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 80, Legacy: 85, Innovation: 80, "Special Ability": "Raining Blood – Reduces the opponent’s Technical Skill by -10 during any thrash metal duel."}},
+{name: "Guitarist: Kirk Hammett (Metallica)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 95, Legacy: 90, Innovation: 85, "Special Ability": "Master of Puppets – Reduces opponent's Technical Skill by -10 in thrash metal duels."}},
+{name: "Guitarist: Lou Reed (The Sonic Poet)", attributes: {"Technical Skill": 75, "Stage Presence": 85, Popularity: 85, Legacy: 100, Innovation: 100, "Special Ability": "Velvet Underground Echo – Gains +10 to Lyrical Impact and Experimental Approach when delivering raw, minimalist guitar work, altering the battlefield with hypnotic repetition and disruptive soundscapes."}},
+{name: "Guitarist: Lúcio Maia (Nação Zumbi)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Psychedelic Riffcraft – Creates immersive soundscapes, adding +10 Innovation and +10 Technique to any alternative rock, psychedelic or experimental Brazilian music duel."}},
+{name: "Guitarist: Mark Knopfler (Dire Straits)", attributes: {"Technical Skill": 95, "Stage Presence": 80, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Sultans of Swing – Increases Technical Skill by +10 in any blues-rock showdown."}},
+{name: "Guitarist: Michele Cordeiro", attributes: {"Technical Skill": 88, "Stage Presence": 85, Popularity: 80, Legacy: 85, Innovation: 90, "Special Ability": "Brazilian Blues Flow – Gains +10 to Groove and Harmonic Creativity when blending blues with Brazilian rhythms, creating a hypnotic swing that strengthens allies and destabilizes adversaries."}},
+{name: "Guitarist: Mick Box (Uriah Heep's Riff Magician)", attributes: {"Technical Skill": 88, "Stage Presence": 85, Popularity: 80, Legacy: 90, Innovation: 85, "Special Ability": "Gypsy Sorcery – Gains +10 to Riff Complexity and Stage Energy in progressive rock and hard rock battles, casting hypnotic guitar spells that empower allies and destabilize opponents."}},
+{name: "Guitarist: Mick Mars (Mötley Crüe)", attributes: {"Technical Skill": 85, "Stage Presence": 85, Popularity: 85, Legacy: 80, Innovation: 75, "Special Ability": "Dr. Feelgood – Reduces opponent's Stage Presence by -10 during any glam rock duel."}},
+{name: "Guitarist: Mike McCready (The Grunge Shredder)", attributes: {"Technical Skill": 88, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Alive Lightning – Gains +10 to Improvisation and Emotional Impact when channeling blues-infused solos during alternative rock duels, unleashing surges of cathartic energy that rally allies and rattle enemies."}},
+{name: "Guitarist: Mikey Demus (Skank-Core Shredder)", attributes: {"Technical Skill": 88, "Stage Presence": 90, Popularity: 80, Legacy: 85, Innovation: 87, "Special Ability": "Heavy Skank Drive – Gains +10 to Groove Attack and Riff Disruption when fusing metal, punk, and ska in battle, unleashing distortion-laced syncopation that destabilizes opponents’ rhythm."}},
+{name: "Guitarist: Morgana Blue (The Sonic Sorceress)", attributes: {"Technical Skill": 88, "Stage Presence": 90, Popularity: 80, Legacy: 85, Innovation: 92, "Special Ability": "Celestial Shred – Gains +10 to Expressiveness and Ethereal Soundscapes when blending progressive rock and experimental tones, creating hypnotic sonic textures that confound opponents."}},
+{name: "Guitarist: Nancy Wilson (The Melodic Powerhouse)", attributes: {"Technical Skill": 92, "Stage Presence": 90, Popularity: 90, Legacy: 95, Innovation: 88, "Special Ability": "Barracuda Strike – Gains +10 to Riff Dominance and Harmonic Precision when combining hard rock with emotional ballads, impacting allies with her expressiveness and dismantling opponents with melodic force."}},
+{name: "Guitarist: Neal Schon (Journey)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 90, Legacy: 85, Innovation: 80, "Special Ability": "Don’t Stop Believin’ – Boosts Stage Presence by +10 after winning an arena rock duel."}},
+{name: "Guitarist: Paul Gilbert (Mr. Big, Racer X)", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 80, Legacy: 85, Innovation: 90, "Special Ability": "Scarified – Increases Technical Skill by +10 in any shred guitar showdown."}},
+{name: "Guitarist: Pete Townshend (The Who)", attributes: {"Technical Skill": 85, "Stage Presence": 100, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Baba O'Riley – Gains +10 to Stage Presence when facing rock opera or classic rock legends."}},
+{name: "Guitarist: Peter Green (The Blues Mystic)", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 80, Legacy: 100, Innovation: 90, "Special Ability": "Green Manalishi Trance – Gains +10 to Expressive Phrasing and Emotional Depth when channeling deep blues energy, weakening opponents with notes full of melancholy and hypnotizing allies with pure feeling."}},
+{name: "Guitarist: Peter Frampton", attributes: {"Technical Skill": 90, "Stage Presence": 95, Popularity: 90, Legacy: 85, Innovation: 90, "Special Ability": "Frampton Comes Alive – Gains +10 to Stage Presence and Crowd Control when using talkbox solos, amplifying ally synergy while mesmerizing opponents."}},
+{name: "Guitarist: Randy Rhoads (Ozzy Osbourne)", attributes: {"Technical Skill": 95, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Crazy Train – Boosts Technical Skill by +10 when facing any heavy metal guitarists."}},
+{name: "Guitarist: Regis Damasceno (Harmonic Alchemist)", attributes: {"Technical Skill": 85, "Stage Presence": 88, Popularity: 80, Legacy: 85, "Innovation": 90, "Special Ability": "Brazilian Dreamscape – Merges intricate harmonies with ambient textures, enhancing allies’ creativity while subtly destabilizing enemy focus through hypnotic grooves."}},
+{name: "Guitarist: Rich Robinson (The Southern Groove Architect)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Remedy Riffs – Gains +10 to Groove and Harmonic Richness when mixing blues and hard rock, creating immersive sonic layers that strengthen allies and confuse enemies."}},
+{name: "Guitarist: Richie Blackmore (Deep Purple, Rainbow)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 90, Legacy: 90, Innovation: 85, "Special Ability": "Highway Star – Boosts Technical Skill by +10 in any 70s rock duel."}},
+{name: "Guitarist: Richie Sambora (Bon Jovi)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 90, Legacy: 85, Innovation: 80, "Special Ability": "Livin’ on a Prayer – Restores 10 points of any stat after a victory in a stadium rock battle."}},
+{name: "Guitarist: Ricky Wilson (The New Wave Architect)", attributes: {"Technical Skill": 80, "Stage Presence": 88, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Rock Lobster Resonance – Ricky unleashes slashing, hypnotic riffs that increase the agility of allies and unsettle enemies with unexpected rhythms."}},
+{name: "Guitarist: Ritchie Blackmore (Deep Purple, Rainbow)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Smoke on the Water – Adds +10 to legacy in any classic rock duel."}},
+{name: "Guitarist: Robby Krieger (The Psychedelic Craftsman)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Light My Fretboard – Gains +10 to Harmonic Experimentation and Hypnotic Groove when integrating flamenco and blues with psychedelic rock, creating sonorous passages that confound opponents and inspire allies."}},
+{name: "Guitarist: Robert Fripp", attributes: {"Technical Skill": 100, "Stage Presence": 75, Popularity: 80, Legacy: 100, Innovation: 100, "Special Ability": "Discipline Matrix – Gains +10 to Technical Mastery and Experimental Soundscapes when creating layered compositions, disorienting opponents and expanding the musical possibilities of allies."}},
+{name: "Guitarist: Ronnie Wood (The Riff Chameleon)", attributes: {"Technical Skill": 90, "Stage Presence": 95, Popularity: 95, Legacy: 95, Innovation: 85, "Special Ability": "Rolling Swagger – Gains +10 to Rhythm and Lead Adaptability when playing in legendary bands, propelling allies with precise grooves and disorienting opponents with riffs full of attitude."}},
+{name: "Guitarist: Rosetta Tharpe (The Gospel Shredder)", attributes: {"Technical Skill": 95, "Stage Presence": 100, Popularity: 85, Legacy: 100, Innovation: 98, "Special Ability": "Holy Riff – Gains +10 to Expressive Playing and Performance Energy when leading gospel-rock fusions, inspiring allies with incendiary solos and destabilizing opponents with overwhelming charisma."}},
+{name: "Guitarist: Ry Cooder", attributes: {"Technical Skill": 95, "Stage Presence": 80, Popularity: 75, Legacy: 85, Innovation: 90, "Special Ability": "Paris, Texas – Gains +10 in innovation when facing folk, blues, or world music guitarists."}},
+{name: "Guitarist: Samantha Fish (The Blues Firebrand)", attributes: {"Technical Skill": 90, "Stage Presence": 95, Popularity: 85, Legacy: 88, Innovation: 90, "Special Ability": "Wild Heart – Gains +10 to Stage Presence and Technical Skill when delivering high-energy blues solos, igniting the battlefield with raw, electrifying licks."}},
+{name: "Guitarist: Scott Metzger (The Jam Mastermind)", attributes: { "Technical Skill": 92, "Stage Presence": 90, Popularity: 80, Legacy: 85, Innovation: 88, "Special Ability": "Cosmic Groove – Gains +10 to Improvisation and Flow when engaging in extended jam sessions, creating hypnotic rhythms that enhance allies’ synergy and destabilize opponents’ tempo."}},
+{name: "Guitarist: Scotty Moore (Elvis Presley)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 85, Legacy: 95, Innovation: 85, "Special Ability": "That’s Alright – Adds +10 to legacy in any early rock or rockabilly battle."}},
+{name: "Guitarist: Sérgio Hinds (The Brazilian Psychedelic Voyager)", attributes: {"Technical Skill": 88, "Stage Presence": 90, Popularity: 80, Legacy: 90, Innovation: 92, "Special Ability": "O Terço Ascension – Gains +10 to Harmonic Complexity and Psychedelic Resonance when performing progressive rock fusions, opening dimensional rifts of sound that elevate allies and confuse enemy formations."}},
+{name: "Guitarist: Slash (Guns N' Roses)", attributes: {"Technical Skill": 90, "Stage Presence": 100, Popularity: 95, Legacy: 90, Innovation: 85, "Special Ability": "Sweet Child O' Mine – Gains +10 to Stage Presence after winning any hard rock showdown."}},
+{name: "Guitarist: Steve Lukather (Toto)", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Hold the Line – Increases Technical Skill by +10 in any arena rock battle."}},
+{name: "Guitarist: Steve Marker (The Frequency Sculptor – Garbage)", attributes: {"Technical Skill": 82, "Stage Presence": 78, Popularity: 85, Legacy: 87, Innovation: 88, "Special Ability": "Feedback Looper – Overloads enemy perception with delay-infused layers, giving allies +10 defense against sonic attacks."}},
+{name: "Guitarist: Steve Vai", attributes: {"Technical Skill": 100, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "For the Love of God – Increases Technical Skill by +10 after every win in a virtuoso duel."}},
+{name: "Guitarist: Stevie Ray Vaughan (Texas Hurricane)", attributes: {"Technical Skill": 95, "Stage Presence": 95, Popularity: 90, Legacy: 98, Innovation: 88, "Special Ability": "Scuttle Buttin’ Fury – Unleashes a storm of blues licks that increases Technical Skill and breaks through enemy defenses, gaining +10 to combo damage in blues-rock battles."}},
+{name: "Guitarist: Susan Tedeschi (The Soulstorm Virtuosa)", attributes: {"Technical Skill": 88, "Stage Presence": 90, Popularity: 88, Legacy: 90, Innovation: 87, "Special Ability": "Bluesfire Wave – Amplifies ally morale and softens enemy power by -10 with every emotionally charged solo."}},
+{name: "Guitarist: Terry Kath (The Soulful Firestorm)", attributes: {"Technical Skill": 95, "Stage Presence": 90, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "25 or 6 to Shred – Gains +10 to Improvisation and Raw Power when delivering emotional solos, channeling explosive energy that strengthens allies and shakes the spirit of opponents."}},
+{name: "Guitarist: The Edge (U2)", attributes: {"Technical Skill": 85, "Stage Presence": 80, Popularity: 90, Legacy: 90, Innovation: 95, "Special Ability": "Where the Streets Have No Name – Increases innovation by +10 in any post-punk or alternative rock battle."}},
+{name: "Guitarist: Tom Morello (Rage Against the Machine, Audioslave)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 100, "Special Ability": "Killing in the Name – Reduces opponent’s innovation by -10 in politically charged showdowns."}},
+{name: "Guitarist: Tony Bellotto (The Six-String Tactician)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 85, Legacy: 92, Innovation: 88, "Special Ability": "Dinosaur Head – By unleashing a distorted ground, Tony reduces the defense of enemies in an area for two turns. In punk or national rock battles, your Technical Skill increases by +10, intensifying the impact of your attacks."}},
+{name: "Guitarist: Tony Iommi (Black Sabbath)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 85, Legacy: 95, Innovation: 95, "Special Ability": "Iron Man – Boosts innovation by +10 in any heavy metal showdown."}},
+{name: "Guitarist: Wes Borland (Limp Bizkit)", attributes: {"Technical Skill": 85, "Stage Presence": 90, Popularity: 80, Legacy: 75, Innovation: 90, "Special Ability": "My Way – Adds +10 to innovation when battling in nu metal or alternative metal duels."}},
+{name: "Guitarist: Yngwie Malmsteen", attributes: {"Technical Skill": 100, "Stage Presence": 85, Popularity: 80, Legacy: 85, Innovation: 95, "Special Ability": "Far Beyond the Sun – Increases Technical Skill by +10 when battling neoclassical or shredding guitarists."}},
+{name: "Guitarist: Zakk Wylde (Ozzy Osbourne, Black Label Society)", attributes: {"Technical Skill": 95, "Stage Presence": 90, Popularity: 85, Legacy: 85, Innovation: 85, "Special Ability": "No More Tears – Increases Technical Skill by +10 in any heavy metal battle."}},
+{name: "Keys: Ally Venable (The Blues Firebrand)", attributes: {"Technical Skill": 90, "Stage Presence": 90, Popularity: 85, Legacy: 80, Innovation: 85, "Special Ability": "Texas Hurricane – Gains +10 to Technical Skill and Stage Energy when performing high-voltage blues solos, overwhelming opponents with fiery licks and soulful intensity."}},
+{name: "Keys: Andret Oliveira (The Harmonic Trailblazer)", attributes: {"Technical Skill": 90, "Stage Presence": 88, Popularity: 85, Legacy: 80, Innovation: 87, "Special Ability": "Soulfire Keys – Gains +10 to Improvisation and Emotional Impact when blending blues, rock, and jazz elements, creating engaging solos that elevate allies and disorient opponents with unpredictable rhythmic shifts."}},
+{name: "Keys: Chiquinho (The Choro Virtuoso)", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 80, Legacy: 90, Innovation: 85, "Special Ability": "Chorinho Encantado – Gains +10 to Harmonic Dexterity and Improvisation when performing intricate choro melodies, empowering allies with captivating rhythm ... lost among their swift arpeggios."}},
+{name: "Keys: Jerry Lee Lewis (The Rock & Roll Inferno)", attributes: {"Technical Skill": 95, "Stage Presence": 100, Popularity: 95, Legacy: 100, Innovation: 90, "Special Ability": "Great Balls of Fire – Gains +10 to Speed ​​and Showmanship when performing high-energy rock & roll, setting the stage on fire with frenetic solos and leaving opponents speechless in the face of his explosive intensity."}},
+{name: "Keys: Mark Mothersbaugh (Devo Sonic Architect)", attributes: {"Technical Skill": 88, "Stage Presence": 90, Popularity: 90, Legacy: 95, "Innovation": 100, "Special Ability": "Mutant Soundwave – Generates unpredictable, futuristic soundscapes that scramble enemy formations while enhancing allies' creativity and adaptability."}},
+{name: "Keys: Michael Nesmith (The Country Rock Visionary)", attributes: {"Technical Skill": 90, "Stage Presence": 85, Popularity: 85, Legacy: 95, Innovation: 95, "Special Ability": "Cosmic Cowboy – Gains +10 to Harmonic Experimentation and Narrative Depth when blending country, rock and folk, creating sonic atmospheres that strengthen allies and confuse opponents."}},
+{name: "Keys: Ray Manzarek (The Psychedelic Architect)", attributes: {"Technical Skill": 95, "Stage Presence": 90, Popularity: 90, Legacy: 100, Innovation: 95, "Special Ability": "Riders on the Storm – Gains +10 to Improvisation and Hypnotic Groove when creating swirling organ melodies, confounding opponents and transporting allies on a transcendental sonic journey."}},
+{name: "Keys: Ryo Okumoto (Prog Virtuoso)", attributes: {"Technical Skill": 95, "Stage Presence": 85, Popularity: 80, Legacy: 90, "Innovation": 88, "Special Ability": "Symphonic Surge – Unleashes a tidal wave of complex arpeggios and swirling synth textures, boosting allies’ dexterity and disrupting enemy timing."}},
+{name: "Vocalist: Adam Levine (Maroon 5 - The Pop Rock Charmer)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 95, Legacy: 80, Innovation: 85, "Special Ability": "Sugar Rush – Restores +5 morale to all allies after a successful melodic performance, boosting team energy and distracting opponents with irresistible hooks."}},
+{name: "Vocalist: Alan Clarke (The Soulful Sentinel)", attributes: {"Powerful Vocals": 88, "Stage Presence": 85, Popularity: 82, Legacy: 87, Innovation: 78, "Special Ability": "British Soulwave – Gains +10 to Vocal Emotion and Crowd Connection when performing classic rock ballads, soothing allies while subtly weakening opponent resolve."}},
+{name: "Vocalist: Alice Cooper (The Nightmare Maestro)", attributes: {"Powerful Vocals": 85, "Stage Presence": 100, Popularity: 90, Legacy: 95, Innovation: 95, "Special Ability": "Theatrical Terror – For each enemy defeated, Alice summons a frightening illusion onto the battlefield that distracts opponents. Stage Presence increases by +5 each round, maximizing chaos."}},
+{name: "Vocalist: Alvin Lee (The Lightning Picker)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 80, Legacy: 85, Innovation: 85, "Special Ability": "Speed King – Gains +10 to Technical Skill and Stage Energy when delivering rapid-fire blues-rock solos, overwhelming opponents with sheer velocity."}},
+{name: "Vocalist: Amy Lee (Evanescence)", attributes: {"Powerful Vocals": 95, "Stage Presence": 85, Popularity: 85, Legacy: 80, Innovation: 85, "Special Ability": "Bring Me to Life – Restores 10 points of any stat after a close loss."}},
+{name: "Vocalist: Andi Deris (The Melodic Metal Voice)", attributes: {"Powerful Vocals": 90, "Stage Presence": 88, Popularity: 85, Legacy: 80, Innovation: 80, "Special Ability": "Power Surge – Gains +10 to Vocal Control and Harmonic Strength during power metal anthems, boosting ally morale and piercing enemy defenses with soaring choruses."}},
+{name: "Vocalist: Ann Wilson (Heart)", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 80, "Special Ability": "Barracuda – Increases Powerful Vocals by +10 in battles involving female vocalists."}},
+{name: "Vocalist: Anthony Kiedis (Red Hot Chili Peppers)", attributes: {"Powerful Vocals": 85, "Stage Presence": 95, Popularity: 90, Legacy: 85, Innovation: 85, "Special Ability": "Give It Away – Steals 5 points from any stat of an opponent after losing a round."}},
+{name: "Vocalist: Arnaldo Baptista (The Psychedelic Alchemist)", attributes: {"Powerful Vocals": 78, "Stage Presence": 85, Popularity: 80, Legacy: 95, Innovation: 98, "Special Ability": "Mental Magnetism – Arnaldo bends reality mid-battle, confusing enemies with unpredictable soundscapes. Legacy increases by +5 each round as the battlefield turns surreal."}},
+{name: "Vocalist: Avril Lavigne (The Punk Princess)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 98, Legacy: 85, Innovation: 80, "Special Ability": "Sk8er Rebel – Gains +10 to Speed and Evasion when facing pop or punk opponents, dodging attacks with high-energy moves while countering with attitude-fueled anthems."}},
+{name: "Vocalist: Axl Rose (Guns N' Roses)", attributes: {"Powerful Vocals": 92, "Stage Presence": 95, Popularity: 90, Legacy: 85, Innovation: 80, "Special Ability": "Welcome to the Jungle – Causes all opponents to lose -5 Stage Presence."}},
+{name: "Vocalist: Bebe Buell (The Rock 'n' Roll Muse)", attributes: {"Powerful Vocals": 80, "Stage Presence": 90, Popularity: 85, Legacy: 80, Innovation: 75, "Special Ability": "Rebel Glamor – Gains +10 to Stage Presence and Media Influence when performing in rock scenes, charming allies and discouraging opponents with her iconic aura of counterculture."}},
+{name: "Vocalist: Beth Gibbons (The Ethereal Enchantress)", attributes: { "Powerful Vocals": 90, "Stage Presence": 85, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Portishead Haze – Gains +10 to Hypnotic Presence and Cinematic Atmosphere when blending trip-hop and jazz elements, distorcendo a percepção dos adversários com vozes fantasmagóricas."}},
+{name: "Vocalist: Billie Joe Armstrong (Green Day)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 95 , Legacy: 90, Innovation: 85, "Special Ability": "American Idiot Anthem – Unleashes a sonic explosion of pop-punk protest, increasing +15 Popularity and +10 Stage Presence in politically charged performances. Grants resistance to crowd control effects due to his loyal fanbase."}},
+{name: "Vocalist: Billy Corgan (The Smashing Pumpkins)", attributes: {"Powerful Vocals": 85, "Stage Presence": 80, Popularity: 85, Legacy: 85, Innovation: 90, "Special Ability": "Bullet with Butterfly Wings – Reduces opponent's legacy by -10 after a victory."}},
+{name: "Vocalist: Billy Idol (The Rebel Icon)", attributes: {"Powerful Vocals": 85, "Stage Presence": 100, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "White Wedding Fury – Gains +10 to Charisma and Counterattack when delivering high-energy rock anthems, creating an aura of rebellious dominance."}},
+{name: "Vocalist: Björk", attributes: {"Powerful Vocals": 85, "Stage Presence": 80, Popularity: 85, Legacy: 90, Innovation: 100, "Special Ability": "Army of Me – Increases innovation by +10 when battling any vocalist known for experimental music."}},
+{name: "Vocalist: Black Francis (The Surreal Screamer)", attributes: {"Powerful Vocals": 90, "Stage Presence": 87, Popularity: 85, Legacy: 92, Innovation: 96, "Special Ability": "Wave of Mutilation – Gains +10 to Innovation during chaotic battles, summoning unpredictable sonic waves that disrupt enemy formations."}},
+{name: "Vocalist: Bob Mothersbaugh (Devolution Virtuoso)", attributes: {"Powerful Vocals": 80, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Devo Energy Wave – Releases a surge of unpredictable, synthesized power that scrambles enemy tactics while boosting allies’ creativity and rhythm."}},
+{name: "Vocalist: Bobby Gillespie (Primal Scream – The Acid Prophet)", attributes: {"Powerful Vocals": 80, "Stage Presence": 90, Popularity: 85, Legacy: 88, Innovation: 92, "Special Ability": "Screamadelica Surge – Channels psychedelic energy to disorient enemies and boost ally versatility by +10."}},
+{name: "Vocalist: Bon Scott (The Electric Wildman)", attributes: {"Powerful Vocals": 93, "Stage Presence": 98, Popularity: 95, Legacy: 94, Innovation: 85, "Special Ability": "High Voltage – Increases Stage Presence by +5 each round. Bon’s attacks deal amplified damage when accompanied by intense guitar solos."}},
+{name: "Vocalist: Bono Vox (U2)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 95, Legacy: 90, Innovation: 85, "Special Ability": "With or Without You – Steals 5 points from the opponent's popularity."}},
+{name: "Vocalist: Brad Arnold (3 Doors Down – The Southern Rock Sentinel)", attributes: {"Powerful Vocals": 82, "Stage Presence": 85, Popularity: 90, Legacy: 80, Innovation: 75, "Special Ability": "Kryptonite Pulse – Gains +10 resilience when performing in rock or post-grunge battles, shielding allies from status effects."}},
+{name: "Vocalist: Bradley Nowell (Sublime)", attributes: {"Powerful Vocals": 85, " Stage Presence": 90, Popularity: 90, Legacy: 95, Innovation: 95, "Special Ability": "Sunset Vibes – Activates a fusion of rhythms that mixes reggae, ska and punk, granting +15 Innovation and +10 Popularity in events summer or outdoor festivals. Can summon a spirit pet called Lou Dog for moral support."}},
+{name: "Vocalist: Branco Mello (The Low End Phantom)", attributes: {"Powerful Vocals": 85, "Stage Presence": 87, Popularity: 78, Legacy: 88, Innovation: 85, "Special Ability": "Bassquake – Branco activates a pulsating bass wave that disorients nearby enemies, reducing their defense for two turns. If used in sequence, the effect intensifies, creating cracks in the field."}},
+{name: "Vocalist: Brandon Flowers (The Killers)", attributes: {"Powerful Vocals": 85, "Stage Presence": 85, Popularity: 90, Legacy: 80, Innovation: 85, "Special Ability": "Mr. Brightside – Gains +10 in popularity when facing alternative rock vocalists."}},
+{name: "Vocalist: Bret Michaels (Poison)", attributes: {"Powerful Vocals": 80, "Stage Presence": 90, Popularity: 85, Legacy: 80, Innovation: 75, "Special Ability": "Every Rose Has Its Thorn – Reduces the opponent’s Stage Presence by -10 after winning a power ballad showdown."}},
+{name: "Vocalist: Brian Johnson (AC/DC)", attributes: {"Powerful Vocals": 90, "Stage Presence": 90, Popularity: 95, Legacy: 90, Innovation: 75, "Special Ability": "Thunderstruck – Adds +10 to Stage Presence in rock showdowns."}},
+{name: "Vocalist: Brian Welch (Korn, Love and Death)", attributes: {"Powerful Vocals": 80, "Stage Presence": 90, Popularity: 85, Legacy: 88, Innovation: 85, "Special Ability": "Blind Redemption – Converts emotional damage into attack power, granting +10 to Vocal Impact and Stage Presence when channeling raw vulnerability through heavy riffs."}},
+{name: "Vocalist: Brian Wilson (The Beach Boys)", attributes: {"Powerful Vocals": 85, "Stage Presence": 80, Popularity: 95, Legacy: 100, Innovation: 100,"Special Ability": "Pet Sounds Harmony – Gains +10 to Arrangement and Lyrical Depth when crafting complex vocal harmonies, overwhelming opponents with lush, dreamlike soundscapes."}},
+{name: "Vocalist: Bryan Ferry (The Art Rock Crooner)", attributes: {"Powerful Vocals": 90, "Stage Presence": 95, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Avalon Charm – Gains +10 to Elegance and Sonic Atmosphere when performing art rock or sophisticated new wave ballads, involving allies in a cinematic atmosphere and leaving opponents mesmerized."}},
+{name: "Vocalist: Bruce Dickinson (Iron Maiden)", attributes: {"Powerful Vocals": 97, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 80, "Special Ability": "Run to the Hills – Increases +10 to Powerful Vocals in heavy metal battles."}},
+{name: "Vocalist: Bruce Springsteen", attributes: {"Powerful Vocals": 90, "Stage Presence": 95, Popularity: 100, Legacy: 100, Innovation: 85, "Special Ability": "Born to Run – Anthemic Surge"}},
+{name: "Vocalist: Campino (Die Toten Hosen)", attributes: {"Powerful Vocals": 85, "Stage Presence": 95, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Opel Gang Riot – Unleashes an explosion of punk rebellion, granting +15 Stage Presence and +10 Popularity during punk rock performances and alternative rock. Can activate “Fortuna's Spirit”, inspiring his team with increased resilience and morale in the most challenging situations, thanks to his resilient attitude and unwavering passion."}},
+{name: "Vocalist: Carl Wilson (The Harmony Weaver)", attributes: {"Powerful Vocals": 88, "Stage Presence": 85, Popularity: 90, Legacy: 92, Innovation: 89, "Special Ability": "Good Vibrations – Carl generates harmonic shields that absorb damage and boost ally morale, increasing Legacy by +5 each turn."}},
+{name: "Vocalist: Cazuza (The Burning Lyricist)", attributes: {"Powerful Vocals": 90, "Stage Presence": 95, Popularity: 92, Legacy: 98, Innovation: 93, "Special Ability": "Truth Bomb – Cazuza's razor-sharp lyrics explode across the battlefield, dealing direct damage to enemies and exposing their weaknesses. Each turn, his attack increases by +5 based on the intensity of his performance. grows."}},
+{name: "Vocalist: Chad Channing (Nirvana)", attributes: {"Powerful Vocals": 80, "Stage Presence": 85, Popularity: 80, Legacy: 85, Innovation: 90, "Special Ability": "Grunge Pulse – Creates a raw, powerful sound wave that reduces enemy defenses and strengthens allies in high-risk environments."}},
+{name: "Vocalist: Chad Kroeger (The Post-Grunge Sentinel)", attributes: {"Powerful Vocals": 83, "Stage Presence": 88, Popularity: 95, Legacy: 80, Innovation: 75, "Special Ability": "Photograph – Summons a nostalgic aura that reduces incoming damage by 10% while increasing Popularity by +5 per round."}},
+{name: "Vocalist: Charles Gavin (The Pulse Keeper)", attributes: {"Powerful Vocals": 70, "Stage Presence": 88, Popularity: 80, Legacy: 91, Innovation: 85, "Special Ability": "Drumstorm – Charles creates a sequence of heavy beats that increase the pace of battle. Allies attack twice per turn while enemies have their evasion reduced."}},
+{name: "Vocalist: Chester Bennington (Linkin Park)", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 90, Legacy: 85, Innovation: 85, "Special Ability": "In the End – Restores 10 points to any stat after a loss."}},
+{name: "Vocalist: Chico Science (Manguebeat Pioneer)", attributes: {"Powerful Vocals": 85, "Stage Presence": 95, Popularity: 85, Legacy: 100, Innovation: 100, "Special Ability": "Mangrove Pulse – Infuses the team's performances with tribal rhythms and electronic beats, causing unexpected synergies between tradition and modernity."}},
+{name: "Vocalist: Chinaina (The Funk Maestro)", attributes: {"Powerful Vocals": 87, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 92, "Special Ability": "Africabatuque – Summons percussive spirits that boost ally speed by 20% and deal rhythmic damage over time to enemies."}},
+{name: "Vocalist: Chino Moreno (Deftones)", attributes: {"Powerful Vocals": 90, "Stage Presence": 90, Popularity: 85, Legacy: 85, Innovation: 90, "Special Ability": "White Pony Reverie – Gains +10 to Emotional Intensity and Sonic Atmosphere when blending whispers, screams, and ethereal melodies, creating an immersive soundscape that disorients opponents."}},
+{name: "Vocalist: Chorão (Charlie Brown Jr.)", attributes: {"Powerful Vocals": 90, "Stage Presence": 95, Popularity: 95, Legacy: 90, Innovation: 85, "Special Ability": "Skate & Flow – Calls upon the power of skateboarding and the streets, granting +15 Stage Presence and +10 Popularity at alternative rock and rap rock shows. Can avoid hits with a stylish kickflip that negates negative effects."}},
+{name: "Vocalist: Chris Cornell (Soundgarden/Audioslave)", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Black Hole Sun – Guarantees an automatic draw if used in a battle of Powerful Vocals."}},
+{name: "Vocalist: Chris Martin (Coldplay)", attributes: {"Powerful Vocals": 80, "Stage Presence": 85, Popularity: 95, Legacy: 85, Innovation: 80, "Special Ability": "Fix You – Restores 10 points of any attribute after a battle."}},
+{name: "Vocalist: Chris Robinson (The Cosmic Blues Shaman)", attributes: {"Powerful Vocals": 88, "Stage Presence": 95, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "Black Crowes Revival – Gains +10 to Groove and Improvisation when channeling the energy of blues and southern rock, creating a hypnotic flow that empowers allies and disorients enemies."}},
+{name: "Vocalist: Chris Stein (The Shadow of New Wave)", attributes: {"Powerful Vocals": 75, "Stage Presence": 80, Popularity: 85, Legacy: 88, Innovation: 90, "Special Ability": "Heart of Glass – Summons a shimmering shield that reflects 50% of ranged attacks, disorienting enemies with dazzling New Wave beats."}},
+{name: "Vocalist: Chrissie Hynde (The Rebel Siren)", attributes: {"Powerful Vocals": 90, "Stage Presence": 90, Popularity: 85, Legacy: 92, Innovation: 85, "Special Ability": "Brass in Pocket – Gains +10 to Charisma and Counterattack Ability when delivering raw, attitude-filled performances, weakening the confidence of opponents and strengthening allies with fearless energy."}},
+{name: "Vocalist: Cindy Wilson (The Hypnotic Dreamweaver)", attributes: {"Powerful Vocals": 88, "Stage Presence": 90, Popularity: 85, Legacy: 88, Innovation: 86, "Special Ability": "Cosmic Wavelength – Cindy emits ethereal vocals that create a psychedelic aura, decreasing enemies' attack and increasing allies' resistance."}},
+{name: "Vocalist: Clemente Nascimento (Inocentes – Brazil’s Punk Pillar)", attributes: {"Powerful Vocals": 85, "Stage Presence": 88, Popularity: 75, Legacy: 90, Innovation: 82, "Special Ability": "Punk Stamina – Boosts team morale in underground battles and reduces damage from high-speed lyrical assaults."}},
+{name: "Vocalist: Colin Blunstone (The Velvet Crooner)", attributes: { "Powerful Vocals": 88, "Stage Presence": 85, Popularity: 80, Legacy: 90, Innovation: 85, "Special Ability": "Time of the Season – Gains +10 to Vocal Smoothness and Dreamlike Atmosphere when delivering soft yet haunting melodies, lulling adversaries into a state of reverie."}},
+{name: "Vocalist: Corey Taylor (Slipknot, Stone Sour)", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 90, Legacy: 85, Innovation: 85, "Special Ability": "Duality – Reduces the opponent’s Powerful Vocals by -10 in any metal showdown."}},
+{name: "Vocalist: Courtney Love (The Grunge Fury)", attributes: {"Powerful Vocals": 90, "Stage Presence": 94, Popularity: 88, Legacy: 85, Innovation: 83, "Special Ability": "Doll Parts – Increases attack damage by +10 when allies are down, channeling raw rage to finish battles explosively."}},
+{name: "Vocalist: Daniel Johns (The Sonic Alchemist)", attributes: {"Powerful Vocals": 88, "Stage Presence": 90, Popularity: 85, Legacy: 87, Innovation: 99, "Special Ability": "Neon Pulse – Daniel Johns alters his sonic style in the middle of combat, switching between rapid attacks and reinforced defenses. The ability allows a chance each round to disorient enemies or speed up allies."}},
+{name: "Vocalist: Dave Gahan (The Dark Messiah)", attributes: {"Powerful Vocals": 90, "Stage Presence": 100, Popularity: 95, Legacy: 98, Innovation: 90, "Special Ability": "Personal Jesus – Gains +10 to Charisma and Hypnotic Influence when performing darkwave or synth-heavy anthems, draining enemy focus while empowering allies with an aura of mystique."}},
+{name: "Vocalist: Dave Grohl (Foo Fighters, Nirvana)", attributes: {"Powerful Vocals": 85, "Stage Presence": 95, Popularity: 90, Legacy: 95, Innovation: 80, "Special Ability": "Everlong – Restores 5 points to every stat after winning a battle."}},
+{name: "Vocalist: Dave Matthews (The Jam Architect)", attributes: {"Powerful Vocals": 86, "Stage Presence": 88, Popularity: 90, Legacy: 85, Innovation: 87, "Special Ability": "Crash Into Me – Creates a looping aura that amplifies over time, boosting ally resilience and increasing crowd control."}},
+{name: "Vocalist: David Bowie", attributes: {"Powerful Vocals": 90, "Stage Presence": 95, Popularity: 90, Legacy: 100, Innovation: 100, "Special Ability": "Space Oddity – Increases innovation by +10 when facing a legacy greater than 90."}},
+{name: "Vocalist: David Byrne", attributes: {"Powerful Vocals": 80, "Stage Presence": 88, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Psycho Groove – Conceptual Overload"}},
+{name: "Vocalist: David Coverdale (The Velvet Thunder)", attributes: {"Powerful Vocals": 90, "Stage Presence": 100, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Whitesnake Charm – Gains +10 to Charisma and Vocal Power when delivering soaring rock anthems, hypnotizing allies and destabilizing opponents with its seductive timbre and magnetic presence."}},
+{name: "Vocalist: David Lee Roth (The Wild Showman)", attributes: {"Powerful Vocals": 88, "Stage Presence": 100, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "High Kick Frenzy – Gains +10 to Speed and Attack when performing high-energy moves, overwhelming enemies with acrobatics and flamboyant rockstar antics."}},
+{name: "Vocalist: Debbie Harry (Blondie)", attributes: {"Powerful Vocals": 85, "Stage Presence": 85, Popularity: 90, Legacy: 85, Innovation: 85, "Special Ability": "Call Me – Increases popularity by +10 when battling pop-punk or new wave vocalists."}},
+{name: "Vocalist: Dee Snider (The Twisted Commander)", attributes: {"Powerful Vocals": 92, "Stage Presence": 100, Popularity: 87, Legacy: 90, Innovation: 85, "Special Ability": "We're Not Gonna Take It – Increases team resilience by +15% when under heavy pressure, rallying allies with rebellious anthems."}},
+{name: "Vocalist: Dexter Holland (The Punk Aviator)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 88, Legacy: 85, Innovation: 80, "Special Ability": "Self Esteem Surge – Gains +10 to Lyrical Impact and Speed when rallying against authority, delivering rapid-fire punk anthems that weaken enemy coordination."}},
+{name: "Vocalist: Dhani Harrison (The Psychedelic Torchbearer)", attributes: {"Powerful Vocals": 80, "Stage Presence": 88, Popularity: 82, Legacy: 95, Innovation: 90, "Special Ability": "Echoes of the Past – Gains +10 to Sonic Depth and Atmosphere when blending psychedelic rock and electronic textures, creating immersive soundscapes that elevate allies' creativity and confound opponents."}},
+{name: "Vocalist: Digão (Brazilian Punk Rock Titan)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 85, Legacy: 80, Innovation: 80, "Special Ability": "Riff Rampage – Unleashes a sonic fury of heavy riffs and powerful vocals that increase the team's stamina and energy in intense and aggressive performances."}},
+{name: "Vocalist: Dinho Ouro Preto (The Brazilian Rock Rebel)", attributes: {"Powerful Vocals": 88, "Stage Presence": 95, Popularity: 90, Legacy: 88, Innovation: 80, "Special Ability": "Que País é Esse? – Gains +10 to Stage Presence and Ally Motivation when performing protest-driven rock anthems, rallying his team and disrupting enemy focus."}},
+{name: "Vocalist: Dolores O’Riordan (The Lyrical Lament)", attributes: { "Powerful Vocals": 95, "Stage Presence": 90, Popularity: 95, Legacy: 100, Innovation: 90, "Special Ability": "Linger Echo – Gains +10 to Emotional Resonance and Harmonic Depth when delivering hauntingly poetic lyrics, enveloping adversaries in a melancholic trance."}},
+{name: "Vocalist: Eddie Vedder (Pearl Jam)", attributes: {"Powerful Vocals": 88, "Stage Presence": 85, Popularity: 80, Legacy: 85, Innovation: 85, "Special Ability": "Alive – Regenerates lost popularity points."}},
+{name: "Vocalist: Edgar Winter (The Sonic Alchemist)", attributes: {"Powerful Vocals": 90, "Stage Presence": 90, Popularity: 80, Legacy: 85, Innovation: 90, "Special Ability": "Frankenstein Surge – Gains +10 to Instrumental Mastery and Improvisation when blending rock, blues, and jazz, overwhelming opponents with high-energy solos and electrifying synth riffs."}},
+{name: "Vocalist: Emily Armstrong (The Riot Queen)", attributes: {"Powerful Vocals": 90, "Stage Presence": 95, Popularity: 80, Legacy: 85, Innovation: 90, "Special Ability": "Dead Sara Storm – Gains +10 to Aggression and Stage Power when delivering high-voltage performances, unleashing raw intensity that crushes enemy defenses."}},
+{name: "Vocalist: Eric Burdon (The Blues Shouter)", attributes: {"Powerful Vocals": 92, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "House of the Rising Roar – Gains +10 to Vocal Power and Emotional Impact when performing blues and rock anthems, breaking enemy defenses with raw, soulful intensity."}},
+{name: "Vocalist: Eugene Hütz (The Gypsy Punk Renegade)", attributes: {"Powerful Vocals": 80, "Stage Presence": 100, Popularity: 85, Legacy: 88, Innovation: 95, "Special Ability": "Vodka Frenzy – Gains +10 to Stage Presence and Speed when fusing punk energy with Eastern European folk rhythms, creating chaotic and unpredictable battlefield movements."}},
+{name: "Vocalist: Fabio Trummer (Manguefolk Rocker)", attributes: {"Powerful Vocals": 85, "Stage Presence": 85, Popularity: 80, Legacy: 85, Innovation: 90, "Special Ability": "Underground Resonance – Activates a wave of cultural resistance, strengthening the team's fighting spirit, allowing for powerful and inspiring protest songs."}},
+{name: "Vocalist: Fat Mike (NOFX)", attributes: {"Powerful Vocals": 80, "Stage Presence ": 85, Popularity: 90, Legacy: 90, Innovation: 85, "Special Ability": "DIY Revolution – Activates an indie punk aura that increases +15 Legacy and +10 Innovation when playing at underground festivals or DIY shows.Can cast Sarcastic Commentary to disorient enemies with sharp social critiques."}},
+{name: "Vocalist: Fausto Fawcett (Cyberbard of Brazil)", attributes: {"Powerful Vocals": 75, "Stage Presence": 80, Popularity: 70, Legacy: 85, Innovation: 95, "Special Ability": "Santa Clara Poltergeist – Converts narrative density into confusion waves, reducing enemy strategy by -10."}},
+{name: "Vocalist: Felipe S (The Tropical Punk Poet)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 85, Legacy: 85, Innovation: 90, "Special Ability": "Mangue Groove – Gains +10 to Genre Fusion and Lyrical Rebellion when mixing punk, MPB and regional rhythms, creating urban anthems that strengthen allies and destabilize adversaries with sharp criticism."}},
+{name: "Vocalist: Fernando Olvera", attributes: {"Powerful Vocals": 90, "Stage Presence": 95, Popularity: 100, Legacy: 95, Innovation: 90, "Special Ability": "Latino Corazón – Gains +10 to Emotional Delivery and Legacy when performing Latin rock anthems, creating a wave of deep connection that strengthens allies and destabilizes adversaries."}},
+{name: "Vocalist: Florence Welch (Florence and the Machine)", attributes: {"Powerful Vocals": 90, "Stage Presence": 90, Popularity: 85, Legacy: 80, Innovation: 85, "Special Ability": "Dog Days Are Over – Boosts Powerful Vocals by +10 when facing alternative or indie vocalists."}},
+{name: "Vocalist: Fred Schneider (The Party Commander)", attributes: {"Powerful Vocals": 80, "Stage Presence": 98, Popularity: 90, Legacy: 90, Innovation: 90, "Special Ability": "Rock Lobster Frenzy – Fred commands the stage with his energetic spoken vocals, leaving enemies confused while boosting attacks and team morale."}},
+{name: "Vocalist: Fred Zero 4 (The Urban Oracle)", attributes: {"Powerful Vocals": 82, "Stage Presence": 89, Popularity: 75, Legacy: 90, Innovation: 95, "Special Ability": "Mangue Groove – Fred conjures the rhythm of the mangrove, creating roots that ensnare enemies, decreasing their mobility. Allies gain continuous regeneration as the sound echoes across the field."}},
+{name: "Vocalist: Freddie Mercury (Queen)", attributes: {"Powerful Vocals": 100, "Stage Presence": 100, Popularity: 95, Legacy: 100, Innovation: 90, "Special Ability": "Bohemian Rhapsody – Increases the vocal power of any allied vocalist."}},
+{name: "Vocalist: Frejat (The Heart of Rock)", attributes: {"Powerful Vocals": 85, "Stage Presence": 92, Popularity: 88, Legacy: 94, Innovation: 85, "Special Ability": "Riff of Steel – Frejat unleashes chords that create a sonic barrier, shielding allies from attacks for one round. If he lands a critical hit, his next attack deals double damage."}},
+{name: "Vocalist: Geddy Lee (Rush)", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 85, Legacy: 95, Innovation: 95, "Special Ability": "Tom Sawyer – Adds +10 to innovation when facing progressive rock vocalists."}},
+{name: "Vocalist: Gerard Way (My Chemical Romance – The Emo Commander)", attributes: {"Powerful Vocals": 88, "Stage Presence": 95, Popularity: 90, Legacy: 92, Innovation: 87, "Special Ability": "Welcome to the Black Parade – When morale is low, triggers a revival wave restoring 15% team energy and boosting Stage Presence."}},
+{name: "Vocalist: Glenn Frey (The West Coast Storyteller)", attributes: {"Powerful Vocals": 90, "Stage Presence": 90, Popularity: 95, Legacy: 95, Innovation: 85, "Special Ability": "Take It Easy – Gains +10 to Melodic Flow and Narrative Songwriting when performing laid-back rock anthems, strengthening allies with smooth harmonies and destabilizing opponents with immersive storytelling."}},
+{name: "Vocalist: Grace Slick (Jefferson Airplane)", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 80, Legacy: 90, Innovation: 85, "Special Ability": "White Rabbit – Increases innovation by +10 in psychedelic rock showdowns."}},
+{name: "Vocalist: Hayley Williams (Paramore)", attributes: {"Powerful Vocals": 90, "Stage Presence": 90, Popularity: 85, Legacy: 80, Innovation: 85, "Special Ability": "Misery Business – Reduces opponent’s Stage Presence by -10 after winning a popularity showdown."}},
+{name: "Vocalist: Henry Rollins (The Spoken Word Titan)", attributes: {"Powerful Vocals": 92, "Stage Presence": 100, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Black Flag Frenzy – Gains +10 to Raw Energy and Resistance when delivering explosive speeches or vocals, igniting allies and unsettling opponents with unstoppable intensity."}},
+{name: "Vocalist: Herbert Viana (The Sonic Navigator)", attributes: {"Powerful Vocals": 88, "Stage Presence": 90, Popularity: 95, Legacy: 95, Innovation: 90, "Special Ability": "Surf’n’Roll Drive – Gains +10 to Versatility and Harmony when blending pop rock, reggae and regionalisms, connecting audiences with identity and contagious melody."}},
+{name: "Vocalist: Hope Sandoval (The Dreamy Enchantress)", attributes: {"Powerful Vocals": 85, "Stage Presence": 80, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "Fade Into You – Releases a hypnotic aura that slows opponents’ attacks while increasing allies’ focus, shrouding the battlefield in an ethereal, melancholic haze."}},
+{name: "Vocalist: Howard Jones (Killswitch Engage, Light the Torch)", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 88, Legacy: 90, Innovation: 85, "Special Ability": "Heart of Fire – Unleashes a dual vocal surge (melodic + scream), increasing team aggression and emotional resonance for 3 rounds in metalcore battles."}},
+{name: "Vocalist: Humberto Effe (Picassos Falsos – The Urban Poet)", attributes: {"Powerful Vocals": 78, "Stage Presence": 85, Popularity: 70, Legacy: 80, Innovation: 88, "Special Ability": "Post-Punk Pulse – Adds +10 to lyrical depth and evasion in duels rooted in cultural critique and city angst."}},
+{name: "Vocalist: Humberto Gessinger (The Thoughtful Rebel)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Infinita Highway – Gains +10 to Intellectual Lyricism and Progressive Rock Mastery when delivering socially reflective songs, strengthening allies with critical thinking and disorienting adversaries with philosophical lyrics."}},
+{name: "Vocalist: Ian Anderson (The Flute Sorcerer)", attributes: {"Powerful Vocals": 85, "Stage Presence": 100, Popularity: 90, Legacy: 98, Innovation: 97, "Special Ability": "Aqualung Invocation – Gains +10 to Innovation and Tactical Advantage when blending folk, rock, and progressive elements, summoning mystical flute melodies that mesmerize and disorient opponents."}},
+{name: "Vocalist: Ian Curtis (The Post-Punk Prophet)", attributes: {"Powerful Vocals": 85, "Stage Presence": 88, Popularity: 80, Legacy: 97, Innovation: 90, "Special Ability": "Love Will Tear Us Apart – Releases waves of despair, lowering enemy defense and attack by 15%."}},
+{name: "Vocalist: Ian Gillan (Deep Purple)", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 80, "Special Ability": "Smoke on the Water – Adds +10 to Powerful Vocals during any 70s rock showdown."}},
+{name: "Vocalist: Iggy Pop (The Stooges)", attributes: {"Powerful Vocals": 80, "Stage Presence": 100, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "Lust for Life – Gains +10 in Stage Presence for every loss he has in popularity."}},
+{name: "Vocalist: Jack Black (Tenacious D)", attributes: {"Powerful Vocals": 90, "Stage Presence": 100, Popularity: 95, Legacy: 85, Innovation: 90, "Special Ability": "Power Slide – Performs an energetic performance full of humor and intensity, demoralizing enemies and energizing allies to the max."}},
+{name: "Vocalist: Jack White (The White Stripes)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 85, Legacy: 85, Innovation: 90, "Special Ability": "Seven Nation Army – Gains +10 innovation when facing indie or alternative rock vocalists."}},
+{name: "Vocalist: James Hetfield (Metallica)", attributes: {"Powerful Vocals": 90, "Stage Presence": 90, Popularity: 90, Legacy: 85, Innovation: 80, "Special Ability": "Master of Puppets – Increases Stage Presence by +10 when used in metal showdowns."}},
+{name: "Vocalist: James McCartney (The Melodic Heir)", attributes: {"Powerful Vocals": 80, "Stage Presence": 85, Popularity: 75, Legacy: 90, Innovation: 80, "Special Ability": "Bloodline Harmony – Gains +10 to Melodic Control and Songwriting Finesse when channeling folk-pop and alternative influences, subtly enhancing team synergy."}},
+{name: "Vocalist: Jander Bilaphra (The Post-Punk Pulse)", attributes: {"Powerful Vocals": 80, "Stage Presence": 85, Popularity: 70, Legacy: 80, Innovation: 85, "Special Ability": "Darkwave Aura – Gain +10 Sound Resistance and Lyrical Intensity when exploring dense, existential atmospheres in new wave and alternative rock fusions."}},
+{name: "Vocalist: Janis Joplin", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Piece of My Heart – Restores 10 points of lost Stage Presence."}},
+{name: "Vocalist: Jared Leto (Thirty Seconds to Mars)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 85, Legacy: 80, Innovation: 80, "Special Ability": "The Kill – Reduces opponent's popularity by -10 after winning a Stage Presence battle."}},
+{name: "Vocalist: Jason Freese (The Versatile Backbone)", attributes: {"Powerful Vocals": 75, "Stage Presence": 85, Popularity: 80, Legacy: 80, Innovation: 90, "Special Ability": "Studio Chameleon – Gains +10 to Adaptability and Instrumental Synergy when supporting high-energy performances, empowering allies with layered arrangements and disrupting enemies with surprise tonal shifts."}},
+{name: "Vocalist: Jason Narducy (The Indie Dynamo)", attributes: {"Powerful Vocals": 85, "Stage Presence": 88, Popularity: 83, Legacy: 86, Innovation: 90, "Special Ability": "Voltage Surge – Jason Narducy’s raw energy amplifies over time, increasing his attack speed and reducing cooldowns for allies. The longer the battle, the stronger he gets."}},
+{name: "Vocalist: Jeff Lynne (ELO)", attributes: {"Powerful Vocals": 80, "Stage Presence": 85, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Mr. Blue Sky – Amplifies team harmony and orchestral energy, granting +10 to Arrangement and Team Synergy while decreasing enemy focus through radiant soundscapes."}},
+{name: "Vocalist: Jerry Garcia (Grateful Dead)", attributes: {"Powerful Vocals": 80, "Stage Presence": 90, Popularity: 95, Legacy: 100, Innovation: 95, "Special Ability": "Cosmic Jam – Leads an expansive musical session that connects allies in a wave of creativity, triggering combo attacks and healing emotional wounds."}},
+{name: "Vocalist: Jim Beattie (Primal Scream – The Sonic Sculptor)", attributes: {"Powerful Vocals": 75, "Stage Presence": 80, Popularity: 70, Legacy: 82, Innovation: 90, "Special Ability": "Neo-Psychedelic Bloom – Twists guitar-driven compositions into dreamscapes, lowering enemy clarity by -10."}},
+{name: "Vocalist: Jim Morrison (The Doors)", attributes: {"Powerful Vocals": 85, "Stage Presence": 95, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Light My Fire – Boosts Stage Presence by +10 when facing classic rock vocalists."}},
+{name: "Vocalist: Joan Jett (Joan Jett & The Blackhearts)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 80, "Special Ability": "Bad Reputation – Adds +10 to Stage Presence after every victory."}},
+{name: "Vocalist: João Gordo (The Hardcore Juggernaut)", attributes: {"Powerful Vocals": 88, "Stage Presence": 95, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Caos Hardcore – Gains +10 to Aggression and Speed when performing punk and crossover thrash anthems, overwhelming opponents with relentless energy and sonic destruction."}},
+{name: "Vocalist: Joe Elliott (Def Leppard)", attributes: {"Powerful Vocals": 88, "Stage Presence": 90, Popularity: 90, Legacy: 90, Innovation: 80, "Special Ability": "Pour Some Sugar On It – Increases ally energy and crowd appeal by +10 in battles within stadium rock or glam metal arenas."}},
+{name: "Vocalist: Joe Strummer (The Clash)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "London Calling – Boosts legacy by +10 in battles with British artists."}},
+{name: "Vocalist: Joey Ramone (Ramones)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 95, Legacy: 100, Innovation: 80, "Special Ability": "Gabba Gabba Hey! – Awakens a burst of punk energy, increasing +15 Popularity and +10 Stage Presence during punk rock performances. Can deflect critical attacks from rivals. with its aura of subversive cool."}},
+{name: "Vocalist: John Fogerty (The Bayou Phantom)", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 88, Legacy: 94, Innovation: 80, "Special Ability": "Proud Mary Surge – With each critical hit, John increases the speed of his entire team, creating a domino effect that propels allies forward while slowing them down. enemies with an irresistible groove."}},
+{name: "Vocalist: John Lydon (The Anarchy Instigator)", attributes: {"Powerful Vocals": 85, "Stage Presence": 100, Popularity: 90, Legacy: 95, Innovation: 95, "Special Ability": "God Save the Queen – Gains +10 to Chaos and Resistance when performing against the system, destabilizing opponents with acidic sarcasm and strengthening allies with insurgent energy."}},
+{name: "Vocalist: John Mellencamp (The Heartland Rebel)", attributes: {"Powerful Vocals": 85, "Stage Presence": 85, Popularity: 90, Legacy: 90, Innovation: 85, "Special Ability": "Jack & Diane Spirit – Reduces opponent’s stamina by -10 after a long-winded battle, weakening foes with resilient lyrics and strengthening allies with a tireless fighting spirit."}},
+{name: "Vocalist: Johnny Rotten (Sex Pistols)", attributes: {"Powerful Vocals": 85, "Stage Presence": 95, Popularity: 90, Legacy: 90, Innovation: 85, "Special Ability": "Anarchy Surge – Unleash a ferocious punk scream that destabilizes enemies, reducing their accuracy and increasing allies' aggression."}},
+{name: "Vocalist: Jon Bon Jovi (Bon Jovi)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 95, Legacy: 85, Innovation: 80, "Special Ability": "Livin' on a Prayer – Adds +10 to popularity when on the verge of losing."}},
+{name: "Vocalist: Jonathan Davis (The Nu Metal Shaman)", attributes: {"Powerful Vocals": 92, "Stage Presence": 90, Popularity: 89, Legacy: 88, Innovation: 90, "Special Ability": "Freak on a Leash – Unleashes chaotic energy, stunning enemies and amplifying damage through primal screams."}},
+{name: "Vocalist: Jorge du Peixe (Manguebeat Vanguard)", attributes: {"Powerful Vocals": 80, "Stage Presence": 90, Popularity: 80, Legacy: 90, Innovation: 95, "Special Ability": "Urban Shamanism – Summons a rhythmic trance that amplifies the artistic abilities of all allies, blending folk culture and urban poetry for intense performances."}},
+{name: "Vocalist: Josh Homme (The Desert Emperor)", attributes: {"Powerful Vocals": 88, "Stage Presence": 98, Popularity: 90, Legacy: 95, Innovation: 95, "Special Ability": "Queens of the Riff Age – Gains +10 to Groove and Sonic Weight when delivering hypnotic, fuzz-drenched riffs, disorienting opponents and creating an aura impenetrable around allies."}},
+{name: "Vocalist: Junior Black (The Soul Phantom)", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 80, Legacy: 88, Innovation: 85, "Special Ability": "Shadow Groove – Junior Black’s deep, soulful voice creates an aura of hypnotic rhythm. Enemies have a chance to lose focus, while allies gain a boost in resilience and synchronization."}},
+{name: "Vocalist: Karen Dió (The Brazilian Metal Diva)", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 80, Legacy: 85, Innovation: 85, "Special Ability": "Vocal Inferno – Gains +10 to Projection and Stage Dominance when performing high-energy metal anthems, breaking through enemy defenses with raw, soaring vocals."}},
+{name: "Vocalist: Kate Pierson (The Cosmic Siren)", attributes: {"Powerful Vocals": 90, "Stage Presence": 92, Popularity: 85, Legacy: 90, Innovation: 88, "Special Ability": "Neon Echo – Kate unleashes vibrant harmonies that create a psychedelic soundscape, disorienting enemies and amplifying allies' energy."}},
+{name: "Vocalist: Kid Congo Powers (The Underground Alchemist)", attributes: {"Powerful Vocals": 78, "Stage Presence": 90, Popularity: 80, Legacy: 88, Innovation: 92, "Special Ability": "Punk Noir – Gains +10 to Raw Energy and Experimental Groove when performing garage rock and post-punk, disorienting opponents with hypnotic riffs and primal rhythms."}},
+{name: "Vocalist: Kid Rock (The American Maverick)", attributes: {"Powerful Vocals": 85, "Stage Presence": 92, Popularity: 90, Legacy: 82, Innovation: 80, "Special Ability": "Cowboy – Gains +5 to Popularity each round while disrupting enemy patterns with genre-switching attacks."}},
+{name: "Vocalist: Kid Vinil (The Brazilian New Wave Rebel)", attributes: { "Powerful Vocals": 80, "Stage Presence": 95, Popularity: 85, Legacy: 90, Innovation: 92, "Special Ability": "Túnel do Tempo – Gains +10 to Punk Energy and Nostalgic Impact when performing new wave, punk rock, or synth-driven anthems, revivendo e energizando aliados com espírito jovem."}},
+{name: "Vocalist: Kim Deal (The Sonic Alchemist)", attributes: {"Powerful Vocals": 80, "Stage Presence": 85, Popularity: 88, Legacy: 90, Innovation: 95, "Special Ability": "Gigantic Basslines – Summons deep, distorted bass waves that lower enemy defense by 20% and amplify ally attacks with raw, grunge energy."}},
+{name: "Vocalist: Kim Gordon", attributes: {"Powerful Vocals": 82, "Stage Presence": 85, Popularity: 80, Legacy: 92, Innovation: 95, "Special Ability": "Sonic Storm – Feedback Distortion"}},
+{name: "Vocalist: Kurt Cobain (Nirvana)", attributes: {"Powerful Vocals": 80, "Stage Presence": 85, Popularity: 90, Legacy: 95, Innovation: 95, "Special Ability": "Smells Like Teen Spirit – Reduces opponents' innovation by -5."}},
+{name: "Vocalist: Layne Staley (Alice in Chains)", attributes: {"Powerful Vocals": 100, "Stage Presence": 90, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": " Haunting Echo – Its dark harmonies activate a state of collective melancholy, granting +15 Legacy and +15 Popularity in grunge and alternative metal performances. Effect remains active even after battle."}},
+{name: "Vocalist: Lenny Kravitz (Solo Artist)", attributes: {"Powerful Vocals": 90, "Stage Presence": 95, Popularity: 92, Legacy: 90, Innovation: 88, "Special Ability": "Fly Away – Boosts Stage Presence by +10 when performing rock or soul tracks."}},
+{name: "Vocalist: Lemmy Kilmister (Motörhead)", attributes: {"Powerful Vocals": 85, "Stage Presence": 95, Popularity: 90, Legacy: 98, Innovation: 90, "Special Ability": "Ace of Spades – Gains +10 to Endurance and Rebel Energy when performing at full throttle, overwhelming opponents with raw, relentless soundwaves that shake the battlefield."}},
+{name: "Vocalist: Leon Russell (The Cosmic Maestro)", attributes: {"Powerful Vocals": 92, "Stage Presence": 95, Popularity: 88, Legacy: 95, Innovation: 97, "Special Ability": "Stardust Invocation – Leon Russell’s celestial piano melodies create waves of inspiration. Allies gain heightened creativity and endurance, while enemies momentarily lose their tempo."}},
+{name: "Vocalist: Liam Gallagher (Oasis)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 95, Legacy: 85, Innovation: 75, "Special Ability": "Wonderwall – Gains +10 in popularity when facing British vocalists."}},
+{name: "Vocalist: Linda Perry (The Hitmaker)", attributes: {"Powerful Vocals": 92, "Stage Presence": 90, Popularity: 85, Legacy: 89, Innovation: 93, "Special Ability": "What's Up? – Creates an emotional resonance that boosts all allies' vocal impact by +10 and causes enemies to hesitate for two rounds."}},
+{name: "Vocalist: Linda Ronstadt (The Genre-Hopping Powerhouse)", attributes: { "Powerful Vocals": 95, "Stage Presence": 90, Popularity: 95, Legacy: 100, Innovation: 90, "Special Ability": "Silver Threads – Gains +10 to Vocal Emotion and Versatility when switching between rock, country, Latin, and folk, overwhelming adversaries with seamless musical adaptability."}},
+{name: "Vocalist: Little Richard (The Architect of Rock ‘n’ Roll)", attributes: {"Powerful Vocals": 100, "Stage Presence": 100, Popularity: 95, Legacy: 100, Innovation: 98, "Special Ability": "Tutti Frutti Blitz – Gains +10 to Speed and Charisma when delivering high-energy performances, overpowering enemies with electrifying piano riffs and primal screams."}},
+{name: "Vocalist: Lobão (The Electric Provocateur)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 88, "Special Ability": "Vida Bandida – Gains +10 to Resistance and Counterattack when performing politically charged or socially critical songs, creating lyrical shockwaves that disorient opponents."}},
+{name: "Vocalist: Lolly Vegas (The Native Rock Shaman)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 80, Legacy: 90, Innovation: 90, "Special Ability": "Redbone Spirit – Gains +10 to Groove and Psychedelic Rock Mastery when blending native influences with rock, empowering allies with tribal energy and disorienting foes with hypnotic riffs."}},
+{name: "Vocalist: Lzzy Hale (Halestorm)", attributes: {"Powerful Vocals": 90, "Stage Presence": 90, Popularity: 85, Legacy: 80, Innovation: 80, "Special Ability": "I Miss the Misery – Reduces opponent’s Powerful Vocals by -10 in rock showdowns."}},
+{name: "Vocalist: Marcelo Camelo (The Melancholic Troubadour)", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Último Romance – Gains +10 to Lyrical Depth and Melodic Intimacy when performing poetic ballads, enveloping allies in an aura of nostalgia and weakening adversaries with introspective and delicate lyrics."}},
+{name: "Vocalist: Marcelo Falcão (The Groove Warrior)", attributes: {"Powerful Vocals": 90, "Stage Presence": 95, Popularity: 85, Legacy: 85, Innovation: 85, "Special Ability": "Reggae'n'Rock Flow – Gains +10 to Groove and Resilience when mixing reggae and rock, creating sound waves that strengthen allies and destabilize opponents."}},
+{name: "Vocalist: Marcelo D2 (Hip-Hop Samba Alchemist)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 95, Legacy: 90, Innovation: 100, "Special Ability": "Samba-Hip-Hop Fusion – Blends urban rhythms and classic samba, unlocking hybrid compositions that increase creativity and popular appeal in any artistic collaboration."}},
+{name: "Vocalist: Marcelo Nova (The Brazilian Outlaw)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 80, Legacy: 90, Innovation: 85, "Special Ability": "Malandragem Rocker – Gains +10 to Anti-Establishment Impact and Raw Energy when performing punk-infused or bluesy rock, destabilizing opponents with sharp sarcasm and incendiary presence."}},
+{name: "Vocalist: Marilyn Manson", attributes: {"Powerful Vocals": 85, "Stage Presence": 95, Popularity: 80, Legacy: 85, Innovation: 85, "Special Ability": "The Beautiful People – Reduces the opponent’s popularity by -10 in battles involving shock rock."}},
+{name: "Vocalist: Mark Hoppus (Blink-182)", attributes: {"Powerful Vocals": 80, "Stage Presence": 90, Popularity: 95, Legacy: 85, Innovation: 80, "Special Ability": "All the Small Hits – Releases a sequence of catchy tunes that increases +20 Popularity at festivals or nostalgia shows. Can use Sarcastic Joke to lower opponents' morale with ironic lyrics and on-stage taunts."}},
+{name: "Vocalist: Matt Bellamy (Muse)", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 85, Legacy: 85, Innovation: 90, "Special Ability": "Uprising – Increases innovation by +10 when facing progressive rock or alternative rock vocalists."}},
+{name: "Vocalist: Max Cavalera (Metal & World Music Icon)", attributes: {"Powerful Vocals": 95, "Stage Presence": 100, Popularity: 95, Legacy: 100, Innovation: 95, "Special Ability": "Tribal Warcry – Emits an ancient war cry that strengthens the team's resolve, unlocking powerful sonic attacks and amplifying the emotional impact of performances."}},
+{name: "Vocalist: Maynard James Keenan (Tool)", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "Schism – Adds +10 to legacy when facing progressive or experimental rock vocalists."}},
+{name: "Vocalist: Mick Fleetwood (The Thunderous Maestro)", attributes: {"Powerful Vocals": 85, "Stage Presence": 95, Popularity: 90, Legacy: 100, Innovation: 85, "Special Ability": "Go Your Own Beat – Gains +10 to Rhythmic Control and Band Synergy when leading emotional compositions, stabilizing allies with solid grooves and confusing opponents with unpredictable dynamic changes."}},
+{name: "Vocalist: Mick Jagger (The Rolling Stones)", attributes: {"Powerful Vocals": 85, "Stage Presence": 100, Popularity: 95, Legacy: 100, Innovation: 80, "Special Ability": "Start Me Up – Increases Stage Presence by +10 each turn."}},
+{name: "Vocalist: Mike Shinoda (The Hybrid Architect)", attributes: {"Powerful Vocals": 85, "Stage Presence": 95, Popularity: 100, Legacy: 90, Innovation: 95, "Special Ability": "Hybrid Theory – Gains +10 to Versatility and Innovation when fusing rock, hip-hop, and electronic elements, adapting to any battle with precision and creativity."}},
+{name: "Vocalist: Nasi (IRA!)", attributes: {"Powerful Vocals": 88, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Screams on the Sidewalk – Amplifies stage control and emotional tension, granting +10 to Resistance and Lyrical Impact in punk and post-rock showdowns."}},
+{name: "Vocalist: Neil Peart (The Rhythm Professor)", attributes: {"Technical Skill": 100, "Stage Presence": 90, Popularity: 95, Legacy: 100, Innovation: 98, "Special Ability": "Percussive Odyssey – Gains +10 to Technical Skill and Innovation when performing complex drum sequences, overwhelming opponents with intricate rhythms and lyrical storytelling."}},
+{name: "Vocalist: Neil Young", attributes: {"Powerful Vocals": 85, "Stage Presence": 88, Popularity: 92, Legacy: 100, Innovation: 88, "Special Ability": "Heart of Gold – Timeless Resonance"}},
+{name: "Vocalist: Nick Cave (The Gothic Preacher)", attributes: {"Powerful Vocals": 88, "Stage Presence": 95, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Red Right Hand – Gains +10 to Dark Poetry and Psychological Warfare when performing dark, intense narratives, enveloping allies in a hypnotic trance and sapping their sanity of opponents."}},
+{name: "Vocalist: Noel Gallagher", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 95, Legacy: 95, Innovation: 90, "Special Ability": "Wonderwall Effect – Gains +10 to Melody and Lyrical Impact when performing anthemic rock ballads, energizing allies while drawing massive audience support."}},
+{name: "Vocalist: Ozzy Osbourne (Black Sabbath)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 95, Legacy: 100, Innovation: 80, "Special Ability": "Crazy Train – Causes opponents to lose 10 innovation points."}},
+{name: "Vocalist: PJ Harvey (The Sonic Chameleon)", attributes: {"Powerful Vocals": 92, "Stage Presence": 95, Popularity: 88, Legacy: 95, Innovation: 98, "Special Ability": "Shape-Shifter's Cry – Transforms genre at will, rendering enemy buffs ineffective for two turns."}},
+{name: "Vocalist: Patti Smith", attributes: {"Powerful Vocals": 80, "Stage Presence": 85, Popularity: 80, Legacy: 90, Innovation: 95, "Special Ability": "Because the Night – Adds +10 to innovation when playing against punk rock vocalists."}},
+{name: "Vocalist: Paul McCartney (The Beatles)", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 100, Legacy: 100, Innovation: 95, "Special Ability": "Let It Be – Prevents the loss of any attribute for one round."}},
+{name: "Vocalist: Paul Rodgers (The Soulful Rock Titan)", attributes: {"Powerful Vocals": 98, "Stage Presence": 95, Popularity: 90, Legacy: 100, Innovation: 85, "Special Ability": "All Right Now – Gains +10 to Charisma and Vocal Endurance when performing bluesy rock anthems, ensuring unwavering energy for your team."}},
+{name: "Vocalist: Paul Stanley (KISS)", attributes: {"Powerful Vocals": 85, "Stage Presence": 100, Popularity: 90, Legacy: 85, Innovation: 75, "Special Ability": "Rock and Roll All Nite – Gains +10 Stage Presence in any rock anthem showdown."}},
+{name: "Vocalist: Pelle Almqvist (The Howling Hurricane – The Hives)", attributes: {"Powerful Vocals": 85, "Stage Presence": 100, Popularity: 85, Legacy: 88, Innovation: 85, "Special Ability": "Tick Tick Boom – Gains +10 to Stage Presence and Speed at the start of any garage or punk rock battle, unleashing a chaotic burst that disrupts enemy formation and charges ally momentum."}},
+{name: "Vocalist: Peter Frampton (The Talkbox Virtuoso)", attributes: {"Powerful Vocals": 88, "Stage Presence": 95, Popularity: 90, Legacy: 90, Innovation: 92, "Special Ability": "Frampton Comes Alive – Gains +10 to Stage Presence and Innovation when using talkbox effects, boosting team harmony and dazzling opponents with vocal-guitar fusion magic."}},
+{name: "Vocalist: Phil Anselmo (Pantera/Down)", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 88, "Special Ability": "Walk of Domination – Unleashes a vocal roar that boosts ally aggression and lowers enemy morale, preventing debuffs for one round in high-intensity metal clashes."}},
+{name: "Vocalist: Phil Lynott (Thin Lizzy)", attributes: {"Powerful Vocals": 85, "Stage Presence": 85, Popularity: 80, Legacy: 85, Innovation: 80, "Special Ability": "The Boys Are Back in Town – Increases Stage Presence by +10 when battling classic rock vocalists."}},
+{name: "Vocalist: Phillipe Seabra (The Brasília Noise Architect)", attributes: {"Powerful Vocals": 82, "Stage Presence": 88, Popularity: 80, Legacy: 85, Innovation: 90, "Special Ability": "Capital Noise – By activating social critiques in distorted riffs, you gain +10 in Lyrical Impact and Critical Defense, destabilizing conventional structures."}},
+{name: "Vocalist: Piero Pelù (The Italian Firestorm)", attributes: {"Powerful Vocals": 88, "Stage Presence": 100, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Rock Ribelle – Gains +10 to Stage Intensity and Lyrical Impact when performing high-energy Italian rock anthems, igniting allies with unfiltered passion and overwhelming opponents with raw power."}},
+{name: "Vocalist: Pink (The Aerial Dynamo)", attributes: {"Powerful Vocals": 92, "Stage Presence": 95, Popularity: 98, Legacy: 90, Innovation: 85, "Special Ability": "Gravity Defier – At critical moments, Pink launches into aerial acrobatics that make her untouchable for a round. Meanwhile, allies gain a speed and attack bonus."}},
+{name: "Vocalist: Pitty (The Rock Phoenix)", attributes: {"Powerful Vocals": 90, "Stage Presence": 95, Popularity: 90, Legacy: 88, Innovation: 85, "Special Ability": "Admirável Caos – Gains +10 to Stage Presence and Lyrical Impact when performing rebellious anthems, igniting ally aggression and disrupting enemy formations."}},
+{name: "Vocalist: Raul Seixas (Brazilian Rock Legend)", attributes: {"Powerful Vocals": 90, "Stage Presence": 95, Popularity: 90, Legacy: 100, Innovation: 100, "Special Ability": "Walking Metamorphosis – Boosts creativity and improvisation for all allied artists, allowing unpredictable and genre-bending performances."}},
+{name: "Vocalist: Renato Russo (The Poetic Visionary)", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 98, Legacy: 100, Innovation: 90, "Special Ability": "Tempo Perdido – Summons waves of nostalgia that deal emotional damage over time, lowering enemy focus while increasing ally legacy by +5 each turn."}},
+{name: "Vocalist: Rita Lee (The Rebel Goddess)", attributes: {"Powerful Vocals": 88, "Stage Presence": 97, Popularity: 95, Legacy: 99, Innovation: 95, "Special Ability": "Lança Perfume – Releases a psychedelic cloud that disorients enemies and boosts ally speed by 15%, turning the battlefield into a vibrant dance floor."}},
+{name: "Vocalist: Rob Halford (Judas Priest)", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 80, "Special Ability": "Breaking the Law – Adds +10 to Stage Presence during any heavy metal battle."}},
+{name: "Vocalist: Rob Thomas (The Smooth Operator)", attributes: {"Powerful Vocals": 89, "Stage Presence": 90, Popularity: 94, Legacy: 85, Innovation: 83, "Special Ability": "Smooth – Summons a blazing solo that raises ally attack and lowers enemy guard by 15%, fueled by irresistible Latin grooves."}},
+{name: "Vocalist: Robert Plant (Led Zeppelin)", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 85, Legacy: 95, Innovation: 85, "Special Ability": "Immigrant Song – Gain +5 popularity during epic battles."}},
+{name: "Vocalist: Robert Smith (The Cure)", attributes: {"Powerful Vocals" : 85, "Stage Presence": 90, Popularity: 95, Legacy: 100, Innovation: 90, "Special Ability": "Disintegration Aura – Creates a wave of sonic melancholy that grants +15 Legacy and +15 Popularity during rock performances gothic and new wave. The emotional field created reduces the attack of enemies inspired by more aggressive genres."}},
+{name: "Vocalist: Roberto Pollo (The Synth Commander)", attributes: {"Powerful Vocals": 75, "Stage Presence": 80, Popularity: 70, Legacy: 78, Innovation: 85, "Special Ability": "New Wave Drive – Activates +10 in Sound Control and Ambience when in electronic pop and retro synth environments."}},
+{name: "Vocalist: Rodolfo (Raimundos Frontman - Classic Era)", attributes: {"Powerful Vocals": 85, "Stage Presence": 95, Popularity: 90, Legacy: 85, Innovation: 85, "Special Ability": "Punk Nordeste Force – Invokes an irreverent and combative energy, multiplying the team's defiant attitude, creating explosive and attitude-filled performances."}},
+{name: "Vocalist: Rodrigo Amarante (The Sonic Wanderer)", attributes: {"Powerful Vocals": 88, "Stage Presence": 85, Popularity: 88, Legacy: 90, Innovation: 92, "Special Ability": "Tuyo Spell – Gains +10 to Cross-Genre Fusion and Musical Storytelling when blending folk, indie, and Brazilian influences, confusing adversaries with their expansive sound and strengthening allies with rich and engaging narratives."}},
+{name: "Vocalist: Rodrigo Tavares (The Melodic Shifter)", attributes: {"Powerful Vocals": 82, "Stage Presence": 85, Popularity: 85, Legacy: 80, Innovation: 88, "Special Ability": "Double Verse – When switching between solo projects and collaborations, gain +10 to Narrative Versatility and Emotional Range."}},
+{name: "Vocalist: Roger Daltrey (The Who)", attributes: {"Powerful Vocals": 90, "Stage Presence": 95, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Baba O'Riley – Adds +10 to Powerful Vocals when facing an opponent from the 70s."}},
+{name: "Vocalist: Roger Moreira (The Satirical Punkster – Ultraje a Rigor)", attributes: {"Powerful Vocals": 80, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Useless Irony – Gains +10 to Lyrical Wit and Crowd Control when performing socially charged punk anthems, disarming foes with sharp sarcasm and energizing allies with infectious defiance."}},
+{name: "Vocalist: Ronnie James Dio (Dio, Black Sabbath)", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 80, "Special Ability": "Holy Diver – Gains +10 to Powerful Vocals during any heavy metal showdown."}},
+{name: "Vocalist: Russo Passapusso (The Groovy Wordsmith)", attributes: {"Powerful Vocals": 85, "Stage Presence": 95, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "Afrofuturist Pulse – Blends reggae, rap and MPB into a hypnotic groove, boosting team synergy by +10 and disrupting enemy rhythm. Can use Street Poetry to weave socially conscious lyrics that weaken opponents' focus."}},
+{name: "Vocalist: Ry Cooder (The String Nomad)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 85, Legacy: 100, Innovation: 95, "Special Ability": "Crossroads Traveler – Gains +10 to Versatility and Improvisation when mixing blues, Cuban music and folk, connecting allies through timeless melodies and unsettling opponents with unexpected stylistic shifts."}},
+{name: "Vocalist: Sam Fender (The Northern Storyteller)", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 80, Legacy: 85, Innovation: 85, "Special Ability": "Hypersonic Grit – Gains +10 to Lyrical Impact and Emotional Intensity when delivering social or introspective narratives, hitting opponents with raw truths and empowering allies with brutal authenticity."}},
+{name: "Vocalist: Sammy Hagar (The Red Rocker)", attributes: {"Powerful Vocals": 92, "Stage Presence": 95, Popularity: 90, Legacy: 88, Innovation: 85, "Special Ability": "I Can't Drive 55 – Increases ally speed by +10 and breaks enemy formations by unleashing high-energy solos that fuel his rebellious spirit."}},
+{name: "Vocalist: Samuel Rosa (The Groove Nomad)", attributes: {"Powerful Vocals": 90, "Stage Presence": 93, Popularity: 95, Legacy: 94, Innovation: 88, "Special Ability": "Solar Chord – Samuel summons a radiant chord that energizes all allies, partially healing them and increasing critical damage for three rounds. Enemies hit by the melody's beam are temporarily paralyzed."}},
+{name: "Vocalist: Sandra Nasić (The Sonic Storm)", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 80, Legacy: 85, Innovation: 88, "Special Ability": "Sonic Howl – A powerful scream that interrupts enemy attacks and amplifies allies' damage by +15 for one round. Weaker enemies can be completely silenced."}},
+{name: "Vocalist: Scott Stapp (The Voice of Creed)", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 88, Legacy: 80, Innovation: 78, "Special Ability": "Higher – Summons divine energy that shields allies from incoming attacks for two rounds, raising defense by +15%."}},
+{name: "Vocalist: Scott Weiland", attributes: {"Powerful Vocals": 88, "Stage Presence": 92, Popularity: 85, Legacy: 87, Innovation: 90, "Special Ability": "Plush Swagger – Sonic Shape-shifter"}},
+{name: "Vocalist: Sérgio Britto (The Voice Shifter)", attributes: {"Powerful Vocals": 88, "Stage Presence": 85, Popularity: 80, Legacy: 90, Innovation: 92, "Special Ability": "Harmonic Fusion – Sérgio switches between different tones and vocal styles during battle, confusing enemies. Each tone change increases his attack by +5 and restores energy to allies."}},
+{name: "Vocalist: Sérgio Sampaio (The Cursed One of Acid Verse)", attributes: {"Powerful Vocals": 80, "Stage Presence": 78, Popularity: 65, Legacy: 92, Innovation: 95, "Special Ability": "I want to put my block – Turns disarray into power, boosting creativity of misfit allies while disrupting polished enemy formations."}},
+{name: "Vocalist: Serj Tankian (System of a Down)", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 85, Legacy: 85, Innovation: 85, "Special Ability": "Chop Suey! – Boosts Powerful Vocals by +10 in battles involving nu metal or alternative metal vocalists."}},
+{name: "Vocalist: Shirley Manson (The Cyberpunk Siren)", attributes: {"Powerful Vocals": 90, "Stage Presence": 100, Popularity: 90, Legacy: 95, Innovation: 95, "Special Ability": "Only Happy When It Rains – Gains +10 to Sonic Chaos and Lyrical Defiance when performing industrial-tinged anthems, draining opponents' confidence with its intensity and strengthening allies with a rebellious attitude."}},
+{name: "Vocalist: Signe Toly Anderson (The Psychedelic Siren – Jefferson Airplane)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 80, Legacy: 85, Innovation: 80, "Special Ability": "White Rabbit Harmony – Gains +10 to Vocal Emotion and Psychedelic Aura when performing captivating harmonies, creating a hypnotic sound field that empowers allies and disorients foes."}},
+{name: "Vocalist: Sinéad O’Connor (The Fierce Prophetess)", attributes: {"Powerful Vocals": 95, "Stage Presence": 85, Popularity: 85, Legacy: 98, Innovation: 90, "Special Ability": "Nothing Compares – Gains +10 to Vocal Emotion and Lyrical Impact when performing stripped-down, deeply personal songs, breaking through enemy defenses with raw power."}},
+{name: "Vocalist: Steve Harwell (The Party Commander)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 92, Legacy: 80, Innovation: 75, "Special Ability": "All Star – Increases ally morale and popularity by +10, reducing cooldowns and making his team harder to stop during extended battles."}},
+{name: "Vocalist: Steve Winwood (The Timeless Virtuoso)", attributes: {"Powerful Vocals": 88, "Stage Presence": 85, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Higher Love – Gains +10 to Musical Versatility and Vocal Soul when performing rock, blues, or jazz-infused songs, transcending genres and strengthening allies with engaging melodies."}},
+{name: "Vocalist: Steven Tyler (Aerosmith)", attributes: {"Powerful Vocals": 90, "Stage Presence": 95, Popularity: 90, Legacy: 85, Innovation: 80, "Special Ability": "Dream On – Restores 5 points to any attribute after a defeat."}},
+{name: "Vocalist: Steven Van Zandt (The Rebel Riffmaster)", attributes: {"Powerful Vocals": 85, "Stage Presence": 92, Popularity: 88, Legacy: 95, Innovation: 85, "Special Ability": "E Street Fury – With soulful riffs and a magnetic presence, Steven propels his allies with speed and endurance, making his team unstoppable."}},
+{name: "Vocalist: Steven Wilson (Porcupine Tree)", attributes: {"Powerful Vocals": 80, "Stage Presence": 85, Popularity: 75, Legacy: 85, Innovation: 95, "Special Ability": "The Raven That Refused to Sing – Boosts innovation by +15 when facing progressive rock artists."}},
+{name: "Vocalist: Stevie Nicks (The Enchantress of Rock)", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 100, Legacy: 100, Innovation: 85, "Special Ability": "Rhiannon’s Spell – Gains +10 to Vocal Emotion and Mystique when performing storytelling ballads, enchanting allies and confusing opponents with her magical aura."}},
+{name: "Vocalist: Sting (The Police)", attributes: {"Powerful Vocals": 85, "Stage Presence": 85, Popularity: 90, Legacy: 90, Innovation: 85, "Special Ability": "Every Breath You Take – Reduces the opponent’s popularity by -10 when facing pop-rock artists."}},
+{name: "Vocalist: Supla (The Glam Punk Maverick)", attributes: {"Powerful Vocals": 80, "Stage Presence": 100, Popularity: 85, Legacy: 80, Innovation: 85, "Special Ability": "Papito Power – Gains +10 to Charisma and Stage Presence when blending punk, glam, and new wave, turning performances into extravagant and unpredictable spectacles."}},
+{name: "Vocalist: Susanna Hoffs (The Melodic Enchantress)", attributes: {"Powerful Vocals": 88, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Eternal Flame – Unleashes a hypnotic melody that captivates enemies, lowering their resistance, while inspiring allies with a wave of nostalgic charm and confidence."}},
+{name: "Vocalist: Suzi Quatro (The Glam Rock Trailblazer)", attributes: {"Powerful Vocals": 88, "Stage Presence": 95, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Bass Thunderstrike – Suzi Quatro channels her rebellious attitude and heavy riffs to boost allies' confidence and disorient enemies with direct, electrifying attacks."}},
+{name: "Vocalist: Syd Barrett (The Cosmic Architect)", attributes: {"Powerful Vocals": 82, "Stage Presence": 80, Popularity: 85, Legacy: 97, Innovation: 100, "Special Ability": "Astronomy Domine – Creates unpredictable soundscapes that alter the battlefield, confusing enemies and boosting ally creativity by +10."}},
+{name: "Vocalist: Terry Hall", attributes: {"Powerful Vocals": 78, "Stage Presence": 85, Popularity: 83, Legacy: 88, Innovation: 85, "Special Ability": "Ghost Town – Social Dissonance"}},
+{name: "Vocalist: Thom Yorke (Radiohead)", attributes: {"Powerful Vocals": 85, "Stage Presence": 80, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Paranoid Android – Reduces the opponent’s innovation by -10 in a head-to-head match."}},
+{name: "Vocalist: Tim Armstrong (Rancid)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Ruby Soho Signal – Summons +20 Legacy and +10 Stage Presence when playing punk and ska resistance songs. Can recruit “Street Allies,” summoning musicians to strengthen the band and provide extra protection against unexpected attacks."}},
+{name: "Vocalist: Tony Andreason (The Surf Shredder)", attributes: {"Powerful Vocals": 80, "Stage Presence": 87, Popularity: 85, Legacy: 90, Innovation: 82, "Special Ability": "Wave Rider – Tony Andreason’s guitar licks send out sonic shockwaves, staggering enemies and granting allies increased agility. The faster the rhythm, the stronger the effect."}},
+{name: "Vocalist: Tom Araya (Slayer)", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 80, Legacy: 85, Innovation: 80, "Special Ability": "Raining Blood – Increases Powerful Vocals by +10 when battling in the thrash metal category."}},
+{name: "Vocalist: Tom Petty (The Heartland Rebel)", attributes: {"Powerful Vocals": 85, "Stage Presence": 95, Popularity: 95, Legacy: 100, Innovation: 85, "Special Ability": "Free Fallin’ Spirit – Gains +10 to Resilience and Crowd Control when delivering timeless rock anthems, energizing allies and undermining the confidence of opponents with their charismatic presence."}},
+{name: "Vocalist: Tony Andreason (The Surf Shredder)", attributes: {"Powerful Vocals": 80, "Stage Presence": 87, Popularity: 85, Legacy: 90, Innovation: 82, "Special Ability": "Wave Rider – Tony Andreason’s guitar licks send out sonic shockwaves, staggering enemies and granting allies increased agility. The faster the rhythm, the stronger the effect."}},
+{name: "Vocalist: Trent Reznor (Nine Inch Nails - The Industrial Prophet)", attributes: {"Powerful Vocals": 88, "Stage Presence": 90, Popularity: 85, Legacy: 95, Innovation: 95, "Special Ability": "Hurtwave Surge – Reduces enemy defense by -5 and boosts team resilience through a haunting sonic assault during dark, emotional performances."}},
+{name: "Vocalist: Zack de la Rocha (Rage Against the Machine)", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 80, Legacy: 85, Innovation: 85, "Special Ability": "Killing in the Name – Reduces opponent's Powerful Vocals by -10 in politically charged battles."}},
+{name: "Vocalist: ZZ Top (The Blues Machine)", attributes: {"Powerful Vocals": 80, "Stage Presence": 88, Popularity: 92, Legacy: 97, Innovation: 85, "Special Ability": "Riff Avalanche – The heavy guitar riffs create a sonic wave that knocks enemies back, lowering their defense and allowing a double attack on the next turn."}},
+{name: "Producer: Alexandre Kassin (The Carioca Sound Sculptor)", attributes: {"Technical Skill": 90, Innovation: 93, Influence: 85, Versatility: 92, Legacy: 87, "Special Ability": "Sonar de Lapa – Gains +10 to Harmonic Layering and Sonic Curiosity when working with samba, indie pop, or experimental artists, unlocking unexpected textures that dazzle allies and disorient opponents."}},
+{name: "Producer: Bid (The Tropical Beat Alchemist)", attributes: {"Technical Skill": 88, Innovation: 92, Influence: 87, Versatility: 90, Legacy: 88, "Special Ability": "Bambas & Beats – Increases groove and rhythmic complexity by +10 when producing for Brazilian or world music artists."}},
+{name: "Producer: Bob Rock (Metallica, Mötley Crüe, Bon Jovi)", attributes: {"Technical Skill": 90, Innovation: 85, Influence: 90, Versatility: 85, Legacy: 90, "Special Ability": "The Black Album – Increases popularity by +10 when producing for hard rock or metal artists."}},
+{name: "Producer: Brian Eno (David Bowie, U2, Talking Heads)", attributes: {"Technical Skill": 95, Innovation: 100, Influence: 95, Versatility: 95, Legacy: 90, "Special Ability": "Ambient Master – Gains +10 innovation when producing experimental or alternative rock albums."}},
+{name: "Producer: Butch Vig (Nirvana, Smashing Pumpkins, Foo Fighters)", attributes: {"Technical Skill": 90, Innovation: 85, Influence: 95, Versatility: 90, Legacy: 95, "Special Ability": "Grunge Icon – Boosts legacy by +10 in any grunge or alternative rock production."}},
+{name: "Producer: Eddie Kramer (Jimi Hendrix, Led Zeppelin, Kiss)", attributes: {"Technical Skill": 95, Innovation: 90, Influence: 90, Versatility: 85, Legacy: 95, "Special Ability": "Electric Master – Boosts legacy by +10 when producing for classic rock legends or guitar virtuosos."}},
+{name: "Producer: George Martin (The Beatles)", attributes: {"Technical Skill": 100, Innovation: 100, Influence: 100, Versatility: 90, Legacy: 100, "Special Ability": "The Fifth Beatle – Gains +10 legacy when producing for any classic rock artist."}},
+{name: "Producer: Liminha (The Sonic Architect of Brazilian Rock)", attributes: {"Technical Skill": 90, Innovation: 90, Influence: 95, Versatility: 92, Legacy: 95, "Special Ability": "Tropicália Pulse – Enhances sonic richness and energy by +10 when working with rock, MPB, and experimental fusion artists, creating timeless anthems."}},
+{name: "Producer: Mário Caldato Jr. (The Cross-Continental Mixer)", attributes: {"Technical Skill": 92, Innovation: 90, Influence: 95, Versatility: 95, Legacy: 90, "Special Ability": "Beastie Bossa Boost – Increases Groove Sync and Genre Fusion by +10 when blending hip-hop, funk, or Brazilian elements, granting his team sonic adaptability and groove dominance."}},
+{name: "Producer: Mutt Lange (AC/DC, Def Leppard, Shania Twain)", attributes: {"Technical Skill": 100, Innovation: 90, Influence: 95, Versatility: 100, Legacy: 95, "Special Ability": "Highway to Hitmaker – Increases Technical Skill by +10 when producing for stadium rock or pop rock artists."}},
+{name: "Producer: Phil Spector (The Ronettes, John Lennon, The Ramones)", attributes: {"Technical Skill": 95, Innovation: 100, Influence: 100, Versatility: 85, Legacy: 90, "Special Ability": "Wall of Sound – Increases Technical Skill by +10 when producing for pop or rock artists."}},
+{name: "Producer: Rick Rubin (Red Hot Chili Peppers, Metallica, Johnny Cash)", attributes: {"Technical Skill": 90, Innovation: 95, Influence: 100, Versatility: 100, Legacy: 95, "Special Ability": "Raw Sound – Boosts influence by +10 when producing for both metal and hip-hop artists."}},
+{name: "Producer: Steve Albini (Pixies, Nirvana, PJ Harvey)", attributes: {"Technical Skill": 95, Innovation: 85, Influence: 90, Versatility: 85, Legacy: 90, "Special Ability": "No Frills Sound – Gains +10 Technical Skill when producing raw, minimalist rock."}},
+{name: "Producer: Tony Visconti (David Bowie, T. Rex, Morrissey)", attributes: {"Technical Skill": 90, Innovation: 95, Influence: 90, Versatility: 90, Legacy: 95, "Special Ability": "The Man Who Sold the World – Gains +10 to influence in glam rock or post-punk projects."}},
+  ];
+const instruments = [
+{name: "Guitar: Fender Stratocaster (Jimi Hendrix, Eric Clapton, David Gilmour)", attributes: {"Unique Sound": 100, Popularity: 100, Legacy: 100, Innovation: 95, "Iconic Design": 100, "Special Ability": "Voodoo Child – Boosts legacy by +10 when played by guitar legends."}},
+{name: "Guitar: Gibson Les Paul (Jimmy Page, Slash, Zakk Wylde)", attributes: {"Unique Sound": 95, Popularity: 100, Legacy: 100, Innovation: 90, "Iconic Design": 95, "Special Ability": "Whole Lotta Love – Gains +10 unique sound when used in classic rock or hard rock performances."}},
+{name: "Guitar: Gibson SG (Angus Young, Tony Iommi, Derek Trucks)", attributes: {"Unique Sound": 90, Popularity: 90, Legacy: 90, Innovation: 85, "Iconic Design": 90, "Special Ability": "Back in Black – Adds +10 to Stage Presence when played in heavy metal or hard rock."}},
+{name: "Guitar: Fender Telecaster (Bruce Springsteen, Keith Richards, Joe Strummer)", attributes: {"Unique Sound": 85, Popularity: 90, Legacy: 95, Innovation: 90, "Iconic Design": 85, "Special Ability": "Born to Run – Gains +10 in legacy when played in punk rock or Americana performances."}},
+{name: "Guitar: Gibson Flying V (Albert King, K. K. Downing, Michael Schenker)", attributes: {"Unique Sound": 90, Popularity: 85, Legacy: 85, Innovation: 90, "Iconic Design": 100, "Special Ability": "V is for Victory – Adds +10 to innovation when used in blues or heavy metal shows."}},
+{name: "Guitar: Rickenbacker 360 (George Harrison, Tom Petty, Roger McGuinn)", attributes: {"Unique Sound": 85, Popularity: 85, Legacy: 90, Innovation: 90, "Iconic Design": 85, "Special Ability": "Jangle Pop – Gains +10 to legacy when used in classic rock or folk rock."}},
+{name: "Guitar: Gretsch White Falcon (Neil Young, Malcolm Young, Billy Duffy)", attributes: {"Unique Sound": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Iconic Design": 95, "Special Ability": "Old Black – Boosts popularity by +10 when used in rock or rockabilly performances."}},
+{name: "Guitar: Ibanez JEM (Steve Vai)", attributes: {"Unique Sound": 100, Popularity: 85, Legacy: 85, Innovation: 95, "Iconic Design": 90, "Special Ability": "Shred Master – Increases Technical Skill by +10 when used in shred guitar or virtuoso performances."}},
+{name: "Guitar: PRS Custom 24 (Carlos Santana, Mark Tremonti, John Mayer)", attributes: {"Unique Sound": 90, Popularity: 85, Legacy: 85, Innovation: 90, "Iconic Design": 85, "Special Ability": "Smooth – Adds +10 to unique sound when used in Latin rock or modern rock performances."}},
+{name: "Guitar: Music Man StingRay (John Petrucci, Steve Morse)", attributes: {"Unique Sound": 90, Popularity: 80, Legacy: 85, Innovation: 90, "Iconic Design": 85, "Special Ability": "Progressive Power – Gains +10 to innovation when played in progressive rock or metal."}},
+{name: "Guitar: Gibson ES-335 (Chuck Berry, Eric Clapton, Dave Grohl)", attributes: {"Unique Sound": 90, Popularity: 95, Legacy: 100, Innovation: 85, "Iconic Design": 90, "Special Ability": "Johnny B. Goode – Gains +10 legacy when used in rock 'n' roll or blues performances."}},
+{name: "Guitar: Fender Jazzmaster (Thurston Moore, J Mascis, Elvis Costello)", attributes: {"Unique Sound": 85, Popularity: 85, Legacy: 85, Innovation: 90, "Iconic Design": 85, "Special Ability": "Sonic Youth – Boosts innovation by +10 when used in alternative rock or indie rock performances."}},
+{name: "Guitar: BC Rich Warlock (Kerry King, Nikki Sixx, Lita Ford)", attributes: {"Unique Sound": 90, Popularity: 80, Legacy: 80, Innovation: 85, "Iconic Design": 100, "Special Ability": "Reign in Blood – Gains +10 to Stage Presence in any thrash metal or glam rock duel."}},
+{name: "Guitar: Gibson Explorer (James Hetfield, The Edge, Allen Collins)", attributes: {"Unique Sound": 90, Popularity: 90, Legacy: 90, Innovation: 85, "Iconic Design": 95, "Special Ability": "Seek & Destroy – Increases unique sound by +10 in heavy metal or hard rock performances."}},
+{name: "Guitar: Danelectro 59 DC (Jimmy Page, Syd Barrett, Jack White)", attributes: {"Unique Sound": 85, Popularity: 80, Legacy: 85, Innovation: 90, "Iconic Design": 80, "Special Ability": "Kashmir – Gains +10 to innovation in psychedelic rock or experimental performances."}},
+{name: "Guitar: Yamaha SG2000 (Carlos Santana, John McGeoch)", attributes: {"Unique Sound": 90, Popularity: 85, Legacy: 85, Innovation: 90, "Iconic Design": 85, "Special Ability": "Smooth Operator – Adds +10 to unique sound in any Latin rock or post-punk performance."}},
+{name: "Guitar: Rickenbacker 4001 (Paul McCartney, Geddy Lee, Chris Squire)", attributes: {"Unique Sound": 90, Popularity: 95, Legacy: 100, Innovation: 90, "Iconic Design": 85, "Special Ability": "Roundabout – Boosts legacy by +10 when used by bass players in progressive rock or rock ‘n’ roll."}},
+{name: "Guitar: Guild Starfire (Jerry Garcia, Kim Thayil, Buddy Guy)", attributes: {"Unique Sound": 85, Popularity: 85, Legacy: 85, Innovation: 85, "Iconic Design": 80, "Special Ability": "Dark Star – Increases innovation by +10 when used in jam band or blues rock performances."}},
+{name: "Guitar: Epiphone Casino (John Lennon, Noel Gallagher, Gary Clark Jr.)", attributes: {"Unique Sound": 85, Popularity: 90, Legacy: 95, Innovation: 85, "Iconic Design": 85, "Special Ability": "Revolution – Gains +10 to legacy when used in rock or Britpop performances."}},
+{name: "Guitar: Jackson Soloist (Randy Rhoads, Phil Collen, Adrian Smith)", attributes: {"Unique Sound": 90, Popularity: 85, Legacy: 85, Innovation: 90, "Iconic Design": 85, "Special Ability": "Shred Machine – Boosts Technical Skill by +10 in any shred or metal performance."}},
+{name: "Drum kit: Ludwig Black Oyster Pearl (Ringo Starr)", attributes: {"Unique Sound": 85, Popularity: 100, Legacy: 100, Innovation: 85, "Iconic Design": 100, "Special Ability": "Come Together – Gains +10 legacy when used in classic rock performances."}},
+{name: "Drum kit: Gretsch USA Custom (Charlie Watts, Phil Collins)", attributes: {"Unique Sound": 90, Popularity: 90, Legacy: 95, Innovation: 85, "Iconic Design": 90, "Special Ability": "Start Me Up – Boosts legacy by +10 in jazz or classic rock performances."}},
+{name: "Drum kit: Tama Starclassic (Lars Ulrich, Stewart Copeland)", attributes: {"Unique Sound": 95, Popularity: 95, Legacy: 90, Innovation: 90, "Iconic Design": 85, "Special Ability": "Enter Sandman – Increases unique sound by +10 in heavy metal or progressive rock battles."}},
+{name: "Drum kit: Yamaha Recording Custom (Steve Gadd, Dave Weckl)", attributes: {"Unique Sound": 100, Popularity: 90, Legacy: 90, Innovation: 95, "Iconic Design": 85, "Special Ability": "Aja – Gains +10 in Technical Skill when used in fusion or jazz-rock performances."}},
+{name: "Drum kit: DW Collector’s Series (Neil Peart, Chad Smith)", attributes: {"Unique Sound": 100, Popularity: 95, Legacy: 95, Innovation: 95, "Iconic Design": 90, "Special Ability": "Tom Sawyer – Boosts Technical Skill by +10 in progressive rock or hard rock duels."}},
+{name: "Drum kit: Slingerland Radio King (Buddy Rich, Gene Krupa)", attributes: {"Unique Sound": 100, Popularity: 85, Legacy: 100, Innovation: 90, "Iconic Design": 90, "Special Ability": "Sing, Sing, Sing – Gains +10 legacy when used in big band or jazz performances."}},
+{name: "Drum kit: Pearl Export Series (Dave Grohl, Dennis Chambers)", attributes: {"Unique Sound": 85, Popularity: 95, Legacy: 90, Innovation: 85, "Iconic Design": 85, "Special Ability": "Smells Like Teen Spirit – Restores 10 points to any stat after a grunge or alternative rock duel."}},
+{name: "Drum kit: Sonor Signature Series (Phil Rudd, Nicko McBrain)", attributes: {"Unique Sound": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Iconic Design": 80, "Special Ability": "Back in Black – Gains +10 Stage Presence when used in hard rock or heavy metal battles."}},
+{name: "Drum kit: Mapex Saturn (Chris Adler, Matt Halpern)", attributes: {"Unique Sound": 90, Popularity: 85, Legacy: 85, Innovation: 90, "Iconic Design": 85, "Special Ability": "Laid to Rest – Increases Technical Skill by +10 in modern metal or progressive metal performances."}},
+{name: "Drum kit: Premier Genista (Keith Moon, Clem Burke)", attributes: {"Unique Sound": 90, Popularity: 90, Legacy: 95, Innovation: 85, "Iconic Design": 90, "Special Ability": "Baba O'Riley – Gains +10 to Stage Presence in any punk or rock opera duel."}}
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playersCheckbox').checked) selectedCards.push(...players);
+    if (document.getElementById('instrumentsCheckbox').checked) selectedCards.push(...instruments);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  document.getElementById('shuffleRulesButton').addEventListener('click', function() {
+    shuffleDeck(rules, 'rulesResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+		body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

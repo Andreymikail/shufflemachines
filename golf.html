@@ -1,0 +1,274 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Golf</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="playmCheckbox"> Player M</label><br>
+    <label><input type="checkbox" id="playfCheckbox"> Player F</label><br>
+    <label><input type="checkbox" id="clubCheckbox"> Club</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Perfect Drive – Increase your Driving Distance by +20 yards this round.",
+"Laser Accuracy – Your Accuracy goes up by +10% for this round.",
+"Master of the Greens – Reduce your Putting Average by 0.1 this round.",
+"Clutch Performance – Choose an attribute and increase it by +5% to win a tie.",
+"Hole-in-One! – Automatically win this round if your opponent does not have this card to counter.",
+"Caddie Advice – Look at the next card in the deck before choosing an attribute.",
+"Momentum Boost – Play two rounds in a row choosing the attribute.",
+"Legendary Wisdom – Use a legendary golfer's card as a reference, even if it is not yours.",
+"Sand Trap – Reduce your Greens in Regulation by -10% this round.",
+"Water Hazard – You automatically lose if you choose Driving Distance this round.",
+"Wind Gust – Reduce your Accuracy by -10% this round.",
+"Missed Putt – Your Putting Average increases by +0.2 this round.",
+"Out of Bounds – Choose another attribute, as the first one chosen is nullified.",
+"Bad Lie – Decrease Driving Distance by -20 yards this round.",
+"Pressure Gets to You – You automatically lose in case of a tie.",
+"Double Bogey – You automatically lose the round if your opponent uses a legendary golfer.",
+"Playoff – If the round ends in a tie, choose a new attribute without changing cards.",
+"Switch Clubs – You can change your card with the next card in your deck.",
+"Rain Delay – All attributes are reduced by 10% this round.",
+"Mental Game – The opponent must choose an attribute before seeing your card.",
+"Fan Interference – The opponent must play their next round without using advantage cards.",
+"Lucky Bounce – Roll a die (or use an online die rolling app). If you roll a 5 or 6, you automatically win the round.",
+"Match Play Mode – This round is worth double the points!",
+"Change the Course – Swap the current field card for another from the deck."];
+  
+const playm = [
+{name: "Adam Scott", attributes: {"Driving Distance": "305 yds", Accuracy: "59%", "Greens in Regulation": "71%", "Putting Average": "1.74", "Major Wins": 1, "Career Wins": 31}},
+{name: "Alexander Zverev (Germany)", attributes: {"Grand Slam Titles": 0, "ATP Titles": "20+", "Career Win %": "~70%", "Fastest Serve": "235 km/h", "Top Spin Mastery": 86, "Mental Toughness": 90}},
+{name: "Arnold Palmer", attributes: {"Driving Distance": "290 yds", Accuracy: "64%", "Greens in Regulation": "73%", "Putting Average": "1.68", "Major Wins": 7, "Career Wins": 62}},
+{name: "Ben Hogan", attributes: {"Driving Distance": "275 yds", Accuracy: "70%", "Greens in Regulation": "75%", "Putting Average": "1.66", "Major Wins": 9, "Career Wins": 64}},
+{name: "Bernhard Langer", attributes: {"Driving Distance": "280 yds", Accuracy: "67%", "Greens in Regulation": "72%", "Putting Average": "1.69", "Major Wins": 2, "Career Wins": 116}},
+{name: "Billy Casper", attributes: {"Driving Distance": "275 yds", Accuracy: "73%", "Greens in Regulation": "74%", "Putting Average": "1.68", "Major Wins": 3, "Career Wins": 51}},
+{name: "Bobby Jones", attributes: {"Driving Distance": "265 yds", Accuracy: "70%", "Greens in Regulation": "74%", "Putting Average": "1.65", "Major Wins": 13, "Career Wins": 40}},
+{name: "Brooks Koepka", attributes: {"Driving Distance": "312 yds", Accuracy: "56%", "Greens in Regulation": "70%", "Putting Average": "1.71", "Major Wins": 5, "Career Wins": 17}},
+{name: "Bryson DeChambeau", attributes: {"Driving Distance": "340 yds", Accuracy: "50%", "Greens in Regulation": "68%", "Putting Average": "1.78", "Major Wins": 1, "Career Wins": 10}},
+{name: "Cameron Smith", attributes: {"Driving Distance": "297 yds", Accuracy: "62%", "Greens in Regulation": "67%", "Putting Average": "1.69", "Major Wins": 1, "Career Wins": 9}},
+{name: "Collin Morikawa", attributes: {"Driving Distance": "295 yds", Accuracy: "64%", "Greens in Regulation": "72%", "Putting Average": "1.76", "Major Wins": 2, "Career Wins": 6}},
+{name: "Corey Pavin", attributes: {"Driving Distance": "270 yds", Accuracy: "78%", "Greens in Regulation": "70%", "Putting Average": "1.70", "Major Wins": 1, "Career Wins": 28}},
+{name: "Dustin Johnson", attributes: {"Driving Distance": "315 yds", Accuracy: "55%", "Greens in Regulation": "69%", "Putting Average": "1.72", "Major Wins": 2, "Career Wins": 29}},
+{name: "Ernie Els", attributes: {"Driving Distance": "310 yds", Accuracy: "58%", "Greens in Regulation": "72%", "Putting Average": "1.73", "Major Wins": 4, "Career Wins": 71}},
+{name: "Fred Couples", attributes: {"Driving Distance": "310 yds", Accuracy: "58%", "Greens in Regulation": "71%", "Putting Average": "1.74", "Major Wins": 1, "Career Wins": 62}},
+{name: "Gary Player", attributes: {"Driving Distance": "275 yds", Accuracy: "68%", "Greens in Regulation": "72%", "Putting Average": "1.68", "Major Wins": 9, "Career Wins": 160}},
+{name: "Gene Sarazen", attributes: {"Driving Distance": "260 yds", Accuracy: "70%", "Greens in Regulation": "75%", "Putting Average": "1.67", "Major Wins": 7, "Career Wins": 39}},
+{name: "Hale Irwin", attributes: {"Driving Distance": "285 yds", Accuracy: "66%", "Greens in Regulation": "71%", "Putting Average": "1.71", "Major Wins": 3, "Career Wins": 65}},
+{name: "Jack Nicklaus", attributes: {"Driving Distance": "285 yds", Accuracy: "65%", "Greens in Regulation": "74%", "Putting Average": "1.69", "Major Wins": 18, "Career Wins": 73}},
+{name: "Jim Furyk", attributes: {"Driving Distance": "285 yds", Accuracy: "75%", "Greens in Regulation": "72%", "Putting Average": "1.71", "Major Wins": 1, "Career Wins": 29}},
+{name: "Jon Rahm", attributes: {"Driving Distance": "315 yds", Accuracy: "60%", "Greens in Regulation": "70%", "Putting Average": "1.73", "Major Wins": 2, "Career Wins": 11}},
+{name: "Jordan Spieth", attributes: {"Driving Distance": "295 yds", Accuracy: "59%", "Greens in Regulation": "67%", "Putting Average": "1.70", "Major Wins": 3, "Career Wins": 16}},
+{name: "José María Olazábal", attributes: {"Driving Distance": "285 yds", Accuracy: "62%", "Greens in Regulation": "69%", "Putting Average": "1.72", "Major Wins": 2, "Career Wins": 35}},
+{name: "Justin Rose", attributes: {"Driving Distance": "300 yds", Accuracy: "61%", "Greens in Regulation": "70%", "Putting Average": "1.73", "Major Wins": 1, "Career Wins": 24}},
+{name: "Justin Thomas", attributes: {"Driving Distance": "305 yds", Accuracy: "59%", "Greens in Regulation": "70%", "Putting Average": "1.73", "Major Wins": 2, "Career Wins": 15}},
+{name: "Lee Trevino", attributes: {"Driving Distance": "285 yds", Accuracy: "67%", "Greens in Regulation": "72%", "Putting Average": "1.71", "Major Wins": 6, "Career Wins": 29}},
+{name: "Louis Oosthuizen", attributes: {"Driving Distance": "300 yds", Accuracy: "63%", "Greens in Regulation": "70%", "Putting Average": "1.74", "Major Wins": 1, "Career Wins": 14}},
+{name: "Matt Fitzpatrick", attributes: {"Driving Distance": "300 yds", Accuracy: "65%", "Greens in Regulation": "68%", "Putting Average": "1.72", "Major Wins": 1, "Career Wins": 8}},
+{name: "Nick Faldo", attributes: {"Driving Distance": "290 yds", Accuracy: "65%", "Greens in Regulation": "73%", "Putting Average": "1.70", "Major Wins": 6, "Career Wins": 41}},
+{name: "Patrick Cantlay", attributes: {"Driving Distance": "305 yds", Accuracy: "61%", "Greens in Regulation": "71%", "Putting Average": "1.73", "Major Wins": 0, "Career Wins": 8}},
+{name: "Payne Stewart", attributes: {"Driving Distance": "295 yds", Accuracy: "64%", "Greens in Regulation": "70%", "Putting Average": "1.72", "Major Wins": 3, "Career Wins": 11}},
+{name: "Phil Mickelson", attributes: {"Driving Distance": "301 yds", Accuracy: "57%", "Greens in Regulation": "68%", "Putting Average": "1.74", "Major Wins": 6, "Career Wins": 45}},
+{name: "Rickie Fowler", attributes: {"Driving Distance": "295 yds", Accuracy: "61%", "Greens in Regulation": "70%", "Putting Average": "1.72", "Major Wins": 0, "Career Wins": 6}},
+{name: "Rory McIlroy", attributes: {"Driving Distance": "320 yds", Accuracy: "58%", "Greens in Regulation": "69%", "Putting Average": "1.75", "Major Wins": 4, "Career Wins": 38}},
+{name: "Scottie Scheffler", attributes: {"Driving Distance": "310 yds", Accuracy: "62%", "Greens in Regulation": "71%", "Putting Average": "1.72", "Major Wins": 2, "Career Wins": 8}},
+{name: "Sergio Garcia", attributes: {"Driving Distance": "302 yds", Accuracy: "60%", "Greens in Regulation": "71%", "Putting Average": "1.75", "Major Wins": 1, "Career Wins": 36}},
+{name: "Seve Ballesteros", attributes: {"Driving Distance": "280 yds", Accuracy: "62%", "Greens in Regulation": "70%", "Putting Average": "1.72", "Major Wins": 5, "Career Wins": 90}},
+{name: "Shane Lowry", attributes: {"Driving Distance": "298 yds", Accuracy: "62%", "Greens in Regulation": "69%", "Putting Average": "1.73", "Major Wins": 1, "Career Wins": 6}},
+{name: "Tiger Woods", attributes: {"Driving Distance": "295 yds", Accuracy: "61%", "Greens in Regulation": "72%", "Putting Average": "1.7", "Major Wins": 15, "Career Wins": 82}},
+{name: "Tom Watson", attributes: {"Driving Distance": "280 yds", Accuracy: "66%", "Greens in Regulation": "73%", "Putting Average": "1.70", "Major Wins": 8, "Career Wins": 39}},
+{name: "Tony Finau", attributes: {"Driving Distance": "315 yds", Accuracy: "58%", "Greens in Regulation": "70%", "Putting Average": "1.76", "Major Wins": 0, "Career Wins": 6}},
+{name: "Viktor Hovland", attributes: {"Driving Distance": "308 yds", Accuracy: "59%", "Greens in Regulation": "69%", "Putting Average": "1.75", "Major Wins": 0, "Career Wins": 6}},
+{name: "Walter Hagen", attributes: {"Driving Distance": "270 yds", Accuracy: "65%", "Greens in Regulation": "71%", "Putting Average": "1.70", "Major Wins": 11, "Career Wins": 45}},
+{name: "Will Zalatoris", attributes: {"Driving Distance": "305 yds", Accuracy: "60%", "Greens in Regulation": "72%", "Putting Average": "1.75", "Major Wins": 0, "Career Wins": 1}},
+{name: "Xander Schauffele", attributes: {"Driving Distance": "306 yds", Accuracy: "60%", "Greens in Regulation": "70%", "Putting Average": "1.74", "Major Wins": 0, "Career Wins": 7}},
+  ];
+
+  const playf = [
+{name: "Angela Stanford", attributes: {"Driving Distance": "280 yds", Accuracy: "72%", "Greens in Regulation": "73%", "Putting Average": "1.71", "Major Wins": 1, "Career Wins": 6}},
+{name: "Annika Sörenstam", attributes: {"Driving Distance": "265 yds", Accuracy: "75%", "Greens in Regulation": "78%", "Putting Average": "1.69", "Major Wins": 10, "Career Wins": 90}},
+{name: "Ariya Jutanugarn", attributes: {"Driving Distance": "285 yds", Accuracy: "70%", "Greens in Regulation": "73%", "Putting Average": "1.72", "Major Wins": 2, "Career Wins": 12}},
+{name: "Babe Didrikson Zaharias", attributes: {"Driving Distance": "270 yds", Accuracy: "72%", "Greens in Regulation": "75%", "Putting Average": "1.67", "Major Wins": 10, "Career Wins": 41}},
+{name: "Betsy King", attributes: {"Driving Distance": "272 yds", Accuracy: "72%", "Greens in Regulation": "74%", "Putting Average": "1.71", "Major Wins": 6, "Career Wins": 34}},
+{name: "Brooke Henderson", attributes: {"Driving Distance": "290 yds", Accuracy: "72%", "Greens in Regulation": "74%", "Putting Average": "1.71", "Major Wins": 2, "Career Wins": 13}},
+{name: "Cristie Kerr", attributes: {"Driving Distance": "270 yds", Accuracy: "74%", "Greens in Regulation": "72%", "Putting Average": "1.69", "Major Wins": 2, "Career Wins": 20}},
+{name: "Grace Charis", attributes: {"Driving Distance": "260 yds", Accuracy: "70%", "Greens in Regulation": "68%", "Putting Average": "1.75", "Major Wins": 0, "Career Wins": 2}},
+{name: "Hyo-Joo Kim", attributes: {"Driving Distance": "275 yds", Accuracy: "74%", "Greens in Regulation": "74%", "Putting Average": "1.70", "Major Wins": 1, "Career Wins": 7}},
+{name: "Inbee Park", attributes: {"Driving Distance": "260 yds", Accuracy: "80%", "Greens in Regulation": "76%", "Putting Average": "1.68", "Major Wins": 7, "Career Wins": 21}},
+{name: "Jin Young Ko", attributes: {"Driving Distance": "270 yds", Accuracy: "78%", "Greens in Regulation": "75%", "Putting Average": "1.68", "Major Wins": 2, "Career Wins": 15}},
+{name: "Juli Inkster", attributes: {"Driving Distance": "270 yds", Accuracy: "72%", "Greens in Regulation": "74%", "Putting Average": "1.70", "Major Wins": 7, "Career Wins": 31}},
+{name: "Karrie Webb", attributes: {"Driving Distance": "270 yds", Accuracy: "73%", "Greens in Regulation": "74%", "Putting Average": "1.71", "Major Wins": 7, "Career Wins": 41}},
+{name: "Lexi Thompson", attributes: {"Driving Distance": "290 yds", Accuracy: "70%", "Greens in Regulation": "72%", "Putting Average": "1.73", "Major Wins": 1, "Career Wins": 11}},
+{name: "Lorena Ochoa", attributes: {"Driving Distance": "275 yds", Accuracy: "72%", "Greens in Regulation": "76%", "Putting Average": "1.70", "Major Wins": 2, "Career Wins": 30}},
+{name: "Lydia Ko", attributes: {"Driving Distance": "265 yds", Accuracy: "75%", "Greens in Regulation": "74%", "Putting Average": "1.70", "Major Wins": 2, "Career Wins": 20}},
+{name: "Meg Mallon", attributes: {"Driving Distance": "270 yds", Accuracy: "70%", "Greens in Regulation": "73%", "Putting Average": "1.72", "Major Wins": 4, "Career Wins": 18}},
+{name: "Mickey Wright", attributes: {"Driving Distance": "265 yds", Accuracy: "70%", "Greens in Regulation": "77%", "Putting Average": "1.67", "Major Wins": 13, "Career Wins": 82}},
+{name: "Minjee Lee", attributes: {"Driving Distance": "285 yds", Accuracy: "75%", "Greens in Regulation": "76%", "Putting Average": "1.70", "Major Wins": 2, "Career Wins": 10}},
+{name: "Nancy Lopez", attributes: {"Driving Distance": "265 yds", Accuracy: "74%", "Greens in Regulation": "76%", "Putting Average": "1.69", "Major Wins": 3, "Career Wins": 48}},
+{name: "Nelly Korda", attributes: {"Driving Distance": "280 yds", Accuracy: "72%", "Greens in Regulation": "73%", "Putting Average": "1.72", "Major Wins": 1, "Career Wins": 12}},
+{name: "Pat Bradley", attributes: {"Driving Distance": "275 yds", Accuracy: "73%", "Greens in Regulation": "75%", "Putting Average": "1.69", "Major Wins": 6, "Career Wins": 31}},
+{name: "Patty Berg", attributes: {"Driving Distance": "250 yds", Accuracy: "74%", "Greens in Regulation": "75%", "Putting Average": "1.68", "Major Wins": 15, "Career Wins": 60}},
+{name: "Se Ri Pak", attributes: {"Driving Distance": "275 yds", Accuracy: "71%", "Greens in Regulation": "74%", "Putting Average": "1.71", "Major Wins": 5, "Career Wins": 39}},
+{name: "Stacy Lewis", attributes: {"Driving Distance": "265 yds", Accuracy: "76%", "Greens in Regulation": "74%", "Putting Average": "1.70", "Major Wins": 2, "Career Wins": 13}},
+{name: "Suzann Pettersen", attributes: {"Driving Distance": "275 yds", Accuracy: "73%", "Greens in Regulation": "75%", "Putting Average": "1.71", "Major Wins": 2, "Career Wins": 21}},
+{name: "Yani Tseng", attributes: {"Driving Distance": "280 yds", Accuracy: "71%", "Greens in Regulation": "74%", "Putting Average": "1.72", "Major Wins": 5, "Career Wins": 15}},
+  ];
+
+const club = [
+    {name: "Club: Augusta National Golf Club (USA)", attributes: {Length: "7,510 yds", Par: 72, Difficulty: 9, "Major Championships Hosted": "88 (The Masters)", "Scenic Beauty": 10}},
+{name: "Club: Bandon Dunes (USA)", attributes: {Length: "6,732 yds", Par: 71, Difficulty: 7, "Major Championships Hosted": "0 (US Amateur Famous)", "Scenic Beauty": 10}},
+{name: "Club: Bethpage Black (USA)", attributes: {Length: "7,468 yds", Par: 71, Difficulty: 10, "Major Championships Hosted": "3 (US Open, PGA Championship)", "Scenic Beauty": 7}},
+{name: "Club: Carnoustie Golf Links (Scotland)", attributes: {Length: "7,421 yds", Par: 72, Difficulty: 10, "Major Championships Hosted": "8 (The Open Championship)", "Scenic Beauty": 8}},
+{name: "Club: Chambers Bay (USA)", attributes: {Length: "7,585 yds", Par: 72, Difficulty: 9, "Major Championships Hosted": "1 (US Open)", "Scenic Beauty": 9}},
+{name: "Club: Kiawah Island (Ocean Course) (USA)", attributes: {Length: "7,876 yds", Par: 72, Difficulty: 10, "Major Championships Hosted": "2 (PGA Championship, Ryder Cup)", "Scenic Beauty": 9}},
+{name: "Club: Le Golf National (France)", attributes: {Length: "7,331 yds", Par: 72, Difficulty: 8, "Major Championships Hosted": "2 (Ryder Cup, Open de France)", "Scenic Beauty": 8}},
+{name: "Club: Merion Golf Club (USA)", attributes: {Length: "6,996 yds", Par: 70, Difficulty: 9, "Major Championships Hosted": "5 (US Open)", "Scenic Beauty": 8}},
+{name: "Club: Muirfield (Scotland)", attributes: {Length: "7,245 yds", Par: 71, Difficulty: 8, "Major Championships Hosted": "16 (The Open Championship)", "Scenic Beauty": 9}},
+{name: "Club: Oakmont Country Club (USA)", attributes: {Length: "7,255 yds", Par: 71, Difficulty: 10, "Major Championships Hosted": "9 (US Open, PGA Championship)", "Scenic Beauty": 8}},
+{name: "Club: Pebble Beach Golf Links (USA)", attributes: {Length: "7,075 yds", Par: 72, Difficulty: 8, "Major Championships Hosted": "6 (US Open)", "Scenic Beauty": 10}},
+{name: "Club: Pinehurst No. 2 (USA)", attributes: {Length: "7,588 yds", Par: 72, Difficulty: 9, "Major Championships Hosted": "5 (US Open, PGA Championship)", "Scenic Beauty": 8}},
+{name: "Club: Royal Birkdale (England)", attributes: {Length: "7,156 yds", Par: 70, Difficulty: 9, "Major Championships Hosted": "10 (The Open Championship)", "Scenic Beauty": 9}},
+{name: "Club: Royal Melbourne Golf Club (Australia)", attributes: {Length: "7,048 yds", Par: 72, Difficulty: 8, "Major Championships Hosted": "16 (Presidents Cup, Australian Open)", "Scenic Beauty": 9}},
+{name: "Club: Shinnecock Hills Golf Club (USA)", attributes: {Length: "7,440 yds", Par: 70, Difficulty: 9, "Major Championships Hosted": "5 (US Open)", "Scenic Beauty": 8}},
+{name: "Club: St Andrews (Old Course) (Scotland)", attributes: {Length: "7,305 yds", Par: 72, Difficulty: 8, "Major Championships Hosted": "30 (The Open Championship)", "Scenic Beauty": 9}},
+{name: "Club: Torrey Pines Golf Course (USA)", attributes: {Length: "7,802 yds", Par: 72, Difficulty: 9, "Major Championships Hosted": "2 (US Open)", "Scenic Beauty": 10}},
+{name: "Club: TPC Sawgrass (USA)", attributes: {Length: "7,189 yds" , Par: 72, Difficulty: 9, "Major Championships Hosted": "0 (The Players Championship Host)", "Scenic Beauty": 9}},
+{name: "Club: Valderrama Golf Club (Spain)", attributes: {Length: "7,000 yds", Par: 71, Difficulty: 8, "Major Championships Hosted": "1 (Ryder Cup, Volvo Masters)", "Scenic Beauty": 9}},
+{name: "Club: Whistling Straits (USA)", attributes: {Length: "7,790 yds", Par: 72, Difficulty: 9, "Major Championships Hosted": "4 (PGA Championship, Ryder Cup)", "Scenic Beauty": 9}},
+  ];
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playmCheckbox').checked) selectedCards.push(...playm);
+    if (document.getElementById('playfCheckbox').checked) selectedCards.push(...playf);
+    if (document.getElementById('clubCheckbox').checked) selectedCards.push(...club);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

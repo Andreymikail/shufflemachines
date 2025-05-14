@@ -1,0 +1,54 @@
+<div>
+  <label for="initialLife" style="color: white;">Initial Life:</label>
+  <input type="number" id="initialLife" value="999">
+</div>
+<br>
+<div>
+  <label for="adjustment" style="color: white;">Adjustment (positive or negative):</label>
+  <input type="number" id="adjustment" value="0">
+</div>
+<br>
+<button id="updateLifeButton" class="round-button">Calc</button>
+
+<p id="lifeResult" style="color: white;">Current Life: 999</p>
+
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let currentLife = parseInt(document.getElementById('initialLife').value);
+
+    // Update current life when the initial life value changes
+    document.getElementById('initialLife').addEventListener('change', function() {
+      currentLife = parseInt(this.value);
+      document.getElementById('lifeResult').textContent = 'Current Life: ' + currentLife;
+    });
+
+    // Update current life when the button is clicked
+    document.getElementById('updateLifeButton').addEventListener('click', function() {
+      const adjustment = parseInt(document.getElementById('adjustment').value);
+      currentLife += adjustment;
+      document.getElementById('lifeResult').textContent = 'Current Life: ' + currentLife;
+    });
+  });
+</script>
+
+<!-- CSS for the Round Button -->
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 60px;
+    transition: background-color 0.3s;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+</style>

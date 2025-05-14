@@ -1,0 +1,274 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Stoics</h2>
+  
+  <!-- Elements per page selection -->
+  <div>
+    <label for="elementsPerPage" style="color: white;">Rules per Page:</label><br>
+    <input type="number" id="elementsPerPage" value="1"><br><br>
+  </div>
+
+  <!-- Checkboxes to select rulesOfAcquisition and stoics_feed -->
+  <div>
+    <input type="checkbox" id="rulesOfAcquisitionCheck" checked>
+    <label for="rulesOfAcquisitionCheck" style="color: white;">Stoics</label><br>
+    
+    <input type="checkbox" id="stoicsFeedCheck">
+    <label for="stoicsFeedCheck" style="color: white;">Paradox</label><br><br>
+  </div>
+
+  <!-- Shuffle Button -->
+  <button id="shuffleButton" class="round-button">Shuffle</button>
+
+  <!-- Rules Display -->
+  <div id="rulesContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const rulesOfAcquisition = [
+    "Life is short if wasted – Use your time wisely.",
+"Control your anger – Anger is destructive and should be managed.",
+"Fortune is fickle – Treat prosperity and adversity equally.",
+"Death is a natural part of life – Reflect on mortality to live fully.",
+"True wealth lies in contentment – Not in material riches.",
+"Moderation in all things – Excess leads to downfall.",
+"Seek tranquility through wisdom – Not external pleasures.",
+"Adversity builds character – Embrace challenges.",
+"A virtuous life is a happy life – Virtue is the only true good.",
+"Value friendships over wealth – Good friends are a treasure.",
+"Reflect daily – Analyze your actions and thoughts.",
+"Don’t fear death – It’s inevitable and natural.",
+"Time is our most valuable possession – Don’t waste it on trivialities.",
+"No one is truly free if driven by desires – Control your wants.",
+"Anger is temporary madness – Keep a clear mind.",
+"Learn from failure – It’s a necessary teacher.",
+"Simplicity is the key to happiness – Live with less.",
+"Gratitude enhances life – Be grateful for what you have.",
+"Learn to forgive others – Harshness breeds more suffering.",
+"Calamities are a test of endurance – Respond with dignity.",
+"Focus on what you can control – Let go of what you cannot.",
+"Freedom comes from within – True freedom is mental.",
+"Adopt the right attitude towards external events – View them with indifference.",
+"Do not seek approval from others – Be content with yourself.",
+"Suffering arises from false judgments – Reframe your thoughts.",
+"Live according to nature – Act in harmony with your true self.",
+"Practice voluntary discomfort – Train yourself to endure hardship.",
+"You are a product of your decisions – Choose wisely.",
+"All suffering is optional – It depends on your reaction to events.",
+"Take responsibility for your life – You shape your destiny.",
+"External things are not good or bad – Only your judgment makes them so.",
+"Adversity reveals true character – Use hardship to grow.",
+"Practice detachment – Don’t cling to possessions or people.",
+"Wisdom is in distinguishing appearance from reality.",
+"Happiness is a state of mind, not external.",
+"Death is neither good nor bad – It is a fact of life.",
+"Fortune favors the prepared mind – Be ready for adversity.",
+"Resentment only harms you – Let go of grudges.",
+"The beginning of wisdom is to know yourself.",
+"Humility is essential – Never think you know everything.",
+"Live in the present moment – Past and future are distractions.",
+"Be indifferent to praise or criticism – Focus on your actions.",
+"The universe is change – Accept the transient nature of everything.",
+"Death is part of the natural order – Don’t fear it.",
+"Everything has its season – Don’t rush or resist life’s phases.",
+"Your mind shapes your experience – Guard your thoughts.",
+"What happens to you happens for you – See challenges as opportunities.",
+"The opinions of others should not define you.",
+"Don’t be driven by anger or frustration – Act with reason.",
+"Work for the common good – We are all interconnected.",
+"Simplicity is the key to a fulfilled life.",
+"Cultivate inner peace – It’s independent of external chaos.",
+"Don’t waste time on trivial matters – Focus on what’s meaningful.",
+"Everything is fleeting – Nothing lasts forever, so embrace change.",
+"Act according to your nature – Live a life consistent with your principles.",
+"Every obstacle is an opportunity – Reframe setbacks as growth.",
+"Kindness is invincible – Approach all with compassion.",
+"Live each day as if it were your last.",
+"The best revenge is to be unlike the person who wronged you.",
+"Do not wait for others to act virtuously – lead by example.",
+"Virtue is the highest good – It’s the only thing that guarantees happiness.",
+"You cannot control events, but you can control your response.",
+"Learn to love your fate (amor fati) – Embrace everything that happens to you.",
+"View obstacles as opportunities for growth.",
+"Live according to reason, not emotions.",
+"Anger is a sign of weakness – Practice patience and understanding.",
+"Material possessions are fleeting – Focus on internal wealth.",
+"Gratitude fosters resilience – Appreciate what you have.",
+"Everyone makes mistakes – forgive and move on.",
+"Nature is rational, and so should we be.",
+"Your worth is not determined by external success.",
+"The path to wisdom is lifelong – Continuously learn and grow.",
+"Adversity is a teacher – Learn from it rather than resent it.",
+"The ultimate freedom is to be at peace with yourself.",
+"Self-discipline is the foundation of a good life.",
+"You are part of a greater whole – Contribute positively to society.",
+"Practice humility daily – No one is above making mistakes.",
+"Let go of attachments – They cause unnecessary suffering.",
+"The world is full of change – resist clinging to permanence.",
+"You are what you repeatedly do – Build habits of excellence.",
+"Treat others with dignity and respect, regardless of their actions.",
+"Don’t allow external forces to disturb your peace.",
+"Your reputation is out of your control – focus on your character.",
+"Be wary of desires – they lead to dissatisfaction.",
+"The wise man is self-sufficient – But cherishes the company of others.",
+"Do not let fear of the future paralyze you.",
+"Wisdom comes from aligning your actions with your principles.",
+"You are responsible for your own happiness.",
+"Calmness is strength – React to difficulty with serenity.",
+"Everything you see will eventually perish.",
+"Kindness is always the right response.",
+"Live your life as an example for others.",
+"Take responsibility for your actions, not for others’ opinions.",
+"Mindfulness of death enhances the value of life.",
+"Suffering comes from resisting what is.",
+"Don’t waste energy on things you cannot change.",
+"Every challenge is an opportunity to exercise virtue.",
+"The present moment is all you ever have.",
+"You have power over your mind – not external events.",
+"True success is living a life of virtue and wisdom.",
+"The true Stoic does not identify himself with a country, but with the entire universe.",
+"Great virtues are shaped by small acts. Do not ignore simple and kind actions.",
+"If you want to live in harmony with nature, learn to understand it.",
+"Great virtues are shaped by small acts. Do not ignore simple and kind actions.",
+"If evil afflicts you, it comes from yourself. Because nothing outside your mind has the power to affect you.",
+"We do not have a short time, but we take a lot of it. Life is long if you know how to use it well.",
+"When you get up in the morning, ask yourself: what should I do? And do what duty demands, even in small things.",
+"Confine yourself to the present. The past is gone, the future is yet to come. Only the present is yours to shape.",
+"The art of living is more like a fight than a dance, for it demands constant readiness to face whatever comes.",
+"Sometimes the best way to face a tragedy is with a smile.",
+"The only thing that is truly ours is our ability to choose. Everything else can be taken away from us.",
+"Treat others as if they were part of you, because in a way, they are.",
+"Man is strongest when he is at peace with himself.",
+"Just as a tree does not fight against the wind, we must learn to live with injustice, because it is part of nature.",
+"Whatever happens, accept it without bitterness. Do the best with what you have at your disposal and let the rest flow.",
+"Prepare yourself for difficulties before they arrive, and they lose their power to shake you.",
+"If you are always seeking the approval of others, you will always be dependent on them.",
+"Many times, we need solitude to find the most important companion of all: ourselves.",
+"The body is a servant; treat it well, but do not allow it to dictate your life.",
+"Let your words be few and far between, but when you speak, let them be clear and sincere.",
+"Laugh whenever you can, for laughter is a manifestation of inner freedom.",
+"Saying 'no' to distractions affirms your freedom.",
+"Each morning brings a new chance to begin the cycle of virtue."
+  ];
+
+  const stoics_feed = [
+    "The Paradox of Control and Acceptance<br>One of the core Stoic principles is focusing on what we can control and accepting what is beyond our control. However, this concept can be seen as a paradox: in trying to control our reactions to events, we simultaneously accept our inability to control the event itself. The paradox lies in how acceptance becomes a form of control — controlling our emotions by accepting that we lack external control.<br>How biases apply: Biases like the illusion of control lead us to believe we have more control than we actually do, causing frustration and suffering. Stoicism teaches us to neutralize this bias by accepting that much is beyond our power.",
+"The Paradox of Ataraxia (Imperturbability)<br>Stoics aim to achieve a state of imperturbability (ataraxia), where the mind is undisturbed by emotions or external events. The paradox here is that actively seeking the absence of disturbance can ironically become a source of disturbance. By trying to avoid all negative emotion, a person may become overly concerned with it, leading to restlessness.<br>How biases apply: Optimism bias can lead people to underestimate the difficulty of achieving true ataraxia, while confirmation bias might cause them to avoid information that contradicts their sense of being on the right path toward serenity.",
+"The Paradox of Virtue and Humility<br>A Stoic teaching is that we should always strive for virtue. However, recognizing that we are being virtuous can lead to pride, which is considered a vice. Thus, the paradox is that the closer we get to virtue, the more we risk losing humility.<br>How biases apply: The self-serving bias may cause a person to attribute their moral success entirely to themselves, ignoring external factors that helped them be virtuous. Stoicism recommends the practice of modesty to counter this bias.",
+"The Paradox of Resistance to Fate<br>The Stoics teach the acceptance of fate (amor fati), believing that everything that happens is part of a larger and inevitable plan. The paradox arises when we try to resist fate, creating more suffering by attempting to change what is unchangeable. By accepting fate, we paradoxically find freedom.<br>How biases apply: Denial bias prevents us from accepting harsh realities, such as death or loss. By resisting these inevitabilities, we suffer more. Stoicism teaches us to neutralize this bias by accepting what cannot be changed.",
+"The Paradox of Self-Consciousness and Happiness<br>According to the Stoics, happiness comes from self-sufficiency and inner harmony. However, paradoxically, focusing too much on one's own happiness can distance us from it. The more we concentrate on being happy, the more we notice the absence of happiness, which can generate anxiety.<br>How biases apply: The introspection bias may lead us to overestimate the value of our self-reflection, causing us to overlook the role that external interactions and social engagement play in our pursuit of happiness. Stoicism suggests a balanced practice of self-awareness and service to the greater good.",
+"The Paradox of Mental Freedom<br>The Stoics argue that true freedom is mental, not physical. Even in situations of slavery or confinement, a person can be free if their mind is virtuous and serene. The paradox is that even though we may be physically free, we can imprison ourselves through desires and emotions, making us less free.<br>How biases apply: The loss aversion bias makes us feel more imprisoned by losing external freedoms, even though our mental freedom remains intact. Stoicism teaches us to recognize this distinction and avoid unnecessary suffering caused by attachments to external things.",
+"The Paradox of Contentment and Ambition<br>Stoicism teaches that we should be content with what we have and not desire more than what is necessary. At the same time, it encourages self-improvement and striving for virtue. The paradox lies in balancing contentment with ambition. How can we pursue excellence while remaining satisfied with what we already possess?<br>How biases apply: The status quo bias may lead us to avoid striving for greater virtues because we’re too comfortable with where we are. Conversely, the ambition bias can make us chase success at the cost of our inner peace. Stoicism suggests finding balance by pursuing self-improvement for its own sake, not out of dissatisfaction.",
+"The Paradox of Suffering and Growth<br>Stoics believe that suffering and hardship are opportunities for growth, and that we should embrace them. However, this creates a paradox: in seeking to avoid suffering, we may inadvertently avoid the very experiences that help us grow stronger and wiser.<br>How biases apply: The negativity bias makes us focus too much on the pain of suffering, while ignoring the potential for growth. Stoicism teaches us to reframe challenges as growth opportunities, helping us overcome this bias.",
+"The Paradox of Detachment and Compassion<br>Stoics advise us to remain emotionally detached from external events to avoid being disturbed by them. However, they also emphasize the importance of compassion and serving others. The paradox is how we can remain emotionally detached while still caring deeply for the well-being of others.<br>How biases apply: The empathy gap can cause us to underestimate the emotional experience of others if we are too detached. Stoicism offers a solution by teaching that we can care for others without becoming emotionally overwhelmed by their suffering, maintaining a rational balance.",
+"The Paradox of Preparation and Living in the Moment<br>Stoicism encourages us to be prepared for future challenges by visualizing worst-case scenarios (premeditatio malorum). At the same time, Stoics also advise living fully in the present moment. The paradox here is that preparing for the future might distract us from enjoying the present.<br>How biases apply: The planning fallacy makes us overly optimistic about how well we can predict and manage the future, while the present bias makes us focus too much on immediate gratification. Stoicism teaches us to balance these two by preparing for the future without being consumed by it.",
+"The Paradox of the Ideal Sage<br>In Stoicism, the ideal sage is someone who has achieved perfect wisdom and virtue. However, Stoic philosophers also acknowledge that achieving this state is nearly impossible for any human. The paradox is that while we strive for perfection, we must also accept that we will never fully reach it.<br>How biases apply: The perfectionism bias can make us overly critical of our own progress and lead to discouragement when we fall short. Stoicism teaches us to aim for continuous improvement rather than unattainable perfection, helping us avoid this bias.",
+"The Paradox of Control and Letting Go<br>Stoicism emphasizes controlling our internal reactions while accepting that we cannot control external events. The paradox lies in how letting go of our desire to control external circumstances actually grants us more control over our emotional state.<br>How biases apply: The illusion of control bias makes us believe we have power over more aspects of life than we do, leading to frustration. By embracing the Stoic principle of letting go, we neutralize this bias and gain emotional freedom.",
+"The Paradox of Strength and Vulnerability<br>Stoicism teaches that inner strength comes from resilience, self-discipline, and facing challenges head-on. Yet, there is a paradox in that true strength may also involve vulnerability—acknowledging our limitations and weaknesses in order to grow.<br>How biases apply: The invulnerability bias makes us deny or hide our weaknesses, thinking it will make us stronger. Stoicism, however, advocates for acknowledging vulnerability as part of the human experience, which in turn strengthens our character.",
+"The Paradox of Self-Reliance and Interdependence<br>Stoics emphasize self-reliance, urging us to find contentment and peace within ourselves. However, they also recognize that humans are social beings who depend on each other. The paradox is how we can be truly self-reliant while still acknowledging our need for community and cooperation.<br>How biases apply: The self-sufficiency bias can make us believe we don’t need others, while the dependency bias can make us overly reliant on external validation. Stoicism advises a balanced approach, where we cultivate inner strength while contributing to the greater good.",
+"The Paradox of Mortality and Immortality<br>Stoic philosophy frequently reflects on mortality, urging us to accept death as a natural part of life. At the same time, Stoics strive to live in a way that their legacy (virtue, wisdom, and impact) remains immortal. The paradox lies in accepting the brevity of life while working towards something eternal.<br>How biases apply: The mortality bias may lead us to avoid thinking about death, while the legacy bias may make us overly concerned with how we’ll be remembered. Stoicism teaches us to embrace mortality as a motivator to live virtuously in the present.",
+"The Paradox of Embracing Fate and Exercising Free Will<br>Stoicism teaches that we should embrace fate and accept that many things in life are predetermined (fatalism). However, it also emphasizes the importance of exercising our free will to make virtuous choices. The paradox is in reconciling the belief in fate with the responsibility for our actions.<br>How biases apply: The fatalism bias may lead us to passive acceptance, believing nothing is in our control, while the illusion of agency bias might cause us to overestimate our control. Stoicism balances this by teaching that while fate governs external events, our responses are always within our power.",
+"The Paradox of Simplicity and Complexity<br>Stoics advocate for a simple life, free from unnecessary desires and distractions. However, Stoic philosophy itself is complex, with deep reflections on ethics, logic, and nature. The paradox lies in applying a simple approach to a philosophy that deals with life's complexities.<br>How biases apply: The complexity bias can make us believe that complex solutions are always better, while the simplicity bias may oversimplify nuanced situations. Stoicism advises us to seek simplicity in our desires while remaining thoughtful about life’s deeper complexities.",
+"The Paradox of Emotional Detachment and Joy<br>Stoicism advocates emotional detachment from external events to avoid being overwhelmed by negative emotions. Yet, it also teaches that joy and contentment can be found in virtuous living. The paradox is in finding how to experience joy without being attached to external outcomes.<br>How biases apply: The negativity bias might cause us to focus on avoiding pain and loss, making us overlook the moments of joy in life. Stoicism teaches that joy comes from within and through virtuous action, rather than from external circumstances.",
+"The Paradox of Reflection and Action<br>Stoics encourage deep reflection on one’s life and values, but they also emphasize taking action in alignment with virtue. The paradox is that too much reflection can lead to inaction, while too much action without reflection may lead to impulsiveness.<br>How biases apply: The action bias may make us favor doing something rather than reflecting, while the overthinking bias may lead to paralysis by analysis. Stoicism encourages a balanced cycle of thoughtful reflection followed by decisive action.",
+"The Paradox of Peace and Vigilance<br>Stoicism teaches inner peace through acceptance and resilience, but it also advises us to remain vigilant and prepared for life’s challenges. The paradox is how to maintain peace of mind while staying alert and ready for adversity.<br>How biases apply: The complacency bias may lead us to lower our guard once we achieve peace, while the hypervigilance bias may make us overly anxious about future threats. Stoicism recommends cultivating calmness alongside mental readiness for whatever life brings.",
+"The Paradox of Patience and Urgency<br>Stoicism teaches the value of patience, advising us to wait calmly for things to unfold and avoid impulsive decisions. However, it also emphasizes the urgency of living well and making the most of every moment, since life is short. The paradox is in balancing a calm, patient attitude with the pressing need to act virtuously in the present.<br>How biases apply: The urgency effect can make us feel like we must act immediately, often leading to rash decisions, while the delay discounting bias can cause us to undervalue long-term benefits in favor of short-term gains. Stoicism teaches patience while maintaining a sense of purpose and action in the moment.",
+"The Paradox of Pride and Modesty<br>Stoicism encourages pride in living a virtuous life, yet it also teaches modesty, warning against arrogance. The paradox arises when taking pride in one's virtues can inadvertently lead to a sense of superiority, which contradicts the Stoic goal of humility.<br>How biases apply: The self-serving bias can make us take too much credit for our virtues, while the modesty bias can cause us to downplay our achievements to an unhealthy degree. Stoicism seeks a balance, where we are proud of our moral efforts but remain humble.",
+"The Paradox of Strength in Surrender<br>Stoic philosophy teaches that strength comes from resilience and perseverance, but also from knowing when to surrender to what we cannot change. The paradox is that sometimes the strongest action is to let go or surrender, which may appear to be a form of weakness but is actually a source of inner strength.<br>How biases apply: The sunk cost fallacy may cause us to keep fighting losing battles because we’ve already invested in them, whereas Stoicism teaches us to let go when necessary, recognizing that true strength often lies in surrendering.",
+"The Paradox of Enjoying Life While Renouncing Pleasure<br>Stoicism advises renouncing excessive pleasure, warning that indulgence can lead to dependency and distraction from virtue. However, it also teaches us to enjoy life and appreciate the simple joys. The paradox is how to embrace life’s pleasures without becoming attached to them.<br>How biases apply: The hedonic treadmill bias makes us constantly seek more pleasure without ever being satisfied. Stoicism helps us enjoy pleasures in moderation while avoiding the trap of constant desire for more.",
+"The Paradox of Consistency and Adaptability<br>Stoicism values consistency in character and behavior, urging us to remain true to our principles. At the same time, Stoics teach the importance of adaptability in the face of changing circumstances. The paradox lies in how to remain consistent with virtue while adapting to new or challenging situations.<br>How biases apply: The status quo bias makes us resist change, while the novelty bias makes us seek change for the sake of it. Stoicism encourages us to be flexible without sacrificing our core values.",
+"The Paradox of Judgment and Non-Judgment<br>Stoicism teaches us to refrain from passing judgment on external events, as they are neither good nor bad in themselves. However, it also emphasizes the importance of judging our own actions and thoughts according to virtue. The paradox lies in how to make sound judgments about ourselves without projecting judgments onto external events.<br>How biases apply: The fundamental attribution error causes us to judge others more harshly than ourselves. Stoicism encourages us to apply judgment inwardly, focusing on self-improvement, while treating external events with neutrality.",
+"The Paradox of Accepting Pain to Avoid Pain<br>Stoics believe that accepting pain and discomfort is essential for growth and resilience. The paradox is that by willingly accepting pain, we often avoid greater suffering in the long run. Resisting pain can intensify it, while acceptance makes it more bearable.<br>How biases apply: The pain avoidance bias leads us to avoid discomfort at all costs, often making it worse. Stoicism teaches us to face pain head-on, reducing its impact over time.",
+"The Paradox of Acting in the World and Staying Detached<br>Stoics are encouraged to engage with the world, to contribute positively to society, and to fulfill their duties. However, they are also advised to remain detached from the outcomes of their actions. The paradox is how to act with full commitment while staying emotionally detached from success or failure.<br>How biases apply: The endowment effect makes us overvalue our own contributions, while the outcome bias makes us judge actions solely based on their results. Stoicism teaches us to focus on doing our best without being attached to the results.",
+"The Paradox of Speaking and Listening<br>Stoicism values wisdom and encourages us to share knowledge and insights with others. However, it also emphasizes the importance of listening, observing, and maintaining silence to gain true understanding. The paradox is knowing when to speak and when to stay silent in the pursuit of wisdom.<br>How biases apply: The talking bias leads us to think we know more by speaking more, while confirmation bias makes us listen selectively to what supports our beliefs. Stoicism advocates thoughtful speech and deep listening for true understanding.",
+"The Paradox of Individual Responsibility and Universal Interconnection<br>Stoicism teaches that we are responsible for our own actions and thoughts, yet it also emphasizes that we are part of a larger universal order, interconnected with all beings. The paradox is how to balance individual responsibility with the recognition that we are deeply connected to the rest of humanity and the cosmos.<br>How biases apply: The individualism bias makes us overemphasize personal responsibility, while the groupthink bias may lead us to conform too much to societal norms. Stoicism teaches a balance where we take personal responsibility but also act in harmony with the greater good.",
+"The Paradox of Seeking and Letting Go of Approval<br>Stoics argue that we should not seek external approval, focusing instead on living in accordance with virtue. However, paradoxically, by living virtuously, we often gain the respect and approval of others without seeking it. The paradox is in how not seeking approval can actually lead to it.<br>How biases apply: The approval bias makes us overly concerned with others' opinions, while the reactance bias makes us resist external expectations. Stoicism teaches us to live according to virtue without being swayed by either desire for or rejection of approval.",
+"The Paradox of Desiring Virtue and Avoiding Desire<br>Stoicism teaches us to avoid desire, which leads to dissatisfaction. Yet, we are encouraged to strongly desire virtue and moral improvement. The paradox lies in how to cultivate a strong desire for virtue while avoiding desire for other external things.<br>How biases apply: The desirability bias makes us overvalue what we want, leading to disappointment. Stoicism redirects desire towards internal virtues, helping us avoid the pitfalls of external longing.",
+"The Paradox of Security and Uncertainty<br>Stoicism advises us to accept uncertainty as a fundamental part of life and not to fear it. At the same time, it encourages us to seek security through wisdom and preparation. The paradox is how to prepare for life’s uncertainties without becoming anxious about the future.<br>How biases apply: The certainty effect makes us overvalue things that seem more certain, while the ambiguity bias causes discomfort with uncertain situations. Stoicism encourages us to accept uncertainty as a natural part of life, while taking reasonable precautions without fear.",
+"The Paradox of Learning and Unlearning<br>Stoicism values learning and knowledge, urging us to study philosophy, nature, and ourselves. Yet, it also teaches that some things must be unlearned, particularly harmful beliefs and biases. The paradox is in the need to constantly seek knowledge while also recognizing that some of what we learn may need to be undone.<br>How biases apply: The confirmation bias may cause us to cling to old beliefs, even when they’re proven wrong. Stoicism encourages unlearning false ideas while continuously seeking true wisdom.",
+"The Paradox of Mastery and Humility<br>Stoicism encourages mastery of the self, urging us to discipline our minds, emotions, and desires. However, it also teaches humility, recognizing that complete mastery may be impossible. The paradox is in striving for mastery while maintaining humility about the limitations of our control.<br>How biases apply: The overconfidence bias leads us to believe we have more control than we do. Stoicism helps counter this by promoting humility and recognizing the limits of mastery.",
+"The Paradox of Seeking Solitude and Embracing Society<br>Stoicism encourages solitude for self-reflection and inner peace, yet also stresses the importance of being an active participant in society, fulfilling one’s duties to others. The paradox is how to balance personal solitude with social engagement, especially when both are necessary for personal growth and contributing to the greater good.<br>How biases apply: The introversion bias may lead us to withdraw too much, while the social conformity bias might cause us to lose ourselves in societal expectations. Stoicism advises a balance between retreating into solitude for reflection and engaging with society to practice virtue.",
+"The Paradox of Expecting the Worst and Maintaining Optimism<br>Stoicism encourages us to prepare for the worst by anticipating challenges and adversities (premeditatio malorum), but it also teaches us to maintain hope and optimism. The paradox lies in how we can expect difficulties while still keeping a positive outlook on life.<br>How biases apply: The negativity bias makes us focus too much on potential dangers, while optimism bias may make us ignore them. Stoicism teaches us to hold both perspectives—anticipating hardships without losing hope or motivation.",
+"The Paradox of Embracing Change While Seeking Stability<br>Stoics accept that change is inevitable and that everything is in a constant state of flux. Yet, they also emphasize the importance of stability, particularly in our virtues and principles. The paradox lies in how to remain stable in our character while adapting to the ever-changing nature of the world.<br>How biases apply: The change aversion bias leads us to resist change even when it’s necessary, while the stability bias might make us cling too tightly to the status quo. Stoicism teaches us to remain firm in our principles while flowing with the changes of life.",
+"The Paradox of Caring for the Self and Serving Others<br>Stoicism teaches us to take care of ourselves—physically, mentally, and emotionally—yet it also promotes serving the greater good and prioritizing the needs of others. The paradox lies in how to balance self-care with altruism, ensuring that neither is neglected.<br>How biases apply: The selfishness bias might make us overly focused on our own needs, while the altruism bias can lead us to neglect self-care. Stoicism advises us to serve others while maintaining personal well-being.",
+"The Paradox of Enjoying Life’s Moments and Remaining Detached<br>Stoicism teaches that we should enjoy the beauty of life’s moments without becoming attached to them. The paradox is that by fully experiencing life’s pleasures, we may naturally become attached to them, even though attachment can lead to suffering.<br>How biases apply: The pleasure bias makes us cling to experiences that bring joy, while the detachment bias can prevent us from enjoying life fully. Stoicism teaches us to savor moments without becoming dependent on them.",
+"The Paradox of Knowledge and Ignorance<br>Stoicism encourages the pursuit of knowledge and wisdom, but it also stresses that true wisdom comes from recognizing how little we actually know. The paradox is that the more knowledge we acquire, the more we realize our ignorance.<br>How biases apply: The Dunning-Kruger effect makes us overestimate our knowledge early on, while the expertise bias might lead us to think we know more than we do. Stoicism helps us cultivate a humble approach to learning, recognizing that wisdom includes acknowledging our limitations.",
+"The Paradox of Strength in Vulnerability<br>Stoicism teaches resilience and strength in facing adversity, yet it also acknowledges that vulnerability is an essential part of human experience and growth. The paradox is that sometimes being vulnerable—acknowledging our weaknesses—can actually make us stronger.<br>How biases apply: The invulnerability bias leads us to hide or deny our weaknesses, while the vulnerability bias might make us overly sensitive to challenges. Stoicism encourages us to find strength in acknowledging our vulnerabilities while working on improving them.",
+"The Paradox of Striving for Virtue While Avoiding Pride<br>Stoicism emphasizes the importance of constantly striving for virtue. Yet, the paradox arises when we become proud of our virtue, which in itself is a vice. How do we pursue virtue without falling into the trap of pride?<br>How biases apply: The self-serving bias might cause us to see our own virtues as superior, while the humility bias might make us undervalue our moral achievements. Stoicism teaches us to strive for virtue while remaining humble.",
+"The Paradox of Freedom and Responsibility<br>Stoics argue that true freedom is found in controlling our own minds and emotions, yet they also emphasize our responsibility to others and the world. The paradox is that, while we are free internally, we still have obligations that may limit our external freedom.<br>How biases apply: The personal freedom bias might make us overvalue independence, while the responsibility bias could lead us to overemphasize duty to others. Stoicism offers a balance between inner freedom and external responsibilities.",
+"The Paradox of Influence and Detachment<br>Stoicism advises us to influence the world positively while remaining detached from the results. The paradox is in how we can put effort into making a difference while not becoming emotionally invested in whether we succeed or fail.<br>How biases apply: The influence bias makes us overly focused on the outcomes of our actions, while the detachment bias might cause us to withdraw from trying altogether. Stoicism encourages us to act meaningfully without attachment to the outcome.",
+"The Paradox of Inner Peace and External Chaos<br>Stoicism teaches that inner peace comes from within and should not be disturbed by external events. Yet, the paradox is that we live in a world full of chaos, uncertainty, and conflict. How do we maintain inner peace when surrounded by external turmoil?<br>How biases apply: The external locus of control bias makes us feel that our happiness depends on outside factors, while the internal locus of control bias can lead us to overlook the impact of external realities. Stoicism teaches us to cultivate inner peace while accepting that external chaos is inevitable.",
+"The Paradox of Rationality and Emotion<br>Stoicism places great emphasis on using reason to guide our actions, but it also recognizes that emotions are an inherent part of the human experience. The paradox lies in how to navigate life rationally without suppressing our emotions entirely, allowing them to serve us without controlling us.<br>How biases apply: The rationality bias can lead us to ignore or suppress emotions, while the emotion bias can cause us to act irrationally. Stoicism encourages using reason to manage emotions, rather than being dominated by them.",
+"The Paradox of Wealth and Poverty<br>Stoicism teaches that wealth is indifferent, neither inherently good nor bad, yet it also warns against the corrupting influence of excessive wealth. The paradox is in how to handle wealth without becoming attached to it, and how to live in poverty without feeling deprived.<br>How biases apply: The wealth bias makes us overvalue material wealth, while the poverty bias might make us disdain wealth entirely. Stoicism advocates treating both wealth and poverty with equanimity, neither seeking nor fearing either.",
+"The Paradox of Control and Surrender<br>Stoicism emphasizes controlling what is within our power—our thoughts, actions, and reactions—while surrendering to the things we cannot control. The paradox is that surrendering to what we can’t control often gives us a greater sense of control over our internal state.<br>How biases apply: The control illusion bias leads us to overestimate our control over external circumstances, while the fatalism bias might make us feel powerless. Stoicism helps us strike a balance by controlling the internal and accepting the external.",
+"The Paradox of Purpose and Detachment from Results<br>Stoics believe in living purposefully, guided by virtue, but also advocate detachment from the outcomes of our actions. The paradox is how to live with purpose and intention while remaining indifferent to whether we succeed or fail.<br>How biases apply: The goal-setting bias makes us overly focused on achieving results, while the detachment bias might cause us to neglect purposeful action. Stoicism teaches us to focus on the process and the present, rather than being fixated on the outcomes."
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to shuffle and display paginated rules
+  function shuffleRules() {
+    let selectedRules = [];
+
+    // Check if Rules of Acquisition should be included
+    if (document.getElementById('rulesOfAcquisitionCheck').checked) {
+      selectedRules = selectedRules.concat(rulesOfAcquisition);
+    }
+
+    // Check if Stoics Feed should be included
+    if (document.getElementById('stoicsFeedCheck').checked) {
+      selectedRules = selectedRules.concat(stoics_feed);
+    }
+
+    // Shuffle the selected rules
+    const shuffledRules = shuffleArray(selectedRules);
+    const elementsPerPage = parseInt(document.getElementById('elementsPerPage').value, 10);
+    displayPaginatedRules(shuffledRules, elementsPerPage);
+  }
+
+  // Function to display paginated rules
+  function displayPaginatedRules(rules, elementsPerPage) {
+    const rulesContainer = document.getElementById('rulesContainer');
+    rulesContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < rules.length; i += elementsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+      pageDiv.innerHTML = `<h3>Page ${(i / elementsPerPage) + 1}</h3><p>${rules.slice(i, i + elementsPerPage).join('<br>')}</p>`;
+      rulesContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Event listener for the Shuffle button
+  document.getElementById('shuffleButton').addEventListener('click', shuffleRules);
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

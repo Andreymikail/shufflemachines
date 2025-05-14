@@ -1,0 +1,301 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Minigolf</h2>
+
+  <p style="color: white;">Move the golf ball to the hole (H) in as few strokes as possible, avoiding obstacles like bushes, rocks, and water.</p>
+  
+  <!-- Control buttons -->
+  <div style="margin-top: 20px;">
+    <button id="restartButton" class="round-button" style="color: white;">Restart</button>
+  </div>
+  
+  <!-- Grid selector -->
+  <div>
+    <label for="gridSelector" style="color: white;">Choose a Grid:</label>
+    <select id="gridSelector">
+      <option value="grid1">Grid 1</option>
+      <option value="grid2">Grid 2</option>
+      <option value="grid3">Grid 3</option>
+    </select>
+    <button id="loadGridButton" class="round-button">Load</button>
+  </div>
+<br>
+  <!-- Directional buttons and power -->
+  <div>
+    <label style="color: white;">Power:</label>
+    <div id="powerButtons">
+      <button id="power1" class="round-button2">1</button>
+      <button id="power2" class="round-button2">2</button>
+      <button id="power3" class="round-button2">3</button>
+      <button id="power4" class="round-button2">4</button>
+      <button id="power5" class="round-button2">5</button>
+    </div>
+    <br><br>
+    <button id="leftButton" class="round-button2">←</button>
+    <button id="upButton" class="round-button2">↑</button>
+    <button id="downButton" class="round-button2">↓</button>
+    <button id="rightButton" class="round-button2">→</button>
+  </div>
+
+  <!-- Grid for Minigolf -->
+  <div id="minigolfGrid" style="display: grid; grid-template-columns: repeat(10, 40px); gap: 5px; justify-content: center; margin-top: 20px;">
+    <!-- Grid will be generated here -->
+  </div>
+  
+  <!-- Game messages -->
+  <p id="gameMessage" style="color: white;"></p>
+  <p style="color: white;">Total Strokes: <span id="strokeCount">0</span></p>
+  <p style="color: white;">Time: <span id="timeElapsed">0</span> seconds</p>
+
+</div>
+
+<script>
+  const terrainTypes = {
+    'S': { color: 'green' },   // Start
+    'H': { color: 'red' },     // Hole
+    'B': { color: 'brown' },   // Bush (barrier)
+    'P': { color: 'darkgray' }, // Stone (obstacle)
+    'W': { color: 'lightblue' }, // Water puddle (obstacle)
+    'E': { color: 'lightgreen' } // Empty space
+  };
+
+const grids = {
+    'grid1': [
+      ['S', 'E', 'E', 'E', 'P', 'E', 'E', 'E', 'E', 'E'],
+      ['B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['B', 'W', 'E', 'E', 'W', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'P', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'H', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'P', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E']
+    ],
+    'grid2': [
+  ['S', 'E', 'E', 'E', 'P', 'E', 'E', 'E', 'E', 'E'],
+  ['E', 'E', 'P', 'B', 'E', 'W', 'E', 'E', 'B', 'E'],
+  ['B', 'W', 'E', 'E', 'E', 'E', 'P', 'E', 'E', 'E'],
+  ['E', 'E', 'E', 'P', 'B', 'E', 'W', 'E', 'E', 'P'],
+  ['E', 'P', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E'],
+  ['W', 'E', 'E', 'E', 'P', 'E', 'E', 'B', 'E', 'E'],
+  ['E', 'E', 'P', 'B', 'E', 'E', 'E', 'E', 'P', 'E'],
+  ['E', 'W', 'E', 'E', 'E', 'E', 'E', 'W', 'B', 'E'],
+  ['B', 'E', 'E', 'P', 'E', 'W', 'E', 'H', 'E', 'E'],
+  ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'P', 'E', 'E']
+],
+    'grid3': [
+  ['S', 'E', 'P', 'E', 'E', 'E', 'B', 'E', 'E', 'H'],
+  ['E', 'E', 'B', 'P', 'E', 'W', 'E', 'E', 'P', 'E'],
+  ['E', 'W', 'E', 'E', 'E', 'E', 'E', 'P', 'E', 'B'],
+  ['E', 'B', 'E', 'P', 'E', 'E', 'B', 'E', 'E', 'E'],
+  ['E', 'E', 'W', 'E', 'E', 'P', 'E', 'W', 'E', 'P'],
+  ['B', 'P', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E'],
+  ['E', 'E', 'E', 'E', 'E', 'E', 'P', 'E', 'W', 'E'],
+  ['E', 'P', 'E', 'B', 'W', 'E', 'B', 'H', 'E', 'E'],
+  ['P', 'E', 'E', 'E', 'E', 'E', 'P', 'E', 'E', 'E'],
+  ['E', 'E', 'E', 'P', 'B', 'E', 'E', 'E', 'B', 'E']
+]
+  };
+
+  let currentGrid = grids['grid1'];
+  let playerPosition = { row: 0, col: 0 };
+  let strokeCount = 0;
+  let selectedPower = 1; // Nível de potência padrão
+  let timerInterval;
+  let timeElapsed = 0;
+  let gameOver = false; // Nova variável para controlar se o jogo terminou
+
+  // Função para iniciar o cronômetro
+  function startTimer() {
+    clearInterval(timerInterval);
+    timeElapsed = 0;
+    document.getElementById('timeElapsed').textContent = timeElapsed;
+    timerInterval = setInterval(() => {
+      timeElapsed++;
+      document.getElementById('timeElapsed').textContent = timeElapsed;
+    }, 1000);
+  }
+
+  // Função para parar o cronômetro
+  function stopTimer() {
+    clearInterval(timerInterval);
+  }
+
+  // Função para renderizar o campo de minigolf
+  function renderCourse(course) {
+    const gridContainer = document.getElementById('minigolfGrid');
+    gridContainer.innerHTML = ''; // Limpa o grid anterior
+    course.forEach((row, rowIndex) => {
+      row.forEach((cell, colIndex) => {
+        const cellDiv = document.createElement('div');
+        cellDiv.className = 'grid-cell';
+        cellDiv.style.backgroundColor = terrainTypes[cell].color;
+        cellDiv.style.width = '40px';
+        cellDiv.style.height = '40px';
+        if (cell === 'H' && rowIndex === playerPosition.row && colIndex === playerPosition.col) {
+          // Se a bola estiver no buraco, mostra a bola dentro do buraco
+          cellDiv.textContent = '⚪⛳';
+        } else if (cell === 'H') {
+          cellDiv.textContent = '⛳'; // Ícone de buraco
+        } else if (rowIndex === playerPosition.row && colIndex === playerPosition.col) {
+          cellDiv.textContent = '⚪'; // Ícone de bola
+        }
+        gridContainer.appendChild(cellDiv);
+      });
+    });
+  }
+
+  // Função para carregar um novo grid
+  function loadGrid(gridName) {
+    currentGrid = grids[gridName];
+    playerPosition = { row: 0, col: 0 };
+    strokeCount = 0;
+    gameOver = false; // Resetar estado de game over
+    document.getElementById('strokeCount').textContent = strokeCount;
+    document.getElementById('gameMessage').textContent = '';
+    renderCourse(currentGrid);
+    startTimer();
+  }
+
+  // Função para reiniciar o jogo
+  function restartGame() {
+    playerPosition = { row: 0, col: 0 };
+    strokeCount = 0;
+    gameOver = false; // Resetar estado de game over
+    document.getElementById('strokeCount').textContent = strokeCount;
+    document.getElementById('gameMessage').textContent = '';
+    renderCourse(currentGrid);
+    startTimer();
+  }
+
+  // Função para mover a bola
+  function movePlayer(direction) {
+    if (gameOver) return; // Não permitir movimento após o jogo terminar
+
+    let newRow = playerPosition.row;
+    let newCol = playerPosition.col;
+
+    // Cálculo do movimento baseado na direção e potência
+    if (direction === 'right') newCol += selectedPower;
+    if (direction === 'left') newCol -= selectedPower;
+    if (direction === 'up') newRow -= selectedPower;
+    if (direction === 'down') newRow += selectedPower;
+
+    // Garante que o movimento permaneça dentro dos limites
+    newRow = Math.max(0, Math.min(newRow, currentGrid.length - 1));
+    newCol = Math.max(0, Math.min(newCol, currentGrid[0].length - 1));
+
+    // Verifica se a nova posição é um obstáculo
+    if (['B', 'P', 'W'].includes(currentGrid[newRow][newCol])) {
+      document.getElementById('gameMessage').textContent = 'You have hit an obstacle! Try another direction.';
+      return;
+    }
+
+    // Verifica se o jogador chegou ao buraco
+    if (currentGrid[newRow][newCol] === 'H') {
+      document.getElementById('gameMessage').textContent = 'You completed the course! Congratulations!';
+      gameOver = true; // Sinaliza que o jogo terminou
+      stopTimer();
+    }
+
+    // Atualiza a posição do jogador
+    playerPosition = { row: newRow, col: newCol };
+    strokeCount++;
+    document.getElementById('strokeCount').textContent = strokeCount;
+
+    // Re-renderiza o campo
+    renderCourse(currentGrid);
+  }
+
+  // Manipula a seleção de potência
+  document.querySelectorAll('#powerButtons button').forEach(button => {
+    button.addEventListener('click', function () {
+      selectedPower = parseInt(this.textContent);
+      document.getElementById('gameMessage').textContent = `Potência definida para ${selectedPower}`;
+    });
+  });
+
+  // Manipula os botões de direção
+  document.getElementById('leftButton').addEventListener('click', function () {
+    movePlayer('left');
+  });
+  document.getElementById('upButton').addEventListener('click', function () {
+    movePlayer('up');
+  });
+  document.getElementById('rightButton').addEventListener('click', function () {
+    movePlayer('right');
+  });
+  document.getElementById('downButton').addEventListener('click', function () {
+    movePlayer('down');
+  });
+
+  // Manipula o botão de reiniciar
+  document.getElementById('restartButton').addEventListener('click', function () {
+    restartGame();
+  });
+
+  // Carrega o grid selecionado quando o botão é clicado
+  document.getElementById('loadGridButton').addEventListener('click', function () {
+    const selectedGrid = document.getElementById('gridSelector').value;
+    loadGrid(selectedGrid);
+  });
+
+  // Carrega o grid inicial
+  loadGrid('grid1');
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .round-button2 {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px;
+  }
+
+  .round-button2:hover {
+    background-color: #6E1919;
+  }
+
+  .grid-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    border: 1px solid #000;
+  }
+
+  #gameMessage {
+    font-weight: bold;
+    color: white;
+  }
+</style>

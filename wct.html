@@ -1,0 +1,238 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">WCT</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="surfersCheckbox"> surfers</label><br>
+    <label><input type="checkbox" id="boardsCheckbox"> boards</label><br>
+    <label><input type="checkbox" id="circuitsCheckbox"> Circuit</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Perfect Set Incoming - Choose a category and add +10 to the value of your current card. Use before revealing cards.",
+"Interference Call - Force your opponent to swap their current card for one from the deck. Use before revealing cards.",
+"Air Reverse Bonus - If your board or surfer has an Aerial Ability score higher than 90, gain +15 in the chosen category.",
+"Massive Wipeout - Choose an opponent's previously played card and permanently discard it from play. Use once per game.",
+"Wildcard Entry - Draw a new card from the deck and immediately play it in place of your current card.",
+"Priority Control - If you lose a round, play again without passing.",
+"Beach Closeout - Choose a category and nullify it for the current round.",
+"Local Knowledge - If the card played is a beach, add +10 to the Break Difficulty stat.",
+"Legends Never Die - If a legendary surfer card (such as Kelly Slater) is discarded, return it to play and play again.",
+"Board Snap - Choose an opponent's surfboard card and nullify its highest stat for the rest of the game.",
+"Late Drop - If your card's Wave Power score is higher than 90, you may play a second card in the same round and choose the best result.",
+"Paddle Battle - Both players choose a new category after the cards are revealed. Whoever has the highest value wins.",
+"Double-Up Wave - ​​If your card wins in the current round, automatically win the next round without having to play a card.",
+"Heat Restart - Swap your current card for a new one from the deck before the round begins.",
+"Overhead Swell - Add +15 to your card's Wave Power attribute for one round.",
+"Tidal Shift - Swap a card from your hand for a card already discarded by any player.",
+"Shark Alert - The current round is canceled and everyone returns their cards to the deck, shuffling again.",
+"Goofy Advantage - If your surfer is Goofy Foot (left foot in front), add +10 to the attribute of your choice.",
+"Right Break - If your beach is a classic right (like J-Bay or Snapper Rocks), add +10 to Break Difficulty.",
+"Secret Weapon - Play a card of your choice from the discard pile as if it were in your hand.",
+"Air Show - If the card played has an Aerial Ability higher than 90, it automatically wins the round, regardless of the category chosen.",
+"Perfect 10 - Use after winning a round. Your previous card returns to your hand to be used again.",
+"Board Switch - Swap your current board for one from the discard pile, increasing your control by +10 for one round.",
+"Massive Set - All players discard their current cards and draw new ones.",
+"Victory Lap - If you win 3 consecutive rounds, receive an extra bonus card from the deck to add to your hand."
+];
+  
+const surfers = [
+{name: "Surfer: Gabriel Medina", attributes: {"Wave Mastery": 95, "Aerial Skills": 98, "Power Surfing": 90, "Competition Nerves": 92, "Championship Titles": 3}},
+{name: "Surfer: Carissa Moore", attributes: {"Wave Mastery": 97, "Aerial Skills": 85, "Power Surfing": 96, "Competition Nerves": 94, "Championship Titles": 5}},
+{name: "Surfer: Italo Ferreira", attributes: {"Wave Mastery": 92, "Aerial Skills": 99, "Power Surfing": 93, "Competition Nerves": 90, "Championship Titles": 1}},
+{name: "Surfer: Stephanie Gilmore", attributes: {"Wave Mastery": 94, "Aerial Skills": 80, "Power Surfing": 92, "Competition Nerves": 96, "Championship Titles": 8}},
+{name: "Surfer: Kelly Slater", attributes: {"Wave Mastery": 100, "Aerial Skills": 95, "Power Surfing": 98, "Competition Nerves": 100, "Championship Titles": 11}},
+{name: "Surfer: John John Florence", attributes: {"Wave Mastery": 98, "Aerial Skills": 94, "Power Surfing": 97, "Competition Nerves": 88, "Championship Titles": 2}},
+{name: "Surfer: Filipe Toledo", attributes: {"Wave Mastery": 90, "Aerial Skills": 100, "Power Surfing": 89, "Competition Nerves": 91, "Championship Titles": 1}},
+{name: "Surfer: Tyler Wright", attributes: {"Wave Mastery": 95, "Aerial Skills": 87, "Power Surfing": 94, "Competition Nerves": 92, "Championship Titles": 2}},
+{name: "Surfer: Mick Fanning", attributes: {"Wave Mastery": 93, "Aerial Skills": 75, "Power Surfing": 96, "Competition Nerves": 99, "Championship Titles": 3}},
+{name: "Surfer: Tatiana Weston-Webb", attributes: {"Wave Mastery": 90, "Aerial Skills": 85, "Power Surfing": 92, "Competition Nerves": 88, "Championship Titles": 0}},
+{name: "Surfer: Jordy Smith", attributes: {"Wave Mastery": 92, "Aerial Skills": 88, "Power Surfing": 95, "Competition Nerves": 87, "Championship Titles": 0}},
+{name: "Surfer: Kanoa Igarashi", attributes: {"Wave Mastery": 88, "Aerial Skills": 90, "Power Surfing": 85, "Competition Nerves": 92, "Championship Titles": 0}},
+{name: "Surfer: Lakey Peterson", attributes: {"Wave Mastery": 89, "Aerial Skills": 91, "Power Surfing": 90, "Competition Nerves": 85, "Championship Titles": 0}},
+{name: "Surfer: Owen Wright", attributes: {"Wave Mastery": 91, "Aerial Skills": 80, "Power Surfing": 94, "Competition Nerves": 86, "Championship Titles": 0}},
+{name: "Surfer: Isabella Nichols", attributes: {"Wave Mastery": 87, "Aerial Skills": 83, "Power Surfing": 88, "Competition Nerves": 84, "Championship Titles": 0}},
+{name: "Surfer: Ethan Ewing", attributes: {"Wave Mastery": 91, "Aerial Skills": 85, "Power Surfing": 93, "Competition Nerves": 87, "Championship Titles": 0}},
+{name: "Surfer: Jack Robinson", attributes: {"Wave Mastery": 94, "Aerial Skills": 87, "Power Surfing": 92, "Competition Nerves": 90, "Championship Titles": 0}},
+{name: "Surfer: Caroline Marks", attributes: {"Wave Mastery": 93, "Aerial Skills": 89, "Power Surfing": 95, "Competition Nerves": 88, "Championship Titles": 1}},
+{name: "Surfer: Morgan Cibilic", attributes: {"Wave Mastery": 87, "Aerial Skills": 84, "Power Surfing": 90, "Competition Nerves": 86, "Championship Titles": 0}},
+{name: "Surfer: Sally Fitzgibbons", attributes: {"Wave Mastery": 92, "Aerial Skills": 86, "Power Surfing": 91, "Competition Nerves": 89, "Championship Titles": 0}},
+{name: "Surfer: Yago Dora", attributes: {"Wave Mastery": 88, "Aerial Skills": 96, "Power Surfing": 89, "Competition Nerves": 85, "Championship Titles": 0}},
+{name: "Surfer: Connor O’Leary", attributes: {"Wave Mastery": 86, "Aerial Skills": 83, "Power Surfing": 90, "Competition Nerves": 87, "Championship Titles": 0}},
+{name: "Surfer: Brisa Hennessy", attributes: {"Wave Mastery": 91, "Aerial Skills": 84, "Power Surfing": 88, "Competition Nerves": 90, "Championship Titles": 0}},
+{name: "Surfer: Samuel Pupo", attributes: {"Wave Mastery": 89, "Aerial Skills": 94, "Power Surfing": 88, "Competition Nerves": 86, "Championship Titles": 0}},
+{name: "Surfer: Caio Ibelli", attributes: {"Wave Mastery": 87, "Aerial Skills": 85, "Power Surfing": 89, "Competition Nerves": 88, "Championship Titles": 0}}
+  ];
+
+  const boards = [
+{name: "Board: Al Merrick - The Proton (Kelly Slater)", attributes: {Speed: 95, Control: 98, "Aerial Ability": 85, "Tube Riding": 100, Legacy: 10}},
+{name: "Board: DHD - DNA (Mick Fanning)", attributes: {Speed: 93, Control: 96, "Aerial Ability": 80, "Tube Riding": 92, Legacy: 9}},
+{name: "Board: Pyzel - Ghost (John John Florence)", attributes: {Speed: 90, Control: 94, "Aerial Ability": 86, "Tube Riding": 95, Legacy: 8}},
+{name: "Board: Mayhem - Lost Driver 2.0 (Kolohe Andino)", attributes: {Speed: 92, Control: 90, "Aerial Ability": 95, "Tube Riding": 85, Legacy: 7}},
+{name: "Board: Sharp Eye - Holy Toledo (Filipe Toledo)", attributes: {Speed: 100, Control: 88, "Aerial Ability": 100, "Tube Riding": 85, Legacy: 9}},
+{name: "Board: JS Industries - Monsta Box (Julian Wilson)", attributes: {Speed: 94, Control: 91, "Aerial Ability": 92, "Tube Riding": 89, Legacy: 8}},
+{name: "Board: Channel Islands - Fever (Conner Coffin)", attributes: {Speed: 90, Control: 92, "Aerial Ability": 88, "Tube Riding": 86, Legacy: 7}},
+{name: "Board: Firewire - Slater Designs Sci-Fi 2.0 (Kelly Slater)", attributes: {Speed: 97, Control: 95, "Aerial Ability": 90, "Tube Riding": 91, Legacy: 8}},
+{name: "Board: Tokoro - Step-Up (Big waves in Hawaii)", attributes: {Speed: 93, Control: 96, "Aerial Ability": 70, "Tube Riding": 100, Legacy: 9}},
+{name: "Board: Haydenshapes - Hypto Krypto (free surf)", attributes: {Speed: 88, Control: 90, "Aerial Ability": 85, "Tube Riding": 87, Legacy: 6}}
+  ];
+
+const circuits = [
+{name: "Circuit: Pipeline (Hawaii, USA) - The Deadly Legend", attributes: {"Wave Power": 100, "Barrel Potential": 100, "Aerial Playground": 70, "Break Difficulty": 100, "Competition Legacy": 10}},
+{name: "Circuit: Teahupo'o (Tahiti) - The Liquid Monster", attributes: {"Wave Power": 98, "Barrel Potential": 100, "Aerial Playground": 60, "Break Difficulty": 100, "Competition Legacy": 9}},
+{name: "Circuit: Supertubos (Peniche, Portugal) - The Home of European Tubes", attributes: {"Wave Power": 90, "Barrel Potential": 95, "Aerial Playground": 85, "Break Difficulty": 88, "Competition Legacy": 8}},
+{name: "Circuit: J-Bay (Jeffreys Bay, South Africa) - The Perfect Slider", attributes: {"Wave Power": 95, "Barrel Potential": 85, "Aerial Playground": 80, "Break Difficulty": 90, "Competition Legacy": 9}},
+{name: "Circuit: Trestles (California, USA) - Aerial amusement park", attributes: {"Wave Power": 80, "Barrel Potential": 70, "Aerial Playground": 95, "Break Difficulty": 85, "Competition Legacy": 7}},
+{name: "Circuit: Bells Beach (Australia) - Classic and challenging", attributes: {"Wave Power": 90, "Barrel Potential": 75, "Aerial Playground": 70, "Break Difficulty": 88, "Competition Legacy": 9}},
+{name: "Circuit: Margaret River (Australia) - Kingdom of Big Waves", attributes: {"Wave Power": 95, "Barrel Potential": 80, "Aerial Playground": 75, "Break Difficulty": 92, "Competition Legacy": 8}},
+{name: "Circuit: Snapper Rocks (Australia) - Perfect right", attributes: {"Wave Power": 85, "Barrel Potential": 82, "Aerial Playground": 90, "Break Difficulty": 87, "Competition Legacy": 9}},
+{name: "Circuit: Saquarema (Brazil) - Maracanã do Surfe", attributes: {"Wave Power": 88, "Barrel Potential": 75, "Aerial Playground": 92, "Break Difficulty": 85, "Competition Legacy": 7}},
+{name: "Circuit: Sunset Beach (Hawaii, USA) - The Hawaiian challenge", attributes: {"Wave Power": 97, "Barrel Potential": 90, "Aerial Playground": 75, "Break Difficulty": 95, "Competition Legacy": 8}},
+{name: "Circuit: Cloudbreak (Fiji) - Deep tube paradise", attributes: {"Wave Power": 94, "Barrel Potential": 97, "Aerial Playground": 78, "Break Difficulty": 96, "Competition Legacy": 8}},
+{name: "Circuit: Hossegor (France) - The European capital of waves", attributes: {"Wave Power": 90, "Barrel Potential": 93, "Aerial Playground": 88, "Break Difficulty": 89, "Competition Legacy": 7}},
+{name: "Circuit: Punta Roca (El Salvador) - The jewel of the Pacific", attributes: {"Wave Power": 88, "Barrel Potential": 85, "Aerial Playground": 86, "Break Difficulty": 84, "Competition Legacy": 6}},
+{name: "Circuit: Barra de la Cruz (Mexico) - The right-hander of dreams", attributes: {"Wave Power": 89, "Barrel Potential": 87, "Aerial Playground": 84, "Break Difficulty": 83, "Competition Legacy": 7}},
+{name: "Circuit: Uluwatu (Bali, Indonesia) - The tropical mystique", attributes: {"Wave Power": 91, "Barrel Potential": 88, "Aerial Playground": 85, "Break Difficulty": 92, "Competition Legacy": 7}},
+{name: "Circuit: Keramas (Bali, Indonesia) – Aerial and Tubing Show", attributes: {"Wave Power": 87, "Barrel Potential": 84, "Aerial Playground": 94, "Break Difficulty": 86, "Competition Legacy": 6}},
+{name: "Circuit: G-Land (Grajang, Indonesia) – Liquid Wall", attributes: {"Wave Power": 96, "Barrel Potential": 95, "Aerial Playground": 75, "Break Difficulty": 95, "Competition Legacy": 8}},
+{name: "Circuit: Chicama (Peru) – The longest wave in the world", attributes: {"Wave Power": 80, "Barrel Potential": 70, "Aerial Playground": 85, "Break Difficulty": 75, "Competition Legacy": 6}},
+{name: "Circuit: Puerto Escondido (Mexico) - Scary and powerful", attributes: {"Wave Power": 98, "Barrel Potential": 95, "Aerial Playground": 78, "Break Difficulty": 100, "Competition Legacy": 7}},
+{name: "Circuit: Arpoador (Brazil) - Birthplace of Brazilian surfing", attributes: {"Wave Power": 82, "Barrel Potential": 75, "Aerial Playground": 88, "Break Difficulty": 83, "Competition Legacy": 7}}
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('surfersCheckbox').checked) selectedCards.push(...surfers);
+    if (document.getElementById('boardsCheckbox').checked) selectedCards.push(...boards);
+    if (document.getElementById('circuitsCheckbox').checked) selectedCards.push(...circuits);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

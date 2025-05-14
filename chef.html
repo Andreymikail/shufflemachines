@@ -1,0 +1,381 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Chef</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="chefCheckbox"> Chef</label><br>
+    <label><input type="checkbox" id="ingCheckbox"> Ingredient</label><br>
+    <label><input type="checkbox" id="utenCheckbox"> Utensil</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Mystery Box - Choose an attribute and all players must use that attribute for the round, even if it's not the one they originally chose.",
+"Michelin Upgrade - Your chef gains +2 Influence and Creativity this round.",
+"Time Pressure - All players lose -2 Accuracy this round (except chefs with TV competition experience).",
+"Knife Skills - Your chef gains +2 Accuracy this round.",
+"Fusion Cuisine - You can use two ingredients from your deck to increase Versatility by +3.",
+"Ingredient Swap - Swap an ingredient from your dish with an opponent's dish, choose which one to replace.",
+"Kitchen Disaster - A player of your choice loses -3 points to their attribute for the round.",
+"TV Star Power - If your chef has more than 5 TV appearances, they gain +2 Influence and Versatility this round.",
+"Secret Ingredient - If your ingredient is considered rare (8+ in rarity), they receive a bonus of +2 Flavor Intensity and Nutritional Value.",
+"Overcooked! - A player automatically loses the round if their chef has less than 6 in Accuracy.",
+"Grandma's Recipe - If your chef has a classic signature dish, they gain +3 Influence this round.",
+"Molecular Gastronomy - If your chef is known for experimental cuisine, they gain +3 in Creativity.",
+"Health Inspection - Choose an opponent. If your chef has a Restaurant Empire of less than 5, they automatically lose the round.",
+"Perfect Pairing - If your chef has experience in wine or pairing, they gain +2 in Versatility and Influence.",
+"World Tour - If your chef has worked in more than one country, they gain +2 in Influence and Creativity.",
+"Plating Master - Your chef gains +2 in Accuracy and Creativity this round.",
+"Head-to-Head Challenge - Choose an opponent for a head-to-head duel. Whoever has the highest value in the chosen attribute will automatically win the round.",
+"Chef Swap - Swap your chef for this round with an opponent's before revealing the attributes.",
+"Flambé! - If your chef is experienced in flambéing or grilling, he gains +2 to Creativity and Accuracy.",
+"Bread Master - If your chef is a renowned baker, he gains +2 to Accuracy and Influence this round.",];
+  
+const chef = [
+{name: "Chef: Alain Chapel (France)", attributes: {Creativity: 9, "Michelin Stars": 3, Influence: 9, "Signature Dish": "Truffle-stuffed Chicken", "TV Appearances": "0 (Pre-TV Era)", "Restaurant Empire": 2}},
+{name: "Chef: Alain Ducasse (France)", attributes: {Creativity: 9, "Michelin Stars": "21 (historical), 17 (current)", Influence: 10, "Signature Dish": "Cookpot of Vegetables", "TV Appearances": 3, "Restaurant Empire": "30+"}},
+{name: "Chef: Alain Passard (France)", attributes: {Creativity: 10, "Michelin Stars": 3, Influence: 9, "Signature Dish": "Légumes en Croûte de Sel", "TV Appearances": 3, "Restaurant Empire": 1}},
+{name: "Chef: Albert Adrià (Spain)", attributes: {Creativity: 10, "Michelin Stars": 2, Influence: 8, "Signature Dish": "Liquid Croquettes", "TV Appearances": 3, "Restaurant Empire": 4}},
+{name: "Chef: Albert Roux (France/UK)", attributes: {Creativity: 9, "Michelin Stars": 3, Influence: 9, "Signature Dish": "Soufflé Suissesse", "TV Appearances": 3, "Restaurant Empire": "10+"}},
+{name: "Chef: Alex Atala (Brazil)", attributes: {Creativity: 9, "Michelin Stars": 1, Influence: 8, "Signature Dish": "Ants with Pineapple", "TV Appearances": 6, "Restaurant Empire": 3}},
+{name: "Chef: Ana Roš (Slovenia)", attributes: {Creativity: 10, "Michelin Stars": 2, Influence: 8, "Signature Dish": "Alpine Cheese Ravioli", "TV Appearances": 4, "Restaurant Empire": 1}},
+{name: "Chef: Ana Sortun (USA/Turkey)", attributes: {Creativity: 9, "Michelin Stars": 1, Influence: 7, "Signature Dish": "Turkish Spice Lamb", "TV Appearances": 3, "Restaurant Empire": 2}},
+{name: "Chef: Andoni Luis Aduriz (Spain)", attributes: {Creativity: 10, "Michelin Stars": 2, Influence: 8, "Signature Dish": "Edible Stones", "TV Appearances": 3, "Restaurant Empire": 3}},
+{name: "Chef: Ángel León (Spain)", attributes: {Creativity: 10, "Michelin Stars": 4, Influence: 8, "Signature Dish": "Plankton Soup", "TV Appearances": 4, "Restaurant Empire": 3}},
+{name: "Chef: Anne-Sophie Pic (France)", attributes: {Creativity: 9, "Michelin Stars": 8, Influence: 8, "Signature Dish": "Berlingots with Matcha and Bergamot", "TV Appearances": 3, "Restaurant Empire": 6}},
+{name: "Chef: Anthony Bourdain", attributes: {Creativity: 9, "Michelin Stars": 0, "Influence": 10, "Signature Dish": "Bone Marrow with Parsley Salad", "TV Appearances": "100+", "Restaurant Empire": 2}},
+{name: "Chef: Auguste Escoffier (France)", attributes: {Creativity: 10, "Michelin Stars": "0 (Pre-Michelin)", Influence: 10, "Signature Dish": "Peach Melba", "TV Appearances": "0 (Pre-TV Era)", "Restaurant Empire": "5+"}},
+{name: "Chef: Bela Gil (Brazil)", attributes: {Creativity: 8, "Michelin Stars": 0, Influence: 9, "Signature Dish": "Banana Peel Burger", "TV Appearances": 7, "Restaurant Empire": 1}},
+{name: "Chef: Björn Frantzén (Sweden)", attributes: {Creativity: 9, "Michelin Stars": 3, Influence: 8, "Signature Dish": "Caramelized Lobster with Truffle", "TV Appearances": 3, "Restaurant Empire": 5}},
+{name: "Chef: Bo Songvisava (Thailand)", attributes: {Creativity: 9, "Michelin Stars": 1, Influence: 7, "Signature Dish": "Fermented Fish Sauce Relish", "TV Appearances": 2, "Restaurant Empire": 1}},
+{name: "Chef: Bruno Verjus (France)", attributes: {Creativity: 9, "Michelin Stars": 2, Influence: 7, "Signature Dish": "Artichokes with Sea Urchin", "TV Appearances": 2, "Restaurant Empire": 1}},
+{name: "Chef: Carlo Cracco (Italy)", attributes: {Creativity: 8, "Michelin Stars": 2, Influence: 7, "Signature Dish": "Marinated Egg Yolk", "TV Appearances": 6, "Restaurant Empire": 3}},
+{name: "Chef: César Ramirez (Mexico/USA)", attributes: {Creativity: 9, "Michelin Stars": 3, Influence: 7, "Signature Dish": "Uni and Caviar Tart", "TV Appearances": 1, "Restaurant Empire": 1}},
+{name: "Chef: Christian Puglisi (Denmark/Italy)", attributes: {Creativity: 9, "Michelin Stars": 1, Influence: 7, "Signature Dish": "Scandinavian Organic Tasting Menu", "TV Appearances": 3, "Restaurant Empire": 2}},
+{name: "Chef: Clare Smyth (UK)", attributes: {Creativity: 9, "Michelin Stars": 3, Influence: 8, "Signature Dish": "Potato and Roe", "TV Appearances": 5, "Restaurant Empire": 2}},
+{name: "Chef: Claude Troisgros (France/Brazil)", attributes: {Creativity: 9, "Michelin Stars": 1, Influence: 10, "Signature Dish": "Camarão com maracujá e mousse de banana-da-terra", "TV Appearances": 10, "Restaurant Empire": 3}},
+{name: "Chef: Cristina Bowerman (Italy)", attributes: {Creativity: 9, "Michelin Stars": 1, Influence: 7, "Signature Dish": "Ravioli with Cuttlefish Ink", "TV Appearances": 3, "Restaurant Empire": 2}},
+{name: "Chef: Cristina Tosi (USA)", attributes: {Creativity: 10, "Michelin Stars": 0, Influence: 9, "Signature Dish": "Cereal Milk Ice Cream", "TV Appearances": 8, "Restaurant Empire": 6}},
+{name: "Chef: Dani García (Spain)", attributes: {Creativity: 9, "Michelin Stars": 3, Influence: 8, "Signature Dish": "Oxtail Brioche", "TV Appearances": 4, "Restaurant Empire": "10+"}},
+{name: "Chef: Daniel Humm (Switzerland/USA)", attributes: {Creativity: 9, "Michelin Stars": 3, Influence: 9, "Signature Dish": "Honey and Lavender Duck", "TV Appearances": 4, "Restaurant Empire": 3}},
+{name: "Chef: Dominique Ansel (France/USA)", attributes: {Creativity: 10, "Michelin Stars": "0 (Pastry Chef)", Influence: 9, "Signature Dish": "Cronut", "TV Appearances": 3, "Restaurant Empire": 5}},
+{name: "Chef: Dominique Crenn (France/USA)", attributes: {Creativity: 10, "Michelin Stars": 3, Influence: 8, "Signature Dish": "A Walk in the Forest", "TV Appearances": 5, "Restaurant Empire": 3}},
+{name: "Chef: Edgar Núñez (Mexico)", attributes: {Creativity: 8, "Michelin Stars": 1, Influence: 7, "Signature Dish": "Avocado Tacos", "TV Appearances": 2, "Restaurant Empire": 2}},
+{name: "Chef: Enrique Olvera (Mexico)", attributes: {Creativity: 9, "Michelin Stars": 2, Influence: 8, "Signature Dish": "Mole Madre, Mole Nuevo", "TV Appearances": 4, "Restaurant Empire": 6}},
+{name: "Chef: Erick Jacquin (French)", attributes: {Creativity: 9, "Michelin Stars": 1, Influence: 9, "Signature Dish": "Grand Gâteau", "TV Appearances": 10, "Restaurant Empire": 3}},
+{name: "Chef: Eyal Shani (Israel)", attributes: {Creativity: 9, "Michelin Stars": 0, Influence: 8, "Signature Dish": "Whole Roasted Cauliflower", "TV Appearances": 5, "Restaurant Empire": "10+"}},
+{name: "Chef: Felipe Bronze (Brazil)", attributes: {Creativity: 10, "Michelin Stars": 2, Influence: 9, "Signature Dish": "Deconstructed Shrimp Moqueca", "TV Appearances": 8, "Restaurant Empire": 2}},
+{name: "Chef: Ferran Adrià (Spain)", attributes: {Creativity: 10, "Michelin Stars": 3, Influence: 10, "Signature Dish": "Spherical Olives", "TV Appearances": 4, "Restaurant Empire": 5}},
+{name: "Chef: Francis Mallmann (Argentina)", attributes: {Creativity: 9, "Michelin Stars": 0, Influence: 9, "Signature Dish": "Fire-Roasted Patagonian Lamb", "TV Appearances": 4, "Restaurant Empire": 6}},
+{name: "Chef: Gabriele Bonci (Italy) - Pizza Master", attributes: {Creativity: 9, "Michelin Stars": 0, Influence: 8, "Signature Dish": "Roman-Style Pizza al Taglio", "TV Appearances": 4, "Restaurant Empire": 4}},
+{name: "Chef: Gaggan Anand (India/Thailand)", attributes: {Creativity: 10, "Michelin Stars": 2, Influence: 9, "Signature Dish": "Lick It Up (Edible Art on a Plate)", "TV Appearances": 5, "Restaurant Empire": 3}},
+{name: "Chef: Gastón Acurio (Peru)", attributes: {Creativity: 9, "Michelin Stars": 1, Influence: 9, "Signature Dish": "Leche de Tigre Tiradito", "TV Appearances": 5, "Restaurant Empire": "40+"}},
+{name: "Chef: Gennaro Contaldo (Italy/UK)", attributes: {Creativity: 8, "Michelin Stars": 0, Influence: 8, "Signature Dish": "Authentic Italian Pasta", "TV Appearances": 7, "Restaurant Empire": 4}},
+{name: "Chef: Gísli Matthías Auðunsson (Iceland)", attributes: {Creativity: 8, "Michelin Stars": 1, Influence: 6, "Signature Dish": "Smoked Puffin with Blueberry Sauce", "TV Appearances": 2, "Restaurant Empire": 1}},
+{name: "Chef: Gordon Ramsay (UK)", attributes: {Creativity: 8, "Michelin Stars": "17 (historical), 7 (current)", Influence: 10, "Signature Dish": "Beef Wellington", "TV Appearances": "10+", "Restaurant Empire": "35+"}},
+{name: "Chef: Helena Rizzo (Brazil)", attributes: {Creativity: 9, "Michelin Stars": 1, Influence: 7, "Signature Dish": "Manioc Gnocchi with Tucupi Sauce", "TV Appearances": 5, "Restaurant Empire": 2}},
+{name: "Chef: Hélène Darroze (France)", attributes: {Creativity: 9, "Michelin Stars": 6, Influence: 8, "Signature Dish": "Armagnac Baba with Chantilly Cream", "TV Appearances": 5, "Restaurant Empire": 3}},
+{name: "Chef: Heston Blumenthal (UK)", attributes: {Creativity: 10, "Michelin Stars": 6, Influence: 9, "Signature Dish": "Bacon and Egg Ice Cream", "TV Appearances": 8, "Restaurant Empire": 4}},
+{name: "Chef: Jamie Oliver (UK)", attributes: {Creativity: 7, "Michelin Stars": 0, Influence: 10, "Signature Dish": "The Naked Chef’s Italian Pasta", "TV Appearances": "15+", "Restaurant Empire": "10+"}},
+{name: "Chef: Jeong Kwan (South Korea) (Monastic Cuisine Master)", attributes: {Creativity: 9, "Michelin Stars": 0, Influence: 8, "Signature Dish": "Fermented Soybean Stew", "TV Appearances": 3, "Restaurant Empire": "0 (temple-based)"}},
+{name: "Chef: Joan Roca (Spain)", attributes: {Creativity: 9, "Michelin Stars": 3, Influence: 9, "Signature Dish": "Charcoal-grilled King Prawn", "TV Appearances": 4, "Restaurant Empire": 3}},
+{name: "Chef: Jorge Vallejo (Mexico)", attributes: {Creativity: 9, "Michelin Stars": 1, Influence: 8, "Signature Dish": "Squash Blossom Quesadilla", "TV Appearances": 3, "Restaurant Empire": 2}},
+{name: "Chef: José Andrés (Spain/USA)", attributes: {Creativity: 9, "Michelin Stars": 2, Influence: 10, "Signature Dish": "Liquid Nitrogen Olive", "TV Appearances": 8, "Restaurant Empire": "30+"}},
+{name: "Chef: Julia Child (USA)", attributes: {Creativity: 8, "Michelin Stars": 0, Influence: 10, "Signature Dish": "Boeuf Bourguignon", "TV Appearances": "10+", "Restaurant Empire": "0 (Books and TV only)"}},
+{name: "Chef: Kamilla Seidler (Denmark/Bolivia)", attributes: {Creativity: 9, "Michelin Stars": 0, Influence: 7, "Signature Dish": "Amazonian Ceviche", "TV Appearances": 2, "Restaurant Empire": 1}},
+{name: "Chef: Karlos Arguiñano (Spain)", attributes: {Creativity: 8, "Michelin Stars": 1, Influence: 8, "Signature Dish": "Basque-style Codfish", "TV Appearances": "10+", "Restaurant Empire": 2}},
+{name: "Chef: Lidia Bastianich (Italy/USA)", attributes: {Creativity: 8, "Michelin Stars": 0, Influence: 9, "Signature Dish": "Homemade Pasta with Bolognese", "TV Appearances": "10+", "Restaurant Empire": "10+"}},
+{name: "Chef: Lorna Muñoz (The Chiloé Guardian)", attributes: {Creativity: 8, "Michelin Stars": 0, "Influence": 9, "Signature Dish": "Curanto en hoyo", "TV Appearances": 3, "Restaurant Empire": 1}},
+{name: "Chef: Magnus Nilsson (Sweden)", attributes: {Creativity: 9, "Michelin Stars": 2, Influence: 8, "Signature Dish": "Reindeer Blood Pancakes", "TV Appearances": 4, "Restaurant Empire": 1}},
+{name: "Chef: Marco Pierre White (United Kingdom)", attributes: {Creativity: 9, "Michelin Stars": 3, Influence: 10, "Signature Dish": "Tagliatelle of Oysters", "TV Appearances": 6, "Restaurant Empire": 5}},
+{name: "Chef: Massialot François (France)", attributes: {Creativity: 10, "Michelin Stars": "0 (Pre-Michelin)", Influence: 10, "Signature Dish": "First Known Crème Brûlée", "TV Appearances": "0 (17th Century Era)", "Restaurant Empire": 0}},
+{name: "Chef: Massimo Bottura (Italy)", attributes: {Creativity: 10, "Michelin Stars": 3, Influence: 9, "Signature Dish": "Five Ages of Parmigiano Reggiano", "TV Appearances": 5, "Restaurant Empire": 6}},
+{name: "Chef: Mauro Colagreco (Argentina/France)", attributes: {Creativity: 9, "Michelin Stars": 3, Influence: 8, "Signature Dish": "Oyster and Pear Sorbet", "TV Appearances": 3, "Restaurant Empire": 4}},
+{name: "Chef: Mauro Uliassi (Italy)", attributes: {Creativity: 9, "Michelin Stars": 3, Influence: 7, "Signature Dish": "Smoked Spaghetti with Clams", "TV Appearances": 2, "Restaurant Empire": 1}},
+{name: "Chef: Mitsuharu 'Micha' Tsumura (Peru/Japan)", attributes: {Creativity: 9, "Michelin Stars": 1, Influence: 8, "Signature Dish": "Nikkei Ceviche", "TV Appearances": 3, "Restaurant Empire": 3}},
+{name: "Chef: Nara Amaral (The Amazonic Essence)", attributes: {Creativity: 9, "Michelin Stars": 0, "Influence": 8, "Signature Dish": "Pirarucu ao tucupi defumado", "TV Appearances": 2, "Restaurant Empire": 1}},
+{name: "Chef: Narda Lepes (Argentina)", attributes: {Creativity: 8, "Michelin Stars": 0, Influence: 7, "Signature Dish": "Plant-based Empanadas", "TV Appearances": 6, "Restaurant Empire": 2}},
+{name: "Chef: Narisawa Yoshihiro (Japan)", attributes: {Creativity: 10, "Michelin Stars": 2, Influence: 8, "Signature Dish": "Satoyama Scenery", "TV Appearances": 3, "Restaurant Empire": 1}},
+{name: "Chef: Niki Nakayama (USA)", attributes: {Creativity: 9, "Michelin Stars": 2, Influence: 7, "Signature Dish": "Modern Kaiseki", "TV Appearances": 3, "Restaurant Empire": 2}},
+{name: "Chef: Paco Roncero (Spain)", attributes: {Creativity: 9, "Michelin Stars": 2, Influence: 7, "Signature Dish": "Liquid Olive Spheres", "TV Appearances": 4, "Restaurant Empire": 5}},
+{name: "Chef: Paul Pairet (France/China)", attributes: {Creativity: 10, "Michelin Stars": 3, Influence: 8, "Signature Dish": "Truffle Burnt Soup Bread", "TV Appearances": 4, "Restaurant Empire": 3}},
+{name: "Chef: Pía León (Peru)", attributes: {Creativity: 9, "Michelin Stars": 1, Influence: 8, "Signature Dish": "Diversity of Corn", "TV Appearances": 3, "Restaurant Empire": 2}},
+{name: "Chef: Pierre Gagnaire (France)", attributes: {Creativity: 10, "Michelin Stars": 14, Influence: 9, "Signature Dish": "Langoustine Five Ways", "TV Appearances": 4, "Restaurant Empire": "12+"}},
+{name: "Chef: Pierre Hermé (France)", attributes: {Creativity: 9, "Michelin Stars": "0 (Pastry Chef)", Influence: 10, "Signature Dish": "Ispahan Macaron", "TV Appearances": 3, "Restaurant Empire": "50+ (Boutiques worldwide)"}},
+{name: "Chef: Rasmus Kofoed (Denmark)", attributes: {Creativity: 9, "Michelin Stars": 3, Influence: 8, "Signature Dish": "Scandinavian Vegetal Landscape", "TV Appearances": 3, "Restaurant Empire": 2}},
+{name: "Chef: René Redzepi (Denmark)", attributes: {Creativity: 10, "Michelin Stars": 2, Influence: 9, "Signature Dish": "Fermented Shrimp and Ants", "TV Appearances": 4, "Restaurant Empire": 3}},
+{name: "Chef: Rodrigo Hilbert (Brazil)", attributes: {Creativity: 8, "Michelin Stars": 0, Influence: 7, "Signature Dish": "Feijão Tropeiro", "TV Appearances": 5, "Restaurant Empire": 0}},
+{name: "Chef: Rodolfo Guzmán (Chile)", attributes: {Creativity: 9, "Michelin Stars": 1, Influence: 7, "Signature Dish": "Native Chilean Forest Tasting Menu", "TV Appearances": 3, "Restaurant Empire": 1}},
+{name: "Chef: Salvatore Martone (Italy/USA) - Pastry Master", attributes: {Creativity: 10, "Michelin Stars": 0, Influence: 7, "Signature Dish": "Sugar Sphere Dessert", "TV Appearances": 2, "Restaurant Empire": 3}},
+{name: "Chef: Tetsuya Wakuda (Japan/Australia)", attributes: {Creativity: 9, "Michelin Stars": 2, Influence: 8, "Signature Dish": "Confit of Ocean Trout", "TV Appearances": 2, "Restaurant Empire": 3}},
+{name: "Chef: Thiago Castanho (Brazil)", attributes: {Creativity: 9, "Michelin Stars": 0, Influence: 8, "Signature Dish": "Pirarucu with Tucupi and Jambu", "TV Appearances": 3, "Restaurant Empire": 2}},
+{name: "Chef: Thomas Keller (USA)", attributes: {Creativity: 9, "Michelin Stars": 7, Influence: 8, "Signature Dish": "Oysters and Pearls", "TV Appearances": 3, "Restaurant Empire": 9}},
+{name: "Chef: Tim Raue (Germany)", attributes: {Creativity: 9, "Michelin Stars": 2, Influence: 8, "Signature Dish": "Wasabi Langoustine", "TV Appearances": 3, "Restaurant Empire": 5}},
+{name: "Chef: Vicky Lau (Hong Kong)", attributes: {Creativity: 9, "Michelin Stars": 2, Influence: 7, "Signature Dish": "Ode to Tofu", "TV Appearances": 3, "Restaurant Empire": 1}},
+{name: "Chef: Vikas Khanna (India/USA)", attributes: {Creativity: 9, "Michelin Stars": 1, Influence: 8, "Signature Dish": "Tamarind-glazed Lamb", "TV Appearances": 6, "Restaurant Empire": 3}},
+{name: "Chef: Virgilio Martínez (Peru)", attributes: {Creativity: 10, "Michelin Stars": 1, Influence: 8, "Signature Dish": "Alturas of Peru", "TV Appearances": 5, "Restaurant Empire": 4}},
+{name: "Chef: Yannick Alléno (France)", attributes: {Creativity: 9, "Michelin Stars": 10, Influence: 9, "Signature Dish": "Cold Egg Custard with Caviar", "TV Appearances": 3, "Restaurant Empire": "10+"}},
+{name: "Chef: Yoshihiro Narisawa (Japan)", attributes: {Creativity: 9, "Michelin Stars": 2, Influence: 8, "Signature Dish": "Satoyama Scenery", "TV Appearances": 2, "Restaurant Empire": 2}},
+  ];
+
+  const ing = [
+{name: "Ingredient: A5 Wagyu Beef – Japan", attributes: {"Flavor Intensity": 10, Rarity: 10, Versatility: 5, "Nutritional Value": 7, "Traditional Use": "Japanese", "Shelf Life": "1-2 weeks (fresh), months (frozen)"}},
+{name: "Ingredient: Açaí – Brazil", attributes: {"Flavor Intensity": 6, Rarity: 7, Versatility: 8, "Nutritional Value": 10, "Traditional Use": "Brazilian, Amazonian", "Shelf Life": "1-2 days (fresh), 1 year (frozen)"}},
+{name: "Ingredient: Aonori (Green Laver Seaweed) – Japan", attributes: {"Flavor Intensity": 7, Rarity: 7, Versatility: 8, "Nutritional Value": 9, "Traditional Use": "Japanese, Korean", "Shelf Life": "1-2 years (dried)"}},
+{name: "Ingredient: Barberries – Iran/Central Asia", attributes: {"Flavor Intensity": 7, Rarity: 8, Versatility: 7, "Nutritional Value": 8, "Traditional Use": "Persian, Central Asian", "Shelf Life": "6 months – 1 year (dried)"}},
+{name: "Ingredient: Black Cardamom – Himalayas", attributes: {"Flavor Intensity": 9, Rarity: 8, Versatility: 7, "Nutritional Value": 8, "Traditional Use": "Indian, Tibetan, Chinese", "Shelf Life": "2-3 years"}},
+{name: "Ingredient: Black Garlic – Korea/Japan", attributes: {"Flavor Intensity": 9, Rarity: 7, Versatility: 8, "Nutritional Value": 9, "Traditional Use": "Korean, Japanese, Gourmet", "Shelf Life": "6 months – 1 year"}},
+{name: "Ingredient: Black Sesame Seeds – Asia", attributes: {"Flavor Intensity": 7, Rarity: 6, Versatility: 9, "Nutritional Value": 9, "Traditional Use": "Japanese, Chinese, Indian", "Shelf Life": "1-2 years"}},
+{name: "Ingredient: Black Truffle (Tartufo Nero) – Italy/France", attributes: {"Flavor Intensity": 9, Rarity: 10, Versatility: 7, "Nutritional Value": 5, "Traditional Use": "Italian, French", "Shelf Life": "7 days (fresh), years (preserved)"}},
+{name: "Ingredient: Blue Corn – Mexico/USA", attributes: {"Flavor Intensity": 7, Rarity: 7, Versatility: 8, "Nutritional Value": 9, "Traditional Use": "Mexican, Native American", "Shelf Life": "1-2 years (dried)"}},
+{name: "Ingredient: Bluefin Tuna (Otoro) – Japan", attributes: {"Flavor Intensity": 9, Rarity: 10, Versatility: 7, "Nutritional Value": 9, "Traditional Use": "Japanese", "Shelf Life": "1-2 days (fresh), months (frozen)"}},
+{name: "Ingredient: Buddha’s Hand (Citrus Medica) – China/India", attributes: {"Flavor Intensity": 7, Rarity: 9, Versatility: 7, "Nutritional Value": 7, "Traditional Use": "Chinese, Indian, Perfumed Dishes", "Shelf Life": "2-3 weeks"}},
+{name: "Ingredient: Burrata – Italy", attributes: {"Flavor Intensity": 8, Rarity: 7, Versatility: 9, "Nutritional Value": 7, "Traditional Use": "Italian", "Shelf Life": "3-5 days"}},
+{name: "Ingredient: Bush Tomato – Australia", attributes: {"Flavor Intensity": 8, Rarity: 10, Versatility: 7, "Nutritional Value": 8, "Traditional Use": "Australian Indigenous Cuisine", "Shelf Life": "6 months – 1 year (dried)"}},
+{name: "Ingredient: Camu Camu – Amazon Rainforest", attributes: {"Flavor Intensity": 6, Rarity: 9, Versatility: 7, "Nutritional Value": 10, "Traditional Use": "Amazonian, Superfood", "Shelf Life": "1-2 weeks (fresh), 1 year (powdered)"}},
+{name: "Ingredient: Cardamom – India/Middle East", attributes: {"Flavor Intensity": 8, Rarity: 7, Versatility: 9, "Nutritional Value": 8, "Traditional Use": "Indian, Middle Eastern, Scandinavian", "Shelf Life": "1-2 years"}},
+{name: "Ingredient: Caviar (Beluga) – Russia/Iran", attributes: {"Flavor Intensity": 9, Rarity: 10, Versatility: 5, "Nutritional Value": 8, "Traditional Use": "Russian, French, Gourmet", "Shelf Life": "1-2 months"}},
+{name: "Ingredient: Chanterelle Mushrooms – Europe/North America", attributes: {"Flavor Intensity": 7, Rarity: 9, Versatility: 8, "Nutritional Value": 8, "Traditional Use": "French, Nordic, Gourmet", "Shelf Life": "1-2 weeks (fresh), 1 year (dried)"}},
+{name: "Ingredient: Chia Seeds – Central America", attributes: {"Flavor Intensity": 5, Rarity: 6, Versatility: 9, "Nutritional Value": 10, "Traditional Use": "Aztec, Modern Health Foods", "Shelf Life": "2-4 years"}},
+{name: "Ingredient: Cloudberries – Nordic Countries", attributes: {"Flavor Intensity": 7, Rarity: 10, Versatility: 6, "Nutritional Value": 9, "Traditional Use": "Scandinavian, Russian", "Shelf Life": "1-2 weeks (fresh), 1 year (frozen)"}},
+{name: "Ingredient: Escamoles (Ant Eggs) – Mexico", attributes: {"Flavor Intensity": 8, Rarity: 9, Versatility: 6, "Nutritional Value": 9, "Traditional Use": "Mexican (Pre-Hispanic)", "Shelf Life": "1-2 weeks"}},
+{name: "Ingredient: Feijoa – South America", attributes: {"Flavor Intensity": 7, Rarity: 8, Versatility: 6, "Nutritional Value": 9, "Traditional Use": "Brazilian, South American", "Shelf Life": "1-2 weeks"}},
+{name: "Ingredient: Fenugreek Seeds – India/Middle East", attributes: {"Flavor Intensity": 8, Rarity: 6, Versatility: 9, "Nutritional Value": 9, "Traditional Use": "Indian, Middle Eastern", "Shelf Life": "2-3 years"}},
+{name: "Ingredient: Finger Lime – Australia", attributes: {"Flavor Intensity": 8, Rarity: 9, Versatility: 7, "Nutritional Value": 8, "Traditional Use": "Australian, Modern Gastronomy", "Shelf Life": "2-3 weeks"}},
+{name: "Ingredient: Foie Gras – France", attributes: {"Flavor Intensity": 9, Rarity: 9, Versatility: 5, "Nutritional Value": 6, "Traditional Use": "French", "Shelf Life": "1-2 weeks (fresh), 3-5 years (canned)"}},
+{name: "Ingredient: Fugu (Pufferfish) – Japan", attributes: {"Flavor Intensity": 8, Rarity: 9, Versatility: 4, "Nutritional Value": 7, "Traditional Use": "Japanese", "Shelf Life": "1-2 days"}},
+{name: "Ingredient: Habanero Pepper – Mexico", attributes: {"Flavor Intensity": 10, Rarity: 6, Versatility: 6, "Nutritional Value": 7, "Traditional Use": "Mexican, Caribbean", "Shelf Life": "1-2 weeks (fresh), 1-2 years (dried)"}},
+{name: "Ingredient: Harissa – North Africa", attributes: {"Flavor Intensity": 8, Rarity: 6, Versatility: 9, "Nutritional Value": 7, "Traditional Use": "Tunisian, Moroccan, North African", "Shelf Life": "6 months – 1 year"}},
+{name: "Ingredient: Horse Gram – India/Sri Lanka", attributes: {"Flavor Intensity": 6, Rarity: 7, Versatility: 8, "Nutritional Value": 10, "Traditional Use": "Indian, Sri Lankan, Ayurvedic", "Shelf Life": "1-2 years"}},
+{name: "Ingredient: Huitlacoche (Corn Fungus) – Mexico", attributes: {"Flavor Intensity": 9, Rarity: 9, Versatility: 6, "Nutritional Value": 8, "Traditional Use": "Mexican", "Shelf Life": "1-2 weeks"}},
+{name: "Ingredient: Iberian Ham (Jamón Ibérico) – Spain", attributes: {"Flavor Intensity": 9, Rarity: 8, Versatility: 7, "Nutritional Value": 8, "Traditional Use": "Spanish", "Shelf Life": "1-2 years"}},
+{name: "Ingredient: Katsuobushi (Bonito Flakes) – Japan", attributes: {"Flavor Intensity": 9, Rarity: 8, Versatility: 8, "Nutritional Value": 7, "Traditional Use": "Japanese", "Shelf Life": "1-2 years"}},
+{name: "Ingredient: Kelp (Kombu) – Japan/Korea", attributes: {"Flavor Intensity": 7, Rarity: 7, Versatility: 9, "Nutritional Value": 10, "Traditional Use": "Japanese, Korean, Gourmet", "Shelf Life": "1-2 years (dried)"}},
+{name: "Ingredient: Kimchi – Korea", attributes: {"Flavor Intensity": 8, Rarity: 5, Versatility: 7, "Nutritional Value": 9, "Traditional Use": "Korean", "Shelf Life": "6 months – 1 year"}},
+{name: "Ingredient: Laverbread (Seaweed Paste) – Wales", attributes: {"Flavor Intensity": 7, Rarity: 8, Versatility: 7, "Nutritional Value": 9, "Traditional Use": "Welsh, British", "Shelf Life": "1-2 weeks (fresh), 1 year (frozen)"}},
+{name: "Ingredient: Luo Han Guo (Monk Fruit) – China", attributes: {"Flavor Intensity": 8, Rarity: 9, Versatility: 7, "Nutritional Value": 10, "Traditional Use": "Chinese, Herbal Medicine", "Shelf Life": "6 months – 1 year (dried)"}},
+{name: "Ingredient: Mamey Sapote – Mexico/Central America", attributes: {"Flavor Intensity": 8, Rarity: 7, Versatility: 7, "Nutritional Value": 9, "Traditional Use": "Mexican, Cuban", "Shelf Life": "1-2 weeks"}},
+{name: "Ingredient: Matcha – Japan", attributes: {"Flavor Intensity": 6, Rarity: 7, Versatility: 8, "Nutritional Value": 9, "Traditional Use": "Japanese", "Shelf Life": "1 year (powdered)"}},
+{name: "Ingredient: Miso – Japan", attributes: {"Flavor Intensity": 7, Rarity: 5, Versatility: 9, "Nutritional Value": 9, "Traditional Use": "Japanese", "Shelf Life": "1-2 years"}},
+{name: "Ingredient: Murupi Pepper – Brazil", attributes: {"Flavor Intensity": 10, Rarity: 9, Versatility: 6, "Nutritional Value": 7, "Traditional Use": "Brazilian, Amazonian", "Shelf Life": "1-2 weeks (fresh), 1-2 years (dried)"}},
+{name: "Ingredient: Natto (Fermented Soybeans) – Japan", attributes: {"Flavor Intensity": 9, Rarity: 7, Versatility: 6, "Nutritional Value": 10, "Traditional Use": "Japanese", "Shelf Life": "1-2 weeks"}},
+{name: "Ingredient: Pandan Leaves – Southeast Asia", attributes: {"Flavor Intensity": 7, Rarity: 7, Versatility: 9, "Nutritional Value": 8, "Traditional Use": "Thai, Indonesian, Malaysian", "Shelf Life": "1-2 weeks (fresh), 6 months (dried)"}},
+{name: "Ingredient: Parmigiano-Reggiano (Parmesan Cheese) – Italy", attributes: {"Flavor Intensity": 7, Rarity: 5, Versatility: 10, "Nutritional Value": 8, "Traditional Use": "Italian", "Shelf Life": "1-2 years"}},
+{name: "Ingredient: Piment d'Espelette – France", attributes: {"Flavor Intensity": 7, Rarity: 8, Versatility: 7, "Nutritional Value": 7, "Traditional Use": "French (Basque)", "Shelf Life": "1-2 years"}},
+{name: "Ingredient: Pink Pineapple – Costa Rica", attributes: {"Flavor Intensity": 7, Rarity: 10, Versatility: 8, "Nutritional Value": 9, "Traditional Use": "Tropical, Gourmet", "Shelf Life": "1-2 weeks"}},
+{name: "Ingredient: Purple Sweet Potato – Hawaii/Japan", attributes: {"Flavor Intensity": 7, Rarity: 7, Versatility: 9, "Nutritional Value": 9, "Traditional Use": "Hawaiian, Japanese", "Shelf Life": "2-3 months"}},
+{name: "Ingredient: Saffron (Saffron) – Iran/Spain/India", attributes: {"Flavor Intensity": 8, Rarity: 10, Versatility: 8, "Nutritional Value": 7, "Traditional Use": "Persian, Spanish, Indian", "Shelf Life": "2-3 years"}},
+{name: "Ingredient: Salted Duck Egg – China/Philippines", attributes: {"Flavor Intensity": 8, Rarity: 6, Versatility: 7, "Nutritional Value": 9, "Traditional Use": "Chinese, Filipino", "Shelf Life": "1-2 months"}},
+{name: "Ingredient: Shiso Leaves – Japan", attributes: {"Flavor Intensity": 7, Rarity: 7, Versatility: 9, "Nutritional Value": 9, "Traditional Use": "Japanese, Korean", "Shelf Life": "1-2 weeks (fresh), 6 months (dried)"}},
+{name: "Ingredient: Soursop (Graviola) – South America", attributes: {"Flavor Intensity": 7, Rarity: 8, Versatility: 7, "Nutritional Value": 9, "Traditional Use": "Brazilian, Caribbean", "Shelf Life": "4-5 days (fresh)"}},
+{name: "Ingredient: Sumac – Middle East", attributes: {"Flavor Intensity": 7, Rarity: 7, Versatility: 8, "Nutritional Value": 7, "Traditional Use": "Middle Eastern, Mediterranean", "Shelf Life": "1-2 years"}},
+{name: "Ingredient: Tahitian Black Pearl Salt – Tahiti", attributes: {"Flavor Intensity": 7, Rarity: 9, Versatility: 6, "Nutritional Value": 5, "Traditional Use": "Polynesian, Gourmet", "Shelf Life": "Indefinite"}},
+{name: "Ingredient: Taro Root – Southeast Asia/Pacific Islands", attributes: {"Flavor Intensity": 6, Rarity: 7, Versatility: 8, "Nutritional Value": 9, "Traditional Use": "Polynesian, Asian, African", "Shelf Life": "1-2 months"}},
+{name: "Ingredient: Teff – Ethiopia/Eritrea", attributes: {"Flavor Intensity": 6, Rarity: 7, Versatility: 8, "Nutritional Value": 10, "Traditional Use": "Ethiopian, African", "Shelf Life": "1-2 years"}},
+{name: "Ingredient: Tonka Bean – South America", attributes: {"Flavor Intensity": 9, Rarity: 8, Versatility: 7, "Nutritional Value": 6, "Traditional Use": "South American, French Pastry", "Shelf Life": "1-2 years"}},
+{name: "Ingredient: Umeboshi (Pickled Plum) – Japan", attributes: {"Flavor Intensity": 9, Rarity: 7, Versatility: 7, "Nutritional Value": 9, "Traditional Use": "Japanese", "Shelf Life": "1-5 years"}},
+{name: "Ingredient: Vanilla Bean – Madagascar/Tahiti/Mexico", attributes: {"Flavor Intensity": 8, Rarity: 9, Versatility: 9, "Nutritional Value": 6, "Traditional Use": "French, Mexican, Global", "Shelf Life": "2-3 years"}},
+{name: "Ingredient: Wasabi (Japanese Horseradish) – Japan", attributes: {"Flavor Intensity": 10, Rarity: 9, Versatility: 6, "Nutritional Value": 7, "Traditional Use": "Japanese", "Shelf Life": "1-2 weeks (fresh), 2 years (powdered)"}},
+{name: "Ingredient: Watercress – Europe/Asia", attributes: {"Flavor Intensity": 6, Rarity: 6, Versatility: 9, "Nutritional Value": 10, "Traditional Use": "European, Asian", "Shelf Life": "3-5 days"}},
+{name: "Ingredient: Yacón – Andes (Peru/Bolivia)", attributes: {"Flavor Intensity": 7, Rarity: 8, Versatility: 7, "Nutritional Value": 10, "Traditional Use": "Andean, Superfood", "Shelf Life": "1-2 weeks (fresh), 6 months (dried)"}},
+{name: "Ingredient: Yuzu – Japan/Korea/China", attributes: {"Flavor Intensity": 7, Rarity: 8, Versatility: 9, "Nutritional Value": 9, "Traditional Use": "Japanese, Korean, Chinese", "Shelf Life": "1-2 months"}},
+  ];
+
+const uten = [
+{name: "Utensil: Balloon Whisk", attributes: {Versatility: 8, Durability: 7, Precision: 8, "Heat Resistance": 7, "Traditional Use": "French, Baking", Maintenance: "Low"}},
+{name: "Utensil: Bamboo Steamer", attributes: {Versatility: 8, Durability: 7, Precision: 7, "Heat Resistance": 9, "Traditional Use": "Chinese, Dim Sum", Maintenance: "Medium"}},
+{name: "Utensil: Blowtorch for Sugar Art", attributes: {Versatility: 6, Durability: 9, Precision: 10, "Heat Resistance": 10, "Traditional Use": "Pastry, Molecular Gastronomy", Maintenance: "Medium"}},
+{name: "Utensil: Blowtorch", attributes: {Versatility: 6, Durability: 9, Precision: 9, "Heat Resistance": 10, "Traditional Use": "French (Crème Brûlée), Modernist", Maintenance: "Medium"}},
+{name: "Utensil: Butcher’s Block", attributes: {Versatility: 7, Durability: 10, Precision: 8, "Heat Resistance": 10, "Traditional Use": "Global, Butchery", Maintenance: "High"}},
+{name: "Utensil: Butter Churn", attributes: {Versatility: 6, Durability: 9, Precision: 7, "Heat Resistance": 9, "Traditional Use": "European, American, Traditional Dairy", Maintenance: "Medium"}},
+{name: "Utensil: Cast Iron Skillet", attributes: {Versatility: 9, Durability: 10, Precision: 7, "Heat Resistance": 10, "Traditional Use": "American, French, Rustic Cooking", Maintenance: "High"}},
+{name: "Utensil: Chef’s Knife", attributes: {Versatility: 10, Durability: 9, Precision: 9, "Heat Resistance": 10, "Traditional Use": "Global", Maintenance: "Medium"}},
+{name: "Utensil: Cherry Pitter", attributes: {Versatility: 4, Durability: 7, Precision: 9, "Heat Resistance": 7, "Traditional Use": "Baking, Desserts", Maintenance: "Low"}},
+{name: "Utensil: Chocolate Tempering Machine", attributes: {Versatility: 5, Durability: 9, Precision: 10, "Heat Resistance": 7, "Traditional Use": "Pastry, French, Chocolatier", Maintenance: "High"}},
+{name: "Utensil: Chopsticks", attributes: {Versatility: 6, Durability: 7, Precision: 7, "Heat Resistance": 10, "Traditional Use": "Chinese, Japanese, Korean", Maintenance: "Low"}},
+{name: "Utensil: Clay Pot (Donabe/Tandoor/Cazuela)", attributes: {Versatility: 7, Durability: 8, Precision: 7, "Heat Resistance": 10, "Traditional Use": "Japanese, Indian, Spanish", Maintenance: "High"}},
+{name: "Utensil: Coffee Grinder (Burr Grinder)", attributes: {Versatility: 7, Durability: 9, Precision: 9, "Heat Resistance": 7, "Traditional Use": "Italian, French, Global", Maintenance: "Medium"}},
+{name: "Utensil: Conical Strainer (Chinois)", attributes: {Versatility: 7, Durability: 8, Precision: 10, "Heat Resistance": 8, "Traditional Use": "French, Sauces", Maintenance: "Medium"}},
+{name: "Utensil: Crepe Spreader (T-Shaped)", attributes: {Versatility: 6, Durability: 7, Precision: 9, "Heat Resistance": 8, "Traditional Use": "French", Maintenance: "Low"}},
+{name: "Utensil: Deep Fryer", attributes: {Versatility: 8, Durability: 9, Precision: 7, "Heat Resistance": 10, "Traditional Use": "American, Asian, Global", Maintenance: "High"}},
+{name: "Utensil: Digital Scale", attributes: {Versatility: 9, Durability: 7, Precision: 10, "Heat Resistance": 6, "Traditional Use": "Baking, Professional Cooking", Maintenance: "Low"}},
+{name: "Utensil: Dough Scraper", attributes: {Versatility: 8, Durability: 9, Precision: 8, "Heat Resistance": 8, "Traditional Use": "Baking, Pastry", Maintenance: "Low"}},
+{name: "Utensil: Dutch Oven", attributes: {Versatility: 9, Durability: 10, Precision: 7, "Heat Resistance": 10, "Traditional Use": "French, American, Baking", Maintenance: "Medium"}},
+{name: "Utensil: Egg Separator", attributes: {Versatility: 5, Durability: 6, Precision: 9, "Heat Resistance": 6, "Traditional Use": "Baking, Pastry", Maintenance: "Low"}},
+{name: "Utensil: Electric Griddle", attributes: {Versatility: 9, Durability: 9, Precision: 7, "Heat Resistance": 10, "Traditional Use": "American, Breakfast, Global", Maintenance: "Medium"}},
+{name: "Utensil: Electric Knife", attributes: {Versatility: 7, Durability: 8, Precision: 9, "Heat Resistance": 7, "Traditional Use": "Modern, Butchery", Maintenance: "Medium"}},
+{name: "Utensil: Electric Stand Mixer", attributes: {Versatility: 10, Durability: 9, Precision: 9, "Heat Resistance": 8, "Traditional Use": "Baking, Pastry", Maintenance: "Medium"}},
+{name: "Utensil: Fish Scaler", attributes: {Versatility: 5, Durability: 8, Precision: 7, "Heat Resistance": 9, "Traditional Use": "Japanese, Seafood", Maintenance: "Low"}},
+{name: "Utensil: Ghee Pot (Indian Butter Warmer)", attributes: {Versatility: 6, Durability: 8, Precision: 7, "Heat Resistance": 10, "Traditional Use": "Indian", Maintenance: "Medium"}},
+{name: "Utensil: Gnocchi Board", attributes: {Versatility: 5, Durability: 7, Precision: 9, "Heat Resistance": 8, "Traditional Use": "Italian", Maintenance: "Low"}},
+{name: "Utensil: Ice Cream Maker", attributes: {Versatility: 6, Durability: 8, Precision: 9, "Heat Resistance": 6, "Traditional Use": "French, Italian, Global", Maintenance: "High"}},
+{name: "Utensil: Kitchen Shears", attributes: {Versatility: 8, Durability: 9, Precision: 9, "Heat Resistance": 7, "Traditional Use": "Global", Maintenance: "Medium"}},
+{name: "Utensil: Ladle", attributes: {Versatility: 9, Durability: 8, Precision: 7, "Heat Resistance": 9, "Traditional Use": "Global", Maintenance: "Low"}},
+{name: "Utensil: Mandoline Slicer", attributes: {Versatility: 7, Durability: 7, Precision: 10, "Heat Resistance": 6, "Traditional Use": "French, Japanese", Maintenance: "High"}},
+{name: "Utensil: Meat Cleaver", attributes: {Versatility: 7, Durability: 10, Precision: 6, "Heat Resistance": 10, "Traditional Use": "Chinese, Butchery", Maintenance: "Medium"}},
+{name: "Utensil: Meat Mallet", attributes: {Versatility: 6, Durability: 9, Precision: 7, "Heat Resistance": 9, "Traditional Use": "Butchery, European", Maintenance: "Low"}},
+{name: "Utensil: Meat Thermometer", attributes: {Versatility: 7, Durability: 7, Precision: 10, "Heat Resistance": 8, "Traditional Use": "Global, Professional Cooking", Maintenance: "Low"}},
+{name: "Utensil: Melon Baller", attributes: {Versatility: 6, Durability: 7, Precision: 9, "Heat Resistance": 7, "Traditional Use": "European, Pastry, Gourmet", Maintenance: "Low"}},
+{name: "Utensil: Microplane Grater", attributes: {Versatility: 9, Durability: 7, Precision: 10, "Heat Resistance": 7, "Traditional Use": "Global, Pastry", Maintenance: "Low"}},
+{name: "Utensil: Mortar and Pestle", attributes: {Versatility: 8, Durability: 10, Precision: 6, "Heat Resistance": 10, "Traditional Use": "Thai, Mexican, Italian, Indian", Maintenance: "Medium"}},
+{name: "Utensil: Oyster Shucker", attributes: {Versatility: 4, Durability: 9, Precision: 9, "Heat Resistance": 10, "Traditional Use": "French, Seafood", Maintenance: "Low"}},
+{name: "Utensil: Paella Pan (Paellera)", attributes: {Versatility: 7, Durability: 9, Precision: 7, "Heat Resistance": 10, "Traditional Use": "Spanish", Maintenance: "Medium"}},
+{name: "Utensil: Pasta Maker", attributes: {Versatility: 7, Durability: 8, Precision: 9, "Heat Resistance": 7, "Traditional Use": "Italian", Maintenance: "High"}},
+{name: "Utensil: Pizza Stone", attributes: {Versatility: 6, Durability: 9, Precision: 8, "Heat Resistance": 10, "Traditional Use": "Italian, Baking", Maintenance: "High"}},
+{name: "Utensil: Potato Ricer", attributes: {Versatility: 6, Durability: 7, Precision: 9, "Heat Resistance": 8, "Traditional Use": "European, American", Maintenance: "Medium"}},
+{name: "Utensil: Pressure Cooker", attributes: {Versatility: 9, Durability: 9, Precision: 8, "Heat Resistance": 10, "Traditional Use": "Indian, Latin American, Global", Maintenance: "Medium"}},
+{name: "Utensil: Raclette Grill", attributes: {Versatility: 7, Durability: 9, Precision: 7, "Heat Resistance": 10, "Traditional Use": "Swiss, French", Maintenance: "Medium"}},
+{name: "Utensil: Ravioli Cutter", attributes: {Versatility: 5, Durability: 7, Precision: 9, "Heat Resistance": 8, "Traditional Use": "Italian", Maintenance: "Low"}},
+{name: "Utensil: Rolling Pin", attributes: {Versatility: 7, Durability: 8, Precision: 7, "Heat Resistance": 10, "Traditional Use": "Italian, French, Baking", Maintenance: "Low"}},
+{name: "Utensil: Salad Spinner", attributes: {Versatility: 6, Durability: 7, Precision: 7, "Heat Resistance": 6, "Traditional Use": "Global, Healthy Cooking", Maintenance: "Medium"}},
+{name: "Utensil: Siphon Whip (Foam Maker)", attributes: {Versatility: 6, Durability: 8, Precision: 9, "Heat Resistance": 7, "Traditional Use": "Molecular Gastronomy", Maintenance: "High"}},
+{name: "Utensil: Slotted Spoon", attributes: {Versatility: 8, Durability: 8, Precision: 7, "Heat Resistance": 9, "Traditional Use": "Global", Maintenance: "Low"}},
+{name: "Utensil: Sous Vide Immersion Circulator", attributes: {Versatility: 7, Durability: 8, Precision: 10, "Heat Resistance": 8, "Traditional Use": "French, Modernist Cuisine", Maintenance: "High"}},
+{name: "Utensil: Spatula", attributes: {Versatility: 10, Durability: 8, Precision: 8, "Heat Resistance": 9, "Traditional Use": "Global", Maintenance: "Low"}},
+{name: "Utensil: Spiralizer (Vegetable Noodle Maker)", attributes: {Versatility: 7, Durability: 7, Precision: 8, "Heat Resistance": 7, "Traditional Use": "Modern, Healthy Cooking", Maintenance: "Medium"}},
+{name: "Utensil: Sushi Knife (Yanagiba)", attributes: {Versatility: 7, Durability: 9, Precision: 10, "Heat Resistance": 10, "Traditional Use": "Japanese", Maintenance: "High"}},
+{name: "Utensil: Taco Press", attributes: {Versatility: 6, Durability: 8, Precision: 8, "Heat Resistance": 7, "Traditional Use": "Mexican", Maintenance: "Medium"}},
+{name: "Utensil: Tagine Pot", attributes: {Versatility: 7, Durability: 8, Precision: 6, "Heat Resistance": 10, "Traditional Use": "Moroccan, North African", Maintenance: "High"}},
+{name: "Utensil: Tamagoyaki Pan", attributes: {Versatility: 7, Durability: 8, Precision: 8, "Heat Resistance": 10, "Traditional Use": "Japanese", Maintenance: "Medium"}},
+{name: "Utensil: Tandoor Oven", attributes: {Versatility: 6, Durability: 10, Precision: 7, "Heat Resistance": 10, "Traditional Use": "Indian, Middle Eastern", Maintenance: "High"}},
+{name: "Utensil: Teppanyaki Griddle", attributes: {Versatility: 8, Durability: 9, Precision: 7, "Heat Resistance": 10, "Traditional Use": "Japanese", Maintenance: "Medium"}},
+{name: "Utensil: Turkish Coffee Pot (Cezve/Ibrik)", attributes: {Versatility: 6, Durability: 8, Precision: 7, "Heat Resistance": 10, "Traditional Use": "Turkish, Middle Eastern", Maintenance: "Medium"}},
+{name: "Utensil: Wok", attributes: {Versatility: 10, Durability: 9, Precision: 7, "Heat Resistance": 10, "Traditional Use": "Chinese, Thai, Japanese", Maintenance: "Medium"}},
+{name: "Utensil: Wooden Sushi Mat (Makisu)", attributes: {Versatility: 6, Durability: 7, Precision: 8, "Heat Resistance": 9, "Traditional Use": "Japanese", Maintenance: "Medium"}},
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('chefCheckbox').checked) selectedCards.push(...chef);
+    if (document.getElementById('ingCheckbox').checked) selectedCards.push(...ing);
+    if (document.getElementById('utenCheckbox').checked) selectedCards.push(...uten);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

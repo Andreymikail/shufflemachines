@@ -1,0 +1,202 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Checkmate</h2>
+  <p style="color: white;">Finish the game with a single move.</p>
+  <!-- Grid selector -->
+  <div>
+    <label for="gridSelector" style="color: white;">Choose a Chess Grid:</label>
+    <select id="gridSelector">
+      <option value="grid1">Grid 1</option>
+      <option value="grid2">Grid 2</option>
+      <option value="grid3">Grid 3</option>
+      <option value="grid4">Grid 4</option>
+    </select>
+    <button id="loadGridButton" class="round-button">Load</button>
+  </div>
+
+  <!-- Input for moves -->
+  <div style="margin-top: 20px;">
+    <label for="initialPos" style="color: white;">Initial Position:</label>
+    <input type="text" id="initialPos" placeholder="e.g., E2" />
+    <br><br>
+    <label for="finalPos" style="color: white;">Final Position:</label>
+    <input type="text" id="finalPos" placeholder="e.g., E4" />
+    <br><br>
+    <button id="validateMoveButton" class="round-button">Check</button>
+  </div>
+
+  <!-- Chess Grid -->
+  <div id="chessBoard" style="display: grid; grid-template-columns: 30px repeat(8, 60px); gap: 0; justify-content: center; margin-top: 20px;">
+    <!-- Grid will be generated here -->
+  </div>
+<p style="color: white;">K – King <br>
+Q – Queen <br>
+R – Rook <br>
+B – Bishop <br>
+N – Knight <br>
+P – Pawn</p>
+  <!-- Game messages -->
+  <p id="gameMessage" style="color: white;"></p>
+</div>
+
+<script>
+  const grids = {
+    'grid1': [
+    [' ', ' ', ' ', ' ', ' ', ' ', 'k', ' '],
+    [' ', ' ', ' ', ' ', ' ', 'R', ' ', 'p'],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', 'P'],
+    [' ', ' ', ' ', ' ', 'Q', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', 'N', ' ', ' ', ' '],
+    [' ', ' ', ' ', 'r', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+],
+'grid2': [
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', 'K', ' ', ' ', ' ', 'T', ' ', ' '],
+    [' ', 'P', ' ', ' ', ' ', 'N', ' ', ' '],
+    ['R', ' ', 'q', ' ', ' ', 'B', ' ', 'k']    
+],
+'grid3': [
+    [' ', ' ', ' ', ' ', 'R', ' ', ' ', 'k'],
+    [' ', ' ', ' ', ' ', ' ', 'N', ' ', 'p'],
+    [' ', ' ', ' ', ' ', 'B', ' ', 'Q', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', 'P', 'P'],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', 'K']
+],
+'grid4': [
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', 'k'],
+    [' ', ' ', ' ', ' ', ' ', ' ', 'p', ' '],
+    [' ', ' ', ' ', ' ', ' ', 'N', ' ', 'Q'],
+    [' ', ' ', ' ', 'B', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    ['p', 'p', ' ', ' ', ' ', ' ', 'P', 'P'],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', 'K']
+]
+  };
+
+  const correctMoves = {
+    'grid1': { from: 'E5', to: 'G7' },
+    'grid2': { from: 'C1', to: 'B2' },
+    'grid3': { from: 'G6', to: 'G7' },
+    'grid4': { from: 'H6', to: 'G7' }
+  };
+
+  let currentGrid = grids['grid1'];
+  let correctMove = correctMoves['grid1'];
+
+  // Function to render the chess grid
+  function renderChessGrid(grid) {
+    const gridContainer = document.getElementById('chessBoard');
+    gridContainer.innerHTML = ''; // Clear previous grid
+
+    const columnLabels = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+    columnLabels.forEach(label => {
+      const labelDiv = document.createElement('div');
+      labelDiv.textContent = label;
+      labelDiv.style.color = 'white';
+      gridContainer.appendChild(labelDiv);
+    });
+
+    grid.forEach((row, rowIndex) => {
+      // Add row labels
+      const rowLabel = document.createElement('div');
+      rowLabel.textContent = 8 - rowIndex;
+      rowLabel.style.color = 'white';
+      gridContainer.appendChild(rowLabel);
+
+      row.forEach((cell, colIndex) => {
+        const cellDiv = document.createElement('div');
+        cellDiv.className = 'grid-cell';
+        
+        // Alternating colors for the chessboard
+        if ((rowIndex + colIndex) % 2 === 0) {
+          cellDiv.style.backgroundColor = '#a2b59c'; // White
+        } else {
+          cellDiv.style.backgroundColor = '#495246'; // Black
+        }
+
+        cellDiv.style.color = (cell.toLowerCase() === cell) ? 'black' : 'white'; // Black pieces in lowercase
+        cellDiv.style.width = '60px';
+        cellDiv.style.height = '60px';
+        cellDiv.style.textAlign = 'center';
+        cellDiv.style.lineHeight = '60px';
+        cellDiv.style.fontSize = '24px';
+        cellDiv.textContent = cell !== ' ' ? cell : '';
+        gridContainer.appendChild(cellDiv);
+      });
+    });
+  }
+
+  // Function to validate the player's move
+  function validateMove() {
+    const initialPos = document.getElementById('initialPos').value.toUpperCase();
+    const finalPos = document.getElementById('finalPos').value.toUpperCase();
+
+    if (initialPos === correctMove.from && finalPos === correctMove.to) {
+      document.getElementById('gameMessage').textContent = 'Correct move! Checkmate!';
+    } else {
+      document.getElementById('gameMessage').textContent = 'Incorrect move. Try again.';
+    }
+  }
+
+  // Function to load a new grid
+  function loadGrid(gridName) {
+    currentGrid = grids[gridName];
+    correctMove = correctMoves[gridName];
+    renderChessGrid(currentGrid);
+    document.getElementById('gameMessage').textContent = '';
+    document.getElementById('initialPos').value = '';
+    document.getElementById('finalPos').value = '';
+  }
+
+  // Handle the grid loading button
+  document.getElementById('loadGridButton').addEventListener('click', function () {
+    const selectedGrid = document.getElementById('gridSelector').value;
+    loadGrid(selectedGrid);
+  });
+
+  // Handle the move validation button
+  document.getElementById('validateMoveButton').addEventListener('click', function () {
+    validateMove();
+  });
+
+  // Load initial grid
+  loadGrid('grid1');
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 10px;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .grid-cell {
+    border: 1px solid #000;
+    display: inline-block;
+    font-weight: bold;
+  }
+
+  #gameMessage {
+    font-weight: bold;
+    color: white;
+  }
+</style>

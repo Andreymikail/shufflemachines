@@ -1,0 +1,154 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Fallacies</h2>
+  
+  <!-- Elements per page selection -->
+  <div>
+    <label for="elementsPerPage" style="color: white;">Fallacies per Page:</label><br>    <input type="number" id="elementsPerPage" value="1"><br><br>  </div>
+
+  <!-- Shuffle Button -->
+  <button id="shuffleButton" class="round-button">Shuffle</button>
+
+  <!-- Rules Display -->
+  <div id="rulesContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const rulesOfAcquisition = [
+    "Ad Hominem<br>Attacking the person making the argument, rather than the argument itself.<br>Example: You can't trust John's argument about climate change because he's not a scientist.",
+"Strawman Argument<br>Misrepresenting someone's argument to make it easier to attack.<br>Example: People who support space exploration want to waste money instead of fixing problems here on Earth.",
+"Appeal to Ignorance (Argumentum ad Ignorantiam)<br>Claiming something is true because it hasn't been proven false (or vice versa).<br>Example: No one has proven that aliens don't exist, so they must be real.",
+"False Dilemma (Either/Or Fallacy)<br>Presenting two options as the only possibilities, when there are more.<br>Example: You're either with us, or you're against us.",
+"Slippery Slope<br>Arguing that a small first step will inevitably lead to a chain of related events ending in disaster, without proof.<br>Example: If we allow students to redo this test, next they'll want to retake every test, and soon they'll be running the school.",
+"Circular Reasoning (Begging the Question)<br>The argument assumes what it is trying to prove, effectively arguing in a circle.<br>Example: God exists because the Bible says so, and we know the Bible is true because it is the word of God.",
+"Hasty Generalization<br>Making a broad generalization based on insufficient evidence.<br>Example: My friend got sick after eating sushi once, so sushi is unsafe.",
+"Post Hoc Ergo Propter Hoc (False Cause)<br>Assuming that because one thing followed another, it was caused by it.<br>Example: Since I started wearing my lucky socks, we've won every game. The socks must be causing our success.",
+"Appeal to Authority (Argumentum ad Verecundiam)<br>Believing something is true just because an authority figure believes it, without examining the evidence.<br>Example: A famous actor uses this product, so it must be the best.",
+"Red Herring<br>Introducing irrelevant material to distract from the argument at hand.<br>Example: Why worry about pollution when there are so many homeless people needing help?",
+"Tu Quoque (You Too Fallacy)<br>Dismissing someone's argument because they themselves are inconsistent or hypocritical.<br>Example: You say smoking is unhealthy, but you used to smoke too!",
+"Bandwagon Appeal (Ad Populum)<br>Assuming something is true or right because it's popular or because everyone is doing it.<br>Example: Everyone believes that this diet works, so it must be effective.",
+"Appeal to Emotion (Argumentum ad Passiones)<br>Using emotions like fear, pity, or flattery rather than logical reasoning to persuade.<br>Example: Think of the children! We must ban all violent video games to protect them.",
+"Appeal to Nature<br>Arguing that because something is natural, it is therefore inherently good or right.<br>Example: This medicine is made from natural ingredients, so it must be better than synthetic alternatives.",
+"False Equivalence<br>Presenting two unlike things as if they are logically equivalent.<br>Example: Both murder and theft are crimes, so they're equally bad.",
+"No True Scotsman<br>Defending a generalization by excluding counterexamples that don’t support it.<br>Example: No true Scotsman puts sugar in their porridge. Oh, he’s Scottish and puts sugar? Then he’s not a true Scotsman.",
+"Gambler's Fallacy<br>Believing that past random events influence the likelihood of future random events.<br>Example: I've lost the last five coin flips, so the next one has to be heads.",
+"Appeal to Tradition (Argumentum ad Antiquitatem)<br>Arguing that something is correct or better simply because it is traditional or has always been done that way.<br>Example: We’ve always done it this way, so it must be the best approach.",
+"Composition Fallacy<br>Assuming that what is true of the parts must be true of the whole.<br>Example: Each player on this basketball team is great, so the team will be unbeatable.",
+"Division Fallacy<br>Assuming that what is true of the whole must be true of its parts.<br>Example: The company is very profitable, so every department in the company must also be profitable.",
+"Appeal to Consequences (Argumentum ad Consequentiam)<br>Arguing that a belief is true or false based on the consequences of believing it, rather than evidence.<br>Example: We must believe in free will; otherwise, society would collapse into chaos.",
+"Argument from Silence (Argumentum ex Silentio)<br>Concluding something is true or false because no one has mentioned or disproved it.<br>Example: Since no one has criticized my presentation, I assume it was perfect.",
+"Equivocation (Ambiguity Fallacy)<br>Using a word with multiple meanings and switching between those meanings in the course of an argument.<br>Example: A feather is light. What is light cannot be dark. Therefore, a feather cannot be dark.",
+"Middle Ground Fallacy<br>Assuming that the middle position between two extremes is always correct.<br>Example: Some people believe the Earth is flat, while others believe it's round. The truth must be somewhere in between.",
+"Personal Incredulity<br>Arguing that because something is difficult to understand or believe, it must not be true.<br>Example: I can’t believe humans evolved from apes, so evolution must be false.",
+"Fallacy of the Single Cause (Causal Oversimplification)<br>Attributing a complex problem to a single cause when there are many contributing factors.<br>Example: The financial crisis happened because greedy bankers wanted bonuses.",
+"False Analogy<br>Comparing two things that are not truly comparable in relevant aspects.<br>Example: Employees are like nails. Just as nails must be hit in the head to work, so must employees.",
+"Cherry Picking (Suppressed Evidence)<br>Only selecting evidence that supports your argument while ignoring relevant evidence that contradicts it.<br>Example: This study shows that one person lost weight on this diet, so it must be effective! (ignoring studies where it didn’t work for others).",
+"Moralistic Fallacy<br>Assuming that because something ought to be a certain way, it necessarily is that way.<br>Example: People shouldn’t lie, so I don’t believe anyone would lie in this situation.",
+"Nirvana Fallacy (Perfect Solution Fallacy)<br>Rejecting a solution because it is not perfect, even if it is a reasonable option.<br>Example: Why bother trying to reduce car accidents? Even with seatbelts and airbags, people will still die in crashes.",
+"Fallacy of Composition<br>Assuming that what is true of a part is necessarily true for the whole.<br>Example: Each brick in this building weighs less than a pound, so the entire building must be light.",
+"Fallacy of Division<br>Assuming that what is true of the whole must also be true of its parts.<br>Example: This cake tastes delicious, so each ingredient must taste delicious on its own.",
+"Base Rate Fallacy<br>Ignoring statistical base rates in favor of anecdotal or specific evidence.<br>Example: I know smoking doesn’t cause cancer because my grandfather smoked his whole life and lived until 90.",
+"Appeal to Novelty (Argumentum ad Novitatem)<br>Claiming something is better or more correct simply because it is new or modern.<br>Example: This new diet must be better than older diets because it just came out.",
+"Appeal to Antiquity (Argumentum ad Antiquitatem)<br>Claiming something is correct or superior simply because it has been traditionally practiced or believed.<br>Example: We’ve been doing this for centuries, so it must be the best way.",
+"Reductio ad Hitlerum<br>Discrediting an argument by associating it with Hitler or Nazi ideology, even if the comparison is irrelevant.<br>Example: Hitler was a vegetarian, so vegetarianism must be wrong.",
+"False Continuum (Continuum Fallacy)<br>Assuming that two things that lie on a continuum are essentially the same because there is no clear dividing line between them.<br>Example: There’s no precise point at which a person becomes bald, so there's no such thing as baldness.",
+"Moving the Goalposts<br>Demanding increasingly difficult standards of proof after an argument has already been sufficiently supported.<br>Example: You’ve proven that vaccines reduce disease, but now prove that they don’t cause any side effects whatsoever.",
+"Loaded Question<br>Asking a question that contains a presupposition that implies guilt or an undesirable answer.<br>Example: Have you stopped cheating on your taxes?",
+"Appeal to Force (Argumentum ad Baculum)<br>Using the threat of force or intimidation to make someone accept a conclusion.<br>Example: You better agree with this policy, or you'll lose your job.",
+"Appeal to Flattery<br>Using flattery instead of evidence to persuade someone to agree with your argument.<br>Example: You're such an intelligent person, I know you'll see why my argument is correct.",
+"Argument from Authority (Ipse Dixit)<br>Claiming that something is true simply because an authority or expert said it, without presenting actual evidence.<br>Example: Dr. Smith said this treatment works, so it must be effective.",
+"Genetic Fallacy<br>Judging something as true or false based on its origin, rather than its actual merits.<br>Example: You shouldn’t trust his ideas on health; he’s not a doctor, he’s just a celebrity.",
+"Quoting Out of Context<br>Taking a quote out of its original context to distort the meaning of what was said.<br>Example: Einstein said, ‘God does not play dice with the universe,’ so he must have believed in a traditional God. (ignoring that this was a metaphor about quantum mechanics).",
+"Sunk Cost Fallacy<br>Continuing an endeavor because of the time, effort, or money already invested, even if the current costs outweigh the benefits.<br>Example: I’ve already spent $500 fixing this old car. I might as well keep fixing it even if it's breaking down all the time.",
+"Relative Privation (Appeal to Worse Problems)<br>Dismissing an issue or argument by comparing it to a more serious problem, even when both are valid concerns.<br>Example: Why are you worried about climate change when there are people starving in the world?",
+"Argument to Moderation (Argumentum ad Temperantiam)<br>Assuming that a compromise between two opposing positions is always the best or correct solution.<br>Example: Some say vaccines are harmful, others say they're safe. The truth must be somewhere in between.",
+"Definist Fallacy<br>Defining a term in a biased way that supports your argument while dismissing any other interpretations.<br>Example: Freedom means doing whatever I want, so any restriction is an attack on my freedom.",
+"Fallacy of Relative Privation<br>Trying to dismiss a serious issue by comparing it to a more serious problem.<br>Example: Why worry about pollution when there are people starving?",
+"Argument by Anecdote<br>Using personal experience or an isolated example instead of a valid argument, especially to dismiss statistics or research.<br>Example: I know a guy who smoked his whole life and lived to be 90, so smoking can’t be that bad.",
+"Wishful Thinking<br>Assuming something is true because one wishes it to be true, rather than based on evidence or logic.<br>Example: I believe we'll find a cure for cancer soon because it would be too terrible if we didn’t.",
+"Anthropomorphism (Personification Fallacy)<br>Attributing human characteristics to animals, objects, or abstract concepts to argue a point.<br>Example: The economy is sick and needs time to heal. (This metaphor may oversimplify or misrepresent complex economic mechanisms.)",
+"Appeal to Wealth (Argumentum ad Crumenam)<br>Assuming that if someone is wealthy, their argument or opinion must be correct, or that wealth is a measure of correctness.<br>Example: He's a billionaire, so he must know the best way to run the country.",
+"Appeal to Poverty (Argumentum ad Lazarum)<br>Assuming that if someone is poor, their argument or opinion must be morally superior or more valid.<br>Example: She’s poor, so she must understand the true nature of life better than anyone else.",
+"Argumentum ad Nauseam<br>Repeating an argument or assertion over and over again in place of better supporting evidence, with the assumption that it will eventually be accepted.<br>Example: Vaccines are harmful! Vaccines are harmful! Vaccines are harmful! (without providing any valid evidence).",
+"Appeal to Ridicule (Ad Absurdum)<br>Presenting an opponent’s argument in a way that makes it appear ridiculous or absurd, rather than addressing its actual substance.<br>Example: Oh, sure, we should trust scientists who believe we're all descended from monkeys!",
+"Appeal to Pity (Argumentum ad Misericordiam)<br>Trying to win an argument by exploiting the audience’s emotions of pity or guilt, rather than presenting logical reasons.<br>Example: You have to pass me in this class; otherwise, I won’t graduate, and my whole life will be ruined.",
+"Fallacy of Quoting a Maxim<br>Using a well-known proverb, saying, or maxim as if it settles the argument, regardless of whether it applies to the specific context.<br>Example: The early bird catches the worm, so you should start this business now, even if you’re not prepared.",
+"Argument from Incredulity<br>Concluding that because something seems unbelievable or difficult to understand, it must not be true.<br>Example: I can't believe that the universe is so vast, therefore, the idea that there are billions of galaxies must be false.",
+"Argument from Popularity (Bandwagon Fallacy)<br>Claiming something is true because a majority of people believe it or because it is popular.<br>Example: Everyone believes this diet works, so it must be the best.",
+"Appeal to Personal Astonishment<br>Claiming that because something is astonishing or surprising to someone, it must be true.<br>Example: It’s unbelievable that I won the lottery, so it must be fate or destiny.",
+"Conjunction Fallacy<br>Assuming that specific conditions are more probable than a single general one.<br>Example: It’s more likely that Linda is a bank teller and a feminist than just a bank teller. (In reality, the probability of both being true is less than one being true.)",
+"Argument from Final Consequences (Teleological Fallacy)<br>Arguing that something is true or false based on the intended or perceived consequences rather than evidence.<br>Example: Evolution can’t be true because if it were, humans would have no purpose in life.",
+"Continuum Fallacy<br>Rejecting a claim because it is not precisely defined, assuming that because a concept is vague, it must be invalid.<br>Example: There’s no clear point at which a person becomes rich, so wealth doesn’t really exist.",
+"Ecological Fallacy<br>Making assumptions about individuals based on the average characteristics of a group.<br>Example: The average income in this country is high, so everyone must be well-off.",
+"Fallacy of Relative Privation (Not as Bad as)<br>Suggesting that a problem isn’t significant because there are worse problems elsewhere.<br>Example: Why are you upset about animal cruelty? There are children starving in other countries!",
+"Appeal to the Stone (Argumentum ad Lapidem)<br>Dismissing a claim as absurd or false without presenting any evidence against it.<br>Example: That idea is just ridiculous, without explaining why it's supposed to be ridiculous.",
+"Misleading Vividness<br>Using a particularly vivid or dramatic event to convince someone of a general conclusion, even if the event is an outlier.<br>Example: I read a story about someone who died from a bee sting, so we should all avoid bees at all costs.",
+"Broken Window Fallacy<br>Arguing that economic benefits can arise from destruction or other harmful events.<br>Example: The hurricane created a lot of jobs in construction, so it was actually good for the economy.",
+"Regression Fallacy<br>Assuming that a recent change in a variable is a direct cause when it’s actually due to a natural fluctuation or regression to the mean.<br>Example: My cold got better after drinking this herbal tea, so the tea must have cured me.",
+"Sharpshooter Fallacy (Texas Sharpshooter Fallacy)<br>Cherry-picking data to support an argument, while ignoring any data that contradicts it.<br>Example: This brand of cereal is healthy because it has high fiber! (ignoring its high sugar content).",
+"Reductio ad Absurdum<br>Extending an argument to absurd lengths to show it is flawed or ridiculous.<br>Example: If we allow people to marry whoever they love, next they’ll want to marry their pets or robots.",
+"Etymological Fallacy<br>Assuming that the original or historical meaning of a word is its true or correct meaning.<br>Example: The word ‘discipline’ comes from the Latin word for ‘teaching,’ so it can’t have any negative connotations.",
+"Reification (Hypostatization)<br>Treating an abstract concept as if it were a concrete, physical entity.<br>Example: Society has decided that this behavior is unacceptable. (Implying that society is a single, conscious entity.)",
+"Argument by Laziness<br>Refusing to engage with a complex issue and dismissing it without proper argument or thought.<br>Example: I don’t want to learn about climate science; it’s all too confusing, and I don’t believe it anyway.",
+"Appeal to Motive<br>Attacking an argument by questioning the motives of the person making the argument, rather than addressing the argument itself.<br>Example: Of course the CEO supports deregulation; he just wants to make more money.",
+"Argument from Repetition (Argumentum ad Infinitum)<br>Repeating a point or argument so many times that it becomes accepted as true, even without evidence.<br>Example: If you keep saying that tax cuts help the economy, eventually people will believe it.",
+"Fallacy of Exclusion<br>Ignoring or excluding key information that would change the outcome of an argument.<br>Example: This drug has been proven to lower cholesterol! (while excluding the fact that it has serious side effects).",
+"Two Wrongs Make a Right<br>Justifying one wrong action because another wrong action was committed.<br>Example: It’s okay that I cheated on my taxes because the government wastes money anyway.",
+"Decomposition Fallacy<br>Incorrectly assuming that what is true for a whole must also be true for its parts, and vice versa.<br>Example: If this car is high-quality, then every part of it must be high-quality as well."
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to shuffle and display paginated rules
+  function shuffleRules() {
+    const shuffledRules = shuffleArray(rulesOfAcquisition);
+    const elementsPerPage = parseInt(document.getElementById('elementsPerPage').value, 10);
+    displayPaginatedRules(shuffledRules, elementsPerPage);
+  }
+
+  // Function to display paginated rules
+  function displayPaginatedRules(rules, elementsPerPage) {
+    const rulesContainer = document.getElementById('rulesContainer');
+    rulesContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < rules.length; i += elementsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+      pageDiv.innerHTML = `<h3>Page ${(i / elementsPerPage) + 1}</h3><p>${rules.slice(i, i + elementsPerPage).join('<br>')}</p>`;
+      rulesContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Event listener for the Shuffle button
+  document.getElementById('shuffleButton').addEventListener('click', shuffleRules);
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

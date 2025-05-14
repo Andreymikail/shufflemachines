@@ -1,0 +1,121 @@
+<!-- HTML Structure -->
+<button id="shuffleButton" class="round-button">Shuffle</button>
+
+<div>
+  <label for="itemsPerPage">Dominoes per Page:</label>
+  <input type="number" id="itemsPerPage" value="5" min="1" max="28">
+</div>
+
+<div id="paginationControls"></div>
+<div id="dominoResult"></div>
+
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let currentPage = 1;
+    let dominoSet = [];
+
+    // Function to create a full set of dominoes
+    function createDominoSet() {
+      let dominoes = [];
+      for (let i = 0; i <= 6; i++) {
+        for (let j = i; j <= 6; j++) {
+          dominoes.push(`${i}-${j}`);
+        }
+      }
+      return dominoes;
+    }
+
+    // Shuffle function
+    function shuffleDominoes(dominoes) {
+      for (let i = dominoes.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [dominoes[i], dominoes[j]] = [dominoes[j], dominoes[i]];
+      }
+      return dominoes;
+    }
+
+    // Function to display a specific page of dominoes
+    function displayPage(dominoes, page, itemsPerPage) {
+      const start = (page - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const paginatedDominoes = dominoes.slice(start, end);
+
+      const resultHTML = paginatedDominoes.map(domino => `<p>${domino}</p>`).join('');
+      document.getElementById('dominoResult').innerHTML = resultHTML;
+
+      updatePaginationControls(dominoes.length, itemsPerPage);
+    }
+
+    // Function to update pagination controls
+    function updatePaginationControls(totalItems, itemsPerPage) {
+      const totalPages = Math.ceil(totalItems / itemsPerPage);
+      let controlsHTML = '';
+
+      for (let i = 1; i <= totalPages; i++) {
+        controlsHTML += `<button class="page-button" data-page="${i}">${i}</button>`;
+      }
+
+      document.getElementById('paginationControls').innerHTML = controlsHTML;
+
+      // Add event listeners to the page buttons
+      document.querySelectorAll('.page-button').forEach(button => {
+        button.addEventListener('click', function() {
+          currentPage = parseInt(this.getAttribute('data-page'));
+          displayPage(dominoSet, currentPage, parseInt(document.getElementById('itemsPerPage').value));
+        });
+      });
+    }
+
+    // Event listener for shuffle button
+    document.getElementById('shuffleButton').addEventListener('click', function() {
+      dominoSet = shuffleDominoes(createDominoSet());
+      currentPage = 1; // Reset to the first page
+      displayPage(dominoSet, currentPage, parseInt(document.getElementById('itemsPerPage').value));
+    });
+
+    // Event listener for items per page change
+    document.getElementById('itemsPerPage').addEventListener('change', function() {
+      displayPage(dominoSet, currentPage, parseInt(this.value));
+    });
+  });
+</script>
+
+<!-- CSS for the Round Button and Pagination Controls -->
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.5; /* Align text vertically */
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  #dominoResult p {
+    font-size: 18px;
+    margin: 5px 0;
+  }
+
+  .page-button {
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    background-color: #f4f4f4;
+  }
+
+  .page-button:hover {
+    background-color: #ddd;
+  }
+</style>

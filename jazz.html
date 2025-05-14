@@ -1,0 +1,889 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Jazz</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="playersCheckbox"> Players</label><br>
+    <label><input type="checkbox" id="instrumentsCheckbox"> Instruments</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    <br><br>
+    <div style="margin-bottom: 20px;">
+      <h3>Rules</h3>
+      <p id="rulesResult" style="color: white;">-</p>
+      <button id="shuffleRulesButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Improvisation Solo: Choose one player card (musician) from your hand. That card gets +5 in attack (representing a powerful solo). If it’s a Saxophone or Trumpet card, draw an extra card after playing it.",
+"Tight Rhythm Section: Increase the defense of all your current players (musicians) by +3 for the next two turns, reflecting the strong foundation provided by the bass and drums.",
+"Scat Singing: Play two attack cards in quick succession, with each gaining +2. If you play a Vocalist card, one of those cards can bypass the opponent's defense.",
+"Syncopation: Swap one of your musician cards on the field with one from your hand. The new musician gets a +3 bonus to either attack or defense (your choice), showing a change in rhythm.",
+"Swing Groove: All your attack cards gain +4 this round, representing the infectious energy of a swing beat. If your band includes a Drummer card, the bonus increases to +6.",
+"Jam Session: Both players draw two cards, and you can play one extra card immediately. All attack values are boosted by +2 for the next turn, reflecting the spontaneous creativity of a live jam.",
+"Call and Response: After your opponent plays an attack card, immediately play a defense card and an attack card in response. Your attack gets a +3 bonus, symbolizing the back-and-forth interaction between musicians.",
+"Bassline Groove: Add +4 to the defense of your entire band (musicians on the field) for two turns, reflecting the steady groove of the bass holding everything together.",
+"Trumpet Blast: Play a Trumpet card for a powerful attack. The attack gains +5. If your opponent has no defense card, the attack value is doubled.",
+"Melodic Improvisation: Choose one Piano or Guitar card from your hand. That musician's attack or defense is doubled for this turn, symbolizing a skillful melodic improvisation.",
+"Encore: After a round ends, you can play one additional attack card. The card gains +3, representing the energy boost from an encore performance.",
+"Rhythmic Break: Cancel the opponent's next attack, representing a sudden shift in rhythm that throws off the timing of the opponent's musicians.",
+"Solo Battle: Challenge the opponent's musician to a solo duel. Both players reveal an attack card, and the highest value wins. The winner gets to play the card for free, and the loser discards theirs.",
+"Jazz Standard: Play a Piano card. All your other musicians gain +2 defense this turn, representing the cohesive structure provided by a well-known jazz standard.",
+"Walking Bassline: Boost the attack of your band’s Bass card by +4. For the next two turns, every attack card you play gets an additional +2 bonus.",
+"Drum Solo: Play a Drummer card. The opponent's next turn is skipped, representing the focus on the drummer during a thrilling solo that steals the spotlight.",
+"Saxophone Serenade: Play a Saxophone card. You can immediately draw two extra cards. If the Saxophone attack wins the round, the opponent must discard one card from their hand.",
+"Cool Jazz: Lower the attack value of all the opponent’s cards by -3 for this round, reflecting the laid-back, controlled style of cool jazz that disrupts the opponent's energy.",
+"Free Jazz Chaos: Both players must discard two cards from their hand and draw two new ones, representing the unpredictable nature of free jazz.",
+"Big Band Attack: If you have three or more musicians on the field, all attack values are increased by +5 this turn, representing the overwhelming power of a full big band."];
+
+  const rules = [
+    `A: Cmaj7 - Am7 - Dm7 - G7 \n
+B: E7 - A7 - D7 - G7 \n
+Cmaj7: C Major (C, D, E, F, G, A, B) \n
+Am7: A Minor Pentatonic (A, C, D, E, G) \n
+Dm7: D Dorian (D, E, F, G, A, B, C) \n
+G7: G Mixolydian (G, A, B, C, D, E, F) \n
+E7: E Harmonic Minor (E, F#, G, A, B, C, D#) \n
+A7: A Mixolydian (A, B, C#, D, E, F#, G) \n
+D7: D Mixolydian (D, E, F#, G, A, B, C)`,
+    `A: Fmaj7 - Gm7 - C7 - Fmaj7
+B: Bb7 - Eb7 - Ab7 - Db7
+Fmaj7: F Major (F, G, A, Bb, C, D, E)
+Gm7: G Dorian (G, A, Bb, C, D, E, F)
+C7: C Mixolydian (C, D, E, F, G, A, Bb)
+Bb7: Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+Eb7: Eb Mixolydian (Eb, F, G, Ab, Bb, C, Db)
+Ab7: Ab Mixolydian (Ab, Bb, C, Db, Eb, F, Gb)
+Db7: Db Mixolydian (Db, Eb, F, Gb, Ab, Bb, Cb)`,
+    `A: Gmaj7 - Em7 - Am7 - D7
+B: A7 - D7 - G7 - C7
+Gmaj7: G Major (G, A, B, C, D, E, F#)
+Em7: E Minor Pentatonic (E, G, A, B, D)
+Am7: A Dorian (A, B, C, D, E, F#, G)
+D7: D Mixolydian (D, E, F#, G, A, B, C)
+A7: A Mixolydian (A, B, C#, D, E, F#, G)
+G7: G Mixolydian (G, A, B, C, D, E, F)
+C7: C Mixolydian (C, D, E, F, G, A, Bb)`,
+    `A: Bbmaj7 - Cm7 - F7 - Bbmaj7
+B: Ebmaj7 - Ab7 - Dbmaj7 - Gb7
+Bbmaj7: Bb Major (Bb, C, D, Eb, F, G, A)
+Cm7: C Dorian (C, D, Eb, F, G, A, Bb)
+F7: F Mixolydian (F, G, A, Bb, C, D, Eb)
+Ebmaj7: Eb Major (Eb, F, G, Ab, Bb, C, D)
+Ab7: Ab Mixolydian (Ab, Bb, C, Db, Eb, F, Gb)
+Dbmaj7: Db Major (Db, Eb, F, Gb, Ab, Bb, C)
+Gb7: Gb Mixolydian (Gb, Ab, Bb, Cb, Db, Eb, Fb)`,
+`A: Dmaj7 - Bm7 - Em7 - A7
+B: F#m7 - B7 - E7 - A7
+Dmaj7: D Major (D, E, F#, G, A, B, C#)
+Bm7: B Dorian (B, C#, D, E, F#, G#, A)
+Em7: E Dorian (E, F#, G, A, B, C#, D)
+A7: A Mixolydian (A, B, C#, D, E, F#, G)
+F#m7: F# Dorian (F#, G#, A, B, C#, D#, E)
+B7: B Mixolydian (B, C#, D#, E, F#, G#, A)
+E7: E Mixolydian (E, F#, G#, A, B, C#, D)`,
+`A: Ebmaj7 - Fm7 - Bb7 - Ebmaj7
+B: Abmaj7 - Db7 - Gbmaj7 - C7
+Ebmaj7: Eb Major (Eb, F, G, Ab, Bb, C, D)
+Fm7: F Dorian (F, G, Ab, Bb, C, D, Eb)
+Bb7: Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+Abmaj7: Ab Major (Ab, Bb, C, Db, Eb, F, G)
+Db7: Db Mixolydian (Db, Eb, F, Gb, Ab, Bb, Cb)
+Gbmaj7: Gb Major (Gb, Ab, Bb, Cb, Db, Eb, F)
+C7: C Mixolydian (C, D, E, F, G, A, Bb)`,
+`A: Amaj7 - F#m7 - Bm7 - E7
+B: Dmaj7 - G7 - Cmaj7 - F#7
+Amaj7: A Major (A, B, C#, D, E, F#, G#)
+F#m7: F# Dorian (F#, G#, A, B, C#, D#, E)
+Bm7: B Dorian (B, C#, D, E, F#, G#, A)
+E7: E Mixolydian (E, F#, G#, A, B, C#, D)
+Dmaj7: D Major (D, E, F#, G, A, B, C#)
+G7: G Mixolydian (G, A, B, C, D, E, F)
+Cmaj7: C Major (C, D, E, F, G, A, B)
+F#7: F# Mixolydian (F#, G#, A#, B, C#, D#, E)`,
+`A: Dbmaj7 - Bbm7 - Ebm7 - Ab7
+B: Gbmaj7 - Cb7 - Fbmaj7 - B7
+Dbmaj7: Db Major (Db, Eb, F, Gb, Ab, Bb, C)
+Bbm7: Bb Dorian (Bb, C, Db, Eb, F, G, Ab)
+Ebm7: Eb Dorian (Eb, F, Gb, Ab, Bb, C, Db)
+Ab7: Ab Mixolydian (Ab, Bb, C, Db, Eb, F, Gb)
+Gbmaj7: Gb Major (Gb, Ab, Bb, Cb, Db, Eb, F)
+Cb7: Cb Mixolydian (Cb, Db, Eb, Fb, Gb, Ab, Bb)
+Fbmaj7: Fb Major (Fb, Gb, Ab, Bbb, Cb, Db, Eb)
+B7: B Mixolydian (B, C#, D#, E, F#, G#, A)`,
+`A: F#m7 - B7 - Emaj7 - Amaj7
+B: C#m7 - F#7 - Bmaj7 - E7
+F#m7: F# Dorian (F#, G#, A, B, C#, D#, E)
+B7: B Mixolydian (B, C#, D#, E, F#, G#, A)
+Emaj7: E Major (E, F#, G#, A, B, C#, D#)
+Amaj7: A Major (A, B, C#, D, E, F#, G#)
+C#m7: C# Dorian (C#, D#, E, F#, G#, A#, B)
+F#7: F# Mixolydian (F#, G#, A#, B, C#, D#, E)
+Bmaj7: B Major (B, C#, D#, E, F#, G#, A#)
+E7: E Mixolydian (E, F#, G#, A, B, C#, D)`,
+`A: Cm7 - F7 - Bbmaj7 - Ebmaj7
+B: Gm7 - C7 - Fmaj7 - Bb7
+Cm7: C Dorian (C, D, Eb, F, G, A, Bb)
+F7: F Mixolydian (F, G, A, Bb, C, D, Eb)
+Bbmaj7: Bb Major (Bb, C, D, Eb, F, G, A)
+Ebmaj7: Eb Major (Eb, F, G, Ab, Bb, C, D)
+Gm7: G Dorian (G, A, Bb, C, D, E, F)
+C7: C Mixolydian (C, D, E, F, G, A, Bb)
+Fmaj7: F Major (F, G, A, Bb, C, D, E)
+Bb7: Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)`,
+`A: Dm7 - G7 - Cmaj7 - Fmaj7
+B: Em7 - A7 - Dmaj7 - Gmaj7
+Dm7: D Dorian (D, E, F, G, A, B, C)
+G7: G Mixolydian (G, A, B, C, D, E, F)
+Cmaj7: C Major (C, D, E, F, G, A, B)
+Fmaj7: F Major (F, G, A, Bb, C, D, E)
+Em7: E Dorian (E, F#, G, A, B, C#, D)
+A7: A Mixolydian (A, B, C#, D, E, F#, G)
+Dmaj7: D Major (D, E, F#, G, A, B, C#)
+Gmaj7: G Major (G, A, B, C, D, E, F#)`,
+`A: Bm7 - E7 - Amaj7 - Dmaj7
+B: F#m7 - B7 - Emaj7 - Amaj7
+Bm7: B Dorian (B, C#, D, E, F#, G#, A)
+E7: E Mixolydian (E, F#, G#, A, B, C#, D)
+Amaj7: A Major (A, B, C#, D, E, F#, G#)
+Dmaj7: D Major (D, E, F#, G, A, B, C#)
+F#m7: F# Dorian (F#, G#, A, B, C#, D#, E)
+B7: B Mixolydian (B, C#, D#, E, F#, G#, A)
+Emaj7: E Major (E, F#, G#, A, B, C#, D#)
+Amaj7: A Major (A, B, C#, D, E, F#, G#)`,
+`A: Ebm7 - Ab7 - Dbmaj7 - Gbmaj7
+B: Bbm7 - Eb7 - Abmaj7 - Dbmaj7
+Ebm7: Eb Dorian (Eb, F, Gb, Ab, Bb, C, Db)
+Ab7: Ab Mixolydian (Ab, Bb, C, Db, Eb, F, Gb)
+Dbmaj7: Db Major (Db, Eb, F, Gb, Ab, Bb, C)
+Gbmaj7: Gb Major (Gb, Ab, Bb, Cb, Db, Eb, F)
+Bbm7: Bb Dorian (Bb, C, Db, Eb, F, G, Ab)
+Eb7: Eb Mixolydian (Eb, F, G, Ab, Bb, C, Db)
+Abmaj7: Ab Major (Ab, Bb, C, Db, Eb, F, G)
+Dbmaj7: Db Major (Db, Eb, F, Gb, Ab, Bb, C)`,
+`A: Abmaj7 - Bbm7 - Eb7 - Abmaj7
+B: Dbmaj7 - Gb7 - Bmaj7 - E7
+Abmaj7: Ab Major (Ab, Bb, C, Db, Eb, F, G)
+Bbm7: Bb Dorian (Bb, C, Db, Eb, F, G, Ab)
+Eb7: Eb Mixolydian (Eb, F, G, Ab, Bb, C, Db)
+Dbmaj7: Db Major (Db, Eb, F, Gb, Ab, Bb, C)
+Gb7: Gb Mixolydian (Gb, Ab, Bb, Cb, Db, Eb, Fb)
+Bmaj7: B Major (B, C#, D#, E, F#, G#, A#)
+E7: E Mixolydian (E, F#, G#, A, B, C#, D)`,
+    `A: F#m7 - B7 - Emaj7 - Amaj7
+B: Dmaj7 - G7 - Cmaj7 - F#7
+F#m7: F# Dorian (F#, G#, A, B, C#, D#, E)
+B7: B Mixolydian (B, C#, D#, E, F#, G#, A)
+Emaj7: E Major (E, F#, G#, A, B, C#, D#)
+Amaj7: A Major (A, B, C#, D, E, F#, G#)
+Dmaj7: D Major (D, E, F#, G, A, B, C#)
+G7: G Mixolydian (G, A, B, C, D, E, F)
+Cmaj7: C Major (C, D, E, F, G, A, B)
+F#7: F# Mixolydian (F#, G#, A#, B, C#, D#, E)`,
+`A: Cm7 - F7 - Bbmaj7 - Ebmaj7
+B: Gm7 - C7 - Fmaj7 - Bb7
+Cm7: C Dorian (C, D, Eb, F, G, A, Bb)
+F7: F Mixolydian (F, G, A, Bb, C, D, Eb)
+Bbmaj7: Bb Major (Bb, C, D, Eb, F, G, A)
+Ebmaj7: Eb Major (Eb, F, G, Ab, Bb, C, D)
+Gm7: G Dorian (G, A, Bb, C, D, E, F)
+C7: C Mixolydian (C, D, E, F, G, A, Bb)
+Fmaj7: F Major (F, G, A, Bb, C, D, E)
+Bb7: Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)`,
+`A: Dm7 - G7 - Cmaj7 - Fmaj7
+B: Em7 - A7 - Dmaj7 - Gmaj7
+Dm7: D Dorian (D, E, F, G, A, B, C)
+G7: G Mixolydian (G, A, B, C, D, E, F)
+Cmaj7: C Major (C, D, E, F, G, A, B)
+Fmaj7: F Major (F, G, A, Bb, C, D, E)
+Em7: E Dorian (E, F#, G, A, B, C#, D)
+A7: A Mixolydian (A, B, C#, D, E, F#, G)
+Dmaj7: D Major (D, E, F#, G, A, B, C#)
+Gmaj7: G Major (G, A, B, C, D, E, F#)`,
+`A: Bm7 - E7 - Amaj7 - Dmaj7
+B: F#m7 - B7 - Emaj7 - Amaj7
+Bm7: B Dorian (B, C#, D, E, F#, G#, A)
+E7: E Mixolydian (E, F#, G#, A, B, C#, D)
+Amaj7: A Major (A, B, C#, D, E, F#, G#)
+Dmaj7: D Major (D, E, F#, G, A, B, C#)
+F#m7: F# Dorian (F#, G#, A, B, C#, D#, E)
+B7: B Mixolydian (B, C#, D#, E, F#, G#, A)
+Emaj7: E Major (E, F#, G#, A, B, C#, D#)
+Amaj7: A Major (A, B, C#, D, E, F#, G#)`,
+`A: Ebm7 - Ab7 - Dbmaj7 - Gbmaj7
+B: Bbm7 - Eb7 - Abmaj7 - Dbmaj7
+Ebm7: Eb Dorian (Eb, F, Gb, Ab, Bb, C, Db)
+Ab7: Ab Mixolydian (Ab, Bb, C, Db, Eb, F, Gb)
+Dbmaj7: Db Major (Db, Eb, F, Gb, Ab, Bb, C)
+Gbmaj7: Gb Major (Gb, Ab, Bb, Cb, Db, Eb, F)
+Bbm7: Bb Dorian (Bb, C, Db, Eb, F, G, Ab)
+Eb7: Eb Mixolydian (Eb, F, G, Ab, Bb, C, Db)
+Abmaj7: Ab Major (Ab, Bb, C, Db, Eb, F, G)
+Dbmaj7: Db Major (Db, Eb, F, Gb, Ab, Bb, C)`,
+`A: Abmaj7 - Bbm7 - Eb7 - Abmaj7
+B: Dbmaj7 - Gb7 - Bmaj7 - E7
+Abmaj7: Ab Major (Ab, Bb, C, Db, Eb, F, G)
+Bbm7: Bb Dorian (Bb, C, Db, Eb, F, G, Ab)
+Eb7: Eb Mixolydian (Eb, F, G, Ab, Bb, C, Db)
+Dbmaj7: Db Major (Db, Eb, F, Gb, Ab, Bb, C)
+Gb7: Gb Mixolydian (Gb, Ab, Bb, Cb, Db, Eb, Fb)
+Bmaj7: B Major (B, C#, D#, E, F#, G#, A#)
+E7: E Mixolydian (E, F#, G#, A, B, C#, D)`    
+  ];  
+const players = [
+{name: "Artist: Abel Selaocoe (Cello - South Africa)", attributes: {Technique: 9, Improvisation: 10, Influence: 8, Creativity: 10, Versatility: 10, Legacy: 7}},
+{name: "Artist: Adam O’Farrill", attributes: {Technique: 9, Groove: 8, Creativity: 10, Influence: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Adrian Cox", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Adrian Younge (USA – The Analog Alchemist)", attributes: {Technique: 9, Improvisation: 8, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Agustina Ferro (The Tango Alchemist)", attributes: {Technique: 10, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Ahmad Jamal (The Elegant Architect)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Al Di Meola (The Lightning Stringsmith)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Al Green (USA)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Al Jarreau (The Vocal Acrobat – USA)", attributes: {Technique: 10, Groove: 9, Creativity: 10, Influence: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Alba Careta (The Catalan Fire)", attributes: {Technique: 9, Improvisation: 9, Influence: 7, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Alba Ramírez (The Urban Whisper)", attributes: {Technique: 8, Improvisation: 7, Influence: 6, Creativity: 9, Versatility: 8, Legacy: 6}},
+{name: "Artist: Alden Hellmuth (USA – The Harmonic Explorer)", attributes: {Technique: 8, Improvisation: 9, Influence: 7, Creativity: 9, Versatility: 9, Legacy: 7}},
+{name: "Artist: Alice Coltrane (USA)", attributes: { Technique: 9, Improvisation: 10, Influence: 10,Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Alphonso Johnson (The Groove Architect)", attributes: {Technique: 9, Improvisation: 9, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Amadito Valdés (The Rhythm Enchanter)", attributes: {Technique: 9, Improvisation: 10, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Amilton Godoy (The Samba-Jazz Architect)", attributes: {Technique: 9, Groove: 9, Creativity: 9, Influence: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Amy Winehouse", attributes: {Technique: 9, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 8, Legacy: 10}},
+{name: "Artist: André Watts (The Classical Virtuoso – USA)", attributes: {Technique: 10, Improvisation: 7, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 10}},
+{name: "Artist: Anette Camargo (The Jazz Virtuous)", attributes: {Technique: 9, Improvisation: 8, Influence: 7, Creativity: 8, Versatility: 9, Legacy: 7}},
+{name: "Artist: Aníbal Augusto Sardinha (Garoto – The Harmonic Visionary)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Anna Mae Winburn (The Swing Pioneer)", attributes: { Technique: 9, Groove: 9, Creativity: 9, Influence: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Anoushka Shankar (The Sitar Innovator)", attributes: {Technique: 10, Groove: 8, Creativity: 10, Influence: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Antoinette Clinton (The Sonic Alchemist)", attributes: {Technique: 9, Groove: 9, Creativity: 10, Influence: 9, Versatility: 10, Legacy: 8}},
+{name: "Artist: Antonino Pedone (The Experimental Craftsman)", attributes: {Technique: 8, Improvisation: 9, Influence: 7, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Aram Khachaturian (The Rhythmic Epicmaker)", attributes: {Technique: 9, Improvisation: 6, Influence: 10, Creativity: 9, Versatility: 8, Legacy: 10}},
+{name: "Artist: Aretha Franklin", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Ariel Mann (The Six-String Architect)", attributes: {Technique: 10, Groove: 9, Creativity: 9, Influence: 8, Versatility: 10, Legacy: 8}},
+{name: "Artist: Arnett Cobb (The Wild Tenor Texan)", attributes: {Technique: 9, Groove: 9, Creativity: 8, Influence: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Art Farmer (Trumpet/Flugelhorn - USA)", attributes: {Technique: 9,Improvisation: 8,Influence: 8,Creativity: 8,Versatility: 9,Legacy: 8}},
+{name: "Artist: Art Tatum (USA)", attributes: {Technique: 10,Improvisation: 10,Influence: 10,Creativity: 9,Versatility: 8,Legacy: 10}},
+{name: "Artist: Arthur Moreira Lima (The Classical Poet – Brazil)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Arthur Rubinstein", attributes: {Technique: 10, Improvisation: 7, Influence: 10, Creativity: 9, Versatility: 8, Legacy: 10}},
+{name: "Artist: Artie Shaw (The Swing Sorcerer)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 8, Versatility: 8, Legacy: 9}},
+{name: "Artist: Arturo Sandoval", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Barbara Bach (The Cinematic Muse)", attributes: {Technique: 7, Improvisation: 6, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: Bebo Best (Multi-instrumentalist/Producer - Italy)", attributes: {Technique: 8, Improvisation: 8, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 8}},
+{name: "Artist: Bennie Maupin (The Spiritual Echo)", attributes: {Technique: 9, Groove: 8, Creativity: 10, Influence: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Benny Golson (The Jazz Storyteller)", attributes: {Technique: 10, Groove: 9, Creativity: 10, Influence: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Benny Goodman (Clarinet - USA)", attributes: {Technique: 10,Improvisation: 8,Influence: 10,Creativity: 8,Versatility: 9,Legacy: 10}},
+{name: "Artist: Benny Green (USA)", attributes: { Technique: 10, Improvisation: 9, Influence: 8,Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Berta Gala (The Cinematic Voice)", attributes: {Technique: 8, Improvisation: 7, Influence: 6, Creativity: 8, Versatility: 8, Legacy: 6}},
+{name: "Artist: Big Black (Percussion - USA)", attributes: {Technique: 8, Improvisation: 9, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Bill Evans (USA)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Bill Frisell", attributes: {Technique: 9, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Bill Summers (The Ethno-Beat Sculptor)", attributes: {Technique: 9, Groove: 10, Creativity: 9, Influence: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Billie Holiday (USA)", attributes: {Technique: 9, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Billy Childs (USA)", attributes: {Technique: 10, Improvisation: 9, Influence: 8, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Billy Preston", attributes: {Technique: 9, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Bira (The Bass Groove Master)", attributes: {Technique: 85, Improvisation: 90, Influence: 85, Creativity: 85, Versatility: 88, Legacy: 90}},
+{name: "Artist: Blind Tom (USA)", attributes: { Technique: 10, Improvisation: 9, Influence: 9,Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Blossom Dearie (The Whispering Jazz Songbird)", attributes: {Technique: 8, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Bobby McFerrin (USA)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Bobby Timmons", attributes: {Technique: 9, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Bootsy Collins (The Funk Magician)", attributes: {Technique: 9, Groove: 10, Creativity: 10, Influence: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Brad Mehldau (USA)", attributes: {Technique: 9,Improvisation: 9,Influence: 8,Creativity: 9,Versatility: 9,Legacy: 8}},
+{name: "Artist: Brady Watt (The Groove Architect)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Branford Marsalis (The Saxophone Strategist)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Brenda Boykin (Vocalist - USA)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: Brian Blade (The Rhythmic Poet)", attributes: {Technique: 9, Groove: 10, Creativity: 10, Influence: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Brian Holland (The Hitmaker Architect)", attributes: {Technique: 9, Improvisation: 7, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Bruce Fowler (The Brass Explorer)", attributes: {Technique: 10, Groove: 9, Creativity: 9, Influence: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Bruno Mangueira (Brazilian Jazz Virtuoso)", attributes: {Technique: 9, Groove: 8, Creativity: 9, Influence: 7, Versatility: 9, Legacy: 8}},
+{name: "Artist: Bud Powell (The Bebop Virtuoso)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 9, Versatility: 8, Legacy: 10}},
+{name: "Artist: Buddy Rich (The Percussion Storm)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Cammyli Aguiar (The Geek Violinist)", attributes: {Technique: 8, Improvisation: 8, Influence: 7, Creativity: 9, Versatility: 9, Legacy: 7}},
+{name: "Artist: Candy Dulfer (The Funky Sax Diva)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Cannonball Adderley (Saxophone - USA)", attributes: {Technique: 9,Improvisation: 9,Influence: 9,Creativity: 9,Versatility: 9,Legacy: 9}},
+{name: "Artist: Carla Bley (The Avant-Garde Architect – USA)", attributes: {Technique: 9, Groove: 8, Creativity: 10, Influence: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Caterina Valente (The Global Virtuoso)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Cecilia Bosso (The Bass Architect)", attributes: {Technique: 9, Improvisation: 8, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 8}},
+{name: "Artist: Céu (The Ethereal Siren)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Charles Gayle (The Spiritual Firebrand)", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 8, Legacy: 9}},
+{name: "Artist: Charles Lloyd (The Jazz Mystic)", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Charles Mingus (USA)", attributes: {Technique: 9,Groove: 9,Creativity: 10,Influence: 10,Versatility: 8,Legacy: 10}},
+{name: "Artist: Charlie Christian (The Electric Pioneer)", attributes: {Technique: 9, Improvisation: 10, Influence: 10, Creativity: 9, Versatility: 8, Legacy: 10}},
+{name: "Artist: Charlie Haden (The Bass Poet)", attributes: {Technique: 9, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Charlie Musselwhite (The Harmonica Preacher)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Charlie Parker (Saxophone - USA)", attributes: {Technique: 10,Improvisation: 10,Influence: 10,Creativity: 10,Versatility: 9,Legacy: 10}},
+{name: "Artist: Charlie Rouse (The Hard Bop Pillar)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Cherry Wainer (South Africa)", attributes: {Technique: 9, Improvisation: 8, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Chet Baker (Trumpet - USA)", attributes: {Technique: 8,Improvisation: 9,Influence: 8,Creativity: 8,Versatility: 8,Legacy: 8}},
+{name: "Artist: Chick Corea (USA)", attributes: {Technique: 10,Improvisation: 10,Influence: 9,Creativity: 10,Versatility: 10,Legacy: 9}},
+{name: "Artist: Chief Adjuah (The Sonic Warrior)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Chris Potter (USA – The Saxophone Virtuoso)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Christian McBride (The Bass Virtuoso)", attributes: {Technique: 10, Groove: 10, Creativity: 9, Influence: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Chucho Valdés (The Afro-Cuban Titan)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 9, Versatility: 10, Legacy: 10}},
+{name: "Artist: Chuck Rainey (The Groove Maestro)", attributes: {Technique: 9, Improvisation: 8, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Clare Fischer (The Harmonic Architect)", attributes: {Technique: 9, Improvisation: 9, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Claudio Constantini (The Crossroads Virtuoso)", attributes: {Technique: 10, Improvisation: 8, Influence: 7, Creativity: 9, Versatility: 10, Legacy: 8}},
+{name: "Artist: Collin Walcott (The Ethno-Fusion Voyager)", attributes: {Technique: 8, Groove: 8, Creativity: 10, Influence: 9, Versatility: 10, Legacy: 8}},
+{name: "Artist: Compay Segundo (The Son Master)", attributes: {Technique: 9, Improvisation: 10, Influence: 10, Creativity: 8, Versatility: 8, Legacy: 10}},
+{name: "Artist: Count Basie (The Swing Commander)", attributes: { Technique: 10, Groove: 10, Creativity: 9, Influence: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Dani Gurgel (Brazil – The Rhythmic Storyteller)", attributes: {Technique: 8, Improvisation: 9, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Danilo Pérez (The Jazz Diplomat)", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Darnell White (The Soul Architect)", attributes: {Technique: 8, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Darynn Dean (USA – The Soulful Innovator)", attributes: {Technique: 8, Improvisation: 9, Influence: 7, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Dave Brubeck (USA)", attributes: {Technique: 9, Improvisation: 8, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Dave Holland (UK)", attributes: {Technique: 10,Groove: 9,Creativity: 9,Influence: 9,Versatility: 10,Legacy: 9}},
+{name: "Artist: David Amaro (The Six-String Alchemist)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 10, Legacy: 8}},
+{name: "Artist: David Bismuth (The Classical Storyteller)", attributes: {Technique: 10, Improvisation: 7, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: David Sanborn (The Saxophone Firestarter)", attributes: {Technique: 10, Groove: 10, Creativity: 9, Influence: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: David Tudor (The Avant-Garde Soundscaper)", attributes: {Technique: 8, Improvisation: 9, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Dean Martin (The Charisma Maestro)", attributes: {Technique: 8, Improvisation: 8, Influence: 9, Creativity: 8, Versatility: 9, Legacy: 10}},
+{name: "Artist: Debora Gurgel (Brazil – A ArquitetA Harmonica)", attributes: {Technique:9, Improvisation: 9, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Dee Dee Bridgewater (The Jazz Diva)", attributes: {Technique: 9, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Destiny Diggs (USA – A Exploradora Sonora)", attributes: {Technique: 8, Improvisation: 9, Influence: 7, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Dexter Gordon (Saxophone - USA)", attributes: {Technique: 9,Improvisation: 9,Influence: 9,Creativity: 8,Versatility: 8,Legacy: 9}},
+{name: "Artist: Dhafer Youssef (The Mystic of Sound – Tunisia)", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Dharni (The Beatbox Alchemist)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Diana Krall (The Velvet Jazz Touch)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Dianne Reeves (USA)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Dizzy Gillespie (Trumpet - USA)", attributes: {Technique: 10,Improvisation: 10,Influence: 9,Creativity: 10,Versatility: 9,Legacy: 9}},
+{name: "Artist: Dmitri Shostakovich (The Iron Composer)", attributes: {Technique: 10, Improvisation: 7, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Domenico Riina (The Mediterranean Colorist)", attributes: {Technique: 9, Improvisation: 8, Influence: 7, Creativity: 8, Versatility: 9, Legacy: 7}},
+{name: "Artist: Don Cherry (The Global Sound Shaman)", attributes: {Technique: 8, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Don Grolnick (USA)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Don Storer (USA)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: Donald Byrd", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Donald Harrison (USA)", attributes: { Technique: 9, Improvisation: 10, Influence: 9,Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Donald Vega (Nicaragua/USA)", attributes: {Technique: 9, Improvisation: 9, Influence: 7, Creativity: 8, Versatility: 8, Legacy: 7}},
+{name: "Artist: Doreen Ketchens", attributes: {Technique: 9, Improvisation: 10, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Duke Ellington (USA)", attributes: {Technique: 9,Improvisation: 8,Influence: 10,Creativity: 9,Versatility: 8,Legacy: 10}},
+{name: "Artist: Ed Motta (The Groove Maestro)", attributes: {Technique: 9, Improvisation: 8, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Eddie Gómez (Puerto Rico/USA)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Edmundo Villani-Côrtes (The Classical Jazz Alchemist)", attributes: {Technique: 100, Improvisation: 95, Influence: 90, Creativity: 100, Versatility: 100, Legacy: 95}},
+{name: "Artist: Edson Cordeiro (The Four-Octave Wonder)", attributes: {Technique: 10, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 10, Legacy: 8}},
+{name: "Artist: Egberto Gismonti (Experimental Maestro)", attributes: {Technique: 10, Groove: 8, Creativity: 10, Influence: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Eleonora Strino (The Harmonic Innovator)", attributes: {Technique: 10, Improvisation: 9, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Eliane Elias", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Elisenda Fàbregas (The Sonic Dramatist)", attributes: {Technique: 10, Improvisation: 8, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Ella Fitzgerald (The Queen of Swing)", attributes: {Technique: 10, Groove: 9, Creativity: 10, Influence: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Emmaline (The Modern Jazz Siren)", attributes: {Technique: 8, Improvisation: 8, Influence: 7, Creativity: 8, Versatility: 8, Legacy: 7}},
+{name: "Artist: Eric Dolphy (Alto Saxophone/Bass Clarinet/Flute - USA)", attributes: {Technique: 9,Improvisation: 10,Influence: 9,Creativity: 10,Versatility: 10,Legacy: 9}},
+{name: "Artist: Eric Revis (The Rhythmic Architect)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: Ernst Mahle (The Symphonic Alchemist)", attributes: {Technique: 9, Improvisation: 7, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Ernestine Anderson (USA)", attributes: {Technique: 9, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Erroll Garner", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Esperanza Spalding", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Estefan Vergara Iatcekiw (The Sonic Sculptor)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Ester Rada (Vocalist/Songwriter - Israel/Ethiopia)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Eva Garín (The Vocal Dreamcatcher)", attributes: {Technique: 8, Improvisation: 7, Influence: 6, Creativity: 9, Versatility: 8, Legacy: 6}},
+{name: "Artist: Fats Domino (The Boogie King)", attributes: {Technique: 8, Improvisation: 8, Influence: 10, Creativity: 9, Versatility: 8, Legacy: 10}},
+{name: "Artist: Fats Waller (The Harlem Entertainer)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Fela Kuti (The Rhythm Prophet)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Femi Kuti (The Afrobeat Torchbearer)", attributes: {Technique: 8, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Flora Purim (The Brazilian Dreamweaver)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Francesco Buzzurro (The Six-String Virtuoso)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Francis Hime (The Brazilian Orchestrator)", attributes: {Technique: 9, Improvisation: 9, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: François Corneloup (France – The Bold Improviser)", attributes: {Technique: 9, Improvisation: 10, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Frank Gambale (The Sweep Virtuoso – Australia)", attributes: {Technique: 10, Groove: 9, Creativity: 9, Influence: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Frank Sinatra (USA)", attributes: {Technique: 10, Improvisation: 8, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Franz Liszt (The Romantic Storm)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Freddie Hubbard (Trumpet - USA)", attributes: {Technique: 10,Improvisation: 9,Influence: 9,Creativity: 9,Versatility: 9,Legacy: 8}},
+{name: "Artist: Fulton Lee (The Retro Crooner – USA)", attributes: {Technique: 8, Groove: 9, Creativity: 8, Influence: 7, Versatility: 8, Legacy: 7}},
+{name: "Artist: Gábor Szabó (The Psychedelic Jazz Alchemist)", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Gabriela Montero (The Improvisation Virtuosa – Venezuela)", attributes: {Technique: 10, Improvisation: 10, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Gaetano Tucci (The Spiritual Reedman)", attributes: {Technique: 9, Improvisation: 10, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: Galt MacDermot (The Groovy Composer)", attributes: {Technique: 9, Improvisation: 8, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Gary Bartz (The Spiritual Saxophonist)", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Gary Peacock", attributes: {Technique: 9, Improvisation: 10, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Gato Barbieri (The Latin Jazz Pioneer)", attributes: {Technique: 9, Improvisation: 10, Influence: 10, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Geoff Wilkinson (The Groove Alchemist)", attributes: {Technique: 8, Improvisation: 9, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 8}},
+{name: "Artist: George Benson (The Jazz-Funk Virtuoso)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: George Duke (The Fusion Virtuoso)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: George Gershwin (USA)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Gerald Albright (The Sax Powerhouse)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 10, Legacy: 8}},
+{name: "Artist: Gerard Presencer (The Harmonic Marksman)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Gerry Mulligan (Baritone Saxophone - USA)", attributes: {Technique: 9,Improvisation: 9,Influence: 9,Creativity: 9,Versatility: 8,Legacy: 9}},
+{name: "Artist: Gian Piero Reverberi", attributes: {Technique: 9, Improvisation: 7, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Gianni Gebbia (The Sonic Shaman)", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Gil Evans (The Harmonic Sculptor)", attributes: {Technique: 9, Improvisation: 8, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Gonzalo Rubalcaba (The Afro-Cuban Virtuoso)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Grant Snider (The Quiet Narrator – USA)", attributes: {Technique: 8, Improvisation: 7, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 7}},
+{name: "Artist: Grette", attributes: {Technique: 9, Improvisation: 8, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: Guido Sant’Anna (The Virtuoso Prodigy)", attributes: {Technique: 10, Improvisation: 8, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Guisado (The Trumpet Nomad)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 7}},
+{name: "Artist: Gunther Schuller (The Third Stream Visionary)", attributes: {Technique: 10, Improvisation: 8, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Hadar Bouzouki", attributes: {Technique: 9, Groove: 9, Creativity: 10, Influence: 8, Versatility: 10, Legacy: 8}},
+{name: "Artist: Hadrien Feraud", attributes: {Technique: 10, Groove: 10, Creativity: 9, Influence: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Hans Dulfer (The Jazz Maverick)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Hans-Joachim Koellreutter (The Avant-Garde Mentor)", attributes: {Technique: 8, Improvisation: 9, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Hans Zimmer (The Cinematic Architect)", attributes: {Technique: 10, Groove: 8, Creativity: 10, Influence: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Hazel Scott (Trinidad/USA)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Heitor Villa-Lobos (The Symphonic Visionary)", attributes: {Technique: 10, Improvisation: 8, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Henri Texier (France – The Harmonic Navigator)", attributes: {Technique: 9, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Henry Mancini (The Maestro of Melodies – USA)", attributes: {Technique: 9, Improvisation: 8, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Herb Alpert (The Brass Maestro)", attributes: {Technique: 9, Groove: 10, Creativity: 9, Influence: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Herbie Hancock (USA)", attributes: {Technique: 9,Improvisation: 10,Influence: 10,Creativity: 10,Versatility: 10,Legacy: 9}},
+{name: "Artist: Herbie Mann (The Flute Trailblazer)", attributes: {Technique: 8, Improvisation: 9, Influence: 9, Creativity: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Hermeto Pascoal (The Elemental Maestro)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Hiram Bullock (The Electric Groove Shredder)", attributes: {Technique: 10, Groove: 10, Creativity: 9, Influence: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Hiromi’s Sonicwonder", attributes: {Technique: 10, Improvisation: 10, Influence: 8, Creativity: 10, Versatility: 10, Legacy: 8}},
+{name: "Artist: Hiroshi Suzuki (Trombone - Japan)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Hyldon (The Soulful Romantic)", attributes: {Technique: 9, Improvisation: 8, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Ibrahim Ferrer (The Crooning Healer)", attributes: {Technique: 9, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 10}},
+{name: "Artist: Isaac Beaumont (The Bass Architect)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 10, Legacy: 8}},
+{name: "Artist: Issar (Experimental Winds & Brass - Brazil)", attributes: {Technique: 8, Improvisation: 9, Influence: 7, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Jackie McLean (Alto Saxophone - USA)", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 8, Legacy: 9}},
+{name: "Artist: Jaco Pastorius (USA)", attributes: {Technique: 10,Groove: 9,Creativity: 10,Influence: 10,Versatility: 10,Legacy: 10}},
+{name: "Artist: Jam da Silva (Percussion & Electronics - Brazil)", attributes: {Technique: 9, Improvisation: 8, Influence: 8, Creativity: 10, Versatility: 10, Legacy: 8}},
+{name: "Artist: Jan Hammer (The Synth Maverick)", attributes: {Technique: 9, Improvisation: 9, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Jan-Heie Erchinger (Keyboardist - Germany)", attributes: {Technique: 9, Improvisation: 8, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Jaques Morelenbaum (The Orchestral Soul of Brazil)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Jasmine Choi (The Flute Enchantress)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Jay Beckenstein (The Smooth Explorer)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Jean-Luc Ponty (The Electric Violin Pioneer)", attributes: {Technique: 9, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Jeff Goldblum (The Jazz Entertainer)", attributes: {Technique: 7, Improvisation: 8, Influence: 6, Creativity: 8, Versatility: 8, Legacy: 7}},
+{name: "Artist: Jerry Goodman (The Electric Violin Sorcerer)", attributes: {Technique: 10, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Jim Hall (The Subtle Genius)", attributes: {Technique: 9, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Jimmy Garrison (USA)", attributes: { Technique: 9, Improvisation: 10, Influence: 9,Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Jimmy Greene", attributes: {Technique: 9, Groove: 8, Creativity: 9, Influence: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Jimmy King (Guitar - USA)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Joe Cocker", attributes: {Technique: 8, Improvisation: 9, Influence: 9, Creativity: 8, Versatility: 9, Legacy: 9}},
+{name: "Artist: Joe Henderson (Saxophone - USA)", attributes: {Technique: 9,Improvisation: 9,Influence: 9,Creativity: 9,Versatility: 9,Legacy: 9}},
+{name: "Artist: Joe Lovano (The Tenor Architect)", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Joe Pass (The Harmonic Weaver)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Joe Venuti (The Jazz Violin Dynamo)", attributes: {Technique: 8, Improvisation: 9, Influence: 9, Creativity: 8, Versatility: 8, Legacy: 9}},
+{name: "Artist: Joe Zawinul (The Fusion Trailblazer)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Joey Calderazzo (The Harmonic Trailblazer)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: John Cage (The Sound Philosopher)", attributes: {Technique: 8, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: John Coltrane (Saxophone - USA)", attributes: {Technique: 10,Improvisation: 10,Influence: 10,Creativity: 10,Versatility: 9,Legacy: 10}},
+{name: "Artist: John McLaughlin (The Fusion Virtuoso)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: John Patitucci (The Low-End Virtuoso)", attributes: {Technique: 10, Groove: 9, Creativity: 10, Influence: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: John Scofield", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Johnny Farina (USA)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: Jools Holland", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: José Miguel Wisnik (The Literary Arranger)", attributes: {Technique: 9, Groove: 7, Creativity: 10, Influence: 8, Versatility: 9, Legacy: 9}},
+{name: "Artist: Josiel Konrad (The Brass Navigator)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Jovino Santos Neto (Brazil)", attributes: { Technique: 9, Improvisation: 9, Influence: 8,Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Julie London (The Velvet Voice)", attributes: {Technique: 8, Improvisation: 7, Influence: 8, Creativity: 8, Versatility: 7, Legacy: 8}},
+{name: "Artist: Junior Mance (USA)", attributes: {Technique: 8, Improvisation: 10, Influence: 9, Creativity: 8, Versatility: 8, Legacy: 8}},
+{name: "Artist: Karin Fernandes (The Precision Poet)", attributes: {Technique: 10, Groove: 7, Creativity: 9, Influence: 7, Versatility: 9, Legacy: 7}},
+{name: "Artist: Karlton Taylor (The Neo-Soul Innovator)", attributes: {Technique: 9, Groove: 10, Creativity: 10, Influence: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Karolina Protsenko (The Violin Virtuosa)", attributes: {Technique: 10, Improvisation: 8, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Keiko Matsui", attributes: {Technique: 9, Improvisation: 8, Influence: 8, Creativity: 9, Versatility: 10, Legacy: 8}},
+{name: "Artist: Keith Emerson (The Symphonic Rock Conqueror)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Keith Jarrett (USA)", attributes: {Technique: 10,Improvisation: 10,Influence: 9,Creativity: 10,Versatility: 10,Legacy: 9}},
+{name: "Artist: Kenny Barron (The Elegant Virtuoso)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Kenny Burrell (The Elegant Swingmaster)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Kenny G (The Smooth Sax Sage)", attributes: {Technique: 9, Improvisation: 8, Influence: 10, Creativity: 8, Versatility: 8, Legacy: 10}},
+{name: "Artist: Khatia Buniatishvili (The Piano Tempest)", attributes: {Technique: 10, Improvisation: 8, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Kimmy Greene (The Rising Fusionist)", attributes: {Technique: 8, Improvisation: 8, Influence: 7, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Kitty the Bill (Producer/Remixer - Europe)", attributes: {Technique: 7, Improvisation: 7, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 7}},
+{name: "Artist: Klaus Waldeck (Composer/Producer - Austria)", attributes: {Technique: 8, Improvisation: 7, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Kormac (The Beat Conductor)", attributes: {Technique: 9, Improvisation: 8, Influence: 7, Creativity: 10, Versatility: 9, Legacy: 7}},
+{name: "Artist: L. Subramaniam (The Carnatic Virtuoso)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Laércio de Freitas (The Harmonic Architect)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Lakshminarayana Shankar (The Carnatic Fusion Virtuoso)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Lang Lang (The Virtuoso Phenomenon)", attributes: {Technique: 10, Improvisation: 7, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Larry Coryell (The Fusion Trailblazer)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Larry Graham (The Funk Thunder)", attributes: {Technique: 10, Groove: 10, Creativity: 10, Influence: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Laura Lacueva (The Neo-Folk Artisan)", attributes: {Technique: 8, Improvisation: 7, Influence: 6, Creativity: 9, Versatility: 8, Legacy: 6}},
+{name: "Artist: Lee Morgan (Trumpet - USA)", attributes: {Technique: 9,Improvisation: 9,Influence: 9,Creativity: 9,Versatility: 9,Legacy: 9}},
+{name: "Artist: Leland Sklar (The Groove Wizard)", attributes: {Technique: 9, Improvisation: 8, Influence: 10, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Leonard Bernstein (Conductor/Composer - USA)", attributes: {Technique: 10, Improvisation: 8, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Les Paul (The Sonic Pioneer)", attributes: {Technique: 9, Improvisation: 9, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Lester Young (Saxophone - USA)", attributes: {Technique: 9,Improvisation: 9,Influence: 10,Creativity: 9,Versatility: 8,Legacy: 10}},
+{name: "Artist: Levi Schechtmann (The Classical Innovator)", attributes: {Technique: 9, Improvisation: 7, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Lionel Hampton (The Vibe Commander)", attributes: {Technique: 9, Improvisation: 10, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Louis Armstrong", attributes: {Technique: 9, Improvisation: 10, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Lubiana (The Kora Enchantress)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Lui Coimbra (Cello & Vocals - Brazil)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 10, Versatility: 10, Legacy: 8}},
+{name: "Artist: Mac Rebennack (Dr. John – The Voodoo Funkmaster – USA)", attributes: {Technique: 9, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Maceo Parker (The Funk Machine)", attributes: {Technique: 9, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Madeleine Peyroux (The Jazz Whisperer)", attributes: {Technique: 8, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Mamiko Polska (The Digital Muse)", attributes: {Technique: 7, Improvisation: 8, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Manuel ‘Guajiro’ Mirabal (The Brass Whisperer)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 8, Versatility: 9, Legacy: 9}},
+{name: "Artist: Marcin Wasilewski (The Dreamcatcher Pianist)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: Marcus Miller (USA)", attributes: {Technique: 10,Groove: 10,Creativity: 9,Influence: 9,Versatility: 10,Legacy: 9}},
+{name: "Artist: Margarita Sipatova (The Sonic Weaver)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Mari Santana (The Mystic Flutist – Brazil)", attributes: {Technique: 9, Groove: 8, Creativity: 9, Influence: 7, Versatility: 8, Legacy: 7}},
+{name: "Artist: Maria Cofan (The Ambient Cellist)", attributes: {Technique: 9, Improvisation: 8, Influence: 6, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Maria Puertas (The Vocal Introspectivist)", attributes: {Technique: 7, Improvisation: 6, Influence: 5, Creativity: 8, Versatility: 7, Legacy: 5}},
+{name: "Artist: Mary Lou Williams (The Jazz Matriarch)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Masato Nakamura (The Sonic Architect)", attributes: {Technique: 8, Improvisation: 7, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Masatoshi Mizuno (The Harmonic Minimalist – Japan)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Massimo Greco (The Trumpet Alchemist)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Matthew Shipp (The Sonic Explorer – USA)", attributes: {Technique: 10, Groove: 8, Creativity: 10, Influence: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Mauro Schiavone (The Expressive Touch)", attributes: {Technique: 9, Improvisation: 9, Influence: 7, Creativity: 8, Versatility: 9, Legacy: 7}},
+{name: "Artist: Maxim Illion (Producer - Germany, Club des Belugas)", attributes: {Technique: 8, Improvisation: 7, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: MC Seven Sundays", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: McCoy Tyner (USA)", attributes: {Technique: 9,Improvisation: 10,Influence: 9,Creativity: 9,Versatility: 9,Legacy: 9}},
+{name: "Artist: Mel Muñiz (The Vintage Enchantress)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Melody Gardot (The Velvet Storyteller)", attributes: {Technique: 9, Improvisation: 8, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Michael 'Patches' Stewart (The Smooth Brass Magician)", attributes: {Technique: 9, Groove: 10, Creativity: 9, Influence: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Michael Brecker (The Tenor Titan)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 9, Versatility: 10, Legacy: 10}},
+{name: "Artist: Michael Bublé (The Modern Crooner)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Michel Petrucciani (France – The Piano Elf)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Michelle Agnes (The Sonic Botanist – Brazil)", attributes: {Technique: 9, Groove: 7, Creativity: 10, Influence: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Michelle Willis", attributes: {Technique: 8, Groove: 8, Creativity: 9, Influence: 7, Versatility: 9, Legacy: 8}},
+{name: "Artist: Mickey Neher (Germany)", attributes: {Technique: 9, Improvisation: 8, Influence: 7, Creativity: 9, Versatility: 9, Legacy: 7}},
+{name: "Artist: Mike Cottone (USA – The Architect do Sopro)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 10, Legacy: 8}},
+{name: "Artist: Mike Mainieri (USA)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Mila González (The Cinematic Minimalist)", attributes: {Technique: 8, Improvisation: 7, Influence: 6, Creativity: 9, Versatility: 8, Legacy: 6}},
+{name: "Artist: Miles Davis (Trumpet - USA)", attributes: {Technique: 9,Improvisation: 10,Influence: 10,Creativity: 10,Versatility: 9,Legacy: 10}},
+{name: "Artist: Miles Lennox (USA – The Harmonic Poet)", attributes: {Technique: 8, Improvisation: 9, Influence: 7, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Milton Nascimento (The Cosmic Voice)", attributes: {Technique: 100, Improvisation: 85, Popularity: 95, Legacy: 100, Innovation: 90}},
+{name: "Artist: Mimmo La Mantia (The Groove Sculptor)", attributes: {Technique: 8, Improvisation: 8, Influence: 7, Creativity: 8, Versatility: 8, Legacy: 7}},
+{name: "Artist: Mose Allison (The Blues Philosopher)", attributes: {Technique: 9, Improvisation: 9, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Mstislav Rostropovich (The Cello Titan)", attributes: {Technique: 10, Improvisation: 7, Influence: 10, Creativity: 8, Versatility: 8, Legacy: 10}},
+{name: "Artist: Nat King Cole (USA)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Nathan East (The Groove Alchemist)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Nicola Conte (The Jazz Aesthetician)", attributes: {Technique: 8, Improvisation: 8, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 8}},
+{name: "Artist: Nina Simone (The Defiant Soul)", attributes: {Technique: 9, Improvisation: 9, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Oliver Belz (Producer - Germany)", attributes: {Technique: 8, Improvisation: 7, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Olivia Casas (The Poetic Voice)", attributes: {Technique: 7, Improvisation: 7, Influence: 6, Creativity: 8, Versatility: 7, Legacy: 5}},
+{name: "Artist: Omara Portuondo (The Timeless Diva)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Orazio Maugeri (The Etna Tenor)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 8, Versatility: 8, Legacy: 7}},
+{name: "Artist: Orlando ‘Cachaíto’ López (The Bass Architect)", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Orville Brooks (USA)", attributes: { Technique: 8, Improvisation: 8, Influence: 8,Creativity: 8, Versatility: 7, Legacy: 8}},
+{name: "Artist: Oscar Peterson (Canada)", attributes: {Technique: 10,Improvisation: 9,Influence: 10,Creativity: 8,Versatility: 9,Legacy: 10}},
+{name: "Artist: Oscar Pettiford (USA)", attributes: {Technique: 9,Groove: 9,Creativity: 9,Influence: 9,Versatility: 8,Legacy: 9}},
+{name: "Artist: Osmar Barutti (The Piano Virtuoso)", attributes: {Technique: 95, Improvisation: 95, Influence: 90, Creativity: 90, Versatility: 95, Legacy: 85}},
+{name: "Artist: Paco de Lucía", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Paolo Fresu (The Lyrical Whisperer)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Paquito D’Rivera (The Latin Jazz Virtuoso)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 9, Versatility: 10, Legacy: 10}},
+{name: "Artist: Pat Metheny (The Sonic Architect)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Paul Chambers (USA)", attributes: {Technique: 9,Groove: 9,Creativity: 8,Influence: 9,Versatility: 8,Legacy: 9}},
+{name: "Artist: Paul Desmond (The Lyrical Minimalist)", attributes: {Technique: 8, Groove: 8, Creativity: 9, Influence: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Paul Jackson (The Groove Engineer)", attributes: {Technique: 9, Groove: 10, Creativity: 9, Influence: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Paulo Bellinati (The Brazilian Stringmaster)", attributes: {Technique: 10, Improvisation: 8, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Pelin Su Yavuz (The Ethereal Improviser)", attributes: {Technique: 9, Improvisation: 10, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Peter Washington (USA)", attributes: { Technique: 9, Improvisation: 9, Influence: 8,Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Pharoah Sanders (USA)", attributes: { Technique: 9, Improvisation: 10, Influence: 10,Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Polina Hanym (The Ethereal Voyager)", attributes: {Technique: 9, Groove: 9, Creativity: 10, Influence: 9, Versatility: 10, Legacy: 8}},
+{name: "Artist: Randy Sandke (The Brass Visionary)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Ravi Coltrane (The Cosmic Explorer)", attributes: {Technique: 10, Groove: 9, Creativity: 10, Influence: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Ravi Shankar (The Cosmic Maestro)", attributes: {Technique: 10, Groove: 9, Creativity: 10, Influence: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Ray Brown (USA)", attributes: {Technique: 9,Groove: 10,Creativity: 8,Influence: 9,Versatility: 8,Legacy: 9}},
+{name: "Artist: Ray Charles (The Soul Pioneer)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Reiner Winterschladen (Trumpet - Germany)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: Renee Rosnes", attributes: {Technique: 10, Groove: 8, Creativity: 9, Influence: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Rhoda Scott (USA/France)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Riccardo Randisi (The Velvet Keysmith)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Richard Clayderman (The Prince of Romance)", attributes: {Technique: 9, Improvisation: 7, Influence: 8, Creativity: 8, Versatility: 8, Legacy: 9}},
+{name: "Artist: Richard Strauss", attributes: {Technique: 10, Improvisation: 8, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Rick Laird (The Fusion Bass Anchor)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Rita Collura (The Baritone Force)", attributes: {Technique: 8, Improvisation: 8, Influence: 7, Creativity: 8, Versatility: 8, Legacy: 7}},
+{name: "Artist: Roberto Cifarelli (The Bass Visionary)", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Roberto Rutigliano (The Rhythmic Explorer)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 10, Legacy: 8}},
+{name: "Artist: Robin Eubanks (USA)", attributes: { Technique: 10, Improvisation: 9, Influence: 9,Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Ron Carter (USA)", attributes: {Technique: 10,Groove: 9,Creativity: 9,Influence: 10,Versatility: 10,Legacy: 10}},
+{name: "Artist: Roy Ayers", attributes: {Technique: 9, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Roy Clark (The Lightning Picker)", attributes: {Technique: 10, Groove: 9, Creativity: 9, Influence: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Roy Hargrove (USA)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Rubén González (The Key Sorcerer)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Rune Gustafsson (The Nordic Stringsmith – Sweden)", attributes: {Technique: 9, Groove: 8, Creativity: 8, Influence: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Ruslan Sirota (The Genre-Fusing Virtuoso)", attributes: {Technique: 10, Groove: 9, Creativity: 10, Influence: 8, Versatility: 10, Legacy: 8}},
+{name: "Artist: Sachal Vasandani (USA – The Emotional Storyteller)", attributes: {Technique: 9, Improvisation: 9, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Sade (The Velvet Enchantress)", attributes: {Technique: 9, Groove: 10, Creativity: 9, Influence: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Salvatore Bonafede (The Sicilian Narrator)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Salvatore Pizzurro (The Modern Classicist)", attributes: {Technique: 9, Improvisation: 8, Influence: 7, Creativity: 8, Versatility: 8, Legacy: 7}},
+{name: "Artist: Sam Jones (The Bass Backbone)", attributes: {Technique: 9, Improvisation: 9, Influence: 9, Creativity: 8, Versatility: 9, Legacy: 9}},
+{name: "Artist: Samara Joy (The Velvet Songstress)", attributes: {Technique: 10, Improvisation: 8, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Sammy Davis Jr. (The Showman Supreme)", attributes: {Technique: 9, Groove: 9, Creativity: 9, Influence: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Sara Bareilles (The Lyrical Virtuosa)", attributes: {Technique: 10, Groove: 9, Creativity: 10, Influence: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Sarah Belle Reid (The Avant-Garde Trumpet Whisperer)", attributes: {Technique: 8, Improvisation: 9, Influence: 7, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Sarah Coponat (The Chamber Voyager – France)", attributes: {Technique: 10, Improvisation: 8, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: Sarasthi (The Sonic Mystic – India)", attributes: {Technique: 8, Improvisation: 10, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 7}},
+{name: "Artist: Sasha Ripley (USA – The Tonal Explorer)", attributes: {Technique: 8, Improvisation: 9, Influence: 7, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Scott LaFaro (USA)", attributes: {Technique: 9,Groove: 8,Creativity: 10,Influence: 9,Versatility: 8,Legacy: 9}},
+{name: "Artist: Scott Mulvahill (The Upright Innovator)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Sébastien Texier (France – The Visionary Improviser)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Sergio Cammalleri (The Ambient Groover)", attributes: {Technique: 8, Improvisation: 9, Influence: 7, Creativity: 9, Versatility: 9, Legacy: 7}},
+{name: "Artist: Sergio Munafò (The Texture Weaver)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Shan Jiang (The Psychedelic Illustrator)", attributes: {Technique: 9, Improvisation: 8, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Shin Duo (The Mirror Maestros)", attributes: {Technique: 9, Improvisation: 8, Influence: 7, Creativity: 9, Versatility: 9, Legacy: 7}},
+{name: "Artist: Shoya Kitagawa (The Urban Breeze – Japan)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 7}},
+{name: "Artist: Silvio Barbara (The Pianist of Nuance)", attributes: {Technique: 8, Improvisation: 8, Influence: 7, Creativity: 8, Versatility: 8, Legacy: 7}},
+{name: "Artist: Sissoko Segal (The Griot Virtuoso)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Sister Rosetta Tharpe (USA)", attributes: {Technique: 10, Improvisation: 9, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Sivuca (The Northeastern Virtuoso)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Sławomir Kurkiewicz (The Precision Bassist)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 8, Versatility: 8, Legacy: 8}},
+{name: "Artist: Slide Hampton (Trombone - USA)", attributes: {Technique: 9, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Slim Gaillard (USA)", attributes: {Technique: 8, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Sol Marcus (The Hidden Hitmaker)", attributes: {Technique: 8, Improvisation: 7, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: Sonny Rollins (Saxophone - USA)", attributes: {Technique: 10,Improvisation: 10,Influence: 9,Creativity: 9,Versatility: 9,Legacy: 9}},
+{name: "Artist: Sonny Sharrock (The Free Jazz Firestorm)", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 8, Legacy: 9}},
+{name: "Artist: Stan Getz (Saxophone - USA)", attributes: {Technique: 9,Improvisation: 9,Influence: 9,Creativity: 8,Versatility: 9,Legacy: 9}},
+{name: "Artist: Stanley Clarke (USA)", attributes: {Technique: 10,Groove: 9,Creativity: 10,Influence: 10,Versatility: 10,Legacy: 9}},
+{name: "Artist: Stanley Jordan (The Tapping Wizard)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Stanley Turrentine (Saxophone - USA)", attributes: {Technique: 8,Improvisation: 9,Influence: 8,Creativity: 8,Versatility: 8,Legacy: 8}},
+{name: "Artist: Stéphane Grappelli (The Elegant Swinger)", attributes: {Technique: 9, Improvisation: 10, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Steve Baxter (The Funk Trombone Mastermind)", attributes: {Technique: 9, Groove: 10, Creativity: 9, Influence: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Stevie Wonder (The Soul Visionary – USA)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Sun Ra (The Cosmic Maestro)", attributes: {Technique: 9, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Tatum Langley", attributes: {Technique: 9, Improvisation: 8, Influence: 7, Creativity: 9, Versatility: 9, Legacy: 7}},
+{name: "Artist: Teddy Brown (Percussion - UK/USA)", attributes: {Technique: 8, Improvisation: 7, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Terry Harrington (The Saxophone Veteran)", attributes: {Technique: 9, Improvisation: 8, Influence: 8, Creativity: 8, Versatility: 9, Legacy: 9}},
+{name: "Artist: Thelonious Monk (USA)", attributes: {Technique: 8,Improvisation: 9,Influence: 10,Creativity: 10,Versatility: 8,Legacy: 10}},
+{name: "Artist: Theo Croker (The Cosmic Jazz Explorer)", attributes: { Technique: 9, Groove: 10, Creativity: 10, Influence: 8, Versatility: 10, Legacy: 8}},
+{name: "Artist: Tina Guo (The Electric Warrior – USA/China)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 8}},
+{name: "Artist: Tiny Davis (The Trumpet Dynamo)", attributes: { Technique: 9, Groove: 9, Creativity: 9, Influence: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Tom Fowler (The Progressive Groove Alchemist)", attributes: {Technique: 9, Groove: 9, Creativity: 10, Influence: 9, Versatility: 10, Legacy: 8}},
+{name: "Artist: Tom Jones", attributes: {Technique: 10, Improvisation: 8, Influence: 9, Creativity: 8, Versatility: 9, Legacy: 9}},
+{name: "Artist: Tom White (The Tribute Virtuoso – UK)", attributes: {Technique: 8, Groove: 8, Creativity: 7, Influence: 6, Versatility: 8, Legacy: 6}},
+{name: "Artist: Toninho Horta (Harmonic Innovator)", attributes: {Technique: 10, Groove: 9, Creativity: 10, Influence: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Tony Levin (The Bass Magician)", attributes: { Technique: 10, Groove: 10, Creativity: 10, Influence: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Toshiki Soejima (The Neo-Soul Virtuoso)", attributes: {Technique: 8, Improvisation: 9, Influence: 7, Creativity: 8, Versatility: 8, Legacy: 7}},
+{name: "Artist: Tyler Henderson (The Jazz Explorer)", attributes: {Technique: 9, Improvisation: 10, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Ulf Wakenius (Sweden – The Nomadic Virtuoso)", attribute: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Ustad Shahid Parvez Khan", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Varijashree Venugopal (The Melodic Virtuosa)", attributes: {Technique: 10, Groove: 9, Creativity: 10, Influence: 9, Versatility: 10, Legacy: 8}},
+{name: "Artist: Velt Moura (The Ambient Sculptor – Brazil)", attributes: {Technique: 8, Improvisation: 9, Influence: 7, Creativity: 10, Versatility: 9, Legacy: 7}},
+{name: "Artist: Verdine White (The Funk Groove Dynamo)", attributes: {Technique: 10, Groove: 10, Creativity: 9, Influence: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Victor Wooten (The Bass Magician)", attributes: {Technique: 10, Improvisation: 10, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Vikingur Ólafsson (The Nordic Visionary)", attributes: {Technique: 10, Improvisation: 8, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Vincent Peirani (The Accordion Innovator)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 8}},
+{name: "Artist: Vito Giordano (The Sicilian Bop Torchbearer)", attributes: {Technique: 9, Improvisation: 9, Influence: 8, Creativity: 8, Versatility: 8, Legacy: 8}},
+{name: "Artist: Vladimir Horowitz (The Thunder & the Whisper)", attributes: {Technique: 10, Groove: 6, Creativity: 10, Influence: 10, Versatility: 8, Legacy: 10}},
+{name: "Artist: Wagner Tiso (The Harmonic Sculptor)", attributes: {Technique: 9, Improvisation: 9, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Walt Fowler (The Jazz Fusion Sorcerer)", attributes: {Technique: 10, Groove: 9, Creativity: 10, Influence: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Wayne Shorter (Saxophone - USA)", attributes: {Technique: 9,Improvisation: 9,Influence: 10,Creativity: 10,Versatility: 9,Legacy: 9}},
+{name: "Artist: Wes Montgomery (The Octave Magician)", attributes: {Technique: 10, Groove: 10, Creativity: 9, Influence: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Willie Smith (The Jumpin’ Swingman)", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 8, Legacy: 9}},
+{name: "Artist: Woody Herman (Clarinet/Bandleader - USA)", attributes: {Technique: 8, Improvisation: 8, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Woody Shaw (Trumpet - USA)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Wynton Kelly (The Swing Catalyst)", attributes: {Technique: 9, Improvisation: 10, Influence: 9, Creativity: 8, Versatility: 8, Legacy: 9}},
+{name: "Artist: Wynton Marsalis (Trumpet - USA)", attributes: {Technique: 10,Improvisation: 9,Influence: 9,Creativity: 9,Versatility: 10,Legacy: 9}},
+{name: "Artist: Yuja Wang (The Virtuoso Hurricane)", attributes: {Technique: 10, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Artist: Zbigniew Seifert (The Violin Maverick)", attributes: {Technique: 10, Improvisation: 10, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Zhanna Kovaleva (The Violin Mystic)", attributes: {Technique: 95, Improvisation: 90, Influence: 85, Creativity: 90, Versatility: 90, Legacy: 85}},
+{name: "Drummer: Ahmad T. Johnson (The Rhythmic Innovator)", attributes: {Speed: 9, Creativity: 10, Influence: 8, Versatility: 9, Swing: 9, Legacy: 8}},
+{name: "Drummer: Airto Moreira (The Percussion Alchemist)", attributes: {Speed: 9, Creativity: 10, Influence: 10, Versatility: 10, Swing: 9, Legacy: 10}},
+{name: "Drummer: Aldo Romano (The Rhythmic Chameleon)", attributes: {Speed: 8, Creativity: 9, Influence: 9, Versatility: 10, Swing: 9, Legacy: 9}},
+{name: "Drummer: Art Blakey (USA)", attributes: {Speed: 8,Creativity: 9,Influence: 10,Versatility: 8,Swing: 10,Legacy: 10}},
+{name: "Drummer: Ben Riley (The Swinging Architect)", attributes: {Speed: 8, Creativity: 9, Influence: 9, Versatility: 9, Swing: 10, Legacy: 9}},
+{name: "Drummer: Billy Cobham (The Fusion Thunder)", attributes: {Speed: 10, Creativity: 10, Influence: 10, Versatility: 10, Power: 10, Legacy: 10}},
+{name: "Drummer: Brian Blade (The Dynamic Storyteller)", attributes: {Speed: 9, Creativity: 10, Influence: 10, Versatility: 10, Swing: 10, Legacy: 9}},
+{name: "Drummer: Buddy Rich (USA)", attributes: {Speed: 10,Creativity: 9,Influence: 10,Versatility: 9,Swing: 8,Legacy: 10}},
+{name: "Drummer: Carl Allen (The Modern Swing Master)", attributes: {Speed: 9, Creativity: 9, Influence: 8, Versatility: 9, Swing: 10, Legacy: 8 }},
+{name: "Drummer: Chaka Khan (The Queen of Groove)", attributes: {Speed: 9, Creativity: 9, Influence: 10, Versatility: 9, Power: 10, Legacy: 10}},
+{name: "Drummer: Charles Bell Jr. (The Groove Technician)", attributes: {Speed: 9, Creativity: 9, Influence: 8, Versatility: 9, Swing: 10, Legacy: 8}},
+{name: "Drummer: Derico Watson (The Funk Catalyst)", attributes: {Speed: 9, Creativity: 10, Influence: 9, Versatility: 10, Swing: 9, Legacy: 8}},
+{name: "Drummer: Ed Blackwell (The Pulse of Freedom)", attributes: {Speed: 9, Creativity: 10, Influence: 10, Versatility: 9, Swing: 9, Legacy: 10}},
+{name: "Drummer: Elliot Zigmund (The Elegant Timekeeper)", attributes: {Speed: 7, Creativity: 9, Influence: 8, Versatility: 9, Swing: 10, Legacy: 8}},
+{name: "Drummer: Elvin Jones (USA)", attributes: {Speed: 9,Creativity: 10,Influence: 9,Versatility: 9,Swing: 9,Legacy: 9}},
+{name: "Drummer: Giuseppe Urso", attributes: {Speed: 8, Creativity: 9, Influence: 8, Versatility: 9, Swing: 9, Legacy: 8}},
+{name: "Drummer: Gene Coye", attributes: {Speed: 9, Creativity: 9, Influence: 8, Versatility: 10, Swing: 8, Legacy: 8}},
+{name: "Drummer: Gene Krupa (USA)", attributes: {Speed: 9,Creativity: 8,Influence: 10,Versatility: 8,Swing: 9,Legacy: 10}},
+{name: "Drummer: Harvey Mason (The Smooth Timekeeper)", attributes: {Speed: 8, Creativity: 9, Influence: 9, Versatility: 10, Swing: 8, Legacy: 9}},
+{name: "Drummer: Isac Jamba (The Brazilian Groove Master)", attributes: {Speed: 8, Creativity: 9, Influence: 8, Versatility: 10, Swing: 9, Legacy: 8}},
+{name: "Drummer: J. D. Blair (The Groove Whisperer)", attributes: {Speed: 9, Creativity: 9, Influence: 10, Versatility: 9, Swing: 10, Legacy: 9}},
+{name: "Drummer: Jack DeJohnette (USA)", attributes: {Speed: 9,Creativity: 10,Influence: 9,Versatility: 10,Swing: 9,Legacy: 9}},
+{name: "Drummer: Jo Jones (USA)", attributes: {Speed: 8,Creativity: 8,Influence: 9,Versatility: 8,Swing: 10,Legacy: 9}},
+{name: "Drummer: Justin Faulkner (The Rhythmic Meteor)", attributes: {Speed: 9, Creativity: 9, Influence: 8, Versatility: 10, Swing: 9, Legacy: 8}},
+{name: "Drummer: Kandace Springs (The Groove Architect)", attributes: {Speed: 8, Creativity: 9, Influence: 8, Versatility: 10, Swing: 9, Legacy: 8 }},
+{name: "Drummer: Kevin Ricard (The Percussive Architect)", attributes: {Speed: 9, Creativity: 10, Influence: 9, Versatility: 10, Swing: 9, Legacy: 9}},
+{name: "Drummer: Leon 'Ndugu' Chancler (The Groove Scientist)", attributes: {Speed: 9, Creativity: 10, Influence: 9, Versatility: 10, Swing: 9, Legacy: 9}},
+{name: "Drummer: Louis Hayes (The Hard Bop Dynamo – USA)", attributes: {Speed: 9, Creativity: 9, Influence: 9, Versatility: 9, Swing: 9, Legacy: 9}},
+{name: "Drummer: Malachi Winston (The Rhythmic Prodigy)", attributes: {Speed: 9, Creativity: 9, Influence: 7, Versatility: 8, Swing: 9, Legacy: 7}},
+{name: "Drummer: Marcus Gilmore (The Rhythmic Futurist)", attributes: {Speed: 9, Creativity: 10, Influence: 9, Versatility: 10, Swing: 9, Legacy: 8}},
+{name: "Drummer: Max Roach (USA)", attributes: {Speed: 8,Creativity: 10,Influence: 10,Versatility: 9,Swing: 9,Legacy: 10}},
+{name: "Drummer: Michał Miśkiewicz (The Polish Pulsekeeper)", attributes: {Speed: 8, Creativity: 8, Influence: 8, Versatility: 9, Swing: 9, Legacy: 8}},
+{name: "Drummer: Miltinho (The Samba Swing Master)", attributes: {Speed: 9, Creativity: 9, Influence: 10, Versatility: 9, Swing: 10, Legacy: 9}},
+{name: "Drummer: Noa Kahn (The Groove Alchemist – Israel)", attributes: {Speed: 8, Creativity: 9, Influence: 8, Versatility: 9, Swing: 8, Legacy: 8}},
+{name: "Drummer: Núria Perich (The Rhythmic Alchemist)", attributes: {Speed: 9, Creativity: 9, Influence: 7, Versatility: 9, Swing: 8, Legacy: 7}},
+{name: "Drummer: Paulinho da Costa (The Percussion Architect)", attributes: {Speed: 9, Creativity: 10, Influence: 10, Versatility: 10, Swing: 10, Legacy: 10}},
+{name: "Drummer: Payton Crossley", attributes: {Speed: 8, Creativity: 9, Influence: 8, Versatility: 9, Swing: 10, Legacy: 8}},
+{name: "Drummer: Peter Erskine (USA)", attributes: {Speed: 8, Creativity: 9, Influence: 9, Versatility: 10, Swing: 9, Legacy: 9}},
+{name: "Drummer: Philly Joe Jones (USA)", attributes: {Speed: 8,Creativity: 9,Influence: 9,Versatility: 8,Swing: 10,Legacy: 9}},
+{name: "Drummer: Questlove", attributes: {Speed: 8, Creativity: 10, Influence: 10, Versatility: 10, Swing: 9, Legacy: 10}},
+{name: "Drummer: Rashied Ali (The Free Jazz Firestarter)", attributes: {Speed: 10, Creativity: 10, Influence: 9, Versatility: 9, Swing: 8, Legacy: 9 }},
+{name: "Drummer: Ronald Bruner Jr. (The Fusion Hurricane)", attributes: {Speed: 10, Creativity: 10, Influence: 9, Versatility: 10, Swing: 9, Legacy: 9}},
+{name: "Drummer: Ronnie Free (The Free-Spirited Swinger)", attributes: {Speed: 8, Creativity: 9, Influence: 9, Versatility: 9, Swing: 10, Legacy: 8}},
+{name: "Drummer: Ronnie Gardiner (The Rhythm Therapist)", attributes: {Speed: 8, Creativity: 9, Influence: 8, Versatility: 9, Power: 8, Legacy: 9}},
+{name: "Drummer: Roy Haynes (USA)", attributes: {Speed: 9,Creativity: 9,Influence: 9,Versatility: 9,Swing: 10,Legacy: 9}},
+{name: "Drummer: Senri Kawaguchi (The Speed Virtuosa – Japan)", attributes: {Speed: 10, Creativity: 9, Influence: 8, Versatility: 9, Swing: 8, Legacy: 8}},
+{name: "Drummer: Sheila E. (The Percussive Queen)", attributes: {Speed: 9, Creativity: 10, Influence: 9, Versatility: 10, Swing: 8, Legacy: 9}},
+{name: "Drummer: Terri Lyne Carrington (The Rhythm Visionary)", attributes: {Speed: 9, Creativity: 10, Influence: 9, Versatility: 10, Swing: 9, Legacy: 9}},
+{name: "Drummer: Tony Williams (USA)", attributes: {Speed: 9,Creativity: 10,Influence: 10,Versatility: 10,Swing: 9,Legacy: 9}},
+{name: "Drummer: Vincent P. Ravary (The Pulse Sculptor)", attributes: {Speed: 9, Creativity: 8, Influence: 7, Versatility: 8, Power: 8, Legacy: 7}},
+{name: "Drummer: Vinnie Colaiuta (The Time-Bending Master)", attributes: {Speed: 10, Creativity: 10, Influence: 10, Versatility: 10, Swing: 9, Legacy: 10}},
+{name: "Drummer: Viola Smith (USA)", attributes: {Speed: 9, Creativity: 9, Influence: 10, Versatility: 9, Power: 8, Legacy: 10}},
+{name: "Drummer: Zé Eduardo Nazário (The Polyrhythmic Explorer)", attributes: {Speed: 9, Creativity: 10, Influence: 9, Versatility: 10, Swing: 8, Legacy: 9}},
+  ];
+
+const instruments = [
+{name: "Piano: Steinway & Sons Model D", attributes: {"Year Released": 1884,"Sound Depth": 9,Brightness: 8,"Jazz Popularity": 95,Versatility: 10,Timelessness: 10,Description: "A legendary concert grand piano, used by Duke Ellington and Thelonious Monk. Its powerful bass and sparkling highs make it perfect for both solo performances and complex jazz ensembles."}},
+{name: "Piano: Yamaha C7", attributes: {"Year Released": 1967,"Sound Depth": 8,Brightness: 9,"Jazz Popularity": 90,Versatility: 9,Timelessness: 9,Description: "Favored by modern jazz pianists like Chick Corea, the Yamaha C7 combines bright trebles with rich bass tones, making it ideal for both fusion and bebop styles."}},
+{name: "Piano: Fazioli F308", attributes: {"Year Released": 1981,"Sound Depth": 10,Brightness: 9,"Jazz Popularity": 80,Versatility: 8,Timelessness: 8,Description: "A masterpiece of piano engineering, the Fazioli F308 offers unparalleled dynamic range, making it a favorite in contemporary jazz performances."}},
+{name: "Piano: Bösendorfer Imperial 290", attributes: {"Year Released": 1900,"Sound Depth": 10,Brightness: 7,"Jazz Popularity": 85,Versatility: 7,Timelessness: 9,Description: "Known for its thunderous bass and incredible resonance, the Bösendorfer Imperial is perfect for emotionally charged jazz ballads and improvisation."}},
+{name: "Piano: Blüthner Model One", attributes: {"Year Released": 1853,"Sound Depth": 8,Brightness: 7,"Jazz Popularity": 75,Versatility: 8,Timelessness: 7,Description: "Famous for its golden tone, the Blüthner Model One excels in soft and intimate jazz compositions, much like those performed by Bill Evans."}},
+{name: "Piano: Rhodes Mark I", attributes: {"Year Released": 1970,"Sound Depth": 7,Brightness: 8,"Jazz Popularity": 92,Versatility: 9,Timelessness: 9,Description: "The electric piano that defined the sound of jazz fusion in the '70s. Used by legends like Herbie Hancock and Chick Corea, its smooth, bell-like tones are unmistakable."}},
+{name: "Piano: Wurlitzer 200A", attributes: {"Year Released": 1968,"Sound Depth": 6,Brightness: 7,"Jazz Popularity": 85,Versatility: 8,Timelessness: 8,Description: "With its distinctive bark and grit, the Wurlitzer electric piano became a key instrument in the evolution of jazz and funk. Think Ray Charles and Joe Zawinul."}},
+{name: "Piano: Mason & Hamlin CC-94", attributes: {"Year Released": 1929,"Sound Depth": 9,Brightness: 8,"Jazz Popularity": 70,Versatility: 7,Timelessness: 9,Description: "Known for its robust, powerful tone, the Mason & Hamlin CC-94 is often favored for jazz performances that require both force and subtlety."}},
+{name: "Piano: Kawai GX-7", attributes: {"Year Released": 2014,"Sound Depth": 8,Brightness: 9,"Jazz Popularity": 65,Versatility: 9,Timelessness: 7,Description: "A modern marvel, the Kawai GX-7 delivers crisp tones and dynamic range, making it a great fit for the more experimental corners of the jazz world."}},
+{name: "Piano: Petrof P 284 Mistral", attributes: {"Year Released": 1954,"Sound Depth": 9,Brightness: 7,"Jazz Popularity": 75,Versatility: 8,Timelessness: 8,Description: "With deep bass and warm midtones, the Petrof P 284 Mistral is an excellent choice for jazz trios and solo performances that require a rich, mellow sound."}},
+{name: "Drum Kit: Gretsch USA Custom", attributes: {"Year Released": 1950,"Tone Warmth": 10,Responsiveness: 9,"Jazz Popularity": 100,Versatility: 9,Durability: 9,Description: "One of the most beloved drum kits in jazz, the Gretsch USA Custom is known for its signature Great Gretsch Sound, which offers warm tones and incredible responsiveness. Used by legends like Elvin Jones and Tony Williams."}},
+{name: "Drum Kit: Ludwig Classic Maple", attributes: {"Year Released": 1960,"Tone Warmth": 9,Responsiveness: 8,"Jazz Popularity": 95,Versatility: 9,Durability: 10,Description: "A versatile kit that has been embraced by jazz drummers for decades. The Classic Maple shells offer bright, punchy tones perfect for both bebop and big band performances. A favorite of Joe Morello."}},
+{name: "Drum Kit: Canopus RFM", attributes: {"Year Released": 2000,"Tone Warmth": 9,Responsiveness: 10,"Jazz Popularity": 85,Versatility: 8,Durability: 9,Description: "A modern drum kit with a vintage feel, the Canopus RFM is known for its highly responsive shells and rich tonal character. It’s an excellent choice for dynamic jazz performances and intimate gigs."}},
+{name: "Drum Kit: Yamaha Recording Custom", attributes: {"Year Released": 1980,"Tone Warmth": 8,Responsiveness: 9,"Jazz Popularity": 90,Versatility: 10,Durability: 10,Description: "Known for its precision and clarity, the Yamaha Recording Custom is a studio favorite, particularly for jazz fusion drummers. Its wide tuning range makes it versatile for various jazz styles."}},
+{name: "Drum Kit: Tama Starclassic Maple", attributes: {"Year Released": 1994,"Tone Warmth": 8,Responsiveness: 9,"Jazz Popularity": 80,Versatility: 9,Durability: 9,Description: "The Starclassic Maple is celebrated for its bright and focused tones, ideal for more modern and experimental jazz sounds. Used by jazz-fusion greats, it’s known for its reliability and tone versatility."}},
+{name: "Drum Kit: Sonor Vintage Series", attributes: {"Year Released": 2015,"Tone Warmth": 10,Responsiveness: 9,"Jazz Popularity": 75,Versatility: 8,Durability: 8,Description: "Inspired by classic 1950s Sonor kits, this modern recreation brings warm vintage tones with the benefit of modern technology. Perfect for traditional jazz and bop drummers looking for that retro sound."}},
+{name: "Drum Kit: DW Collector’s Series", attributes: {"Year Released": 1990,"Tone Warmth": 9,Responsiveness: 10,"Jazz Popularity": 85,Versatility: 10,Durability: 10,Description: "The DW Collector’s Series is all about customization and quality. Known for its versatile tone and excellent craftsmanship, this kit adapts to any jazz setting, from small clubs to large stages."}},
+{name: "Drum Kit: Premier Genista", attributes: {"Year Released": 1993,"Tone Warmth": 8,Responsiveness: 8,"Jazz Popularity": 70,Versatility: 7,Durability: 9,Description: "A popular choice in the 90s, the Premier Genista delivers a focused tone with punchy mids and highs. It's particularly well-suited for fast jazz playing like bebop and fusion."}},
+{name: "Drum Kit: Sakae Trilogy", attributes: {"Year Released": 2013,"Tone Warmth": 9,Responsiveness: 9,"Jazz Popularity": 80,Versatility: 9,Durability: 9,Description: "The Sakae Trilogy brings a modern take on vintage sound. With its three-ply shells, this kit offers a warm, resonant sound that’s perfect for jazz drummers seeking classic vibes with modern playability."}},
+{name: "Drum Kit: Craviotto Custom Shop Kit", attributes: {"Year Released": 2004,"Tone Warmth": 10,Responsiveness: 10,"Jazz Popularity": 75,Versatility: 8,Durability: 9,Description: "Handcrafted from solid wood, the Craviotto Custom Shop Kit offers unparalleled tonal warmth and resonance. Known for its dynamic range, it's perfect for jazz drummers who want something truly unique."}},
+{name: "Metal: Selmer Mark VI Tenor Saxophone", attributes: {"Year Released": 1954,"Tone Warmth": 10,Projection: 9,"Jazz Popularity": 100,Versatility: 10,Durability: 9,Description: "The most iconic tenor saxophone in jazz history, used by legends like John Coltrane and Sonny Rollins. Known for its warm, rich tone and unparalleled versatility across various jazz styles."}},
+{name: "Metal: Martin Committee Trumpet", attributes: {"Year Released": 1940,"Tone Warmth": 9,Projection: 9,"Jazz Popularity": 95,Versatility: 9,Durability: 8,Description: "A favorite of Miles Davis, the Martin Committee Trumpet is revered for its mellow, dark tone and exceptional control, making it perfect for cool jazz and more expressive playing styles."}},
+{name: "Metal: Conn 88H Trombone", attributes: {"Year Released": 1954,"Tone Warmth": 8,Projection: 10,"Jazz Popularity": 90,Versatility: 8,Durability: 10,Description: "Known for its powerful, bold projection, the Conn 88H has been a staple in jazz ensembles, particularly big bands. Its robust tone makes it ideal for both lead and solo roles in brass sections."}},
+{name: "Metal: King Super 20 Alto Saxophone", attributes: {"Year Released": 1945,"Tone Warmth": 9,Projection: 8,"Jazz Popularity": 85,Versatility: 8,Durability: 9,Description: "Used by Cannonball Adderley, the King Super 20 is beloved for its smooth, punchy sound. It's excellent for bebop and soul jazz, with a lush, vibrant tone that cuts through ensembles."}},
+{name: "Metal: Bach Stradivarius Model 37 Trumpet", attributes: {"Year Released": 1925,"Tone Warmth": 8,Projection: 9,"Jazz Popularity": 85,Versatility: 9,Durability: 10,Description: "A go-to trumpet for jazz professionals, the Bach Stradivarius Model 37 offers a well-balanced tone that works beautifully across various jazz subgenres, from bebop to big band."}},
+{name: "Metal: Yamaha YTS-62 Tenor Saxophone", attributes: {"Year Released": 1979,"Tone Warmth": 8,Projection: 9,"Jazz Popularity": 80,Versatility: 9,Durability: 10,Description: "The Yamaha YTS-62 is known for its modern construction and reliability. It delivers a clear, focused sound, making it a favorite among contemporary jazz saxophonists."}},
+{name: "Metal: Holton TR181 Bass Trombone", attributes: {"Year Released": 1964,"Tone Warmth": 9,Projection: 10,"Jazz Popularity": 70,Versatility: 7,Durability: 9,Description: "A powerhouse of a trombone, the Holton TR181 is known for its deep, rich bass tones and commanding presence in jazz ensembles. It's a key player in big band and orchestral jazz."}},
+{name: "Metal: Yanagisawa A-WO10 Alto Saxophone", attributes: {"Year Released": 2014,"Tone Warmth": 8,Projection: 9,"Jazz Popularity": 75,Versatility: 9,Durability: 10,Description: "This modern saxophone combines classic tonal warmth with excellent projection and smooth key action. It's becoming a favorite in contemporary jazz settings."}},
+{name: "Metal: Getzen 3047AF Custom Series Trombone", attributes: {"Year Released": 1998,"Tone Warmth": 9,Projection: 8,"Jazz Popularity": 80,Versatility: 8,Durability: 9,Description: "Known for its responsive action and warm tone, the Getzen 3047AF is a top choice for jazz trombonists looking for versatility in both small groups and big bands."}},
+{name: "Metal: Selmer Reference 54 Tenor Saxophone", attributes: {"Year Released": 2003,"Tone Warmth": 9,Projection: 8,"Jazz Popularity": 85,Versatility: 9,Durability: 9,Description: "Modeled after the classic Mark VI, the Selmer Reference 54 delivers a modern take on vintage tone. Its warm, full sound makes it ideal for jazz ballads and more lyrical playing."}}
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playersCheckbox').checked) selectedCards.push(...players);
+    if (document.getElementById('instrumentsCheckbox').checked) selectedCards.push(...instruments);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  document.getElementById('shuffleRulesButton').addEventListener('click', function() {
+    shuffleDeck(rules, 'rulesResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

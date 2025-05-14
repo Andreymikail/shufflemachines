@@ -1,0 +1,207 @@
+<div style="text-align: center;">
+  <h1 style="color: white;">Spin</h1>
+</div>
+<BR>
+<div style="text-align: center; margin-bottom: 20px;">
+  <button class="start-button2" id="startBoth">▶</button>
+</div>
+<div class="control-box">
+  <label><input type="checkbox" id="loopToggle" /> Loop</label>
+</div>
+  <!-- Clock 1 -->
+  <div class="clock-container">
+    <div class="clock" id="clock1">
+      <div class="second-hand" id="hand1"></div>
+      <button class="start-button" id="start1">▶</button>
+    </div>
+    <div class="control-box" style="color: white;">
+      Spin (sec): <input type="number" id="duration1" value="1" min="1" />
+    </div>
+  </div>
+<BR><BR>
+  <!-- Clock 2 -->
+  <div class="clock-container">
+    <div class="clock" id="clock2">
+      <div class="second-hand" id="hand2"></div>
+      <button class="start-button" id="start2">▶</button>
+    </div>
+    <div class="control-box" style="color: white;">
+      Full Spin (sec): <input type="number" id="duration2" value="1" min="1" />
+    </div>
+  </div>
+
+<script>
+    const hand1 = document.getElementById("hand1");
+    const start1 = document.getElementById("start1");
+    const durationInput1 = document.getElementById("duration1");
+
+    const hand2 = document.getElementById("hand2");
+    const start2 = document.getElementById("start2");
+    const durationInput2 = document.getElementById("duration2");
+
+    const startBoth = document.getElementById("startBoth");
+    const loopToggle = document.getElementById("loopToggle");
+
+    let anim1, anim2;
+    let lastAngle1 = 0;
+
+    function startClock1() {
+      cancelAnimationFrame(anim1);
+      let duration = parseFloat(durationInput1.value);
+      let start = null;
+
+      function animate(timestamp) {
+        if (!start) start = timestamp;
+        const elapsed = (timestamp - start) / 1000;
+        const t = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - t, 3);
+        const maxDeg = 2160;
+
+        const angle = lastAngle1 + maxDeg * easeOut;
+        hand1.style.transform = `rotate(${angle}deg)`;
+
+        if (t < 1) {
+          anim1 = requestAnimationFrame(animate);
+        } else {
+          lastAngle1 = angle % 360;
+          if (loopToggle.checked) {
+          startClock1();
+        }
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    function startClock2() {
+      cancelAnimationFrame(anim2);
+      let duration = parseFloat(durationInput2.value);
+      let start = null;
+
+      function animate(timestamp) {
+        if (!start) start = timestamp;
+        const elapsed = (timestamp - start) / 1000;
+        const t = Math.min(elapsed / duration, 1);
+
+        const angle = 360 * t;
+        hand2.style.transform = `rotate(${angle}deg)`;
+        
+        if (t < 1) {
+        anim2 = requestAnimationFrame(animate);
+      } else {
+        if (loopToggle.checked) {
+          startClock2();
+        }
+      }
+    }
+
+      requestAnimationFrame(animate);
+    }
+
+    start1.addEventListener("click", startClock1);
+    start2.addEventListener("click", startClock2);
+    startBoth.addEventListener("click", () => {
+      startClock1();
+      startClock2();
+    });
+  </script>
+   <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    .clock-container {
+      display: inline-block;
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 30px;
+    }
+
+    .clock {
+      width: 100%;
+      height: 100%;
+      border: 8px solid #333;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .clock::after {
+      content: '';
+      width: 12px;
+      height: 12px;
+      background: #333;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .second-hand {
+      width: 2px;
+      height: 90px;
+      background: red;
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform-origin: bottom center;
+    }
+
+    .start-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: none;
+      background-color: #E4C58A;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .start-button:hover {
+      background-color: #6E1919;
+      color: white;
+    }
+    
+		.start-button2 {
+		  width: 60px;
+		  height: 60px;
+		  border-radius: 50%;
+		  border: none;
+		  background-color: #E4C58A;
+		  color: black;
+		  font-weight: bold;
+		  cursor: pointer;
+		  font-size: 1em;
+		  margin: auto;
+		}
+
+
+    .start-button2:hover {
+      background-color: #6E1919;
+      color: white;
+    }
+
+    .control-box {
+      margin: 10px;
+    }
+
+    input[type="number"] {
+      padding: 5px;
+      font-size: 1em;
+      width: 60px;
+      margin-left: 5px;
+    }
+    h2, p, label {
+      color: white;
+    }
+  </style>

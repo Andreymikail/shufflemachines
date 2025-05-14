@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Exploração de Halloween</title>
+</head>
+<body>
+  <div style="text-align: center;">
+    <h2 style="color: white;">Jack-o'-lantern</h2>
+  
+    <p style="color: white;">Find the Halloween rewards!</p>
+  
+    <!-- Botão de reiniciar -->
+    <div style="margin-top: 20px;">
+      <button id="restartButton" class="round-button" style="color: white;">Start</button>
+    </div>
+  
+    <!-- Seletor de Grid -->
+    <div>
+      <label for="gridSelector" style="color: white;">Labyrinth:</label>
+      <select id="gridSelector">
+        <option value="grid1">1</option>
+        <option value="grid2">2</option>
+        <option value="grid3">3</option>
+      </select>
+      <button id="loadGridButton" class="round-button">Load</button>
+    </div>
+    
+    <!-- Grade -->
+    <div id="gameGrid">
+      <!-- Grid gerado aqui -->
+    </div>
+  
+    <!-- Mensagens de jogo -->
+    <p id="gameMessage" style="color: white; font-weight: bold;"></p>
+    <p style="color: white;">Rewards Collected: <span id="collectedItems">0</span> / <span id="totalItems">0</span></p>
+    <p style="color: white;">Moves: <span id="moveCount">0</span></p>
+    <p style="color: white;">Elapsed Time: <span id="timeElapsed">0</span> seconds</p>
+
+    <!-- Controles de movimento -->
+    <div id="controls" style="margin-top: 20px;">
+      <button class="round-button2" id="leftButton">←</button>
+      <button class="round-button2" id="upButton">↑</button>
+      <button class="round-button2" id="downButton">↓</button>
+      <button class="round-button2" id="rightButton">→</button>
+    </div>
+  </div>
+
+  <script>
+  	// Definição de tipos de terreno
+const terrainTypes = {
+  'P': { color: '#191970', text: '🎃' }, // Personagem principal: Abóbora
+  'B': { color: '#363636', text: '' }, // Barreira
+  'E': { color: '#A020F0', text: '' }, // Espaço vazio
+  'R': { color: '#FF00FF', text: '🍭' }, // Recompensa (Pirulito de Bruxa)
+  'C': { color: '#FF00FF', text: '🎩' }, // Recompensa (Chapéu de Bruxa)
+  'X': { color: '#FF00FF', text: '🧪' }, // Recompensa (Poção de Abóbora)
+  'D': { color: '#FF00FF', text: '💀' }, // Recompensa (Caveira Sorridente)
+  'L': { color: '#FF00FF', text: '🕯️' }  // Recompensa (Lanterna de Abóbora)
+};
+
+// Mapa maior (20x20) com apenas parte visível
+const grids = {
+  'grid1': [
+    ['P', 'E', 'E', 'B', 'E', 'R', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'C', 'B', 'E', 'B', 'E', 'B'],
+    ['E', 'E', 'E', 'B', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'B'],
+    ['E', 'B', 'E', 'E', 'E', 'E', 'X', 'B', 'B', 'B', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'R', 'B'],
+    ['E', 'E', 'E', 'E', 'B', 'B', 'B', 'E', 'D', 'E', 'B', 'E', 'E', 'L', 'E', 'B', 'E', 'B', 'E', 'B'],
+    ['B', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'B', 'B', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'B'],
+    ['E', 'B', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'B', 'E', 'B', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E'],
+    ['E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'B', 'B', 'E', 'E', 'E', 'B', 'E', 'B', 'E', 'E', 'B', 'E'],
+    ['E', 'B', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'B', 'E', 'B', 'B', 'B', 'E', 'B', 'E', 'B', 'E', 'E'],
+    ['B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'B', 'E', 'E', 'E'],
+    ['E', 'E', 'E', 'B', 'B', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'B', 'B', 'B'],
+    ['E', 'B', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'B', 'E', 'E'],
+    ['B', 'B', 'E', 'E', 'B', 'B', 'E', 'E', 'B', 'E', 'B', 'E', 'B', 'E', 'B', 'B', 'E', 'E', 'B', 'E'],
+    ['E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'B', 'E'],
+    ['E', 'B', 'E', 'B', 'E', 'E', 'E', 'B', 'B', 'B', 'B', 'E', 'E', 'B', 'B', 'E', 'E', 'B', 'B', 'E'],
+    ['E', 'E', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'B', 'B', 'E', 'B', 'B', 'E', 'B', 'B', 'B'],
+    ['E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'B', 'B', 'B', 'E', 'E', 'B', 'E', 'E', 'E'],
+    ['E', 'B', 'E', 'B', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'B', 'E', 'B'],
+    ['E', 'B', 'E', 'B', 'E', 'B', 'E', 'E', 'B', 'E', 'B', 'B', 'E', 'B', 'B', 'E', 'B', 'B', 'E', 'B'],
+    ['B', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E'],
+    ['B', 'E', 'E', 'B', 'E', 'B', 'E', 'B', 'E', 'E', 'E', 'E', 'B', 'B', 'B', 'B', 'B', 'E', 'E', 'E']
+  ],
+  'grid2': [
+    ['P', 'E', 'B', 'E', 'E', 'R', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'B', 'C', 'E', 'E', 'B', 'E', 'B'],
+		['E', 'B', 'E', 'E', 'B', 'E', 'B', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'E', 'B', 'B'],
+		['E', 'E', 'E', 'B', 'E', 'E', 'X', 'B', 'B', 'E', 'B', 'E', 'R', 'E', 'E', 'B', 'B', 'E', 'B', 'E'],
+		['B', 'E', 'B', 'E', 'B', 'B', 'B', 'D', 'E', 'E', 'E', 'B', 'E', 'L', 'B', 'E', 'B', 'E', 'E', 'E'],
+		['E', 'E', 'E', 'B', 'E', 'B', 'E', 'B', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'B', 'E', 'E'],
+		['B', 'E', 'B', 'E', 'E', 'B', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'B', 'E', 'B', 'E', 'B'],
+		['E', 'E', 'B', 'E', 'E', 'E', 'B', 'B', 'E', 'B', 'B', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'E'],
+		['B', 'E', 'B', 'E', 'E', 'B', 'E', 'B', 'E', 'B', 'E', 'B', 'B', 'E', 'B', 'E', 'B', 'E', 'E', 'B'],
+		['E', 'E', 'E', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'B', 'B', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'B'],
+		['E', 'B', 'B', 'E', 'E', 'E', 'B', 'E', 'B', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'B', 'B', 'E', 'E'],
+		['E', 'E', 'B', 'E', 'B', 'E', 'B', 'E', 'E', 'E', 'B', 'B', 'E', 'E', 'B', 'E', 'E', 'B', 'E', 'E'],
+		['B', 'B', 'E', 'E', 'B', 'B', 'E', 'B', 'E', 'E', 'B', 'B', 'E', 'B', 'B', 'E', 'B', 'E', 'E', 'B'],
+		['E', 'B', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'B', 'B', 'B', 'E', 'B', 'E', 'E', 'B', 'E', 'B'],
+		['B', 'E', 'E', 'B', 'B', 'E', 'E', 'B', 'B', 'E', 'B', 'E', 'E', 'B', 'B', 'E', 'E', 'B', 'B', 'E'],
+		['E', 'E', 'B', 'E', 'B', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'B', 'B', 'E', 'E', 'B', 'B', 'E', 'B'],
+		['E', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'B', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'B', 'E', 'B', 'E'],
+		['B', 'E', 'B', 'B', 'E', 'B', 'E', 'E', 'E', 'E', 'B', 'E', 'B', 'B', 'E', 'B', 'E', 'B', 'E', 'B'],
+		['E', 'E', 'E', 'E', 'B', 'B', 'E', 'B', 'E', 'B', 'E', 'B', 'E', 'B', 'E', 'E', 'E', 'E', 'B', 'E'],
+		['B', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'B', 'B', 'E', 'B', 'E', 'E', 'B'],
+		['B', 'E', 'B', 'B', 'E', 'E', 'E', 'B', 'B', 'E', 'B', 'B', 'E', 'B', 'B', 'B', 'E', 'B', 'B', 'E']
+  ],
+  'grid3': [
+    ['P', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'B', 'E', 'B', 'E', 'B', 'E', 'C'],
+		['E', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'B'],
+		['E', 'E', 'E', 'B', 'B', 'B', 'E', 'E', 'B', 'E', 'B', 'B', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'B'],
+		['B', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'B', 'E', 'R', 'B'],
+		['E', 'B', 'E', 'B', 'E', 'E', 'B', 'B', 'E', 'E', 'B', 'B', 'E', 'B', 'B', 'E', 'B', 'E', 'B', 'E'],
+		['E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'E'],
+		['E', 'B', 'E', 'B', 'B', 'E', 'B', 'E', 'E', 'E', 'E', 'B', 'B', 'E', 'B', 'B', 'E', 'E', 'B', 'E'],
+		['E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'B', 'B', 'B', 'E', 'E', 'E', 'E', 'E', 'B', 'B', 'E', 'E'],
+		['B', 'E', 'B', 'B', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'B', 'B', 'B', 'B'],
+		['E', 'E', 'E', 'E', 'B', 'B', 'E', 'E', 'E', 'E', 'E', 'B', 'B', 'B', 'E', 'E', 'E', 'E', 'B', 'E'],
+		['E', 'B', 'B', 'E', 'B', 'E', 'E', 'E', 'B', 'B', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'B', 'B', 'E'],
+		['E', 'E', 'E', 'E', 'E', 'B', 'E', 'B', 'E', 'E', 'B', 'E', 'B', 'E', 'B', 'E', 'E', 'E', 'B', 'E'],
+		['B', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'E', 'B', 'B', 'E', 'E', 'E', 'B', 'B', 'E', 'B', 'E', 'E'],
+		['B', 'B', 'B', 'B', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'B', 'E', 'B', 'E', 'E', 'E', 'D'],
+		['E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'B', 'E', 'B', 'B', 'B', 'B', 'E', 'B', 'B', 'B', 'E', 'B'],
+		['E', 'B', 'B', 'E', 'E', 'E', 'E', 'B', 'B', 'E', 'E', 'E', 'E', 'E', 'B', 'B', 'E', 'E', 'E', 'E'],
+		['B', 'E', 'E', 'E', 'B', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'B', 'B', 'E', 'E', 'E', 'B', 'B'],
+		['B', 'E', 'E', 'B', 'E', 'B', 'E', 'E', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'B', 'E', 'E', 'E', 'X'],
+		['E', 'E', 'E', 'E', 'E', 'E', 'B', 'B', 'B', 'E', 'E', 'E', 'B', 'E', 'B', 'E', 'E', 'B', 'E', 'E'],
+		['E', 'R', 'E', 'B', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'B', 'E', 'L', 'B', 'B', 'E', 'B']
+  ]
+};
+
+const gridSize = 7;  // Tamanho visível do grid alterado para 7x7
+let currentGrid = []; // Grid atual
+let startRow = 0;    // Linha inicial visível no mapa grande
+let startCol = 0;    // Coluna inicial visível no mapa grande
+let playerPosition = { row: 0, col: 0 }; // Posição inicial da abóbora
+
+let moveCount = 0;
+let collectedItems = 0; // Número de recompensas coletadas
+let totalItems = 0;     // Total de itens para coletar
+let timerInterval;
+let timeElapsed = 0;
+let gameOver = false;
+const visibilityRadius = 2; // Raio de visibilidade
+
+// Função para fazer uma cópia profunda do grid
+function deepCopyGrid(grid) {
+  return grid.map(row => row.slice());
+}
+
+// Função para iniciar o timer
+function startTimer() {
+  clearInterval(timerInterval);
+  timeElapsed = 0;
+  document.getElementById('timeElapsed').textContent = timeElapsed;
+  timerInterval = setInterval(() => {
+    timeElapsed++;
+    document.getElementById('timeElapsed').textContent = timeElapsed;
+  }, 1000);
+}
+
+// Função para parar o timer
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// Função para calcular o total de itens no grid
+function calculateTotalItems(grid) {
+  let count = 0;
+  grid.forEach(row => {
+    row.forEach(cell => {
+      if (['R', 'C', 'X', 'D', 'L'].includes(cell)) {
+        count++;
+      }
+    });
+  });
+  return count;
+}
+
+// Função para exibir mensagens ao jogador
+function displayMessage(message) {
+  const gameMessage = document.getElementById('gameMessage');
+  gameMessage.textContent = message;
+  setTimeout(() => {
+    if (gameMessage.textContent === message) {
+      gameMessage.textContent = '';
+    }
+  }, 3000);
+}
+
+// Função para renderizar a parte visível do mapa (grid), com base no raio de visibilidade
+function renderGrid() {
+  const gridContainer = document.getElementById('gameGrid');
+  gridContainer.innerHTML = ''; // Limpa o grid anterior
+
+  // Renderiza a parte visível do mapa, com deslocamento baseado em startRow e startCol
+  for (let row = 0; row < Math.min(gridSize, currentGrid.length - startRow); row++) {
+    for (let col = 0; col < Math.min(gridSize, currentGrid[0].length - startCol); col++) {
+      const actualRow = startRow + row;
+      const actualCol = startCol + col;
+
+      const cell = currentGrid[actualRow][actualCol];
+      const cellDiv = document.createElement('div');
+      cellDiv.className = 'grid-cell';
+      cellDiv.style.backgroundColor = 'black'; // Começa tudo escuro
+
+      // Se a célula estiver dentro do raio de visibilidade em torno da abóbora, revele
+      if (Math.abs(playerPosition.row - actualRow) <= visibilityRadius && Math.abs(playerPosition.col - actualCol) <= visibilityRadius) {
+        cellDiv.style.backgroundColor = terrainTypes[cell]?.color || 'black';
+        if (actualRow === playerPosition.row && actualCol === playerPosition.col) {
+          cellDiv.textContent = '🎃'; // Abóbora
+        } else if (['R', 'C', 'X', 'D', 'L'].includes(cell)) {
+          cellDiv.textContent = terrainTypes[cell].text; // Recompensas
+        }
+      }
+
+      gridContainer.appendChild(cellDiv);
+    }
+  }
+}
+
+// Função para mover a abóbora
+function movePlayer(direction) {
+  if (gameOver) return;
+
+  let newRow = playerPosition.row;
+  let newCol = playerPosition.col;
+
+  // Movimentação da abóbora
+  if (direction === 'right') newCol++;
+  if (direction === 'left') newCol--;
+  if (direction === 'up') newRow--;
+  if (direction === 'down') newRow++;
+
+  // Manter a abóbora dentro dos limites do mapa grande
+  if (newRow < 0 || newRow >= currentGrid.length || newCol < 0 || newCol >= currentGrid[0].length) {
+    displayMessage('You can not move in that direction!');
+    return;
+  }
+
+  // Verificar se o novo movimento está bloqueado por uma barreira
+  if (currentGrid[newRow][newCol] === 'B') {
+    displayMessage('You hit a barrier!');
+    return;
+  }
+
+  // Atualiza a posição da abóbora
+  playerPosition = { row: newRow, col: newCol };
+
+  // Coleta recompensas, se houver na célula
+  const cell = currentGrid[newRow][newCol];
+  if (['R', 'C', 'X', 'D', 'L'].includes(cell)) {
+    collectedItems++;
+    document.getElementById('collectedItems').textContent = collectedItems;
+    displayMessage('You have collected a reward!');
+    currentGrid[newRow][newCol] = 'E'; // Limpa a célula após coletar
+  }
+
+  // Verifica vitória
+  if (collectedItems === totalItems) {
+    gameOver = true;
+    displayMessage('You found all the rewards! Congratulations!');
+    stopTimer();
+    return;
+  }
+
+  // Ajusta a parte visível do mapa com base na posição da abóbora
+  if (playerPosition.row - startRow >= gridSize - visibilityRadius && startRow + gridSize < currentGrid.length) startRow++;
+  if (playerPosition.row - startRow <= visibilityRadius - 1 && startRow > 0) startRow--;
+  if (playerPosition.col - startCol >= gridSize - visibilityRadius && startCol + gridSize < currentGrid[0].length) startCol++;
+  if (playerPosition.col - startCol <= visibilityRadius - 1 && startCol > 0) startCol--;
+
+  moveCount++;
+  document.getElementById('moveCount').textContent = moveCount;
+
+  // Re-renderiza o grid visível
+  renderGrid();
+}
+
+// Função para reiniciar o estado do jogo
+function resetGameState() {
+  moveCount = 0;
+  collectedItems = 0;
+  timeElapsed = 0;
+  gameOver = false;
+  document.getElementById('collectedItems').textContent = collectedItems;
+  document.getElementById('moveCount').textContent = moveCount;
+  document.getElementById('gameMessage').textContent = '';
+}
+
+// Função para carregar o grid selecionado
+function loadSelectedGrid() {
+  const selectedGrid = document.getElementById('gridSelector').value;
+  currentGrid = deepCopyGrid(grids[selectedGrid]);
+  playerPosition = { row: 0, col: 0 };  // Reinicia posição da abóbora
+  startRow = 0;  // Reinicia o grid visível
+  startCol = 0;
+  resetGameState();
+  totalItems = calculateTotalItems(currentGrid);
+  document.getElementById('totalItems').textContent = totalItems;
+  startTimer();
+  renderGrid();
+}
+
+// Movimentação da abóbora com setas do teclado
+document.addEventListener('keydown', (event) => {
+  if (['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown'].includes(event.key)) {
+    event.preventDefault();
+    const direction = event.key.replace('Arrow', '').toLowerCase();
+    movePlayer(direction);
+  }
+});
+
+// Movimentação da abóbora com botões de controle
+document.getElementById('upButton').addEventListener('click', () => movePlayer('up'));
+document.getElementById('downButton').addEventListener('click', () => movePlayer('down'));
+document.getElementById('leftButton').addEventListener('click', () => movePlayer('left'));
+document.getElementById('rightButton').addEventListener('click', () => movePlayer('right'));
+
+// Função para reiniciar o jogo
+document.getElementById('restartButton').addEventListener('click', loadSelectedGrid);
+
+// Função para carregar o grid quando o botão é clicado
+document.getElementById('loadGridButton').addEventListener('click', loadSelectedGrid);
+
+// Iniciar o jogo carregando o primeiro grid
+loadSelectedGrid();
+
+  	</script>
+</body>
+</html>
+<style>
+body {
+  background-color: black;
+}
+
+.round-button {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+  background-color: #E4C58A;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+  line-height: 80px;
+  transition: background-color 0.3s;
+  margin: 10px;
+}
+
+.round-button:hover {
+  background-color: #D4B57A;
+}
+
+.grid-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+  border: 0px solid #000;
+  width: 5vw;
+  height: 5vw;
+}
+
+#gameGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 5vw); /* Alterado para 7 colunas */
+  gap: 0px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+#gameMessage {
+  font-weight: bold;
+  color: white;
+}
+
+.control-button {
+  width: 60px;
+  height: 60px;
+  font-size: 2em;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.control-button:hover {
+  background-color: #D4B57A;
+}
+
+.round-button2 {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px;
+  }
+
+.round-button2:hover {
+    background-color: #6E1919;
+  }
+
+</style>

@@ -1,0 +1,92 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Metronome</h2>
+
+  <!-- Control Buttons -->
+  <button id="startStopButton" class="round-button" style="background-color: #E4C58A;">Start</button>
+  
+  <!-- BPM Selector -->
+  <div style="margin-top: 10px;">
+    <label for="bpmInput" style="color: white;">BPM:</label>
+    <input type="number" id="bpmInput" min="30" max="300" value="120">
+  </div>
+
+  <!-- Beat Visual -->
+  <div id="beatCircle" style="
+    margin: 30px auto;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #E4C58A;
+    transition: transform 0.1s ease-in-out;
+  "></div>
+</div>
+
+<audio id="clickSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+
+<script>
+  let intervalId = null;
+  const beatCircle = document.getElementById('beatCircle');
+  const clickSound = document.getElementById('clickSound');
+
+  function playClick() {
+    clickSound.currentTime = 0;
+    clickSound.play();
+  }
+
+  function pulseVisual() {
+    beatCircle.style.transform = 'scale(1.3)';
+    setTimeout(() => {
+      beatCircle.style.transform = 'scale(1)';
+    }, 100);
+  }
+
+  function startMetronome() {
+    const bpm = parseInt(document.getElementById('bpmInput').value);
+    const interval = 60000 / bpm;
+
+    intervalId = setInterval(() => {
+      playClick();
+      pulseVisual();
+    }, interval);
+  }
+
+  function stopMetronome() {
+    clearInterval(intervalId);
+    intervalId = null;
+  }
+
+  document.getElementById('startStopButton').addEventListener('click', () => {
+    if (intervalId === null) {
+      startMetronome();
+      document.getElementById('startStopButton').textContent = 'Stop';
+    } else {
+      stopMetronome();
+      document.getElementById('startStopButton').textContent = 'Start';
+    }
+  });
+</script>
+
+<style>
+  body {
+    background-color: black;
+    font-family: sans-serif;
+  }
+
+  .round-button {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 100px;
+    transition: background-color 0.3s;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+</style>

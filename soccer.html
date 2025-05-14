@@ -1,0 +1,315 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Soccer</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="playmCheckbox"> Player M</label><br>
+    <label><input type="checkbox" id="playfCheckbox"> Player F</label><br>
+    <label><input type="checkbox" id="coachCheckbox"> Coach</label><br>
+    <label><input type="checkbox" id="stadCheckbox"> Stadium</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+"Penalty Kick: You can make an immediate attack with +5. If the opponent has no defense card, double the attack value.",
+"Red Card: Choose one of the opponent’s player cards. That player is ejected from the game and cannot be used again.",
+"Offside Trap: Cancel the opponent's next attack. If the attack was made by a Striker card, the attacker loses 3 points for this round.",
+"Extra Time: Extend the round for one more turn. Both players can play one extra card before the round ends.",
+"Tactical Substitution: Swap one of your player cards on the field with another card from your hand. The new player gains +2 defense for one turn.",
+"Corner Kick: Draw two cards. You can immediately play one attack card with a +2 bonus.",
+"Counter-Attack: After defending, immediately play an attack card with +3 to its value.",
+"Yellow Card: Select one of the opponent’s player cards. That player is warned and loses -2 defense for the next two turns.",
+"Goalkeeper Save: Completely block the opponent’s next attack, regardless of its value.",
+"Free Kick Specialist: Play an attack card from your hand with a +4 bonus. If it’s a Midfielder card, draw an additional card from your deck.",
+"Hat-Trick: Play three attack cards in a row. Each attack gains +2 if the player card is a Striker.",
+"VAR Review: Negate the last card played by the opponent and force them to discard another card from their hand.",
+"Injury Time: Draw two additional cards and extend the current round for one extra turn, allowing both players to play another card.",
+"Defensive Wall: All of your defensive cards gain +4 for this turn, reflecting a solid team defense.",
+"Through Ball: Play an attack card with +3 bonus. If it’s a Midfielder card, the bonus increases to +5.",
+"Own Goal: The opponent must discard one of their attack cards. That card's value is subtracted from their total score.",
+"Fan Support: Your team gets a morale boost. Draw one extra card, and all your attack cards gain +2 until the end of the round.",
+"Formation Change: You can rearrange your player cards on the field, swapping their positions to optimize for attack or defense. Each swapped player gains +1 to their new role.",
+"Set Piece Mastery: Choose any one of your attack cards. That card’s value is doubled for this turn.",
+"Man of the Match: Choose one player card on your side. That player gets +3 to both attack and defense until the end of the game."
+  ];
+
+  
+const playm = [
+{name: "Goalkeeper: Alisson Becker (Brazil)", attributes: {Reflexes: 9, Positioning: 9, Handling: 9, "One-on-One": 9, Kicking: 9, Titles: 8}},
+{name: "Goalkeeper: Claudio Taffarel (Brazil)", attributes: {Reflexes: 9, Positioning: 8, Handling: 8, "One-on-One": 9, Kicking: 7, Titles: 8}},
+{name: "Goalkeeper: Dino Zoff (Italy)", attributes: {Reflexes: 8, Positioning: 10, Handling: 10, "One-on-One": 8, Kicking: 7, Titles: 9}},
+{name: "Goalkeeper: Dida (Brazil)", attributes: {Reflexes: 10, Positioning: 9, Handling: 8, "One-on-One": 10, Kicking: 8, Titles: 9}},
+{name: "Goalkeeper: Edwin van der Sar (Netherlands)", attributes: {Reflexes: 9, Positioning: 9, Handling: 9, "One-on-One": 8, Kicking: 9, Titles: 8}},
+{name: "Goalkeeper: Gianluigi Buffon (Italy)", attributes: {Reflexes: 9, Positioning: 10, Handling: 10, "One-on-One": 9, Kicking: 8, Titles: 9}},
+{name: "Goalkeeper: Iker Casillas (Spain)", attributes: {Reflexes: 10, Positioning: 9, Handling: 8, "One-on-One": 9, Kicking: 7, Titles: 10}},
+{name: "Goalkeeper: Lev Yashin (Russia)", attributes: {Reflexes: 10, Positioning: 9, Handling: 9, "One-on-One": 9, Kicking: 7, Titles: 6}},
+{name: "Goalkeeper: Manuel Neuer (Germany)", attributes: {Reflexes: 9, Positioning: 9, Handling: 9, "One-on-One": 10, Kicking: 10, Titles: 9}},
+{name: "Goalkeeper: Oliver Kahn (Germany)", attributes: {Reflexes: 9, Positioning: 9, Handling: 9, "One-on-One": 10, Kicking: 7, Titles: 8}},
+{name: "Goalkeeper: Peter Schmeichel (Denmark)", attributes: {Reflexes: 9, Positioning: 9, Handling: 9, "One-on-One": 10, Kicking: 8, Titles: 9}},
+{name: "Goalkeeper: Zetti (Brazil)", attributes: {Reflexes: 9, Positioning: 8, Handling: 9, "One-on-One": 9, Kicking: 8, Titles: 8}},
+{name: "Player: Adriano (Brazil)", attributes: {Goals: 9, Assists: 7, Dribbling: 8, Defense: 5, Speed: 8, Titles: 6}},
+{name: "Player: Andrea Pirlo (Italy)", attributes: {Goals: 6, Assists: 9, Dribbling: 7, Defense: 7, Speed: 6, Titles: 8}},
+{name: "Player: Andriy Shevchenko (Ukraine)", attributes: {Goals: 10, Assists: 7, Dribbling: 8, Defense: 5, Speed: 9, Titles: 9}},
+{name: "Player: Andrés Iniesta (Spain)", attributes: {Goals: 7, Assists: 9, Dribbling: 9, Defense: 7, Speed: 7, Titles: 9}},
+{name: "Player: Antony (Brazil)", attributes: {Goals: 7, Assists: 7, Dribbling: 9, Defense: 5, Speed: 8, Titles: 3}},
+{name: "Player: Arjen Robben (Netherlands)", attributes: {Goals: 9, Assists: 7, Dribbling: 9, Defense: 6, Speed: 9, Titles: 8}},
+{name: "Player: Carlos Alberto (Brazil)", attributes: {Goals: 5, Assists: 7, Dribbling: 7, Defense: 9, Speed: 8, Titles: 9}},
+{name: "Player: Clarence Seedorf (Netherlands)", attributes: {Goals: 7, Assists: 8, Dribbling: 8, Defense: 7, Speed: 7, Titles: 9}},
+{name: "Player: Cristiano Ronaldo (Portugal)", attributes: {Goals: 10, Assists: 7, Dribbling: 8, Defense: 6, Speed: 10, Titles: 9}},
+{name: "Player: David Beckham (England)", attributes: {Goals: 8, Assists: 9, Dribbling: 7, Defense: 6, Speed: 7, Titles: 7}},
+{name: "Player: Didier Drogba (Ivory Coast)", attributes: {Goals: 9, Assists: 7, Dribbling: 8, Defense: 6, Speed: 8, Titles: 8}},
+{name: "Player: Diego Maradona (Argentina)", attributes: {Goals: 9, Assists: 9, Dribbling: 10, Defense: 6, Speed: 8, Titles: 8}},
+{name: "Player: Eden Hazard (Belgium)", attributes: {Goals: 8, Assists: 8, Dribbling: 10, Defense: 6, Speed: 9, Titles: 7}},
+{name: "Player: Frank Lampard (England)", attributes: {Goals: 9, Assists: 8, Dribbling: 7, Defense: 7, Speed: 7, Titles: 8}},
+{name: "Player: Franz Beckenbauer (Germany)", attributes: {Goals: 7, Assists: 7, Dribbling: 7, Defense: 10, Speed: 7, Titles: 9}},
+{name: "Player: Gareth Bale (Wales)", attributes: {Goals: 8, Assists: 8, Dribbling: 9, Defense: 6, Speed: 9, Titles: 8}},
+{name: "Player: Garrincha (Brazil)", attributes: {Goals: 9, Assists: 8, Dribbling: 10, Defense: 5, Speed: 9, Titles: 9}},
+{name: "Player: George Best (Northern Ireland)", attributes: {Goals: 9, Assists: 8, Dribbling: 10, Defense: 5, Speed: 9, Titles: 6}},
+{name: "Player: Gerard Piqué (Spain)", attributes: {Goals: 6, Assists: 6, Dribbling: 7, Defense: 9, Speed: 7, Titles: 9}},
+{name: "Player: Gérson (Brazil)", attributes: {Goals: 6, Assists: 10, Dribbling: 7, Defense: 7, Speed: 6, Titles: 9}},
+{name: "Player: Gianluigi Buffon (Italy)", attributes: {Goals: 0, Assists: 3, Dribbling: 2, Defense: 10, Speed: 6, Titles: 9}},
+{name: "Player: Harry Kane (England)", attributes: {Goals: 9, Assists: 8, Dribbling: 7, Defense: 6, Speed: 8, Titles: 5}},
+{name: "Player: Jairzinho (Brazil)", attributes: {Goals: 10, Assists: 7, Dribbling: 9, Defense: 6, Speed: 9, Titles: 8}},
+{name: "Player: Johan Cruyff (Netherlands)", attributes: {Goals: 9, Assists: 9, Dribbling: 9, Defense: 7, Speed: 8, Titles: 8}},
+{name: "Player: Kaká (Brazil)", attributes: {Goals: 8, Assists: 9, Dribbling: 9, Defense: 6, Speed: 9, Titles: 8}},
+{name: "Player: Kylian Mbappé (France)", attributes: {Goals: 10, Assists: 8, Dribbling: 9, Defense: 6, Speed: 10, Titles: 8}},
+{name: "Player: Lev Yashin (Russia)", attributes: {Goals: 0, Assists: 4, Dribbling: 3, Defense: 10, Speed: 6, Titles: 6}},
+{name: "Player: Lionel Messi (Argentina)", attributes: {Goals: 10, Assists: 10, Dribbling: 10, Defense: 5, Speed: 8, Titles: 9}},
+{name: "Player: Luis Suárez (Uruguay)", attributes: {Goals: 9, Assists: 8, Dribbling: 8, Defense: 6, Speed: 8, Titles: 8}},
+{name: "Player: Luka Modrić (Croatia)", attributes: {Goals: 7, Assists: 8, Dribbling: 8, Defense: 7, Speed: 7, Titles: 8}},
+{name: "Player: Marco van Basten (Netherlands)", attributes: {Goals: 10, Assists: 8, Dribbling: 8, Defense: 5, Speed: 8, Titles: 8}},
+{name: "Player: Michel Platini (France)", attributes: {Goals: 9, Assists: 8, Dribbling: 8, Defense: 7, Speed: 7, Titles: 8}},
+{name: "Player: Mohamed Salah (Egypt)", attributes: {Goals: 9, Assists: 8, Dribbling: 9, Defense: 6, Speed: 10, Titles: 7}},
+{name: "Player: Neymar Jr. (Brazil)", attributes: {Goals: 9, Assists: 9, Dribbling: 10, Defense: 5, Speed: 9, Titles: 8}},
+{name: "Player: Paolo Maldini (Italy)", attributes: {Goals: 4, Assists: 5, Dribbling: 6, Defense: 10, Speed: 7, Titles: 9}},
+{name: "Player: Pelé (Brazil)", attributes: {Goals: 10, Assists: 8, Dribbling: 9, Defense: 5, Speed: 9, Titles: 10}},
+{name: "Player: Rivaldo (Brazil)", attributes: {Goals: 9, Assists: 8, Dribbling: 9, Defense: 6, Speed: 7, Titles: 8}},
+{name: "Player: Rivelino (Brazil)", attributes: {Goals: 8, Assists: 8, Dribbling: 9, Defense: 6, Speed: 7, Titles: 7}},
+{name: "Player: Roberto Baggio (Italy)", attributes: {Goals: 9, Assists: 8, Dribbling: 9, Defense: 5, Speed: 7, Titles: 6}},
+{name: "Player: Roberto Carlos (Brazil)", attributes: {Goals: 7, Assists: 8, Dribbling: 8, Defense: 9, Speed: 10, Titles: 9}},
+{name: "Player: Romário (Brazil)", attributes: {Goals: 10, Assists: 7, Dribbling: 8, Defense: 5, Speed: 8, Titles: 9}},
+{name: "Player: Ronaldinho (Brazil)", attributes: {Goals: 8, Assists: 9, Dribbling: 10, Defense: 5, Speed: 8, Titles: 8}},
+{name: "Player: Ronaldo Nazário (Brazil)", attributes: {Goals: 10, Assists: 7, Dribbling: 10, Defense: 5, Speed: 9, Titles: 8}},
+{name: "Player: Sergio Ramos (Spain)", attributes: {Goals: 7, Assists: 6, Dribbling: 6, Defense: 10, Speed: 8, Titles: 9}},
+{name: "Player: Steven Gerrard (England)", attributes: {Goals: 8, Assists: 8, Dribbling: 7, Defense: 8, Speed: 7, Titles: 7}},
+{name: "Player: Thierry Henry (France)", attributes: {Goals: 9, Assists: 8, Dribbling: 9, Defense: 6, Speed: 9, Titles: 7}},
+{name: "Player: Tostão (Brazil)", attributes: {Goals: 9, Assists: 9, Dribbling: 8, Defense: 6, Speed: 7, Titles: 7}},
+{name: "Player: Vini Jr. (Brazil)", attributes: {Goals: 9, Assists: 8, Dribbling: 10, Defense: 6, Speed: 10, Titles: 8}},
+{name: "Player: Xavi Hernández (Spain)", attributes: {Goals: 6, Assists: 10, Dribbling: 8, Defense: 7, Speed: 6, Titles: 9}},
+{name: "Player: Zico (Brazil)", attributes: {Goals: 9, Assists: 10, Dribbling: 9, Defense: 6, Speed: 7, Titles: 8}},
+{name: "Player: Zinedine Zidane (France)", attributes: {Goals: 8, Assists: 9, Dribbling: 9, Defense: 7, Speed: 7, Titles: 9}},
+{name: "Player: Zlatan Ibrahimović (Sweden)", attributes: {Goals: 9, Assists: 7, Dribbling: 8, Defense: 6, Speed: 8, Titles: 8}},
+ 	];
+ 	
+ 	
+const playf = [
+{name: "Goalkeeper: Barbara (The Unbreakable Force – Brazil)", attributes: {Reflexes: 9, Positioning: 8, Handling: 9, "One-on-One": 9, Kicking: 8, Titles: 8}},
+{name: "Goalkeeper: Christiane Endler (The Andean Guardian – Chile)", attributes: {Reflexes: 9, Positioning: 10, Handling: 9, "One-on-One": 9, Kicking: 9, Titles: 7}},
+{name: "Goalkeeper: Hedvig Lindahl (The Nordic Sentinel – Sweden)", attributes: {Reflexes: 9, Positioning: 9, Handling: 9, "One-on-One": 9, Kicking: 8, Titles: 8}},
+{name: "Goalkeeper: Hope Solo (The Fearless Wall – USA)", attributes: {Reflexes: 10, Positioning: 9, Handling: 9, "One-on-One": 10, Kicking: 8, Titles: 10}},
+{name: "Goalkeeper: Manuela Zinsberger (The Austrian Wall – Austria)", attributes: {Reflexes: 9, Positioning: 9, Handling: 9, "One-on-One": 8, Kicking: 9, Titles: 7}},
+{name: "Goalkeeper: Mary Earps (The English Guardian – England)", attributes: {Reflexes: 9, Positioning: 9, Handling: 9, "One-on-One": 9, Kicking: 8, Titles: 9}},
+{name: "Goalkeeper: Sarah Bouhaddi (The Sweeper Keeper – France)", attributes: {Reflexes: 9, Positioning: 9, Handling: 8, "One-on-One": 9, Kicking: 10, Titles: 9}},
+{name: "Goalkeeper: Stephanie Labbé (The Golden Glove – Canada)", attributes: {Reflexes: 9, Positioning: 9, Handling: 8, "One-on-One": 9, Kicking: 8, Titles: 9}},
+{name: "Player: Abby Dahlkemper (USA)", attributes: {Goals: 2, Assists: 5, Dribbling: 6, Defense: 9, Speed: 8, Titles: 10}},
+{name: "Player: Amandine Henry (France)", attributes: {Goals: 6, Assists: 8, Dribbling: 7, Defense: 8, Speed: 7, Titles: 9}},
+{name: "Player: Andrea Pirlo (Italy)", attributes: {Goals: 6, Assists: 9, Dribbling: 7, Defense: 7, Speed: 6, Titles: 8}},
+{name: "Player: Andressa Alves (Brazil)", attributes: {Goals: 7, Assists: 9, Dribbling: 8, Defense: 6, Speed: 7, Titles: 7}},
+{name: "Player: Carli Lloyd (USA)", attributes: {Goals: 9, Assists: 8, Dribbling: 7, Defense: 7, Speed: 7, Titles: 10}},
+{name: "Player: Daniëlle van de Donk (Netherlands)", attributes: {Goals: 7, Assists: 9, Dribbling: 8, Defense: 7, Speed: 7, Titles: 9}},
+{name: "Player: Dzsenifer Marozsán (Germany)", attributes: {Goals: 7, Assists: 9, Dribbling: 8, Defense: 7, Speed: 6, Titles: 9}},
+{name: "Player: Elise Kellond-Knight (Australia)", attributes: {Goals: 6, Assists: 9, Dribbling: 7, Defense: 8, Speed: 6, Titles: 7}},
+{name: "Player: Formiga (Brazil)", attributes: {Goals: 6, Assists: 8, Dribbling: 7, Defense: 8, Speed: 6, Titles: 10}},
+{name: "Player: Ingrid Engen (Norway)", attributes: {Goals: 6, Assists: 8, Dribbling: 7, Defense: 8, Speed: 7, Titles: 8}},
+{name: "Player: Jackie Groenen (Netherlands)", attributes: {Goals: 6, Assists: 9, Dribbling: 7, Defense: 8, Speed: 7, Titles: 8}},
+{name: "Player: Jessie Fleming (Canada)", attributes: {Goals: 6, Assists: 9, Dribbling: 7, Defense: 7, Speed: 7, Titles: 8}},
+{name: "Player: Ji So-Yun (South Korea)", attributes: {Goals: 7, Assists: 9, Dribbling: 7, Defense: 6, Speed: 7, Titles: 8}},
+{name: "Player: Keira Walsh (England)", attributes: {Goals: 6, Assists: 9, Dribbling: 7, Defense: 7, Speed: 6, Titles: 8}},
+{name: "Player: Kim Little (Scotland)", attributes: {Goals: 6, Assists: 9, Dribbling: 8, Defense: 7, Speed: 6, Titles: 8}},
+{name: "Player: Lena Oberdorf (Germany)", attributes: {Goals: 5, Assists: 8, Dribbling: 7, Defense: 9, Speed: 7, Titles: 7}},
+{name: "Player: Lindsey Horan (USA)", attributes: {Goals: 7, Assists: 9, Dribbling: 8, Defense: 7, Speed: 7, Titles: 9}},
+{name: "Player: Louise Quinn (Ireland)", attributes: {Goals: 5, Assists: 8, Dribbling: 6, Defense: 9, Speed: 6, Titles: 6}},
+{name: "Player: Marta (Brazil)", attributes: {Goals: 10, Assists: 9, Dribbling: 9, Defense: 6, Speed: 8, Titles: 9}},
+{name: "Player: Saki Kumagai (Japan)", attributes: {Goals: 5, Assists: 8, Dribbling: 7, Defense: 9, Speed: 6, Titles: 9}},
+{name: "Player: Sara Däbritz (Germany)", attributes: {Goals: 6, Assists: 9, Dribbling: 7, Defense: 8, Speed: 6, Titles: 9}},
+{name: "Player: Shirley Cruz (Costa Rica)", attributes: {Goals: 5, Assists: 9, Dribbling: 7, Defense: 7, Speed: 6, Titles: 7}},
+{name: "Player: Verónica Boquete (Spain)", attributes: {Goals: 7, Assists: 9, Dribbling: 8, Defense: 6, Speed: 7, Titles: 7}},
+{name: "Player: Vicky Losada (Spain)", attributes: {Goals: 6, Assists: 9, Dribbling: 7, Defense: 7, Speed: 6, Titles: 8}},
+
+ 	];
+ 	
+ 	
+const coach = [
+{name: "Coach: Arsène Wenger (France)", attributes: {Trophies: 7, Tactics: 9, "Player Development": 10, Leadership: 8, Longevity: 10, "Big Match Performance": 7}},
+{name: "Coach: Carlo Ancelotti (Italy)", attributes: {Trophies: 9, Tactics: 9, "Player Development": 8, Leadership: 9, Longevity: 9, "Big Match Performance": 10}},
+{name: "Coach: Diego Simeone (Argentina)", attributes: {Trophies: 7, Tactics: 9, "Player Development": 8, Leadership: 9, Longevity: 8, "Big Match Performance": 8}},
+{name: "Coach: José Mourinho (Portugal)", attributes: {Trophies: 9, Tactics: 9, "Player Development": 7, Leadership: 9, Longevity: 9, "Big Match Performance": 10}},
+{name: "Coach: Jürgen Klopp (Germany)", attributes: {Trophies: 8, Tactics: 9, "Player Development": 9, Leadership: 10, Longevity: 8, "Big Match Performance": 9}},
+{name: "Coach: Marcelo Bielsa (Argentina)", attributes: {Trophies: 5, Tactics: 9, "Player Development": 9, Leadership: 8, Longevity: 8, "Big Match Performance": 7}},
+{name: "Coach: Pep Guardiola (Spain)", attributes: {Trophies: 10, Tactics: 10, "Player Development": 9, Leadership: 9, Longevity: 8, "Big Match Performance": 9}},
+{name: "Coach: Sir Alex Ferguson (Scotland)", attributes: {Trophies: 10, Tactics: 9, "Player Development": 10, Leadership: 10, Longevity: 10, "Big Match Performance": 10}},
+{name: "Coach: Vicente del Bosque (Spain)", attributes: {Trophies: 9, Tactics: 8, "Player Development": 7, Leadership: 9, Longevity: 8, "Big Match Performance": 9}},
+{name: "Coach: Zinedine Zidane (France)", attributes: {Trophies: 9, Tactics: 8, "Player Development": 7, Leadership: 9, Longevity: 6, "Big Match Performance": 10}},
+  ];
+  
+const stad = [
+{name: "Stadium: Allianz Arena (Germany)", attributes: {Capacity: 8, Atmosphere: 9, History: 8, Architecture: 10, "Home Advantage": 9, Location: 8}},
+{name: "Stadium: Anfield (England)", attributes: {Capacity: 7, Atmosphere: 10, History: 9, Architecture: 7, "Home Advantage": 10, Location: 8}},
+{name: "Stadium: Camp Nou (Spain)", attributes: {Capacity: 10, Atmosphere: 9, History: 10, Architecture: 8, "Home Advantage": 9, Location: 9}},
+{name: "Stadium: La Bombonera (Argentina)", attributes: {Capacity: 7, Atmosphere: 10, History: 8, Architecture: 7, "Home Advantage": 10, Location: 7}},
+{name: "Stadium: Maracanã (Brazil)", attributes: {Capacity: 10, Atmosphere: 10, History: 10, Architecture: 7, "Home Advantage": 8, Location: 8}},
+{name: "Stadium: Old Trafford (England)", attributes: {Capacity: 9, Atmosphere: 9, History: 10, Architecture: 8, "Home Advantage": 9, Location: 8}},
+{name: "Stadium: San Siro (Italy)", attributes: {Capacity: 9, Atmosphere: 9, History: 9, Architecture: 8, "Home Advantage": 9, Location: 8}},
+{name: "Stadium: Santiago Bernabéu (Spain)", attributes: {Capacity: 9, Atmosphere: 9, History: 10, Architecture: 8, "Home Advantage": 9, Location: 9}},
+{name: "Stadium: Signal Iduna Park (Germany)", attributes: {Capacity: 9, Atmosphere: 10, History: 8, Architecture: 8, "Home Advantage": 10, Location: 8}},
+{name: "Stadium: Wembley Stadium (England)", attributes: {Capacity: 10, Atmosphere: 8, History: 10, Architecture: 9, "Home Advantage": 7, Location: 9}},
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playmCheckbox').checked) selectedCards.push(...playm);
+    if (document.getElementById('playfCheckbox').checked) selectedCards.push(...playf);
+    if (document.getElementById('coachCheckbox').checked) selectedCards.push(...coach);
+    if (document.getElementById('stadCheckbox').checked) selectedCards.push(...stad);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+		body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

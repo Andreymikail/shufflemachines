@@ -1,0 +1,375 @@
+<!-- HTML Structure -->
+<button id="generateAllButton" class="round-button">All</button>
+<br><br>
+<div id="journeyStages"></div>
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sciFiOptions = {
+      "The Call to Adventure": [
+        "Receiving a distress signal from a forgotten star system.",
+				"Discovering an ancient alien artifact buried deep in the earth.",
+				"Being selected by a cosmic force to represent humanity in an intergalactic council.",
+				"Finding a wormhole that leads to an uncharted galaxy.",
+				"Being contacted by an AI from a long-lost civilization.",
+				"A mysterious spacecraft crash-lands on the hero’s home planet.",
+				"Hearing a prophecy that foretells the hero's role in saving the universe.",
+				"Uncovering a conspiracy that threatens the fabric of reality.",
+				"An alien entity offers the hero a chance to explore the multiverse.",
+				"Receiving a cryptic message from the future.",
+				"A rogue AI asks the hero to help stop a galactic war.",
+				"Finding a map that leads to a legendary lost city in space.",
+				"A scientist offers the hero the chance to participate in a time-travel experiment.",
+				"Discovering a parallel universe that mirrors the hero’s world.",
+				"A dying star reveals a hidden gateway to another dimension.",
+				"Encountering a rebel group fighting against a tyrannical regime.",
+				"A mysterious mentor appears, offering knowledge of an unknown power.",
+				"Being chosen as the pilot for an experimental starship.",
+				"An energy surge from a distant galaxy affects the hero’s DNA.",
+				"Discovering a hidden base with advanced alien technology."
+      ],
+      "Refusal of the Call": [
+        "Fear of leaving behind family and friends.",
+				"Doubting one’s own abilities to undertake the mission.",
+				"A deep distrust of the alien beings who made contact.",
+				"Concern over the unknown dangers of traveling through a wormhole.",
+				"Anxiety about the potential consequences of altering the timeline.",
+				"Disbelief in the existence of the multiverse.",
+				"Worry about the potential fallout of engaging with a rogue AI.",
+				"Apprehension about the risks of space exploration.",
+				"Fear of the prophecy’s implications on the hero’s life.",
+				"Reluctance to become involved in an intergalactic war.",
+				"Concern about leaving the familiar safety of home.",
+				"Disbelief in the mentor’s supernatural knowledge.",
+				"A desire to remain anonymous and avoid the spotlight.",
+				"Fear of becoming a target for powerful enemies.",
+				"Doubts about the authenticity of the ancient artifact.",
+				"Reluctance to trust a rebel group with a questionable past.",
+				"Uncertainty about navigating the complexities of a parallel universe.",
+				"Hesitation due to the unpredictable nature of alien technology.",
+				"Fear of the unknown effects of time travel on the hero’s mind.",
+				"Concern about the potential loss of humanity when interfacing with advanced AI."
+      ],
+      "Meeting the Mentor": [
+        "An ancient alien sage who has seen the rise and fall of civilizations.",
+				"A sentient starship with vast knowledge of the cosmos.",
+				"A rogue AI that has evolved beyond its original programming.",
+				"A time traveler who offers guidance based on their experience.",
+				"A scientist who has unlocked the secrets of the multiverse.",
+				"A reclusive alien mystic with deep understanding of quantum mechanics.",
+				"A holographic guide programmed with the wisdom of a thousand species.",
+				"A warrior from a distant galaxy who has fought in countless battles.",
+				"An ancient robot who has survived eons and possesses forgotten knowledge.",
+				"A cosmic being who exists across multiple dimensions.",
+				"A former hero who completed a similar journey in the past.",
+				"An alien diplomat with insight into the politics of the universe.",
+				"A genetically enhanced human with extraordinary mental abilities.",
+				"A mysterious entity that communicates through visions and dreams.",
+				"A seasoned space explorer with maps to uncharted territories.",
+				"A philosopher AI who offers moral guidance for the journey.",
+				"A guardian of an ancient star system with keys to hidden knowledge.",
+				"A mentor who appears as a projection from a distant galaxy.",
+				"A bioengineer with the ability to enhance the hero’s physical abilities.",
+				"A wise elder from a forgotten civilization who offers cryptic advice."
+      ],
+      "Crossing the Threshold": [
+        "Entering a wormhole that leads to an unknown galaxy.",
+				"Stepping aboard an alien spacecraft for the first time.",
+				"Leaving Earth’s orbit and setting course for a distant star system.",
+				"Passing through a dimensional rift into a parallel universe.",
+				"Activating a stargate that transports the hero to a new world.",
+				"Crossing into an uncharted region of space controlled by hostile aliens.",
+				"Entering the event horizon of a black hole.",
+				"Teleporting to a hidden base on a distant planet.",
+				"Engaging the FTL (faster-than-light) drive for the first time.",
+				"Entering the atmosphere of a planet covered in perpetual storms.",
+				"Navigating through an asteroid field that marks the boundary of known space.",
+				"Passing through a shielded barrier protecting an ancient alien relic.",
+				"Activating a time machine to travel to a distant future.",
+				"Docking at a mysterious space station with no known origin.",
+				"Descending into the depths of a gas giant to uncover hidden secrets.",
+				"Walking onto an alien world where gravity and time behave differently.",
+				"Entering a quantum tunnel that connects distant parts of the universe.",
+				"Stepping through a portal that leads to the core of a dying star.",
+				"Crossing into a territory governed by a tyrannical AI overlord.",
+				"Passing through the gateway of an ancient alien temple."
+      ],
+      "Tests": [
+        "Surviving an attack by hostile space pirates.",
+				"Decoding an ancient alien language to unlock a mystery.",
+				"Navigating a starship through a deadly asteroid field.",
+				"Disabling a rogue AI that threatens the mission.",
+				"Escaping from a prison on a distant planet.",
+				"Solving a complex puzzle to activate a stargate.",
+				"Surviving the harsh conditions of an uninhabitable world.",
+				"Negotiating peace between two warring alien factions.",
+				"Evading capture by a powerful alien overlord.",
+				"Repairing a starship before it crashes into a black hole.",
+				"Deactivating a time bomb placed by a saboteur on a space station.",
+				"Surviving a deadly encounter with a swarm of nanobots gone rogue.",
+				"Outsmarting a sentient asteroid field that reacts to the hero’s movements.",
+				"Navigating through the treacherous gravitational pull of a binary star system.",
+				"Evading detection by a hyper-advanced surveillance network.",
+				"Translating a dead language encoded in an alien artifact before it self-destructs.",
+				"Surviving a duel with an elite alien assassin sent to eliminate the hero.",
+				"Preventing the collapse of a pocket dimension that is crucial to the mission.",
+				"Deciphering a complex alien code to stop a planetary extinction event.",
+				"Restoring power to a derelict spacecraft before it drifts into a black hole."
+      ],
+      "Allies": [
+        "A rebel fighter from an oppressed alien race.",
+				"An AI companion with advanced hacking skills.",
+				"A telepathic alien who can communicate across vast distances.",
+				"A pilot who knows every corner of the galaxy.",
+				"A scientist who specializes in alien biology.",
+				"A warrior from a distant planet with unmatched combat skills.",
+				"A diplomat who can negotiate with hostile alien species.",
+				"A rogue with knowledge of the galaxy’s underworld.",
+				"An engineer who can repair any technology.",
+				"A healer who uses advanced alien medicine.",
+				"A cyborg bounty hunter who has a personal vendetta against the hero’s enemies.",
+				"A genetically enhanced diplomat capable of influencing even the most stubborn adversaries.",
+				"A sentient hologram of an ancient warrior who can provide tactical advice.",
+				"An alien scientist who specializes in interdimensional physics.",
+				"A former pirate with detailed knowledge of the galaxy’s black market.",
+				"A rogue AI who seeks redemption and offers the hero its vast computational power.",
+				"A reformed smuggler who knows secret routes through uncharted space.",
+				"A telekinetic being who can manipulate matter to protect the hero.",
+				"An empathic healer who can sense and alleviate the suffering of others.",
+				"A mysterious wanderer with knowledge of forgotten alien technologies."
+      ],
+      "Enemies": [
+        "A powerful warlord who controls a vast star empire.",
+				"A rogue AI that seeks to eradicate all organic life.",
+				"A bounty hunter determined to capture the hero.",
+				"A corrupt corporate magnate with a private army.",
+				"An alien overlord who seeks to enslave other species.",
+				"A rival starship captain competing for the same objective.",
+				"A shape-shifting alien infiltrator.",
+				"A sentient virus that infects both technology and living beings.",
+				"A renegade scientist conducting unethical experiments.",
+				"A cosmic entity that feeds on fear and chaos.",
+				"A powerful telepath who can manipulate the thoughts and actions of others.",
+				"A time-traveling warlord bent on altering history to his favor.",
+				"A ruthless corporate magnate who uses cloned soldiers as his personal army.",
+				"An alien queen whose hive mind controls an army of drones.",
+				"A renegade AI that has taken over a massive space station, turning it into a fortress.",
+				"A corrupt government official who seeks to exploit the hero’s discoveries for personal gain.",
+				"A rival explorer competing for the same interstellar resources.",
+				"A rogue geneticist creating dangerous hybrid creatures as weapons.",
+				"An interdimensional being that feeds on the life force of entire planets.",
+				"A former ally who has turned against the hero due to a personal grudge."
+      ],
+      "Approach to the Inmost Cave": [
+        "Navigating through a nebula filled with energy-draining particles.",
+				"Infiltrating an enemy fortress hidden inside an asteroid.",
+				"Entering the core of a derelict spacecraft haunted by lost souls.",
+				"Approaching a heavily guarded alien temple on a distant moon.",
+				"Descending into the heart of a gas giant to retrieve a lost artifact.",
+				"Crossing a quantum boundary that warps time and space.",
+				"Penetrating the defenses of a sentient supercomputer.",
+				"Entering the depths of a black hole to uncover a hidden truth.",
+				"Approaching a planet-sized weapon capable of destroying stars.",
+				"Sneaking into the central command of a galactic tyrant.",
+				"Deactivating a shield that protects a powerful alien relic.",
+				"Approaching a dimensional rift that leads to a parallel universe.",
+				"Navigating the labyrinthine tunnels of an alien hive.",
+				"Breaking through the defenses of a hidden rebel base.",
+				"Approaching the central core of a dying star.",
+				"Entering a forbidden zone controlled by an ancient AI.",
+				"Preparing to confront a cosmic entity that dwells in the void.",
+				"Descending into the dark underbelly of a space station.",
+				"Approaching a sacred site guarded by a fanatical cult.",
+				"Penetrating the defenses of a highly advanced alien species."
+      ],
+      "The Ordeal": [
+        "Battling a powerful alien warlord in hand-to-hand combat.",
+				"Facing the wrath of a cosmic entity that manipulates reality.",
+				"Surviving an ambush by a rogue AI’s robotic army.",
+				"Confronting a rival who has betrayed the hero.",
+				"Defending a starship from a massive fleet of enemy vessels.",
+				"Resisting the mind control of a powerful psychic alien.",
+				"Surviving a planet-wide cataclysm triggered by an ancient weapon.",
+				"Confronting the hero’s darkest fears in a virtual reality simulation.",
+				"Defeating a monstrous creature guarding a hidden relic.",
+				"Escaping from a collapsing space station.",
+				"Surviving the intense gravitational forces of a black hole.",
+				"Disabling a doomsday device before it activates.",
+				"Fighting through an army of cybernetic soldiers.",
+				"Confronting the embodiment of chaos in the form of a cosmic storm.",
+				"Escaping from a time loop that resets every few minutes.",
+				"Overcoming a deadly virus that threatens to consume the hero.",
+				"Surviving a direct confrontation with a sentient star.",
+				"Escaping the clutches of a parasitic alien lifeform.",
+				"Resisting the temptations of a powerful but corrupting artifact.",
+				"Facing the hero’s own dark side, manifested as a doppelgänger."
+      ],
+      "The Reward": [
+        "Gaining control of a powerful alien artifact.",
+				"Receiving advanced technology that can alter the course of history.",
+				"Discovering the key to immortality.",
+				"Uncovering the secret to faster-than-light travel.",
+				"Gaining access to a hidden library of ancient knowledge.",
+				"Forming an alliance with a powerful alien species.",
+				"Unlocking a genetic enhancement that boosts physical abilities.",
+				"Acquiring a starship with advanced capabilities.",
+				"Receiving a map to a hidden treasure trove in deep space.",
+				"Gaining insight into the true nature of the universe.",
+				"Obtaining a weapon capable of defending against any threat.",
+				"Learning the secret to manipulating time and space.",
+				"Gaining the loyalty of a powerful cosmic entity.",
+				"Acquiring the ability to communicate with all sentient beings.",
+				"Receiving a cure for a deadly interstellar plague.",
+				"Gaining control of a vast energy source that can power entire worlds.",
+				"Uncovering a hidden pathway to a parallel universe.",
+				"Gaining the knowledge to prevent an impending cosmic disaster.",
+				"Acquiring a powerful ally with vast resources.",
+				"Unlocking the potential to reshape reality itself."
+      ],
+      "The Road Back": [
+        "Fleeing from an enemy fleet in hot pursuit.",
+				"Escaping from a collapsing wormhole.",
+				"Navigating through a region of space ravaged by cosmic storms.",
+				"Evading a bounty hunter sent by a powerful enemy.",
+				"Crossing back through a dimensional rift to return home.",
+				"Facing the remnants of a powerful enemy’s forces.",
+				"Surviving a sabotage attempt on the hero’s starship.",
+				"Returning to a homeworld that has changed in the hero’s absence.",
+				"Evading the grasp of a cosmic entity that seeks to reclaim the hero’s reward.",
+				"Escaping from an alien world that is on the brink of destruction.",
+				"Navigating through an asteroid field while being pursued by enemies.",
+				"Confronting the hero’s doubts and fears as they prepare to return.",
+				"Overcoming the betrayal of a trusted ally.",
+				"Escaping a deadly trap set by a vengeful rival.",
+				"Returning through hostile territory controlled by enemies.",
+				"Surviving the journey through a black hole.",
+				"Confronting a powerful figure who demands the hero’s reward.",
+				"Fleeing from a planet about to be engulfed by a supernova.",
+				"Navigating a maze of bureaucratic obstacles to return home.",
+				"Facing a final challenge before reaching safety."
+      ],
+      "The Resurrection": [
+        "Surviving a deadly confrontation with the final enemy.",
+				"Overcoming a powerful virus that threatens the hero’s life.",
+				"Facing the hero’s ultimate fear in a life-or-death situation.",
+				"Confronting a cosmic entity that demands the hero’s soul.",
+				"Defeating an enemy who was presumed dead but returns for revenge.",
+				"Resisting the pull of a black hole that threatens to consume the hero.",
+				"Overcoming a powerful mind control that nearly destroys the hero’s will.",
+				"Surviving a direct hit from a doomsday weapon.",
+				"Rescuing an ally who was thought lost in the depths of space.",
+				"Escaping from the clutches of a powerful alien warlord.",
+				"Resisting the corrupting influence of a powerful artifact.",
+				"Surviving a near-fatal encounter with a cosmic storm.",
+				"Confronting a doppelgänger that represents the hero’s darkest side.",
+				"Escaping from a collapsing starship moments before destruction.",
+				"Overcoming the final remnants of a powerful enemy’s army.",
+				"Defeating a being of pure energy that seeks to consume the hero.",
+				"Resisting the lure of an alternate timeline that promises a perfect life.",
+				"Surviving the collapse of a parallel universe.",
+				"Escaping from a mind prison created by a rogue AI.",
+				"Confronting the hero’s inner demons in a final showdown."
+      ],
+      "Return with the Elixir": [
+        "Returning home with the key to a new energy source that can power entire planets.",
+				"Bringing back advanced technology that can revolutionize society.",
+				"Sharing the knowledge of how to prevent an impending cosmic disaster.",
+				"Introducing a cure for a deadly interstellar plague.",
+				"Bringing peace between warring alien species.",
+				"Sharing the secret to faster-than-light travel.",
+				"Bringing back an artifact that can heal the planet’s ecosystem.",
+				"Sharing insights into the true nature of the universe.",
+				"Bringing back the knowledge to prevent future intergalactic wars.",
+				"Introducing a new form of communication that unites all sentient beings.",
+				"Bringing back the technology to terraform uninhabitable planets.",
+				"Sharing the secret of immortality with humanity.",
+				"Bringing back a powerful weapon that can defend against any threat.",
+				"Returning with the knowledge to rebuild a collapsed civilization.",
+				"Bringing back a lost technology that can restore a dying star.",
+				"Sharing the means to stabilize a collapsing wormhole.",
+				"Bringing back the technology to harness the power of black holes.",
+				"Returning with a map to hidden resources that can save a dying world.",
+				"Bringing back the secret to creating new life forms.",
+				"Sharing the knowledge of how to unite the galaxy under a peaceful alliance."
+      ]
+    };
+
+    const majorArcana = [
+      "The Call to Adventure", "Refusal of the Call", "Meeting the Mentor", 
+      "Crossing the Threshold", "Tests", "Allies", "Enemies", "Approach to the Inmost Cave", 
+      "The Ordeal", "The Reward", "The Road Back", "The Resurrection", "Return with the Elixir"
+    ];
+
+    // Generate the stages with individual buttons
+    const journeyContainer = document.getElementById('journeyStages');
+    majorArcana.forEach(card => {
+      const stageDiv = document.createElement('div');
+      stageDiv.innerHTML = `
+        <h3>${card}</h3>
+        <p id="${card}Story"></p>
+        <button class="round-button generateButton" data-card="${card}">Shuffle</button>
+      `;
+      journeyContainer.appendChild(stageDiv);
+    });
+
+    // Function to generate a random story for a given card
+    function generateStory(card) {
+      const options = sciFiOptions[card];
+      const randomOption = options[Math.floor(Math.random() * options.length)];
+      document.getElementById(`${card}Story`).textContent = randomOption;
+    }
+
+    // Event listener for individual generate buttons
+    document.querySelectorAll('.generateButton').forEach(button => {
+      button.addEventListener('click', function() {
+        const card = this.getAttribute('data-card');
+        generateStory(card);
+      });
+    });
+
+    // Event listener for generating all stories at once
+    document.getElementById('generateAllButton').addEventListener('click', function() {
+      majorArcana.forEach(card => {
+        generateStory(card);
+      });
+    });
+  });
+</script>
+
+<!-- CSS for the Round Button -->
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 60px; /* Align text vertically */
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  #journeyStages h3 {
+    margin-top: 20px;
+    color: #333;
+  }
+
+  #journeyStages p {
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  #generateAllButton {
+    margin-top: 20px;
+    display: block;
+  }
+</style>

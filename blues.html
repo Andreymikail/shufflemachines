@@ -1,0 +1,443 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Blues</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="playersCheckbox"> Players</label><br>
+    <label><input type="checkbox" id="instrumentsCheckbox"> Instruments</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    <br><br>
+    <div style="margin-bottom: 20px;">
+      <h3>Rules</h3>
+      <p id="rulesResult" style="color: white;">-</p>
+      <button id="shuffleRulesButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Crossroads Deal: Double the value of your next card’s Influence for one round. Description: Just like Robert Johnson at the crossroads, you make a deal to gain legendary status. Your next card's Influence stat doubles for one round.",
+"Late Night Jam Session: Add +10 to your current card's Tone Quality or Soulfulness. Description: You find yourself in an incredible late-night jam session. The vibe is perfect, and your music flows with extra emotion or precision.",
+"Encore Performance: Replay your last card with a 10% boost in all its stats. Description: The crowd demands an encore! You get to play your last card again, but this time, with a little more flair and energy.",
+"Legendary Blues Festival: Force your opponent to reveal their next card before you play yours. Description: You’re performing at a legendary blues festival alongside the greatest musicians. Gain insight into your rival's set before making your move.",
+"Broken String: Reduce your opponent’s next card’s Durability by -20. Description: Disaster strikes as your opponent’s instrument string snaps mid-performance. Their Durability drops for the next round.",
+"Studio Session: Swap one card in your hand with one from your deck. Description: During a studio recording session, you decide to switch instruments for a better sound. Exchange one card from your hand with another in your deck.",
+"Blues Revival: Revive a previously discarded card and return it to your hand. Description: Just like the great blues revival of the 1960s, one of your cards makes a comeback. Bring a previously discarded card back into play.",
+"Spontaneous Solo: Add +15 to the Versatility of your current instrument or musician card. Description: A spontaneous solo in the middle of a set gives you a chance to show your range. Boost your instrument's Versatility for this round.",
+"Battle of the Bands: Both players reveal their cards, and the one with the highest Stage Presence wins the round. Description: You face off in a classic battle of the bands. The artist or instrument with the highest Stage Presence takes the crowd by storm.",
+"Tour Bus Breakdown: Opponent skips their next turn. Description: The tour bus breaks down, leaving your opponent stuck on the side of the road. They miss the next round while you continue your set.",
+"Sold-Out Show: Add +10 to all stats of your current card. Description: Your show sells out, and the energy from the crowd lifts your performance. All of your stats get a boost for this round.",
+"Rainy Night in Chicago: Reduce your opponent’s Tone Quality by -15 for one round. Description: A stormy night in Chicago makes the acoustics less than ideal for your opponent. Their Tone Quality suffers for one round.",
+"Legendary Recording: Triple your next card’s Influence for this round. Description: You just recorded a hit blues song that will stand the test of time. Your next card’s Influence triples for one round.",
+"Blues Jam with Friends: Swap your current card with one in your hand before revealing. Description: In a laid-back blues jam with friends, you switch up your instrument for a better vibe. Swap your card before revealing.",
+"Broke and Down: Halve the opponent's card’s highest stat for this round. Description: Blues is about hardship, and your opponent feels the full weight of it this round. Their highest stat is cut in half for one round.",
+"12-Bar Blues Riff: Add +15 to the Groove or Rhythm of your current card (this can apply to any instrument with a rhythm component, like bass or drums). Description: You settle into the perfect 12-bar blues groove. Boost your current card’s Groove or Rhythm stat to lock in the perfect flow.",
+"New Strings, New Sound: Add +20 to your current card's Tone Quality for one round. Description: New strings bring your instrument’s tone to life. Your current card’s Tone Quality increases by +20 for this round.",
+"Mississippi Delta Blues: Both players reveal their cards, and only the Soulfulness stat counts for this round. Highest Soulfulness wins. Description: In the heart of the Delta, it’s all about the soul of the music. For this round, both players’ cards reveal, and the winner is decided by Soulfulness alone.",
+"Blues Harp Masterclass: If your current card is a harmonica, add +25 to its Technique stat. Description: You’ve attended a harmonica masterclass with the greats. If you’re using a harmonica card, boost its Technique by +25."];
+
+  const rules = [
+    `Classic 12-Bar Blues:
+E7 - A7 - E7 - E7
+A7 - A7 - E7 - E7
+B7 - A7 - E7 - B7
+E Mixolydian (E, F#, G#, A, B, C#, D)
+A Mixolydian (A, B, C#, D, E, F#, G)
+B Mixolydian (B, C#, D#, E, F#, G#, A)`,
+`Slow Blues with Minor Tones:
+Am7 - Dm7 - Am7 - Am7
+Dm7 - Dm7 - Am7 - Am7
+E7 - Dm7 - Am7 - E7
+A minor pentatonic (A, C, D, E, G)
+D minor pentatonic (D, F, G, A, C)
+E Mixolydian (E, F#, G#, A, B, C#, D)`,
+`Jazz Blues:
+Bb7 - Eb7 - Bb7 - Bb7
+Eb7 - Eb7 - Bb7 - G7
+C7 - F7 - Bb7 - F7
+Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+Eb Mixolydian (Eb, F, G, Ab, Bb, C, Db)
+G Mixolydian (G, A, B, C, D, E, F)`,
+`Shuffle Blues:
+G7 - C7 - G7 - G7
+C7 - C7 - G7 - G7
+D7 - C7 - G7 - D7
+G Mixolydian (G, A, B, C, D, E, F)
+C Mixolydian (C, D, E, F, G, A, Bb)
+D Mixolydian (D, E, F#, G, A, B, C)`,
+`Minor Blues with a Jazzy Twist:
+Cm7 - Fm7 - Cm7 - Cm7
+Fm7 - Fm7 - Cm7 - Cm7
+Ab7 - G7 - Cm7 - G7
+C minor pentatonic (C, Eb, F, G, Bb)
+F Dorian (F, G, Ab, Bb, C, D, Eb)
+G Mixolydian (G, A, B, C, D, E, F)`,
+`Slow Delta Blues:
+D7 - D7 - G7 - D7
+G7 - G7 - D7 - D7
+A7 - G7 - D7 - A7
+D Mixolydian (D, E, F#, G, A, B, C)
+G Mixolydian (G, A, B, C, D, E, F)
+A Mixolydian (A, B, C#, D, E, F#, G)`,
+`Chicago Blues Style:
+A7 - D7 - A7 - A7
+D7 - D7 - A7 - A7
+E7 - D7 - A7 - E7
+A Mixolydian (A, B, C#, D, E, F#, G)
+D Mixolydian (D, E, F#, G, A, B, C)
+E Mixolydian (E, F#, G#, A, B, C#, D)`,
+`Funky Blues:
+G9 - C9 - G9 - G9
+C9 - C9 - G9 - G9
+D9 - C9 - G9 - D9
+G Mixolydian (G, A, B, C, D, E, F)
+C Mixolydian (C, D, E, F, G, A, Bb)
+D Mixolydian (D, E, F#, G, A, B, C)`,
+`Texas Blues Shuffle:
+E7 - A7 - E7 - E7
+A7 - A7 - E7 - E7
+B7 - A7 - E7 - B7
+E Mixolydian (E, F#, G#, A, B, C#, D)
+A Mixolydian (A, B, C#, D, E, F#, G)
+B Mixolydian (B, C#, D#, E, F#, G#, A)`,
+`Minor Slow Blues:
+Am - Dm - Am - Am
+Dm - Dm - Am - Am
+F - E7 - Am - E7
+A minor pentatonic (A, C, D, E, G)
+D Dorian (D, E, F, G, A, B, C)
+E Phrygian dominant (E, F, G#, A, B, C, D)`,
+`Jazz-Blues Fusion:
+Bb7 - Eb7 - Bb7 - Bb7
+Eb7 - Eb7 - Bb7 - G7
+Cm7 - F7 - Bb7 - F7
+Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+Eb Mixolydian (Eb, F, G, Ab, Bb, C, Db)
+G Mixolydian (G, A, B, C, D, E, F)
+C minor pentatonic (C, Eb, F, G, Bb)`,
+`Soulful Blues:
+C - F - G - C
+F - F - C - C
+G - F - C - G
+C major pentatonic (C, D, E, G, A)
+F Mixolydian (F, G, A, Bb, C, D, Eb)
+G Mixolydian (G, A, B, C, D, E, F)`,
+`Modern Blues Rock:
+G - C - G - G
+C - C - G - G
+D - C - G - D
+G Mixolydian (G, A, B, C, D, E, F) 
+C major pentatonic (C, D, E, G, A)
+D Mixolydian (D, E, F#, G, A, B, C)`,
+`Acoustic Delta Blues:
+E7 - E7 - A7 - E7
+B7 - A7 - E7 - B7
+E minor pentatonic (E, G, A, B, D)
+A Mixolydian (A, B, C#, D, E, F#, G)
+B Mixolydian (B, C#, D#, E, F#, G#, A)`,
+`Uptempo Swing Blues:
+C7 - F7 - C7 - C7
+F7 - F7 - C7 - A7
+D7 - G7 - C7 - G7
+Scales: C Mixolydian (C, D, E, F, G, A, Bb)
+F Mixolydian (F, G, A, Bb, C, D, Eb)
+G Mixolydian (G, A, B, C, D, E, F)`,
+`Soul/Blues Ballad:
+Dm7 - G7 - Cmaj7 - Cmaj7
+Dm7 - G7 - Cmaj7 - Cmaj7
+Em7 - A7 - Dm7 - G7
+C major (C, D, E, F, G, A, B)
+D Dorian (D, E, F, G, A, B, C)
+G Mixolydian (G, A, B, C, D, E, F)
+A Mixolydian (A, B, C#, D, E, F#, G)`,
+`Chicago Electric Blues:
+A7 - D7 - A7 - A7
+D7 - D7 - A7 - A7
+E7 - D7 - A7 - E7
+A Mixolydian (A, B, C#, D, E, F#, G)
+D Mixolydian (D, E, F#, G, A, B, C)
+E Mixolydian (E, F#, G#, A, B, C#, D)`,
+`Slow Jazzy Blues:
+G7 - C9 - G7 - G7
+C9 - C9 - G7 - G7
+D9 - C9 - G7 - D9
+G Mixolydian (G, A, B, C, D, E, F)
+C Mixolydian (C, D, E, F, G, A, Bb)
+D Mixolydian (D, E, F#, G, A, B, C)`,
+`Minor Blues:
+Dm7 - Gm7 - Dm7 - Dm7
+Gm7 - Gm7 - Dm7 - Dm7
+A7 - Gm7 - Dm7 - A7
+D minor pentatonic (D, F, G, A, C)
+G minor pentatonic (G, Bb, C, D, F) 
+A Phrygian dominant (A, Bb, C#, D, E, F, G)`,
+`Bluesy R&B Groove:
+E7 - A7 - E7 - E7
+A7 - A7 - E7 - E7
+B7 - A7 - E7 - B7
+E Mixolydian (E, F#, G#, A, B, C#, D)
+A Mixolydian (A, B, C#, D, E, F#, G)
+B Mixolydian (B, C#, D#, E, F#, G#, A)` 
+  ];  
+const players = [
+    {name: "Bass player: Bob Stroger", attributes: { Technique: 80, Influence: 85, Groove: 90, Versatility: 85, "Stage Presence": 80, Discography: 70, Description: "A veteran of the Chicago blues scene, Stroger has played with Otis Rush, Jimmy Rogers, and many more, always delivering a rock-solid bass foundation."}},
+{name: "Bass player: Calvin Fuzz Jones", attributes: { Technique: 80, Influence: 80, Groove: 85, Versatility: 80, "Stage Presence": 75, Discography: 60, Description: "A key player in Muddy Waters' band, Jones’ thick, supportive bass work was crucial to the Chicago blues sound."}},
+{name: "Bass player: Donald Duck Dunn", attributes: { Technique: 85, Influence: 90, Groove: 95, Versatility: 90, "Stage Presence": 80, Discography: 200, Description: "Bassist for Booker T. & the M.G.'s and the Stax house band, his grooves were essential to countless blues and soul recordings."}},
+{name: "Bass player: Jack Myers", attributes: { Technique: 80, Influence: 80, Groove: 85, Versatility: 85, "Stage Presence": 75, Discography: 50, Description: "Known for his work with Muddy Waters and Otis Spann, Myers' smooth and steady bass playing helped shape the sound of Chicago blues."}},
+{name: "Bass player: Jerry Jemmott", attributes: { Technique: 90, Influence: 90, Groove: 95, Versatility: 95, "Stage Presence": 80, Discography: 150, Description: "Known as The Groovemaster, Jemmott played with legends like B.B. King and Aretha Franklin, blending soul and blues with tight, funky bass lines."}},
+{name: "Bass player: Keith Ferguson", attributes: { Technique: 80, Influence: 80, Groove: 85, Versatility: 85, "Stage Presence": 75, Discography: 40, Description: "As a member of The Fabulous Thunderbirds, Ferguson’s bass lines laid the groundwork for Texas blues and helped bridge traditional blues with rock."}},
+{name: "Bass player: Larry Taylor", attributes: { Technique: 85, Influence: 85, Groove: 90, Versatility: 85, "Stage Presence": 80, Discography: 100, Description: "Bassist for Canned Heat and a session musician for blues legends, Taylor’s deep, rolling grooves were a staple of the blues-rock movement."}},
+{name: "Bass player: Richard Cousins", attributes: { Technique: 85, Influence: 80, Groove: 90, Versatility: 85, "Stage Presence": 85, Discography: 30, Description: "Long-time bassist for Robert Cray, Cousins brings a soulful, smooth approach to modern blues."}},
+{name: "Bass player: Tommy Shannon", attributes: { Technique: 85, Influence: 85, Groove: 90, Versatility: 80, "Stage Presence": 80, Discography: 50, Description: "Best known for his work with Stevie Ray Vaughan, Shannon’s solid and supportive playing gave Texas blues its powerful low-end punch."}},
+{name: "Bass player: Willie Dixon", attributes: { Technique: 85, Influence: 100, Groove: 90, Versatility: 95, "Stage Presence": 85, Discography: 500, Description: "A towering figure in blues, not only as a bassist but also as a prolific songwriter and producer. His bass lines helped define Chicago blues."}},
+{name: "Drummer: Casey Jones", attributes: { Technique: 85, Influence: 80, Groove: 85, Versatility: 85, "Stage Presence": 80, Discography: 50, Description: "A versatile drummer, Jones worked with artists like Albert Collins and Otis Rush, always delivering a punchy, driving rhythm."}},
+{name: "Drummer: Frank Big Foot Robinson", attributes: { Technique: 85, Influence: 80, Groove: 90, Versatility: 85, "Stage Presence": 80, Discography: 30, Description: "Played with Freddie King and was known for his dynamic, hard-hitting style, adding fire to the Texas blues sound."}},
+{name: "Drummer: Fred Below", attributes: { Technique: 90, Influence: 100, Groove: 95, Versatility: 90, "Stage Presence": 85, Discography: 200, Description: "The king of Chicago blues drumming, Below played with Muddy Waters, Little Walter, and Chuck Berry, creating the modern shuffle beat that shaped blues and rock."}},
+{name: "Drummer: Jesse Cheese Hames", attributes: { Technique: 80, Influence: 75, Groove: 85, Versatility: 80, "Stage Presence": 75, Discography: 40, Description: "Played with Albert King and other blues legends, bringing a laid-back yet deep groove to the Southern blues scene."}},
+{name: "Drummer: Mickey Roker", attributes: { Technique: 90, Influence: 80, Groove: 85, Versatility: 90, "Stage Presence": 80, Discography: 200, Description: "A drummer who played across blues and jazz, Roker worked with B.B. King and Dizzy Gillespie, bringing an intricate, jazzy flair to blues drumming."}},
+{name: "Drummer: Odie Payne", attributes: { Technique: 85, Influence: 90, Groove: 90, Versatility: 85, "Stage Presence": 80, Discography: 100, Description: "A master of the blues shuffle, Payne played with Elmore James, Jimmy Reed, and Little Walter, bringing precision and groove to every performance."}},
+{name: "Drummer: Richard Innes", attributes: { Technique: 80, Influence: 75, Groove: 85, Versatility: 85, "Stage Presence": 75, Discography: 50, Description: "Known for his understated yet driving groove, Innes played with many West Coast blues artists and was a reliable force behind countless sessions."}},
+{name: "Drummer: S.P. Leary", attributes: { Technique: 85, Influence: 80, Groove: 85, Versatility: 85, "Stage Presence": 80, Discography: 75, Description: "Having played with legends like Howlin’ Wolf and Muddy Waters, Leary was a rock-steady drummer whose swing and subtlety influenced the blues scene."}},
+{name: "Drummer: Sam Lay", attributes: { Technique: 85, Influence: 90, Groove: 90, Versatility: 85, "Stage Presence": 80, Discography: 100, Description: "Known for his powerful playing with Howlin’ Wolf and the Paul Butterfield Blues Band, Lay helped define the gritty sound of electric blues."}},
+{name: "Drummer: Willie Big Eyes Smith", attributes: { Technique: 85, Influence: 85, Groove: 90, Versatility: 80, "Stage Presence": 80, Discography: 50, Description: "A drummer and harmonica player, Smith’s drumming in Muddy Waters' band was foundational to the Chicago blues sound."}},
+{name: "Guitarist: Albert King", attributes: { Technique: 85, Influence: 90, Speed: 70, Feeling: 95, Charisma: 80, Discography: 21, Description: "Creator of a heavy, aggressive style that inspired generations of blues and rock guitarists."}},
+{name: "Guitarist: Ally Venable", attributes: {Technique: 85, Influence: 85, Speed: 80, Feeling: 95, Charisma: 90, Discography: 10, Description: "Lone Star Licks – Gains +10 to Expressive Solos and Stage Dominance when performing high-energy blues-rock, igniting allies with explosive riffs and leaving opponents speechless in the face of his intensity."}},
+{name: "Guitarist: Ana Popović", attributes: {Technique: 88, Influence: 85, Speed: 80, Feeling: 90, Charisma: 90, Discography: 10, "Description": "A modern blues force, Popović combines razor-sharp technique, vibrant stage presence and a contemporary edge, taking the blues to new frontiers."}},
+{name: "Guitarist: B.B. King", attributes: { Technique: 90, Influence: 100, Speed: 65, Feeling: 100, Charisma: 95, Discography: 43, Description: "Master of the vibrato, known for his Lucille guitar, and one of the most iconic figures in blues history."}},
+{name: "Guitarist: Bo Diddley", attributes: {Technique: 85, Influence: 100, Speed: 82, Feel: 95, Charisma: 94, Discography: 11, Description: "The Originator - Bo Diddley revolutionized blues and rock with his pulsating rhythm and famous Bo Diddley beat."}},
+{name: "Guitarist: Buddy Guy", attributes: { Technique: 90, Influence: 90, Speed: 80, Feeling: 95, Charisma: 90, Discography: 34, Description: "Explosive and unpredictable, a true force of nature in electric blues."}},
+{name: "Guitarist: Dave Hole", attributes: {Technique: 88, Influence: 85, Speed: 92, Feeling: 95, Charisma: 87, Discography: 9, Description: "Slide Fury – Gains +12 to Speed ​​and Groove when using slide guitar techniques, unleashing a whirlwind of notes that slice through defenses and electrify allies with a wild, untamed energy."}},
+{name: "Guitarist: Eric Clapton", attributes: { Technique: 95, Influence: 90, Speed: 80, Feeling: 90, Charisma: 85, Discography: 24, Description: "A legend who transcends blues but always returns to his roots."}},
+{name: "Guitarist: Freddie King", attributes: { Technique: 85, Influence: 85, Speed: 80, Feeling: 85, Charisma: 80, Discography: 12, Description: "One of the Three Kings of the Blues, famous for his aggressive solos and fingerpicking technique."}},
+{name: "Guitarist: Gary Moore", attributes: {Technique: 95, Influence: 92, Speed: 90, Feeling: 99, Charisma: 88, Discography: 10, Description: "Celtic Fury – Gains +15 to Technique and Feeling when performing emotional blues ballads or high-intensity rock solos, delivering searing bends and soaring vibratos that ignite the battlefield, stunning enemies with pure passion."}},
+{name: "Guitarist: Jimmie Vaughan", attributes: {Technique: 88, Influence: 90, Speed: 75, Feeling: 98, Charisma: 90, Discography: 10, Description: "Texas Strut – Gains +10 to Groove and Feeling when performing slow blues shuffles, creating a deep, soulful resonance that weakens enemy focus and strengthens ally confidence."}},
+{name: "Guitarist: Jimmy Thackery", attributes: {Technique: 90, Influence: 87, Speed: 85, Feeling: 96, Charisma: 89, Discography: 9, Description: "Highway Burn – Gains +10 to Versatility and Feeling when jamming extended solos, weaving between blues, rock, and country to create an unpredictable sonic landscape that keeps foes off balance and allies inspired."}},
+{name: "Guitarist: Joanne Shaw Taylor", attributes: {Technique: 85, Influence: 90, Speed: 75, Feeling: 95, Charisma: 85, Discography: 10, "Description": "A powerhouse of modern blues, blending soulful vocals with fiery guitar work, keeping the blues alive with raw energy and deep emotion."}},
+{name: "Guitarist: Joe Bonamassa", attributes: {Technique: 95, Influence: 90, Speed: 85, Feeling: 95, Charisma: 88, Discography: 15, "Special Ability": "Blues Deluxe – Gains +10 to Technical Mastery and Expressive Power when delivering extended solos, unsettling opponents with surgical precision and inspiring allies with emotional intensity."}},
+{name: "Guitarist: Joe Walsh", attributes: {Technique: 85, Influence: 95, Speed: 75, Feeling: 95, Charisma: 90, Discography: 18, Description: "Life’s Been Good – Gains +10 to Slide Guitar Precision and Groove Control when performing relaxed solos and improvisations, empowering allies with an infectious swing and leaving opponents disoriented with unexpected dynamic changes."}},
+{name: "Guitarist: Johnny Winter", attributes: {Technique: 95, Influence: 95, Speed: 98, Feeling: 92, Charisma: 90, Discography: 60, Description: "A fiery blues-rock virtuoso with lightning-fast licks and raw intensity, Johnny Winter redefined electric blues with his blistering slide guitar and soulful vocals."}},
+{name: "Guitarist: Keb' Mo'", attributes: {Technique: 85, Influence: 90, Speed: 75, Feeling: 95, Charisma: 85, Discography: 15, "Special Ability": "Modern Delta – Gains +10 to Blues Authenticity and Narrative Power when blending traditional blues with contemporary influences, creating songs that empower allies and disarm adversaries with raw emotion."}},
+{name: "Guitarist: Lonnie Brooks", attributes: {Technique: 90, Influence: 88, Speed: 80, Feeling: 97, Charisma: 92, Discography: 12, Description: "A master of Chicago blues with a Louisiana twist, Lonnie Brooks trouxe uma fusão hipnótica de swamp blues, soul e rock, com solos carregados de emoção e histórias."}},
+{name: "Guitarist: Muddy Waters", attributes: {Technique: 85, Influence: 100, Speed: 60, Feeling: 95, Charisma: 90, Discography: 22, Description: "The man who electrified the blues, shaping the sound of Chicago blues."}},
+{name: "Guitarist: Robert Johnson", attributes: {Technique: 80, Influence: 100, Speed: 70, Feeling: 100, Charisma: 85, Discography: 2, Description: "Legendary for his deal with the devil and for writing the foundation of blues."}},
+{name: "Guitarist: Steve Contostavlos", attributes: {Technique: 92, Influence: 87, Speed: 88, Feeling: 85, Charisma: 83, Discography: 50, Description: "A powerful guitarist known for his expressive solos and magnetic stage presence, he combines blues, rock and soul for unforgettable performances."}},
+{name: "Guitarist: Steve Cropper", attributes: {Technique: 90, Influence: 95, Speed: 75, Feeling: 92, Charisma: 85, Discography: 25, "Description": "The architect of soul and R&B, Cropper defined the groove with his economical, precise style, shaping the sound of Stax Records and influencing generations."}},
+{name: "Guitarist: Steve Miller", attributes: {Technique: 85, Influence: 90, Speed: 80, Feeling: 90, Charisma: 85, Discography: 20, Description: "Fly Like an Eagle – Gains +10 to Melodic Flow and Psychedelic Blues when performing extended jams, elevating allies with ethereal solos and disorienting opponents with floating grooves."}},
+{name: "Guitarist: Stevie Ray Vaughan", attributes: { Technique: 95, Influence: 90, Speed: 85, Feeling: 95, Charisma: 90, Discography: 6, Description: "A blues legend of the modern era, famous for his fiery, emotional solos."}},
+{name: "Guitarist: T-Bone Walker", attributes: { Technique: 90, Influence: 90, Speed: 75, Feeling: 85, Charisma: 85, Discography: 12, Description: "A pioneer of electric blues guitar, known for his refined and innovative style."}},
+{name: "Guitarist: Walter Trout", attributes: {Technique: 90, Influence: 85, Speed: 85, Feeling: 95, Charisma: 88, Discography: 30, "Description": "A relentless blues-rock force, blending virtuosic solos with raw soul and survival-driven intensity."}},
+{name: "Guitarist: Warren Haynes", attributes: {Technique: 90, Influence: 95, Speed: 80, Feeling: 98, Charisma: 85, Discography: 20, "Special Ability": "Soulful Slide – Gains +10 to Improvisation and Expressive Phrasing when using slide guitar, channeling intense emotional energy that empowers allies and confuses opponents with soulful notes."}},
+{name: "Artist: Alabama Mike (The Modern Blues Shouter)", attributes: {Technique: 82, Influence: 88, Soulfulness: 93, Versatility: 80, "Stage Presence": 87, Discography: 6, "Description": "Blues Tornado – Gains +10 to Vocal Grit and Emotional Impact when performing raw electric blues, shaking opponents' defenses and boosting the spirit of allies with high-voltage authenticity."}},
+{name: "Player: Albert King (The Crosscut Titan)", attributes: {Technique: 85, Influence: 95, Soulfulness: 95, Versatility: 80, "Stage Presence": 85, Discography: 21, Description: "Born Under a Bad Sign – Gains +10 to Bending Power and Expressive Solos when engaging in blues battles, unleashing deep notes that drain opponents' stamina and empower allies with pure emotion."}},
+{name: "Player: Bessie Smith", attributes: { "Vocal Power": 100, Range: 90, Soulfulness: 95, Influence: 100, "Stage Presence": 90, Discography: 160, Description: "Known as the Empress of the Blues, Bessie’s booming voice and commanding Stage Presence made her one of the most influential blues singers of all time."}},
+{name: "Player: Big Mama Thornton", attributes: { "Vocal Power": 95, Range: 85, Soulfulness: 95, Influence: 90, "Stage Presence": 90, Discography: 10, Description: "Famous for her original recording of Hound Dog, Big Mama’s booming voice and tough persona set her apart as one of the fiercest women in blues."}},
+{name: "Player: Big Walter Horton (Harmonica)", attributes: { Technique: 95, Influence: 90, Soulfulness: 90, Versatility: 85, "Stage Presence": 80, Discography: 50, Description: "A subtle and brilliant harmonica player, Horton had a fluid and sophisticated style that stood out in Chicago blues."}},
+{name: "Player: Bill Withers", attributes: {"Vocal Power": 90, Range: 85, Soulfulness: 100, Influence: 100, "Stage Presence": 88, Discography: 15, "Special Ability": "Lean On Groove – Gains +10 to Emotional Impact and Resilience when delivering heartfelt ballads, strengthening ally resolve while subtly lowering enemy aggression."}},
+{name: "Artist: Bobby Whitlock", attributes: {"Vocal Power": 90, Range: 80, Soulfulness: 95, Influence: 90, "Stage Presence": 85, Discography: 60, "Description": "Layla’s Echo – Gains +10 to Soulful Expression and Hammond Organ Power when performing southern rock or gospel-infused blues, boosting ally harmony and weakening enemy composure with raw, heartfelt delivery."}},
+{name: "Player: Bonnie Raitt", attributes: {"Vocal Power": 95, Range: 85, Soulfulness: 100, Influence: 100, "Stage Presence": 90, Discography: 80, Description: "Nick of Time – Gains +10 to Emotional Resonance and Slide Guitar Mastery when performing blues ballads, empowering allies with deep interpretations and destabilizing opponents with mesmerizing slide solos."}},
+{name: "Player: Buddy Guy", attributes: { "Vocal Power": 90, Range: 85, Soulfulness: 90, Influence: 90, "Stage Presence": 95, Discography: 30, Description: "Known as a guitar legend, Buddy Guy’s voice is equally powerful, filled with emotion and energy, making him one of the most versatile performers in blues."}},
+{name: "Player: Cab Calloway (The Hi-De-Ho Showman)", attributes: {Technique: 90, Influence: 95, Soulfulness: 90, Versatility: 90, "Stage Presence": 100, Discography: 40, Description: "Minnie the Moocher Magic – Gains +10 to Charisma and Audience Control when delivering swing-infused performances, mesmerizing allies and leaving opponents disoriented with her theatrical style and unmistakable scat singing."}},
+{name: "Player: Carey Bell (Harmonica)", attributes: { Technique: 90, Influence: 85, Soulfulness: 85, Versatility: 85, "Stage Presence": 80, Discography: 60, Description: "A powerful harmonica player who worked with Muddy Waters and Willie Dixon, known for his deep tone and emotionally charged solos."}},
+{name: "Player: Charlie Musselwhite (Harmonica)", attributes: { Technique: 90, Influence: 85, Soulfulness: 90, Versatility: 90, "Stage Presence": 85, Discography: 40, Description: "A harmonica virtuoso who helped bridge traditional blues with modern rock and blues-rock, bringing both technique and feeling to his playing."}},
+{name: "Player: Donavon Frankenreiter (The Surf Folk Nomad)", attributes: {Technique: 85, Influence: 80, Soulfulness: 90, Versatility: 95, "Stage Presence": 88, Discography: 20, Description: "Sunset Serenade – Gains +10 to Laid-Back Groove and Melodic Warmth when performing beach-infused folk and blues, calming allies and reducing the accuracy of opponents' attacks with its relaxing vibe."}},
+{name: "Player: Dr. John (The Night Tripper)", attributes: {"Vocal Power": 85, Range: 80, Soulfulness: 95, Influence: 92, "Stage Presence": 93, Discography: 40, "Description": "Fusing New Orleans funk, blues, jazz, and voodoo mystique, Dr. John conjured a sound both rooted and surreal. With gravel-toned vocals and rhythmic swagger, he became a shamanic figure in American music, casting spells from the bayou to the big stage."}},
+{name: "Player: Etta James", attributes: { "Vocal Power": 95, Range: 90, Soulfulness: 100, Influence: 90, "Stage Presence": 95, Discography: 30, Description: "With hits like “At Last,” Etta’s emotionally charged voice could move seamlessly between blues, soul, and jazz, captivating listeners for decades."}},
+{name: "Player: Fats Domino (Piano & Vocals)", attributes: {Technique: 90, Influence: 100, Soulfulness: 95, Versatility: 88, "Stage Presence": 90, Discography: 60, Description: "A rock 'n' roll and R&B pioneer, Fats Domino combined effortless piano rolls with warm, soulful vocals, crafting timeless hits that shaped modern popular music."}},
+{name: "Player: Floyd Council (The Carolina Groove Weaver)", attributes: {Technique: 88, Influence: 90, Soulfulness: 95, Versatility: 90, "Stage Presence": 85, Discography: 40, Description: "Carolina Fingerstyle – Gains +10 to Blues Precision and Groove Consistency when exploring Eastern US blues, creating fluid rhythms that strengthen allies and confuse opponents."}},
+{name: "Player: Howlin' Wolf", attributes: { "Vocal Power": 100, Range: 80, Soulfulness: 90, Influence: 95, "Stage Presence": 95, Discography: 40, Description: "A towering figure with a rough, growling voice, Howlin' Wolf brought an almost primal energy to his performances, influencing countless rock and blues musicians."}},
+{name: "Player: James Cotton (Harmonica)", attributes: { Technique: 95, Influence: 90, Soulfulness: 90, Versatility: 85, "Stage Presence": 95, Discography: 80, Description: "Known for his explosive, high-energy harmonica playing, Cotton worked with Howlin’ Wolf and Muddy Waters, leaving a huge mark on modern blues."}},
+{name: "Player: John Lee Hooker", attributes: { "Vocal Power": 85, Range: 75, Soulfulness: 95, Influence: 90, "Stage Presence": 85, Discography: 100, Description: "Known for his deep, hypnotic voice and rhythmic delivery, Hooker’s vocal style matched perfectly with his driving, boogie-based blues."}},
+{name: "Player: John Mayall (The Blues Architect)", attributes: {Technique: 88, Influence: 98, Soulfulness: 90, Versatility: 95,"Stage Presence": 80, Discography: 35, Description: "The Godfather’s Touch – Gains +10 to Band Synergy and Improvisation when mentoring musicians, unlocking hidden potential in allies while overwhelming opponents with blues mastery."}},
+{name: "Player: John Primer (Guitar & Vocals)", attributes: {Technique: 92, Influence: 90, Soulfulness: 92, Versatility: 87, "Stage Presence": 85, Discography: 40, Description: "A modern torchbearer of Chicago blues, John Primer keeps the tradition alive with his masterful slide guitar work and deep, expressive vocal delivery."}},
+{name: "Player: Johnny Johnson (Piano)", attributes: { Technique: 90, Influence: 85, Soulfulness: 90, Versatility: 85, "Stage Presence": 80, Discography: 70, Description: "Best known for his work with Chuck Berry, Johnson’s piano was the rhythmic engine of many early rock ‘n’ roll and blues classics."}},
+{name: "Player: Koko Taylor", attributes: { "Vocal Power": 95, Range: 85, Soulfulness: 90, Influence: 90, "Stage Presence": 90, Discography: 20, Description: "The Queen of the Blues, Taylor’s raw, powerful voice made her one of the most exciting live performers in the blues world."}},
+{name: "Player: Little Walter (Harmonica)", attributes: { Technique: 100, Influence: 100, Soulfulness: 95, Versatility: 90, "Stage Presence": 90, Discography: 150, Description: "The harmonica legend who revolutionized the instrument in blues, known for his amplified, electrifying sound. A central figure in Chicago blues."}},
+{name: "Player: Lonnie Brooks", attributes: {Technique: 8, Improvisation: 9, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 9, Description: "Delta Blaze – Blues Revival"}},
+{name: "Player: Muddy Waters", attributes: { "Vocal Power": 95, Range: 85, Soulfulness: 100, Influence: 100, "Stage Presence": 90, Discography: 30, Description: "The father of modern Chicago blues, Muddy’s powerful, gravelly voice defined the sound of electric blues."}},
+{name: "Player: Otis Spann (Piano)", attributes: { Technique: 95, Influence: 90, Soulfulness: 95, Versatility: 85, "Stage Presence": 80, Discography: 60, Description: "The heart of Muddy Waters' band, Spann's piano playing is widely regarded as the best in blues history, blending soul and technical skill."}},
+{name: "Player: Peabo Bryson (The Velvet Balladeer)", attributes: {Technique: 92, Influence: 90, Soulfulness: 98, Versatility: 88, "Stage Presence": 90, Discography: "20+", "Special Ability": "Timeless Serenade – Gain +10 Vocal Expression and Emotional Harmony when performing romantic ballads, enchanting allies and disarming enemies with pure sonic elegance."}},
+{name: "Player: Pinetop Perkins (Piano)", attributes: { Technique: 90, Influence: 95, Soulfulness: 95, Versatility: 90, "Stage Presence": 85, Discography: 70, Description: "One of the most beloved blues pianists, Perkins played with Muddy Waters and had a long solo career. His boogie-woogie style became legendary."}},
+{name: "Player: Pink Anderson (The Piedmont Poet)", attributes: {Technique: 90, Influence: 95, Soulfulness: 100, Versatility: 85, "Stage Presence": 90, Discography: 50, Description: "Storyteller’s Stride – Gains +10 to Lyrical Flow and Acoustic Dexterity when performing Piedmont blues, enchanting allies with captivating narratives and disarming opponents with an irresistible swing."}},
+{name: "Player: Robert Johnson", attributes: { "Vocal Power": 85, Range: 80, Soulfulness: 100, Influence: 100, "Stage Presence": 85, Discography: 2, Description: "Though his recording output was small, Johnson’s haunting vocals and mysterious persona have made him one of the most iconic figures in blues history."}},
+{name: "Player: Ruth Brown", attributes: { "Vocal Power": 90, Range: 85, Soulfulness: 90, Influence: 85, "Stage Presence": 90, Discography: 40, Description: "A pioneering R&B and blues vocalist, Ruth Brown’s smooth yet powerful voice paved the way for future blues and soul singers."}},
+{name: "Player: Sax Gordon (Saxophone)", attributes: { Technique: 85, Influence: 80, Soulfulness: 85, Versatility: 90, "Stage Presence": 90, Discography: 50, Description: "A modern master of the blues saxophone, bringing a fiery, energetic approach to the stage, often playing alongside blues guitar legends."}},
+{name: "Player: Seasick Steve", attributes: {"Vocal Power": 85, Range: 75, Soulfulness: 95, Influence: 85, "Stage Presence": 95, Discography: 11, "Description": "A modern bluesman with an old soul, Seasick Steve channels raw, gritty energy through his homemade guitars and foot-stomping rhythms, carrying the spirit of the Delta into the 21st century."}},
+{name: "Player: Shemekia Copeland", attributes: {"Vocal Power": 92, Range: 88, Soulfulness: 93, Influence: 87, "Stage Presence": 91, Discography: 35, Description: "Combining the raw power of traditional blues with a contemporary sensibility, Shemekia Copeland carries the torch of the blues legacy with authenticity, passion and a voice that commands any stage."}},
+{name: "Player: Sonny Boy Williamson II (Harmonica)", attributes: { Technique: 95, Influence: 100, Soulfulness: 90, Versatility: 85, "Stage Presence": 85, Discography: 100, Description: "A blues icon with a raw, deep sound, influencing generations of blues and rock harmonica players."}},
+  ];
+
+const instruments = [
+{name: "Instrument: Gibson ES-335 (Guitar)", attributes: { "Tone Quality": 95, Durability: 85, Versatility: 90, "Famous Users": "B.B. King, Chuck Berry, Freddie King", Influence: 100, Era: 1958, Description: "A semi-hollow body electric guitar known for its warm, resonant tone, famously played by B.B. King (with his iconic Lucille) and Freddie King."}},
+{name: "Instrument: Fender Stratocaster (Guitar)", attributes: { "Tone Quality": 90, Durability: 90, Versatility: 100, "Famous Users": "Stevie Ray Vaughan, Buddy Guy, Jimi Hendrix", Influence: 95, Era: 1954, Description: "A versatile workhorse guitar that helped define modern blues-rock, with crisp highs and a distinctive “quack” in the middle pickup positions."}},
+{name: "Instrument: Martin D-28 (Acoustic Guitar)", attributes: { "Tone Quality": 100, Durability: 95, Versatility: 85, "Famous Users": "Robert Johnson, Eric Clapton, John Lee Hooker", Influence: 90, Era: 1931, Description: "This iconic dreadnought guitar is known for its booming sound and full bass, perfect for Delta blues legends like Robert Johnson."}},
+{name: "Instrument: Hohner Marine Band (Harmonica)", attributes: { "Tone Quality": 90, Durability: 85, Versatility: 95, "Famous Users": "Little Walter, Sonny Boy Williamson II, Bob Dylan", Influence: 100, Era: 1896, Description: "One of the most famous harmonicas ever, with a rich, expressive sound that has been the go-to choice for legendary blues harmonica players for over a century."}},
+{name: "Instrument: Gretsch G6120 (Guitar)", attributes: { "Tone Quality": 90, Durability: 85, Versatility: 85, "Famous Users": "Chet Atkins, Eddie Cochran", Influence: 85, Era: 1954, Description: "A hollow body guitar known for its twang and punchy sound, often used in rockabilly and crossover blues styles."}},
+{name: "Instrument: Ampeg B-15 (Bass Amplifier)", attributes: { "Tone Quality": 90, Durability: 80, Versatility: 85, "Famous Users": "James Jamerson, Duck Dunn", Influence: 90, Era: 1960, Description: "A classic tube bass amp with deep, smooth tone. This amp was a staple in the 1960s blues and soul recordings."}},
+{name: "Instrument: Fender Bassman (Amplifier)", attributes: { "Tone Quality": 95, Durability: 90, Versatility: 100, "Famous Users": "Buddy Guy, Jimi Hendrix, Eric Clapton", Influence: 95, Era: 1952, Description: "Originally designed for bass, this amp became a favorite among blues guitarists for its ability to produce warm tube tones with rich overdrive."}},
+{name: "Instrument: Ludwig Black Beauty Snare Drum", attributes: { "Tone Quality": 95, Durability: 95, Versatility: 85, "Famous Users": "Fred Below, Buddy Rich, Steve Jordan", Influence: 90, Era: 1920, Description: "Known for its crisp, powerful crack, this snare has been favored by blues and jazz drummers for decades, thanks to its timeless sound and robust construction."}},
+{name: "Instrument: Shure SM58 (Microphone)", attributes: { "Tone Quality": 90, Durability: 100, Versatility: 95, "Famous Users": "Muddy Waters, B.B. King, Etta James", Influence: 100, Era: 1966, Description: "One of the most durable and versatile vocal microphones in history, perfect for capturing the gritty, soulful vocals that define blues."}},
+{name: "Instrument: Epiphone Casino (Guitar)", attributes: { "Tone Quality": 85, Durability: 85, Versatility: 80, "Famous Users": "John Lennon, Keith Richards", Influence: 80, Era: 1961, Description: "A fully hollow electric guitar with a bright, articulate tone, it’s been used by blues and rock artists alike for its warm, resonant sound."}},
+{name: "Instrument: Selmer Mark VI (Saxophone)", attributes: { "Tone Quality": 95, Durability: 90, Versatility: 85, "Famous Users": "King Curtis, Junior Walker", Influence: 90, Era: 1954, Description: "The Selmer Mark VI is regarded as one of the greatest saxophones ever made, with a rich, expressive tone used by blues and R&B legends like King Curtis."}},
+{name: "Instrument: Gibson SG (Guitar)", attributes: { "Tone Quality": 90, Durability: 85, Versatility: 85, "Famous Users": "Derek Trucks, Sister Rosetta Tharpe", Influence: 90, Era: 1961, Description: "Known for its sharp, biting tone and lightweight design, the Gibson SG has been a favorite for blues rockers, especially Derek Trucks with his slide guitar mastery."}},
+{name: "Instrument: Ampeg SVT (Bass Amplifier)", attributes: { "Tone Quality": 95, Durability: 90, Versatility: 90, "Famous Users": "James Jamerson, Jaco Pastorius", Influence: 95, Era: 1969, Description: "The Ampeg SVT is a monster in the world of bass amplification, known for its earth-shaking power and clear, deep tone that defined the low end for both blues and funk."}},
+{name: "Instrument: Supro 1690T Coronado (Amplifier)", attributes: { "Tone Quality": 90, Durability: 85, Versatility: 85, "Famous Users": "Jimmy Page, Albert King", Influence: 85, Era: 1959, Description: "A vintage tube amplifier that delivers creamy overdrive and punchy, mid-heavy tone, perfect for blues rock and gritty electric blues."}},
+{name: "Instrument: Fender Vibroverb (Amplifier)", attributes: { "Tone Quality": 90, Durability: 85, Versatility: 90, "Famous Users": "Stevie Ray Vaughan, Roy Buchanan", Influence: 90, Era: 1963, Description: "Known for its sweet reverb and tremolo, the Vibroverb was a favorite of Stevie Ray Vaughan, helping define his legendary Texas blues sound."}},
+{name: "Instrument: Gibson L-1 (Acoustic Guitar)", attributes: { "Tone Quality": 90, Durability: 80, Versatility: 85, "Famous Users": "Robert Johnson", Influence: 95, Era: 1926, Description: "The guitar played by Robert Johnson in his iconic photos, the Gibson L-1 is a small-bodied acoustic with a warm, vintage tone, perfect for Delta blues."}},
+{name: "Instrument: Zildjian A Custom Cymbals (Cymbals)", attributes: { "Tone Quality": 90, Durability: 95, Versatility: 85, "Famous Users": "Fred Below, Steve Jordan", Influence: 85, Era: 1992, Description: "These bright, cutting cymbals are a favorite among drummers for their crisp attack and versatility, often used by blues and rock drummers alike."}},
+{name: "Instrument: Wurlitzer 200 (Electric Piano)", attributes: { "Tone Quality": 90, Durability: 80, Versatility: 85, "Famous Users": "Ray Charles, Donny Hathaway", Influence: 90, Era: 1968, Description: "The Wurlitzer 200 electric piano produces a warm, mellow tone with a subtle bite, perfect for soulful blues and R&B. It’s been a staple in blues since its introduction."}},
+{name: "Instrument: Kay K-162 (Bass Guitar)", attributes: { "Tone Quality": 85, Durability: 80, Versatility: 80, "Famous Users": "Howlin’ Wolf's bassist, Willie Dixon", Influence: 85, Era: 1952, Description: "A vintage bass that has a deep, resonant sound, used by legendary bassists in early blues bands. It was known for its upright bass-like tone."}},
+{name: "Instrument: Dunlop Cry Baby (Wah Pedal)", attributes: { "Tone Quality": 85, Durability: 90, Versatility: 90, "Famous Users": "Buddy Guy, Jimi Hendrix", Influence: 95, Era: 1966, Description: "The most iconic wah pedal, known for its expressive, vocal-like tone. It’s a staple for blues guitarists looking to add emotion and texture to their solos."}},
+{name: "Instrument: Fender Precision Bass (Bass Guitar)", attributes: { "Tone Quality": 90, Durability: 95, Versatility: 85, "Famous Users": "Donald “Duck” Dunn, Willie Dixon, James Jamerson", Influence: 100, Era: 1951, Description: "The Fender Precision Bass was the first mass-produced electric bass guitar, revolutionizing blues, rock, and soul music with its punchy, defined low-end. It became the backbone of countless blues rhythm sections."}},
+{name: "Instrument: D'Angelico Excel EXL-1 (Archtop Guitar)", attributes: { "Tone Quality": 85, Durability: 80, Versatility: 80, "Famous Users": "Big Joe Williams, Charlie Christian", Influence: 85, Era: 1932, Description: "Known for its elegant craftsmanship and rich, warm sound, the D'Angelico Excel EXL-1 is a classic archtop guitar perfect for jazz-blues crossover styles."}},
+{name: "Instrument: Slingerland Radio King (Drum Kit)", attributes: { "Tone Quality": 90, Durability: 90, Versatility: 85, "Famous Users": "Gene Krupa, Howlin' Wolf’s drummers", Influence: 90, Era: 1936, Description: "A legendary drum kit favored by big band drummers and blues players alike. The Radio King is known for its resonant, woody tone, which adds richness to blues performances."}},
+{name: "Instrument: Vox AC30 (Amplifier)", attributes: { "Tone Quality": 95, Durability: 85, Versatility: 90, "Famous Users": "Rory Gallagher, Peter Green", Influence: 90, Era: 1958, Description: "The Vox AC30 is famous for its chiming tone, brilliant clean sounds, and rich overdrive, making it ideal for blues-rock players seeking dynamic tonal range."}},
+{name: "Instrument: Hammond B3 (Organ)", attributes: { "Tone Quality": 100, Durability: 85, Versatility: 90, "Famous Users": "Booker T. Jones, Dr. John, Jimmy Smith", Influence: 100, Era: 1954, Description: "The Hammond B3 organ is the soul of many blues and jazz tunes, known for its deep, resonant tone and iconic sound, often paired with a Leslie speaker for its swirling effect."}},
+{name: "Instrument: Hohner Blues Harp (Harmonica)", attributes: { "Tone Quality": 85, Durability: 85, Versatility: 90, "Famous Users": "Paul Butterfield, James Cotton, Junior Wells", Influence: 95, Era: 1965, Description: "A durable, easy-to-bend harmonica that has become a standard for blues players worldwide, the Hohner Blues Harp is known for its rich, expressive tone."}},
+{name: "Instrument: National Resophonic Guitar (Resonator)", attributes: { "Tone Quality": 90, Durability: 85, Versatility: 80, "Famous Users": "Son House, Bukka White, Tampa Red", Influence: 95, Era: 1927, Description: "The National Resophonic Guitar is a metal-bodied acoustic guitar known for its loud, bright tone, making it ideal for Delta blues slide guitar playing."}},
+{name: "Instrument: Fender Telecaster (Guitar)", attributes: { "Tone Quality": 90, Durability: 95, Versatility: 90, "Famous Users": "Muddy Waters, Albert Collins, Roy Buchanan", Influence: 95, Era: 1950, Description: "The Fender Telecaster is known for its twangy, sharp tone and rock-solid construction, making it a go-to guitar for blues legends like Muddy Waters and Albert Collins."}},
+{name: "Instrument: Marshall JTM45 (Amplifier)", attributes: { "Tone Quality": 90, Durability: 85, Versatility: 90, "Famous Users": "Eric Clapton, Peter Green, Jimi Hendrix", Influence: 95, Era: 1962, Description: "One of the first amplifiers to produce classic British overdrive, the Marshall JTM45 became a favorite among blues-rock players for its smooth, yet powerful, overdriven sound."}},
+{name: "Instrument: DW Collector’s Series (Drum Kit)", attributes: { "Tone Quality": 95, Durability: 95, Versatility: 90, "Famous Users": "Steve Jordan, Levon Helm", Influence: 85, Era: 1972, Description: "The DW Collector’s Series is known for its premium craftsmanship, offering superior tone and durability. This kit is a favorite for modern blues drummers who demand top-quality performance."}}
+ ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playersCheckbox').checked) selectedCards.push(...players);
+    if (document.getElementById('instrumentsCheckbox').checked) selectedCards.push(...instruments);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  document.getElementById('shuffleRulesButton').addEventListener('click', function() {
+    shuffleDeck(rules, 'rulesResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

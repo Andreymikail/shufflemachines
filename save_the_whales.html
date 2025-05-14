@@ -1,0 +1,363 @@
+ <div style="text-align: center;">
+  <h2 style="color: white;">Save the Whales</h2>
+
+  <!-- Legend -->
+  <div style="margin-bottom: 20px;">
+    <h3 style="color: white;">Legend</h3>
+    <div style="color: white;">Ships (S): <span style="background-color: red; width: 20px; height: 20px; display: inline-block;"></span></div>
+    <div style="color: white;">Whales (W): <span style="background-color: black; width: 20px; height: 20px; display: inline-block;"></span> (Game Over)</div>
+  </div>
+
+  <!-- Control Buttons -->
+  <div style="margin-top: 20px;">
+    <button id="newGameButton" class="round-button">Start</button>
+    <button id="showAllButton" class="round-button">Show</button>
+  </div>
+
+  <!-- Grid with Axis Labels -->
+  <div style="margin-top: 20px; display: flex; justify-content: center;">
+    <!-- Row labels -->
+    <div style="display: flex; flex-direction: column; margin-right: 5px;">
+      <div style="height: 36px;"></div> <!-- Empty corner for alignment -->
+      <div style="height: 36px; text-align: center; color: white;">A</div>
+      <div style="height: 36px; text-align: center; color: white;">B</div>
+      <div style="height: 36px; text-align: center; color: white;">C</div>
+      <div style="height: 36px; text-align: center; color: white;">D</div>
+      <div style="height: 36px; text-align: center; color: white;">E</div>
+    </div>
+
+    <div>
+      <!-- Column labels -->
+      <div style="display: grid; grid-template-columns: repeat(5, 30px); gap: 5px; text-align: center;">
+        <div style="color: white;">1</div>
+        <div style="color: white;">2</div>
+        <div style="color: white;">3</div>
+        <div style="color: white;">4</div>
+        <div style="color: white;">5</div>
+      </div>
+
+      <!-- Grid cells -->
+      <div id="gridContainer" style="display: grid; grid-template-columns: repeat(5, 30px); gap: 5px; margin-top: 5px;">
+        <!-- Rows with interactive cells -->
+        ${[...'ABCDE'].map(row => `
+          ${[...Array(5)].map((_, colIndex) => `<div id="${row}${colIndex + 1}" class="grid-cell"></div>`).join('')}
+        `).join('')}
+      </div>
+    </div>
+  </div>
+
+  <!-- Guess Input -->
+  <div style="margin-top: 20px; color: white;">
+    <label for="guessInput">Enter Coordinates (e.g., A1, B3):</label>
+    <input type="text" id="guessInput" maxlength="3">
+    <button id="guessButton" class="round-button">Fire!</button>
+  </div>
+
+  <!-- Display Results -->
+  <p id="resultMessage"></p>
+  <p style="color: white;">Total Shots: <span id="shotCount">0</span></p>
+</div>
+
+<script>
+  const gridElements = {
+    '.': { color: '#fff' },
+    'S': { color: 'red' },   // Ship
+    'W': { color: 'black' }  // Whale (game-over)
+  };
+
+ const grids = [
+    [
+['W', '.', '.', '.', '.'],
+['.', '.', '.', 'S', 'S'],
+['.', 'S', 'S', '.', '.'],
+['.', '.', '.', '.', '.'],
+['.', '.', 'W', '.', '.']
+    ],
+    [
+['.', '.', 'W', '.', '.'],
+['.', '.', 'S', 'S', '.'],
+['W', '.', '.', '.', '.'],
+['.', 'S', 'S', '.', '.'],
+['.', '.', '.', '.', '.']
+    ],
+    [
+['.', 'S', 'S', '.', '.'],
+['.', '.', '.', '.', 'W'],
+['.', '.', 'W', '.', '.'],
+['S', 'S', '.', '.', '.'],
+['.', '.', '.', '.', '.']
+    ],
+    [
+['.', '.', 'W', '.', '.'],
+['S', 'S', '.', '.', '.'],
+['.', '.', '.', '.', 'W'],
+['.', '.', '.', 'S', 'S'],
+['.', '.', '.', '.', '.']
+    ],
+    [
+['.', '.', '.', '.', 'W'],
+['.', 'S', 'S', '.', '.'],
+['.', '.', '.', '.', '.'],
+['W', '.', '.', 'S', 'S'],
+['.', '.', '.', '.', '.']
+    ],
+    [
+['.', '.', 'S', 'S', '.'],
+['.', 'W', '.', '.', '.'],
+['.', '.', '.', '.', '.'],
+['.', '.', '.', 'S', 'S'],
+['W', '.', '.', '.', '.']
+    ],
+    [
+['W', '.', '.', '.', '.'],
+['.', '.', '.', '.', 'W'],
+['.', 'S', 'S', '.', '.'],
+['.', '.', '.', 'S', 'S'],
+['.', '.', '.', '.', '.']
+    ],
+    [
+['.', '.', '.', 'W', '.'],
+['S', 'S', '.', '.', '.'],
+['.', '.', '.', '.', 'W'],
+['.', '.', 'S', 'S', '.'],
+['.', '.', '.', '.', '.']
+    ],
+    [
+['.', 'S', 'S', '.', '.'],
+['.', '.', '.', 'W', '.'],
+['.', '.', '.', '.', '.'],
+['.', 'W', '.', 'S', 'S'],
+['.', '.', '.', '.', '.']
+    ],
+    [
+['.', '.', '.', 'S', 'S'],
+['.', '.', '.', '.', '.'],
+['W', '.', '.', '.', '.'],
+['.', '.', '.', 'W', '.'],
+['S', 'S', '.', '.', '.']
+    ],
+    [
+['.', 'W', '.', '.', '.'],
+['S', 'S', '.', '.', '.'],
+['.', '.', '.', '.', '.'],
+['.', '.', 'W', '.', '.'],
+['.', '.', 'S', 'S', '.']
+    ],
+    [
+['S', 'S', '.', '.', '.'],
+['.', '.', '.', '.', 'W'],
+['.', '.', '.', '.', '.'],
+['.', 'S', 'S', '.', '.'],
+['.', 'W', '.', '.', '.']
+    ],
+    [
+['.', '.', '.', 'W', '.'],
+['.', 'S', 'S', '.', '.'],
+['.', '.', '.', '.', '.'],
+['S', 'S', '.', '.', '.'],
+['.', '.', 'W', '.', '.']
+    ],
+    [
+['.', '.', '.', '.', 'W'],
+['.', 'S', 'S', '.', '.'],
+['W', '.', '.', '.', '.'],
+['.', '.', '.', 'S', 'S'],
+['.', '.', '.', '.', '.']
+    ],
+    [
+['.', 'S', 'S', '.', '.'],
+['W', '.', '.', '.', '.'],
+['.', '.', '.', '.', '.'],
+['.', '.', 'S', 'S', '.'],
+['.', '.', '.', 'W', '.']
+    ],
+    [
+['.', '.', 'W', '.', '.'],
+['S', 'S', '.', '.', '.'],
+['.', '.', '.', 'S', 'S'],
+['.', '.', '.', '.', '.'],
+['W', '.', '.', '.', '.']
+    ],
+    [
+['.', 'W', '.', '.', '.'],
+['.', '.', '.', '.', 'W'],
+['S', 'S', '.', '.', '.'],
+['.', '.', 'S', 'S', '.'],
+['.', '.', '.', '.', '.']
+    ],
+    [
+['S', 'S', '.', '.', '.'],
+['.', '.', 'W', '.', '.'],
+['.', '.', '.', '.', '.'],
+['.', '.', '.', 'W', '.'],
+['.', 'S', 'S', '.', '.']
+    ],
+    [
+['.', '.', '.', '.', 'W'],
+['.', '.', 'S', 'S', '.'],
+['W', '.', '.', '.', '.'],
+['.', 'S', 'S', '.', '.'],
+['.', '.', '.', '.', '.']
+    ],
+    [
+['.', '.', 'S', 'S', '.'],
+['W', '.', '.', '.', '.'],
+['.', '.', '.', '.', '.'],
+['.', '.', 'W', '.', '.'],
+['S', 'S', '.', '.', '.']
+    ],
+    [
+['.', '.', 'S', 'S', '.'],
+['.', '.', '.', '.', '.'],
+['.', 'W', '.', '.', '.'],
+['.', '.', '.', '.', 'W'],
+['S', 'S', '.', '.', '.']
+    ]
+  ];
+
+  let currentGrid = [];
+  let shotCount = 0;
+  let gameOver = false;
+  let shipsSunkCount = 0;
+
+  // Generate the grid
+  function generateGrid(grid) {
+    const gridContainer = document.getElementById('gridContainer');
+    gridContainer.innerHTML = ''; // Clear previous grid
+    grid.forEach((row, rowIndex) => {
+      row.forEach((cell, colIndex) => {
+        const cellDiv = document.createElement('div');
+        cellDiv.className = 'grid-cell';
+        cellDiv.id = `${String.fromCharCode(65 + rowIndex)}${colIndex + 1}`;
+        cellDiv.style.backgroundColor = '#fff'; // Default white
+        gridContainer.appendChild(cellDiv);
+      });
+    });
+    currentGrid = grid;
+  }
+
+  // Start a new game
+  function newGame() {
+    shotCount = 0;
+    gameOver = false;
+    document.getElementById('shotCount').textContent = shotCount;
+    document.getElementById('resultMessage').textContent = '';
+    const randomGrid = grids[Math.floor(Math.random() * grids.length)];
+    generateGrid(randomGrid);
+  }
+
+  // Show all elements
+  function showAll() {
+    currentGrid.forEach((row, rowIndex) => {
+      row.forEach((cell, colIndex) => {
+        const cellDiv = document.getElementById(`${String.fromCharCode(65 + rowIndex)}${colIndex + 1}`);
+        cellDiv.style.backgroundColor = gridElements[cell].color;
+      });
+    });
+  }
+
+
+
+document.getElementById('guessButton').addEventListener('click', function () {
+    if (gameOver) return;
+    const guess = document.getElementById('guessInput').value.toUpperCase().trim();
+    const resultMessage = document.getElementById('resultMessage');
+
+    if (!/^[A-E](5|[1-4])$/.test(guess)) {
+      resultMessage.textContent = 'Invalid input! Enter coordinates like A1, B3, etc.';
+      return;
+    }
+
+    const row = guess.charCodeAt(0) - 65; // Convert A, B, C, D, E to 0, 1, 2, 3, 4
+    const col = parseInt(guess.slice(1), 10) - 1;
+
+    const cellValue = currentGrid[row][col];
+    const cellDiv = document.getElementById(guess);
+
+    if (cellValue === 'W') {
+      cellDiv.style.backgroundColor = gridElements[cellValue].color;
+      resultMessage.textContent = 'Game Over! You hit a whale!';
+      gameOver = true;
+    } else if (cellValue === 'S') {
+      cellDiv.style.backgroundColor = gridElements[cellValue].color;
+      shotCount++;
+      shipsSunkCount++;
+      document.getElementById('shotCount').textContent = shotCount;
+
+      // Marca o navio como afundado
+      currentGrid[row][col] = '.'; // Marca essa célula como já acertada para evitar múltiplos acertos no mesmo navio
+
+      // Verifica se o navio foi afundado (ou seja, se não há mais partes 'S' no grid)
+      let remainingShips = currentGrid.flat().filter(cell => cell === 'S').length;
+      if (remainingShips === 0) {
+        shipsSunkCount++;
+      }
+
+      // Verifica se todos os navios foram afundados
+      if (shipsSunkCount === 2) {
+        resultMessage.textContent = 'Victory! The whales were saved!';
+        gameOver = true;
+      } else {
+        resultMessage.textContent = `Hit at ${guess}`;
+      }
+    } else {
+      cellDiv.style.backgroundColor = '#ccc'; // Empty space
+      resultMessage.textContent = `Miss at ${guess}`;
+    }
+
+    document.getElementById('guessInput').value = ''; // Clear input
+});
+
+
+  // Add event listeners for "New Game" and "Show All" buttons
+  document.getElementById('newGameButton').addEventListener('click', newGame);
+  document.getElementById('showAllButton').addEventListener('click', showAll);
+
+  // Initialize the first game
+  newGame();
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .grid-cell {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #000;
+    background-color: #fff;
+    text-align: center;
+    line-height: 30px;
+    cursor: pointer;
+  }
+
+  .grid-cell:hover {
+    background-color: #f0f0f0;
+  }
+
+  #gridContainer {
+    margin-top: 5px;
+  }
+
+  #resultMessage {
+    font-weight: bold;
+    color: white;
+    
+  }
+</style>

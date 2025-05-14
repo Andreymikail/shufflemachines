@@ -1,0 +1,243 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Skateboard</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="playmCheckbox"> Skateboarder M</label><br>
+    <label><input type="checkbox" id="playfCheckbox"> Skateboarder F</label><br>
+    <label><input type="checkbox" id="courtCheckbox"> Challenge</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Perfect Line! - Choose two cards from your hand and play them both at the same time! Your opponent must win both to win the round.",
+"Sketchy Landing! - Force your opponent to reduce all attributes of the card played this round by 5 points.",
+"Bail! - Your opponent automatically loses the round!",
+"Crowd Goes Wild! - Choose an attribute and increase it by 10 points for this round.",
+"Broken Board! - Your opponent cannot use their next card and loses the round.",
+"Replay! - Replay the last round, but this time you choose the attribute.",
+"Switch Stance! - Invert the values ​​of two attributes of your card before the round starts.",
+"Pro Power! - Choose any card already played and use the same attribute to compare again this round.",
+"Street Spot Bonus! - If you are using a street obstacle card (e.g. Handrail, Ledge, Stair Set), add +7 to all attributes.",
+"Vert Bonus! - If you are using a street obstacle card (e.g. Handrail, Ledge, Stair Set), add +7 to all attributes.",
+" If you are using a vert or park obstacle card (e.g. Halfpipe, Bowl, Quarter Pipe), add +7 to all attributes.",
+"Game of S.K.A.T.E. - Choose an opponent and challenge them to a best of three rounds, worth two extra points to the winner.",];
+  
+const playm = [
+    {name: "Alex Sorgente 🇮🇹🇺🇸", attributes: {Skill: 94, Style: 96, Creativity: 90, Legacy: 85, "Trick Difficulty": 95, "X-Games Medals": 3}},
+{name: "Andrew Reynolds 🇺🇸", attributes: {Skill: 94, Style: 97, Creativity: 90, Legacy: 95, "Trick Difficulty": 92, "X-Games Medals": 3}},
+{name: "Aori Nishimura 🇯🇵", attributes: {Skill: 96, Style: 94, Creativity: 90, Legacy: 88, "Trick Difficulty": 96, "X-Games Medals": 6}},
+{name: "Ben Raybourn 🇺🇸", attributes: {Skill: 90, Style: 92, Creativity: 95, Legacy: 80, "Trick Difficulty": 92, "X-Games Medals": 1}},
+{name: "Bob Burnquist 🇧🇷", attributes: {Skill: 98, Style: 90, Creativity: 100, Legacy: 95, "Trick Difficulty": 99, "X-Games Medals": 14}},
+{name: "Bucky Lasek 🇺🇸", attributes: {Skill: 96, Style: 92, Creativity: 94, Legacy: 90, "Trick Difficulty": 97, "X-Games Medals": 10}},
+{name: "Chris Cole 🇺🇸", attributes: {Skill: 95, Style: 88, Creativity: 85, Legacy: 80, "Trick Difficulty": 93, "X-Games Medals": 5}},
+{name: "Chris Joslin 🇺🇸", attributes: {Skill: 97, Style: 90, Creativity: 85, Legacy: 80, "Trick Difficulty": 98, "X-Games Medals": 2}},
+{name: "Cory Juneau 🇺🇸", attributes: {Skill: 92, Style: 97, Creativity: 90, Legacy: 85, "Trick Difficulty": 90, "X-Games Medals": 2}},
+{name: "Daewon Song 🇰🇷", attributes: {Skill: 97, Style: 95, Creativity: 100, Legacy: 85, "Trick Difficulty": 98, "X-Games Medals": 2}},
+{name: "Danny Way 🇺🇸", attributes: {Skill: 99, Style: 85, Creativity: 90, Legacy: 98, "Trick Difficulty": 97, "X-Games Medals": 9}},
+{name: "Eric Koston 🇹🇭🇺🇸", attributes: {Skill: 94, Style: 92, Creativity: 95, Legacy: 90, "Trick Difficulty": 96, "X-Games Medals": 7}},
+{name: "Evan Smith 🇺🇸", attributes: {Skill: 92, Style: 98, Creativity: 100, Legacy: 85, "Trick Difficulty": 92, "X-Games Medals": 1}},
+{name: "Grant Taylor 🇺🇸", attributes: {Skill: 95, Style: 100, Creativity: 90, Legacy: 88, "Trick Difficulty": 92, "X-Games Medals": 2}},
+{name: "Ishod Wair 🇺🇸", attributes: {Skill: 95, Style: 99, Creativity: 95, Legacy: 90, "Trick Difficulty": 93, "X-Games Medals": 3}},
+{name: "Jaime Reyes 🇺🇸", attributes: {Skill: 89, Style: 95, Creativity: 90, Legacy: 92, "Trick Difficulty": 88, "X-Games Medals": 1}},
+{name: "Jamie Thomas 🇺🇸", attributes: {Skill: 91, Style: 88, Creativity: 90, Legacy: 96, "Trick Difficulty": 95, "X-Games Medals": 2}},
+{name: "Louie Lopez 🇺🇸", attributes: {Skill: 94, Style: 98, Creativity: 92, Legacy: 85, "Trick Difficulty": 93, "X-Games Medals": 2}},
+{name: "Luan Oliveira 🇧🇷", attributes: {Skill: 95, Style: 97, Creativity: 88, Legacy: 80, "Trick Difficulty": 92, "X-Games Medals": 2}},
+{name: "Lucas Puig 🇫🇷", attributes: {Skill: 92, Style: 100, Creativity: 93, Legacy: 85, "Trick Difficulty": 90, "X-Games Medals": 1}},
+{name: "Mark Gonzales 🇺🇸", attributes: {Skill: 85, Style: 10, Creativity: 100, Legacy: 98, "Trick Difficulty": 85, "X-Games Medals": 1}},
+{name: "Nyjah Huston 🇺🇸", attributes: {Skill: 98, Style: 90, Creativity: 85, Legacy: 90, "Trick Difficulty": 95, "X-Games Medals": 13}},
+{name: "Paul Rodriguez (P-Rod) 🇺🇸", attributes: {Skill: 93, Style: 95, Creativity: 90, Legacy: 85, "Trick Difficulty": 92, "X-Games Medals": 8}},
+{name: "Pedro Barros 🇧🇷", attributes: {Skill: 98, Style: 95, Creativity: 92, Legacy: 90, "Trick Difficulty": 97, "X-Games Medals": 9}},
+{name: "Rodney Mullen 🇺🇸", attributes: {Skill: 100, Style: 80, Creativity: 100, Legacy: 95, "Trick Difficulty": 100, "X-Games Medals": 3}},
+{name: "Ryan Sheckler 🇺🇸", attributes: {Skill: 96, Style: 90, Creativity: 88, Legacy: 85, "Trick Difficulty": 95, "X-Games Medals": 7}},
+{name: "Shane O’Neill 🇦🇺", attributes: {Skill: 96, Style: 94, Creativity: 95, Legacy: 85, "Trick Difficulty": 99, "X-Games Medals": 3}},
+{name: "Sky Brown 🇬🇧🇯🇵", attributes: {Skill: 97, Style: 98, Creativity: 100, Legacy: 90, "Trick Difficulty": 95, "X-Games Medals": 4}},
+{name: "Steve Caballero 🇺🇸", attributes: {Skill: 92, Style: 85, Creativity: 95, Legacy: 100, "Trick Difficulty": 90, "X-Games Medals": 5}},
+{name: "Tom Penny 🇬🇧", attributes: {Skill: 90, Style: 100, Creativity: 90, Legacy: 85, "Trick Difficulty": 88, "X-Games Medals": 1}},
+{name: "Tony Alva 🇺🇸", attributes: {Skill: 85, Style: 95, Creativity: 90, Legacy: 100, "Trick Difficulty": 80, "X-Games Medals": 0}},
+{name: "Tony Hawk 🇺🇸", attributes: {Skill: 100, Style: 85, Creativity: 90, Legacy: 100, "Trick Difficulty": 95, "X-Games Medals": 10}},
+{name: "Torey Pudwill 🇺🇸", attributes: {Skill: 92, Style: 95, Creativity: 97, Legacy: 82, "Trick Difficulty": 94, "X-Games Medals": 4}},
+{name: "Willy Santos 🇵🇭🇺🇸", attributes: {Skill: 88, Style: 90, Creativity: 92, Legacy: 80, "Trick Difficulty": 88, "X-Games Medals": 1}},
+{name: "Yuto Horigome 🇯🇵", attributes: {Skill: 99, Style: 97, Creativity: 94, Legacy: 90, "Trick Difficulty": 100, "X-Games Medals": 4}},
+  ];
+
+  const playf = [
+{name: "Alana Smith 🇺🇸", attributes: {Skill: 93, Style: 94, Creativity: 97, Legacy: 90, "Trick Difficulty": 95, "X-Games Medals": 2}},
+{name: "Alexis Sablone 🇺🇸", attributes: {Skill: 97, Style: 98, Creativity: 95, Legacy: 95, "Trick Difficulty": 96, "X-Games Medals": 4}},
+{name: "Amelia Brodka 🇵🇱", attributes: {Skill: 91, Style: 94, Creativity: 92, Legacy: 87, "Trick Difficulty": 91, "X-Games Medals": 1}},
+{name: "Brooke Baldwin 🇺🇸", attributes: {Skill: 89, Style: 91, Creativity: 90, Legacy: 85, "Trick Difficulty": 88, "X-Games Medals": 1}},
+{name: "Elissa Steamer 🇺🇸", attributes: {Skill: 94, Style: 95, Creativity: 90, Legacy: 100, "Trick Difficulty": 92, "X-Games Medals": 3}},
+{name: "Fabiola da Silva 🇧🇷", attributes: {Skill: 96, Style: 93, Creativity: 92, Legacy: 100, "Trick Difficulty": 97, "X-Games Medals": 7}},
+{name: "Hayley Wilson 🇦🇺", attributes: {Skill: 91, Style: 93, Creativity: 90, Legacy: 85, "Trick Difficulty": 92, "X-Games Medals": 1}},
+{name: "Isadora Pacheco 🇧🇷", attributes: {Skill: 93, Style: 95, Creativity: 92, Legacy: 87, "Trick Difficulty": 94, "X-Games Medals": 2}},
+{name: "Jordyn Barratt 🇺🇸", attributes: {Skill: 94, Style: 96, Creativity: 92, Legacy: 89, "Trick Difficulty": 94, "X-Games Medals": 3}},
+{name: "Keet Oldenbeuving 🇳🇱", attributes: {Skill: 89, Style: 92, Creativity: 90, Legacy: 85, "Trick Difficulty": 91, "X-Games Medals": 1}},
+{name: "Kisa Nakamura 🇯🇵", attributes: {Skill: 94, Style: 95, Creativity: 92, Legacy: 90, "Trick Difficulty": 94, "X-Games Medals": 3}},
+{name: "Leticia Bufoni 🇧🇷", attributes: {Skill: 96, Style: 95, Creativity: 90, Legacy: 98, "Trick Difficulty": 92, "X-Games Medals": 12}},
+{name: "Lizzie Armanto 🇺🇸🇫🇮", attributes: {Skill: 95, Style: 97, Creativity: 95, Legacy: 92, "Trick Difficulty": 96, "X-Games Medals": 5}},
+{name: "Mandy Zieren 🇦🇺", attributes: {Skill: 90, Style: 92, Creativity: 89, Legacy: 88, "Trick Difficulty": 91, "X-Games Medals": 2}},
+{name: "Margielyn Didal 🇵🇭", attributes: {Skill: 92, Style: 97, Creativity: 95, Legacy: 85, "Trick Difficulty": 92, "X-Games Medals": 2}},
+{name: "Mariah Duran 🇺🇸", attributes: {Skill: 95, Style: 96, Creativity: 90, Legacy: 89, "Trick Difficulty": 95, "X-Games Medals": 3}},
+{name: "Mimi Knoop 🇺🇸", attributes: {Skill: 90, Style: 95, Creativity: 94, Legacy: 90, "Trick Difficulty": 89, "X-Games Medals": 5}},
+{name: "Nora Vasconcellos 🇺🇸", attributes: {Skill: 93, Style: 100, Creativity: 97, Legacy: 90, "Trick Difficulty": 94, "X-Games Medals": 2}},
+{name: "Pamela Rosa 🇧🇷", attributes: {Skill: 97, Style: 95, Creativity: 92, Legacy: 90, "Trick Difficulty": 96, "X-Games Medals": 5}},
+{name: "Poppy Starr Olsen 🇦🇺", attributes: {Skill: 92, Style: 95, Creativity: 93, Legacy: 88, "Trick Difficulty": 92, "X-Games Medals": 2}},
+{name: "Rayssa Leal 🇧🇷", attributes: {Skill: 98, Style: 100, Creativity: 92, Legacy: 90, "Trick Difficulty": 95, "X-Games Medals": 3}},
+{name: "Renata Paschini 🇧🇷", attributes: {Skill: 90, Style: 94, Creativity: 91, Legacy: 87, "Trick Difficulty": 90, "X-Games Medals": 1}},
+{name: "Roos Zwetsloot 🇳🇱", attributes: {Skill: 92, Style: 94, Creativity: 91, Legacy: 85, "Trick Difficulty": 93, "X-Games Medals": 2}},
+{name: "Vanessa Torres 🇺🇸", attributes: {Skill: 91, Style: 96, Creativity: 92, Legacy: 90, "Trick Difficulty": 93, "X-Games Medals": 2}},
+{name: "Yndiara Asp 🇧🇷", attributes: {Skill: 94, Style: 96, Creativity: 93, Legacy: 88, "Trick Difficulty": 95, "X-Games Medals": 3}},
+  ];
+
+const court = [
+    {name: "Handrail", attributes: {Difficulty: 98, "Fun Factor": 85, "Creativity Potential": 92, "Risk Level": 99, "Pro Popularity": 95}},
+{name: "Ledge", attributes: {Difficulty: 90, "Fun Factor": 95, "Creativity Potential": 100, "Risk Level": 85, "Pro Popularity": 97}},
+{name: "Stair Set", attributes: {Difficulty: 95, "Fun Factor": 90, "Creativity Potential": 88, "Risk Level": 98, "Pro Popularity": 93}},
+{name: "Manual Pad", attributes: {Difficulty: 92, "Fun Factor": 90, "Creativity Potential": 98, "Risk Level": 70, "Pro Popularity": 90}},
+{name: "Flatbar", attributes: {Difficulty: 88, "Fun Factor": 96, "Creativity Potential": 95, "Risk Level": 80, "Pro Popularity": 94}},
+{name: "Hubba Ledge", attributes: {Difficulty: 97, "Fun Factor": 90, "Creativity Potential": 94, "Risk Level": 95, "Pro Popularity": 92}},
+{name: "Quarter Pipe", attributes: {Difficulty: 85, "Fun Factor": 100, "Creativity Potential": 97, "Risk Level": 87, "Pro Popularity": 98}},
+{name: "Mini Ramp", attributes: {Difficulty: 80, "Fun Factor": 100, "Creativity Potential": 95, "Risk Level": 75, "Pro Popularity": 96}},
+{name: "Halfpipe", attributes: {Difficulty: 98, "Fun Factor": 99, "Creativity Potential": 95, "Risk Level": 98, "Pro Popularity": 97}},
+{name: "Bowl", attributes: {Difficulty: 92, "Fun Factor": 100, "Creativity Potential": 97, "Risk Level": 90, "Pro Popularity": 96}},
+{name: "Mega Ramp", attributes: {Difficulty: 100, "Fun Factor": 100, "Creativity Potential": 92, "Risk Level": 100, "Pro Popularity": 95}},
+{name: "Snake Run", attributes: {Difficulty: 88, "Fun Factor": 100, "Creativity Potential": 98, "Risk Level": 85, "Pro Popularity": 90}},
+
+  ];
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playmCheckbox').checked) selectedCards.push(...playm);
+    if (document.getElementById('playfCheckbox').checked) selectedCards.push(...playf);
+    if (document.getElementById('courtCheckbox').checked) selectedCards.push(...court);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

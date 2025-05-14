@@ -1,0 +1,58 @@
+<!-- HTML Structure -->
+<div>
+  <label for="numDice">Number of Dice:</label>
+  <input type="number" id="numDice" value="1" min="1" max="10">
+</div>
+<br>
+<div>
+  <label for="faces">Number of Faces:</label>
+  <input type="number" id="faces" value="6" min="2" max="100">
+</div>
+<br>
+<button id="rollDiceButton" class="round-button">Shuffle</button>
+
+<p id="diceResult"></p>
+
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('rollDiceButton').addEventListener('click', function() {
+      const numDice = parseInt(document.getElementById('numDice').value);
+      const faces = parseInt(document.getElementById('faces').value);
+      let results = [];
+      let sum = 0;
+
+      // Roll each die and store the result
+      for (let i = 0; i < numDice; i++) {
+        const result = Math.floor(Math.random() * faces) + 1;
+        results.push(result);
+        sum += result;
+      }
+
+      // Display the results and the sum
+      document.getElementById('diceResult').textContent = 
+        `Results: ${results.join(', ')} (Sum: ${sum})`;
+    });
+  });
+</script>
+
+<!-- CSS for the Round Button -->
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 60px; /* Align text vertically */
+    transition: background-color 0.3s;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+</style>

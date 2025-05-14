@@ -1,0 +1,150 @@
+<!-- HTML Structure -->
+<div>
+  <label for="itemsPerPage">Letters per Page:</label>
+  <input type="number" id="itemsPerPage" value="10" min="1" max="100">
+</div>
+<br>
+<button id="shuffleButton" class="round-button">Shuffle</button>
+
+<div id="paginationControls"></div>
+<div id="lettersResult"></div>
+
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let currentPage = 1;
+    let shuffledLetters = [];
+
+    const scrabbleLetters = [
+      { letter: 'A', value: 1, count: 9 },
+      { letter: 'B', value: 3, count: 2 },
+      { letter: 'C', value: 3, count: 2 },
+      { letter: 'D', value: 2, count: 4 },
+      { letter: 'E', value: 1, count: 12 },
+      { letter: 'F', value: 4, count: 2 },
+      { letter: 'G', value: 2, count: 3 },
+      { letter: 'H', value: 4, count: 2 },
+      { letter: 'I', value: 1, count: 9 },
+      { letter: 'J', value: 8, count: 1 },
+      { letter: 'K', value: 5, count: 1 },
+      { letter: 'L', value: 1, count: 4 },
+      { letter: 'M', value: 3, count: 2 },
+      { letter: 'N', value: 1, count: 6 },
+      { letter: 'O', value: 1, count: 8 },
+      { letter: 'P', value: 3, count: 2 },
+      { letter: 'Q', value: 10, count: 1 },
+      { letter: 'R', value: 1, count: 6 },
+      { letter: 'S', value: 1, count: 4 },
+      { letter: 'T', value: 1, count: 6 },
+      { letter: 'U', value: 1, count: 4 },
+      { letter: 'V', value: 4, count: 2 },
+      { letter: 'W', value: 4, count: 2 },
+      { letter: 'X', value: 8, count: 1 },
+      { letter: 'Y', value: 4, count: 2 },
+      { letter: 'Z', value: 10, count: 1 }
+    ];
+
+    // Function to create a full set of letters based on their counts
+    function createLetterSet() {
+      let letterSet = [];
+      scrabbleLetters.forEach(item => {
+        for (let i = 0; i < item.count; i++) {
+          letterSet.push(`${item.letter} (Value: ${item.value})`);
+        }
+      });
+      return letterSet;
+    }
+
+    // Shuffle function
+    function shuffleLetters(letters) {
+      for (let i = letters.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [letters[i], letters[j]] = [letters[j], letters[i]];
+      }
+      return letters;
+    }
+
+    // Function to display a specific page of letters
+    function displayPage(letters, page, itemsPerPage) {
+      const start = (page - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const paginatedLetters = letters.slice(start, end);
+
+      const resultHTML = paginatedLetters.map(letter => `<p>${letter}</p>`).join('');
+      document.getElementById('lettersResult').innerHTML = resultHTML;
+
+      updatePaginationControls(letters.length, itemsPerPage);
+    }
+
+    // Function to update pagination controls
+    function updatePaginationControls(totalItems, itemsPerPage) {
+      const totalPages = Math.ceil(totalItems / itemsPerPage);
+      let controlsHTML = '';
+
+      for (let i = 1; i <= totalPages; i++) {
+        controlsHTML += `<button class="page-button" data-page="${i}">${i}</button>`;
+      }
+
+      document.getElementById('paginationControls').innerHTML = controlsHTML;
+
+      // Add event listeners to the page buttons
+      document.querySelectorAll('.page-button').forEach(button => {
+        button.addEventListener('click', function() {
+          currentPage = parseInt(this.getAttribute('data-page'));
+          displayPage(shuffledLetters, currentPage, parseInt(document.getElementById('itemsPerPage').value));
+        });
+      });
+    }
+
+    // Event listener for shuffle button
+    document.getElementById('shuffleButton').addEventListener('click', function() {
+      shuffledLetters = shuffleLetters(createLetterSet());
+      currentPage = 1; // Reset to the first page
+      displayPage(shuffledLetters, currentPage, parseInt(document.getElementById('itemsPerPage').value));
+    });
+
+    // Event listener for items per page change
+    document.getElementById('itemsPerPage').addEventListener('change', function() {
+      displayPage(shuffledLetters, currentPage, parseInt(this.value));
+    });
+  });
+</script>
+
+<!-- CSS for the Round Button and Pagination Controls -->
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.5; /* Align text vertically */
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  #lettersResult p {
+    font-size: 18px;
+    margin: 5px 0;
+  }
+
+  .page-button {
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    background-color: #f4f4f4;
+  }
+
+  .page-button:hover {
+    background-color: #ddd;
+  }
+</style>

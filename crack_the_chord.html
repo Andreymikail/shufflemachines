@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mastermind with Musical Notes (Triads)</title>
+  <style>
+  	
+  .round-button {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+  	
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+    }
+
+    #gameContainer {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    #controls {
+      margin-bottom: 20px;
+    }
+
+    #guessContainer, .guess-row {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .note {
+      width: 60px;
+      height: 40px;
+      margin: 0 5px;
+      border: 1px solid #000;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fff;
+      user-select: none;
+    }
+
+    .note.correct {
+      border: 2px solid green;
+      cursor: default;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    #feedback {
+      font-size: 1.2em;
+      margin-top: 20px;
+      color: white;
+    }
+
+    #history {
+      margin-top: 20px;
+      color: white;
+    }
+
+    .feedback-symbol {
+      width: 20px;
+      height: 20px;
+      margin: 0 2px;
+      display: inline-block;
+      font-size: 1.2em;
+      line-height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Crack the Chord</h1>
+  <div id="gameContainer">
+    <div id="controls">
+    	<button id="resetGame" class="round-button">Start</button>
+      <button id="showChord" class="round-button">Root</button>
+    </div>
+    <div id="guessContainer">
+      <!-- Area for the player's current guess -->
+    </div>
+    <button id="submitGuess" class="round-button">Guess</button>
+    <p id="feedback"></p>
+    <div id="history">
+      <!-- History of guesses -->
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+      const codeLength = 3; // Fixed code length of 3
+      let secretCode = [];
+      let currentGuess = [];
+      let attempts = 0;
+      const maxAttempts = 12;
+      let correctPositions = []; // Array to keep track of correct positions
+      let rootNote = ''; // Variable to store the root note
+      let chordType = ''; // Variable to store the chord type
+
+      // Chord types with intervals for triads (3 notes)
+      const triadChords = {
+        'Major Triad': [0, 4, 7],
+        'Minor Triad': [0, 3, 7],
+        'Augmented Triad': [0, 4, 8],
+        'Diminished Triad': [0, 3, 6]
+      };
+
+      // Generate the secret chord code with notes in sequence
+      function generateSecretCode() {
+        secretCode = [];
+        correctPositions = [];
+
+        // Randomly select a root note
+        const rootIndex = Math.floor(Math.random() * notes.length);
+        rootNote = notes[rootIndex];
+
+        // Randomly select a chord type
+        const chordNames = Object.keys(triadChords);
+        chordType = chordNames[Math.floor(Math.random() * chordNames.length)];
+        const intervals = triadChords[chordType];
+
+        // Build the chord notes in sequence
+        secretCode = intervals.map(interval => {
+          const noteIndex = (rootIndex + interval) % notes.length;
+          return notes[noteIndex];
+        });
+
+        console.log('Secret Code (Root Note: ' + rootNote + ', Chord Type: ' + chordType + '):', secretCode); // For debugging
+      }
+
+      // Create the note slots for the current guess
+      function createGuessSlots() {
+        const guessContainer = document.getElementById('guessContainer');
+        guessContainer.innerHTML = '';
+        currentGuess = [];
+
+        for (let i = 0; i < codeLength; i++) {
+          const noteDiv = document.createElement('div');
+          noteDiv.className = 'note';
+          noteDiv.dataset.index = i;
+
+          if (correctPositions[i]) {
+            // If position is correct, show the correct note and disable the slot
+            noteDiv.textContent = secretCode[i];
+            noteDiv.classList.add('correct');
+            currentGuess.push(secretCode[i]);
+          } else {
+            noteDiv.addEventListener('click', selectNote);
+            currentGuess.push(null);
+          }
+          guessContainer.appendChild(noteDiv);
+        }
+      }
+
+      // Select a note for the slot
+      function selectNote(event) {
+        const index = event.target.dataset.index;
+        let noteIndex = notes.indexOf(currentGuess[index]);
+        noteIndex = (noteIndex + 1) % notes.length;
+        currentGuess[index] = notes[noteIndex];
+        event.target.textContent = notes[noteIndex];
+      }
+
+      // Check the player's guess
+      function checkGuess() {
+        if (currentGuess.includes(null)) {
+          alert('Please select a note for each slot.');
+          return;
+        }
+
+        let exactMatches = 0;
+        let noteMatches = 0;
+        let secretCodeCopy = secretCode.slice();
+        let guessCopy = currentGuess.slice();
+
+        // Reset correct positions for this guess
+        correctPositions = [];
+
+        // Check for exact matches
+        for (let i = 0; i < codeLength; i++) {
+          if (guessCopy[i] === secretCodeCopy[i]) {
+            exactMatches++;
+            secretCodeCopy[i] = null;
+            guessCopy[i] = null;
+            correctPositions[i] = true; // Mark position as correct
+          } else {
+            correctPositions[i] = correctPositions[i] || false;
+          }
+        }
+
+        // Check for note matches
+        for (let i = 0; i < codeLength; i++) {
+          if (guessCopy[i]) {
+            const index = secretCodeCopy.indexOf(guessCopy[i]);
+            if (index !== -1) {
+              noteMatches++;
+              secretCodeCopy[index] = null;
+            }
+          }
+        }
+
+        attempts++;
+        updateHistory(currentGuess, exactMatches, noteMatches);
+
+        if (exactMatches === codeLength) {
+          document.getElementById('feedback').textContent = 'Congratulations! You guessed the secret chord!';
+          // Disable submit button to prevent further guesses
+          document.getElementById('submitGuess').disabled = true;
+        } else if (attempts >= maxAttempts) {
+          document.getElementById('feedback').textContent = 'You have exceeded the maximum number of attempts. The secret chord was: ' + secretCode.join(', ');
+          // Disable submit button to prevent further guesses
+          document.getElementById('submitGuess').disabled = true;
+        } else {
+          createGuessSlots();
+        }
+      }
+
+      // Update the history of guesses
+      function updateHistory(guess, exactMatches, noteMatches) {
+        const history = document.getElementById('history');
+        const guessRow = document.createElement('div');
+        guessRow.className = 'guess-row';
+
+        guess.forEach((note, index) => {
+          const noteDiv = document.createElement('div');
+          noteDiv.className = 'note';
+          noteDiv.textContent = note ? note : '';
+
+          if (correctPositions[index]) {
+            noteDiv.classList.add('correct');
+          }
+
+          guessRow.appendChild(noteDiv);
+        });
+
+        const feedbackDiv = document.createElement('div');
+        feedbackDiv.className = 'feedback-symbols';
+
+        for (let i = 0; i < exactMatches; i++) {
+          const feedbackSymbol = document.createElement('div');
+          feedbackSymbol.className = 'feedback-symbol';
+          feedbackSymbol.textContent = '●'; // Solid circle for exact match
+          feedbackDiv.appendChild(feedbackSymbol);
+        }
+
+        for (let i = 0; i < noteMatches; i++) {
+          const feedbackSymbol = document.createElement('div');
+          feedbackSymbol.className = 'feedback-symbol';
+          feedbackSymbol.textContent = '○'; // Hollow circle for note match
+          feedbackDiv.appendChild(feedbackSymbol);
+        }
+
+        guessRow.appendChild(feedbackDiv);
+        history.appendChild(guessRow);
+      }
+
+      function resetGame() {
+        attempts = 0;
+        correctPositions = [];
+        generateSecretCode();
+        createGuessSlots();
+        document.getElementById('history').innerHTML = '';
+        document.getElementById('feedback').textContent = '';
+        document.getElementById('submitGuess').disabled = false;
+      }
+
+      // Show the root note of the chord
+      function showChord() {
+        document.getElementById('feedback').textContent = 'The root note of the chord is: ' + rootNote;
+      }
+
+      // Start the game
+      function startGame() {
+        resetGame();
+      }
+
+      document.getElementById('submitGuess').addEventListener('click', checkGuess);
+      document.getElementById('resetGame').addEventListener('click', resetGame);
+      document.getElementById('showChord').addEventListener('click', showChord);
+      document.getElementById('startGame').addEventListener('click', startGame);
+
+      // Initialize the game
+      generateSecretCode();
+      createGuessSlots();
+    });
+  </script>
+</body>
+</html>

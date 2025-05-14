@@ -1,0 +1,241 @@
+<!-- HTML Structure -->
+<button id="generateAllButton" class="round-button">All</button>
+<br><br>
+<div id="journeyStages"></div>
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sciFiOptions = {
+      "Personality": [
+        "Brave",
+				"Cunning",
+				"Cheerful",
+				"Gloomy",
+				"Honest",
+				"Deceptive",
+				"Kind",
+				"Ruthless",
+				"Ambitious",
+				"Lazy",
+				"Charismatic",
+				"Shy",
+				"Hot-tempered",
+				"Patient",
+				"Curious",
+				"Pessimistic",
+				"Optimistic",
+				"Reckless",
+				"Cautious",
+				"Stoic"
+      ],
+      "Profession/Role": [
+        "Warrior",
+				"Mage",
+				"Healer",
+				"Merchant",
+				"Thief",
+				"Noble",
+				"Scholar",
+				"Hunter",
+				"Bard",
+				"Blacksmith",
+				"Sailor",
+				"Spy",
+				"Priest/Priestess",
+				"Assassin",
+				"Farmer",
+				"Alchemist",
+				"Diplomat",
+				"Explorer",
+				"Soldier",
+				"Inventor"
+      ],
+      "Appearance": [
+        "Tall",
+				"Short",
+				"Muscular",
+				"Slim",
+				"Scarred",
+				"Tattooed",
+				"Bald",
+				"Long Hair",
+				"Bearded",
+				"Clean-shaven",
+				"Piercings",
+				"Elegant",
+				"Ragged",
+				"Hunched",
+				"Graceful",
+				"Freckled",
+				"Pale",
+				"Dark-skinned",
+				"Bright eyes",
+				"Missing limb"
+      ],
+      "Backstory": [
+        "Orphaned",
+				"Exiled",
+				"Raised by animals",
+				"Former noble",
+				"Lost love",
+				"Betrayed by a friend",
+				"Survived a disaster",
+				"War veteran",
+				"Amnesia",
+				"Former slave",
+				"Born under a prophecy",
+				"Lost kingdom",
+				"Sole survivor of a village",
+				"Kidnapped as a child",
+				"Abandoned at birth",
+				"Runaway",
+				"Cursed",
+				"Child of a god",
+				"Seeking redemption",
+				"Hunted by an unknown enemy"
+      ],
+      "Motivation": [
+        "Revenge",
+				"Justice",
+				"Love",
+				"Wealth",
+				"Knowledge",
+				"Power",
+				"Freedom",
+				"Redemption",
+				"Fame",
+				"Peace",
+				"Protecting someone",
+				"Restoring honor",
+				"Discovering truth",
+				"Surviving",
+				"Escaping the past",
+				"Loyalty to a cause",
+				"Curiosity",
+				"Wrath",
+				"Greed",
+				"Fear"
+      ],
+      "Special Ability": [
+        "Invisibility",
+				"Telepathy",
+				"Super strength",
+				"Elemental control",
+				"Healing",
+				"Shapeshifting",
+				"Master swordsman",
+				"Expert archer",
+				"Illusion magic",
+				"Animal communication",
+				"Night vision",
+				"Immortality (cursed)",
+				"Flight",
+				"Time manipulation",
+				"Enhanced senses",
+				"Poison immunity",
+				"Shadow manipulation",
+				"Mind control",
+				"Pyromancy",
+				"Speed"
+      ],
+      "Goal/Objective": [
+        "Find a lost artifact",
+				"Protect a secret",
+				"Avenge a loved one",
+				"Overthrow a tyrant",
+				"Discover the truth",
+				"Reclaim a throne",
+				"Save a kingdom",
+				"Unite warring factions",
+				"Escape captivity",
+				"End a curse",
+				"Find a cure for a disease",
+				"Prevent a prophecy",
+				"Restore honor to the family name",
+				"Gather allies for a war",
+				"Solve a mystery",
+				"Recover stolen treasure",
+				"Protect an innocent",
+				"Survive a deadly game",
+				"Stop a great evil",
+				"Build a new life"
+      ]
+    };
+
+    const majorArcana = [
+      "Personality", "Profession/Role", "Appearance", "Backstory", "Motivation", "Special Ability", "Goal/Objective"
+    ];
+
+    // Generate the stages with individual buttons
+    const journeyContainer = document.getElementById('journeyStages');
+    majorArcana.forEach(card => {
+      const stageDiv = document.createElement('div');
+      stageDiv.innerHTML = `
+        <h3>${card}</h3>
+        <p id="${card}Story"></p>
+        <button class="round-button generateButton" data-card="${card}">Shuffle</button>
+      `;
+      journeyContainer.appendChild(stageDiv);
+    });
+
+    // Function to generate a random story for a given card
+    function generateStory(card) {
+      const options = sciFiOptions[card];
+      const randomOption = options[Math.floor(Math.random() * options.length)];
+      document.getElementById(`${card}Story`).textContent = randomOption;
+    }
+
+    // Event listener for individual generate buttons
+    document.querySelectorAll('.generateButton').forEach(button => {
+      button.addEventListener('click', function() {
+        const card = this.getAttribute('data-card');
+        generateStory(card);
+      });
+    });
+
+    // Event listener for generating all stories at once
+    document.getElementById('generateAllButton').addEventListener('click', function() {
+      majorArcana.forEach(card => {
+        generateStory(card);
+      });
+    });
+  });
+</script>
+
+<!-- CSS for the Round Button -->
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 60px; /* Align text vertically */
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  #journeyStages h3 {
+    margin-top: 20px;
+    color: #333;
+  }
+
+  #journeyStages p {
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  #generateAllButton {
+    margin-top: 20px;
+    display: block;
+  }
+</style>

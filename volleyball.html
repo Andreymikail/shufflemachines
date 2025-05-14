@@ -1,0 +1,238 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Volleyball</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="playmCheckbox"> Player M</label><br>
+    <label><input type="checkbox" id="playfCheckbox"> Player F</label><br>
+    <label><input type="checkbox" id="coachCheckbox"> Coach</label><br>
+    <label><input type="checkbox" id="courtCheckbox"> Court</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Ace! - Choose an attribute and play again, without the opponent being able to use action cards to defend themselves.",
+"Monster Block! - If you are losing the round, cancel the result and force a new contest with another attribute chosen by the defending player.",
+"Quick Attack - Swap the attribute chosen by the opponent for one of your choice before comparing the values.",
+"Coach’s Challenge - Force a repeat of the last play, with the same attributes. If you win, take 2 cards instead of 1.",
+"Golden Set - Allows the player who uses it to choose any card from the discarded deck and put it in their hand.",
+"Injury Time-out - Opponent loses their turn in the next round.",
+"Home Crowd Advantage - Increase any of your attributes by +5 points for this round.",
+"Super Defense - If you lose the round, you keep your card instead of giving it to the winner.",
+"Unexpected Substitution - Swap your card for a new one from the deck before the contest.",
+"Power Spike - If you win the round, take 2 cards from your opponent instead of 1."];
+  
+const playm = [
+    {name: "Aleksandar Atanasijević (Serbia)", attributes: {Height: "202 cm", "Spike Reach": "362 cm", "Block Reach": "340 cm", "Attack Power": 96, Defense: 82, Speed: 85, Experience: 93}},
+{name: "Antoine Brizard (France)", attributes: {Height: "196 cm", "Spike Reach": "340 cm", "Block Reach": "320 cm", "Attack Power": 85, Defense: 90, Speed: 95, Experience: 92}},
+{name: "Bartosz Kurek (Poland)", attributes: {Height: "205 cm", "Spike Reach": "365 cm", "Block Reach": "340 cm", "Attack Power": 97, Defense: 85, Speed: 88, Experience: 96}},
+{name: "Bruno Lima (Argentina)", attributes: {Height: "198 cm", "Spike Reach": "350 cm", "Block Reach": "330 cm", "Attack Power": 94, Defense: 85, Speed: 89, Experience: 90}},
+{name: "Bruno Rezende (Brazil)", attributes: {Height: "190 cm", "Spike Reach": "330 cm", "Block Reach": "310 cm", "Attack Power": 80, Defense: 95, Speed: 92, Experience: 99}},
+{name: "Christian Fromm (Germany)", attributes: {Height: "204 cm", "Spike Reach": "360 cm", "Block Reach": "340 cm", "Attack Power": 94, Defense: 85, Speed: 87, Experience: 90}},
+{name: "Dmitry Muserskiy (Russia)", attributes: {Height: "218 cm", "Spike Reach": "375 cm", "Block Reach": "350 cm", "Attack Power": 97, Defense: 85, Speed: 80, Experience: 94}},
+{name: "Earvin Ngapeth (France)", attributes: {Height: "194 cm", "Spike Reach": "355 cm", "Block Reach": "325 cm", "Attack Power": 95, Defense: 88, Speed: 95, Experience: 90}},
+{name: "Facundo Conte (Argentina)", attributes: {Height: "198 cm", "Spike Reach": "350 cm", "Block Reach": "330 cm", "Attack Power": 93, Defense: 88, Speed: 92, Experience: 94}},
+{name: "Giba (Brazil)", attributes: {Height: "190 cm", "Spike Reach": "345 cm", "Block Reach": "320 cm", "Attack Power": 90, Defense: 95, Speed: 92, Experience: 98}},
+{name: "Ivan Zaytsev (Italy)", attributes: {Height: "202 cm", "Spike Reach": "360 cm", "Block Reach": "340 cm", "Attack Power": 96, Defense: 84, Speed: 90, Experience: 94}},
+{name: "Jenia Grebennikov (France)", attributes: {Height: "188 cm", "Spike Reach": "315 cm", "Block Reach": "300 cm", "Attack Power": 75, Defense: 100, Speed: 97, Experience: 95}},
+{name: "Karch Kiraly (USA)", attributes: {Height: "188 cm", "Spike Reach": "345 cm", "Block Reach": "320 cm", "Attack Power": 95, Defense: 90, Speed: 85, Experience: 100}},
+{name: "Lucarelli (Brazil)", attributes: {Height: "196 cm", "Spike Reach": "355 cm", "Block Reach": "330 cm", "Attack Power": 95, Defense: 93, Speed: 96, Experience: 94}},
+{name: "Matey Kaziyski (Bulgaria)", attributes: {Height: "202 cm", "Spike Reach": "370 cm", "Block Reach": "345 cm", "Attack Power": 98, Defense: 85, Speed: 85, Experience: 98}},
+{name: "Matthew Anderson (USA)", attributes: {Height: "204 cm", "Spike Reach": "360 cm", "Block Reach": "340 cm", "Attack Power": 95, Defense: 88, Speed: 89, Experience: 96}},
+{name: "Maxim Mikhaylov (Russia)", attributes: {Height: "202 cm", "Spike Reach": "360 cm", "Block Reach": "340 cm", "Attack Power": 98, Defense: 80, Speed: 82, Experience: 95}},
+{name: "Micah Christenson (USA)", attributes: {Height: "198 cm", "Spike Reach": "340 cm", "Block Reach": "320 cm", "Attack Power": 80, Defense: 92, Speed: 95, Experience: 95}},
+{name: "Nimir Abdel-Aziz (Netherlands)", attributes: {Height: "202 cm", "Spike Reach": "370 cm", "Block Reach": "345 cm", "Attack Power": 99, Defense: 80, Speed: 85, Experience: 91}},
+{name: "Osmany Juantorena (Italy/Cuba)", attributes: {Height: "200 cm", "Spike Reach": "370 cm", "Block Reach": "345 cm", "Attack Power": 97, Defense: 90, Speed: 91, Experience: 98}},
+{name: "Ran Takahashi (Japan)", attributes: {Height: "188 cm", "Spike Reach": "343 cm", "Block Reach": "320 cm", "Attack Power": 89, Defense: 94, Speed: 98, Experience: 85}},
+{name: "Ricardo Lucarelli (Brazil)", attributes: {Height: "196 cm", "Spike Reach": "355 cm", "Block Reach": "330 cm", "Attack Power": 96, Defense: 93, Speed: 97, Experience: 94}},
+{name: "Sergey Tetyukhin (Russia)", attributes: {Height: "197 cm", "Spike Reach": "350 cm", "Block Reach": "330 cm", "Attack Power": 92, Defense: 90, Speed: 85, Experience: 100}},
+{name: "Simone Giannelli (Italy)", attributes: {Height: "199 cm", "Spike Reach": "345 cm", "Block Reach": "325 cm", "Attack Power": 86, Defense: 90, Speed: 94, Experience: 95}},
+{name: "Tine Urnaut (Slovenia)", attributes: {Height: "200 cm", "Spike Reach": "350 cm", "Block Reach": "330 cm", "Attack Power": 92, Defense: 88, Speed: 90, Experience: 92}},
+{name: "Wilfredo León (Poland/Cuba)", attributes: {Height: "201 cm", "Spike Reach": "370 cm", "Block Reach": "340 cm", "Attack Power": 100, Defense: 80, Speed: 85, Experience: 85}},
+{name: "Yoandy Leal (Brazil/Cuba)", attributes: {Height: "202 cm", "Spike Reach": "370 cm", "Block Reach": "340 cm", "Attack Power": 98, Defense: 85, Speed: 87, Experience: 92}},
+{name: "Yuki Ishikawa (Japan)", attributes: {Height: "191 cm", "Spike Reach": "350 cm", "Block Reach": "320 cm", "Attack Power": 90, Defense: 94, Speed: 98, Experience: 85}},
+  ];
+
+  const playf = [
+{name: "Agnieszka Kąkolewska (Poland)", attributes: {Height: "199 cm", "Spike Reach": "335 cm", "Block Reach": "320 cm", "Attack Power": 88, Defense: 97, Speed: 87, Experience: 92}},
+{name: "Arina Fedorovtseva (Russia)", attributes: {Height: "190 cm", "Spike Reach": "330 cm", "Block Reach": "310 cm", "Attack Power": 96, Defense: 82, Speed: 89, Experience: 80}},
+{name: "Fernanda Garay (Brazil)", attributes: {Height: "179 cm", "Spike Reach": "315 cm", "Block Reach": "295 cm", "Attack Power": 91, Defense: 95, Speed: 94, Experience: 97}},
+{name: "Gabriela Guimarães (Brazil)", attributes: {Height: "180 cm", "Spike Reach": "320 cm", "Block Reach": "300 cm", "Attack Power": 90, Defense: 97, Speed: 95, Experience: 94}},
+{name: "Jordan Larson (USA)", attributes: {Height: "188 cm", "Spike Reach": "320 cm", "Block Reach": "305 cm", "Attack Power": 90, Defense: 96, Speed: 94, Experience: 100}},
+{name: "Kelsey Robinson (USA)", attributes: {Height: "188 cm", "Spike Reach": "320 cm", "Block Reach": "300 cm", "Attack Power": 85, Defense: 98, Speed: 95, Experience: 92}},
+{name: "Kim Yeon-koung (South Korea)", attributes: {Height: "192 cm", "Spike Reach": "330 cm", "Block Reach": "305 cm", "Attack Power": 97, Defense: 90, Speed: 89, Experience: 99}},
+{name: "Lauren Carlini (USA)", attributes: {Height: "185 cm", "Spike Reach": "320 cm", "Block Reach": "300 cm", "Attack Power": 85, Defense: 92, Speed: 95, Experience: 90}},
+{name: "Macris Carneiro (Brazil)", attributes: {Height: "178 cm", "Spike Reach": "305 cm", "Block Reach": "290 cm", "Attack Power": 78, Defense: 92, Speed: 97, Experience: 93}},
+{name: "Maja Ognjenović (Serbia)", attributes: {Height: "183 cm", "Spike Reach": "305 cm", "Block Reach": "290 cm", "Attack Power": 75, Defense: 90, Speed: 94, Experience: 100}},
+{name: "Natalia Pereira (Brazil)", attributes: {Height: "185 cm", "Spike Reach": "325 cm", "Block Reach": "305 cm", "Attack Power": 92, Defense: 90, Speed: 88, Experience: 96}},
+{name: "Paola Egonu (Italy)", attributes: {Height: "193 cm", "Spike Reach": "365 cm", "Block Reach": "330 cm", "Attack Power": 100, Defense: 85, Speed: 90, Experience: 92}},
+{name: "Polina Rahimova (Azerbaijan)", attributes: {Height: "198 cm", "Spike Reach": "330 cm", "Block Reach": "305 cm", "Attack Power": 98, Defense: 80, Speed: 85, Experience: 95}},
+{name: "Tijana Bošković (Serbia)", attributes: {Height: "194 cm", "Spike Reach": "345 cm", "Block Reach": "320 cm", "Attack Power": 99, Defense: 83, Speed: 86, Experience: 95}},
+{name: "Wilma Salas (Cuba)", attributes: {Height: "186 cm", "Spike Reach": "325 cm", "Block Reach": "305 cm", "Attack Power": 95, Defense: 88, Speed: 93, Experience: 90}},
+{name: "Zhu Ting (China)", attributes: {Height: "198 cm", "Spike Reach": "360 cm", "Block Reach": "320 cm", "Attack Power": 98, Defense: 85, Speed: 88, Experience: 95}},    
+  ];
+
+const coach = [
+    {name: "Coach: Bernardinho (Brazil)", attributes: {"Major Titles": "2x Olympic Gold, 3x World Championships, 8x World Leagues", "Tactical Genius": 98, "Motivation & Leadership": 100, "Career Success": 100, "Game Adaptability": 95, Legacy: 100}},
+{name: "Coach: Julio Velasco (Argentina/Italy)", attributes: {"Major Titles": "2x World Cup, 5x World Leagues, 2x European Championships", "Tactical Genius": 100, "Motivation & Leadership": 95, "Career Success": 98, "Game Adaptability": 97, Legacy: 100}},
+{name: "Coach: Zé Roberto Guimarães (Brazil)", attributes: {"Major Titles": "3x Olympic Gold (only one to win with men's and women's teams)", "Tactical Genius": 96, "Motivation & Leadership": 98, "Career Success": 99, "Game Adaptability": 95, Legacy: 100}},
+{name: "Coach: Vital Heynen (Belgium)", attributes: {"Major Titles": "1x World Cup, 1x Nations League", "Tactical Genius": 95, "Motivation & Leadership": 94, "Career Success": 93, "Game Adaptability": 97, Legacy: 92}},
+{name: "Coach: Nikola Grbić (Serbia)", attributes: {"Major Titles": "1x World, 1x European", "Tactical Genius": 94, "Motivation & Leadership": 92, "Career Success": 90, "Game Adaptability": 95, Legacy: 89}},
+{name: "Coach: Giovanni Guidetti (Italy)", attributes: {"Major Titles": "4x Champions League, 1x European", "Tactical Genius": 97, "Motivation & Leadership": 95, "Career Success": 96, "Game Adaptability": 98, Legacy: 95}},
+{name: "Coach: Andrea Anastasi (Italy)", attributes: {"Major Titles": "1x World Cup, 3x World League", "Tactical Genius": 93, "Motivation & Leadership": 91, "Career Success": 92, "Game Adaptability": 94, Legacy: 90}},
+{name: "Coach: Karch Kiraly (USA)", attributes: {"Major Titles": "2016 Olympic Gold (as coach), 2x VNL", "Tactical Genius": 94, "Motivation & Leadership": 97, "Career Success": 96, "Game Adaptability": 92, Legacy: 98}},
+{name: "Coach: Renan Dal Zotto (Brazil)", attributes: {"Major Titles": "1x League of Nations, 1x South American", "Tactical Genius": 90, "Motivation & Leadership": 92, "Career Success": 88, "Game Adaptability": 89, Legacy: 85}},
+{name: "Coach: José Luis Moltó (Spain)", attributes: {"Major Titles": "Development of the Spanish national team", "Tactical Genius": 87, "Motivation & Leadership": 85, "Career Success": 80, "Game Adaptability": 88, Legacy: 83}},
+  ];
+
+const court = [
+    {name: "Maracanãzinho", attributes: {Location: "Rio de Janeiro, Brazil", Capacity: "11,800", Prestige: 98, "Events Hosted": 100, Modernity: 90, Atmosphere: 97, Accessibility: 94}},
+{name: "Ariake Arena", attributes: {Location: "Tokyo, Japan", Capacity: "15,000", Prestige: 95, "Events Hosted": 90, Modernity: 100, Atmosphere: 88, Accessibility: 96}},
+{name: "Spodek Arena", attributes: {Location: "Katowice, Poland", Capacity: "11,500", Prestige: 96, "Events Hosted": 97, Modernity: 85, Atmosphere: 100, Accessibility: 92}},
+{name: "Atlas Arena", attributes: {Location: "Łódź, Poland", Capacity: "13,800", Prestige: 94, "Events Hosted": 95, Modernity: 89, Atmosphere: 98, Accessibility: 91}},
+{name: "Pala Alpitour", attributes: {Location: "Turin, Italy", Capacity: "14,500", Prestige: 95, "Events Hosted": 96, Modernity: 92, Atmosphere: 90, Accessibility: 93}},
+{name: "Ahoy Rotterdam", attributes: {Location: "Rotterdam, Netherlands", Capacity: "15,000", Prestige: 90, "Events Hosted": 88, Modernity: 95, Atmosphere: 85, Accessibility: 97}},
+{name: "Omnisport Apeldoorn", attributes: {Location: "Apeldoorn, Netherlands", Capacity: "5,000", Prestige: 85, "Events Hosted": 87, Modernity: 88, Atmosphere: 90, Accessibility: 93}},
+{name: "Ergo Arena", attributes: {Location: "Gdańsk, Poland", Capacity: "11,409", Prestige: 93, "Events Hosted": 94, Modernity: 90, Atmosphere: 96, Accessibility: 91}},
+{name: "Nelson Mandela Forum", attributes: {Location: "Florence, Italy", Capacity: "7,500", Prestige: 88, "Events Hosted": 90, Modernity: 85, Atmosphere: 92, Accessibility: 89}},
+{name: "Ginásio do Ibirapuera", attributes: {Location: "São Paulo, Brazil", Capacity: "10,000", Prestige: 90, "Events Hosted": 94, Modernity: 86, Atmosphere: 95, Accessibility: 88}},
+
+  ];
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playmCheckbox').checked) selectedCards.push(...playm);
+    if (document.getElementById('playfCheckbox').checked) selectedCards.push(...playf);
+    if (document.getElementById('coachCheckbox').checked) selectedCards.push(...coach);
+    if (document.getElementById('courtCheckbox').checked) selectedCards.push(...court);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

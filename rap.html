@@ -1,0 +1,463 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Rap</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="playersCheckbox"> Players</label><br>
+    <label><input type="checkbox" id="instrumentsCheckbox"> Instruments</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    <br><br>
+    <div style="margin-bottom: 20px;">
+      <h3>Rules</h3>
+      <p id="rulesResult" style="color: white;">-</p>
+      <button id="shuffleRulesButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+"Diss Track – Choose an opponent and reduce their morale or resources.",
+"Mic Drop – Deal massive damage, but discard a random card after the attack.",
+"Battle Bars – Engage in a direct battle with an opponent; whoever has the strongest rhyming card wins and earns extra points.",
+"Verbal Assault – Deal constant damage over three turns.",
+"Freestyle Shield – Block the next attack by improvising a rhyme.",
+"Label Support – Reduce damage by receiving help from your label.",
+"Crowd Back-Up – Receive support from fans and recover energy.",
+"Comeback Verse – Ignore an attack and return part of the damage.",
+"Topper – Earn extra points for one round after landing a hit.",
+"Radio Play – Double your resources when played on the radio.",
+"Viral Hit – Choose a card from your hand and double its effect due to viral success.",
+"Endorsement Deal – Add influence points when receiving an endorsement deal.",
+"Producer Power – Increase the impact of your next attack by combining with a powerful producer.",
+"Remix Master – Use a card already played from the discard pile to create a new effect.",
+"Hit – Combine your card with an ally’s to create a devastating attack.",
+"Legacy Boost – Activate an extra ability if you have a legendary artist on your team.",
+"Feud – Initiate a battle between two opponents, causing damage to both.",
+"Snub – Prevent a player from gaining extra points after a successful hit.",
+"Era – Swap all cards from players’ hands, resetting the game.",
+"Drop – Choose an opponent to lose half of their resources due to a public scandal.",
+"Encore! – Reroll after a successful victory.",
+"Stage Dive – Risk it all to earn extra points, but lose a card if you fail.",
+"Hype the Crowd – Increase your popularity and recover energy in two rounds.",
+"Show Stopper – Cancel any player’s action during the current round.",
+"First Platinum Album – Earn instant victory points.",
+"World Tour – Collect extra resources from all opponents while traveling globally.",
+"Hall of Fame Induction – Activate a permanent ability until the end of the game.",
+"Hit – Double your next attack due to your recent success.",
+"Dispute – Choose an opponent and force them to discard an important card.",
+"Shady Deal – Trade a secret card with another player without revealing your choice.",
+"Scandal – Disable an opponent’s next move due to media pressure.",
+"Takeover – Take control of another player’s resource card.",
+"Session – Draw two extra cards due to a productive session.",
+"Creative Block – Force an opponent to skip their next move due to a creative slump.",
+"Hire – Use a special card for free if you have enough resources.",
+"Rewind – Use a previously discarded card, but it will be removed after use.",
+"Drop – Deal medium-power cards to gain instant popularity points.",
+"Legend – Increase your defenses against commercial attacks.",
+"Cypher – Challenge an opponent to a rhyme battle; loser discards a random card.",
+"Hero – Earn resources by impressing your loyal fanbase in the underground scene.",
+"Classic Album Release – Activate a lasting effect that empowers all your future actions.",
+"Legends Never Die – Reactivate a previously used special card, bypassing usage restrictions.",
+"Feature – Play a legendary card for a devastating combo.",
+"Verse – Nullify any opponent’s actions, claiming immortal status in rap history."  
+  ];
+
+  const rules = [
+    `Rap Progression 1 (Dark Trap / Drill Vibes)
+Am - F - Em - G
+A minor (A, B, C, D, E, F, G)
+E Phrygian (E, F, G, A, B, C, D)`,
+`Rap Progression 2 (Lo-Fi Chill Vibes)
+Dm7 - G7 - Cmaj7 - A7
+C major (C, D, E, F, G, A, B)
+D Dorian (D, E, F, G, A, B, C)`,
+`Rap Progression 3 (West Coast / G-Funk)
+Cm7 - F7 - Bbmaj7 - Eb7
+C minor pentatonic (C, Eb, F, G, Bb)
+F Mixolydian (F, G, A, Bb, C, D, Eb)`,
+`Rap Progression 4 (Melodic Trap / R&B Vibes)
+Em - C - G - D
+E minor (E, F#, G, A, B, C, D)
+G major (G, A, B, C, D, E, F#)`,
+`Rap Progression 5 (Boom Bap / Old School)
+Am7 - Dm7 - G7 - Cmaj7
+C major (C, D, E, F, G, A, B)
+A minor (A, B, C, D, E, F, G)`,
+`Rap Progression 6 (Emotional Storytelling)
+F#m - D - A - E
+F# minor (F#, G#, A, B, C#, D, E)
+A major (A, B, C#, D, E, F#, G#)`,
+`Rap Progression 7 (Melodic Trap / Emo Rap)
+Bm - G - D - A
+B minor (B, C#, D, E, F#, G, A)
+D major (D, E, F#, G, A, B, C#)`,
+`Rap Progression 8 (Dark Cinematic Drill)
+Fm - Ab - Eb - Db
+F minor (F, G, Ab, Bb, C, Db, Eb)
+Ab major (Ab, Bb, C, Db, Eb, F, G)`,
+`Rap Progression 9 (West Coast Bounce)
+Am7 - Dm7 - G7 - C7
+A minor pentatonic (A, C, D, E, G)
+D Dorian (D, E, F, G, A, B, C)`,
+`Rap Progression 10 (Lo-Fi Boom Bap)
+Em7 - A7 - Dmaj7 - Gmaj7
+E Dorian (E, F#, G, A, B, C#, D)
+D major (D, E, F#, G, A, B, C#)`,
+`Rap Progression 11 (Introspective Lo-Fi)
+Am - G - F - G
+A minor (A, B, C, D, E, F, G)
+G major (G, A, B, C, D, E, F#)
+F major (F, G, A, Bb, C, D, E)`,
+`Rap Progression 12 (Trap Anthem)
+Fm - Db - Ab - Eb
+F minor (F, G, Ab, Bb, C, Db, Eb)
+Ab major (Ab, Bb, C, Db, Eb, F, G)
+Eb major (Eb, F, G, Ab, Bb, C, D)`,
+`Rap Progression 13 (Soulful R&B Crossover)
+Dm7 - G7 - Cmaj7 - Fmaj7
+D Dorian (D, E, F, G, A, B, C)
+C major (C, D, E, F, G, A, B)
+F major (F, G, A, Bb, C, D, E)`,
+`Rap Progression 14 (Boom Bap / Old School)
+Em - C - G - D
+E minor pentatonic (E, G, A, B, D)
+G major (G, A, B, C, D, E, F#)
+D Mixolydian (D, E, F#, G, A, B, C)`,
+`Rap Progression 15 (Dark Trap / Cinematic)
+Bm - G - F#m - A
+B minor (B, C#, D, E, F#, G, A)
+F# minor (F#, G#, A, B, C#, D, E)`,
+`Rap Progression 16 (Melodic Emo Rap)
+Am - C - G - F
+A minor (A, B, C, D, E, F, G)
+C major (C, D, E, F, G, A, B)`,
+`Rap Progression 17 (Lo-Fi Chill Hop)
+Dm7 - G7 - Cmaj7 - A7
+C major (C, D, E, F, G, A, B)
+D Dorian (D, E, F, G, A, B, C)`,
+`Rap Progression 18 (West Coast Funk)
+Cm7 - F7 - Bbmaj7 - Eb7
+C minor pentatonic (C, Eb, F, G, Bb)
+F Mixolydian (F, G, A, Bb, C, D, Eb)`,
+`Rap Progression 19 (R&B Crossover / Melodic Rap)
+F#m7 - B7 - Emaj7 - Amaj7
+E major (E, F#, G#, A, B, C#, D#)
+F# minor (F#, G#, A, B, C#, D, E)`,
+`Rap Progression 20 (Old-School Boom Bap)
+Em - A7 - Dmaj7 - G7
+E minor pentatonic (E, G, A, B, D)
+D major (D, E, F#, G, A, B, C#)`
+  ];  
+const players = [
+{name: "Lyricist: 50 Cent (Street Hustler)", attributes: {"Lyrical Aggression": 95, "Resilience": 100, "Popularity": 90, "Legacy": 90, "Innovation": 85, "Special Ability": "Get Rich or Die Tryin’ – Receives bonus attack and resistance whenever health drops below 50%, becoming stronger under pressure."}},
+{name: "Lyricist: 8Ball (The Southern Storyteller)", attributes: {"Lyrical Aggression": 90, Resilience: 95, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Memphis Chronicles – Gains +10 to Storytelling and Flow Mastery when delivering Southern hip-hop narratives, empowering allies with street savvy and destabilizing adversaries with hard-hitting verses."}},
+{name: "Lyricist: A$AP Rocky (Fashion Icon)", attributes: {"Style & Flow": 95, "Stage Presence": 95, "Popularity": 90, "Legacy": 85, "Innovation": 90, "Special Ability": "Fashion Killa – Flawless Style grants extra defense and popularity bonuses to the entire team, rendering social critique attacks ineffective."}},
+{name: "Lyricist: Ad-Rock (Beastie Boys Instigator)", attributes: {"Lyrical Aggression": 88, Resilience: 85, Popularity: 93, Legacy: 90, Innovation: 94, "Special Ability": "No Sleep 'til Brooklyn – Gains a speed boost and enhanced reflexes when engaging in city-based battles, excelling in high-pressure environments."}},
+{name: "Vocalist: Alicia Keys", attributes: {"Lyrical Flow": 88, Charisma: 90, Popularity: 95, Legacy: 95, Innovation: 90, "Special Ability": "Fallin’ Grace – Heals emotional damage for all allies, increasing their resilience and restoring vocal clarity through soulful harmonies."}},
+{name: "Lyricist: André 3000 (Futuristic Visionary)", attributes: {"Lyrical Creativity": 100, "Versatility": 95, "Popularity": 90, "Legacy": 100, "Innovation": 100, "Special Ability": "ATLiens Flow – Transforms the combat environment, changing the rules of the game and disorienting enemies with surreal and unusual performances."}},
+{name: "Lyricist: Antwan André Patton (Big Boi - The Southern Visionary)", attributes: {"Lyrical Aggression": 90, Resilience: 95, Popularity: 95, Legacy: 90, Innovation: 92, "Special Ability": "ATL Bounce – Boosts team synergy and speed by summoning southern beats that overwhelm opponents with unstoppable groove and swagger."}},
+{name: "Lyricist: B-Real (Cypress Hill Enforcer)", attributes: {"Lyrical Aggression": 85, Resilience: 90, Popularity: 92, Legacy: 88, Innovation: 90, "Special Ability": "Insane in the Brain – Gains unpredictable attack patterns and confusion-based abilities, disorienting enemies with psychedelic flows and unexpected tactics."}},
+{name: "Lyricist: Bad Bunny (The Latin Vanguard)", attributes: {"Lyrical Skill": 95, "Vocal Range": 90, Popularity: 100, Legacy: 95, Innovation: 98, "Special Ability": "Cultural Catalyst – Amplifies team morale and disrupts enemy strategies by infusing performances with powerful cultural narratives and genre-blending artistry."}},
+{name: "Lyricist: Big Punisher (The Bronx Titan)", attributes: {"Lyrical Aggression": 100, Resilience: 95, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Capital Punishment – ​​Gains +10 to Multisyllabic Flow and Lyrical Precision when delivering fast and heavy rhymes, crushing opponents with brutal punchlines and empowering allies with impeccable technique."}},
+{name: "Lyricist: Biggie Smalls (The Notorious B.I.G.)", attributes: {"Lyrical Charisma": 100, "Storytelling": 100, "Popularity": 95, "Legacy": 100, "Innovation": 90, "Special Ability": "Sky’s the Limit – Dramatically increases luck and resource gains after a victory, propelling your team to instant stardom."}},
+{name: "Lyricist: Black Alien (Wordplay Virtuoso)", attributes: {"Lyrical Versatility": 100, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Intergalactic Verse – Unlock a sharp and introspective lyrical torrent. Gain +10 Innovation and +10 Technique in any rap, reggae, or alternative hip-hop battle, with verses that blend existential reflections and futuristic soundscapes."}},
+{name: "Lyricist: BNegão (Funk Punk Preacher)", attributes: {"Lyrical Versatility": 90, "Stage Presence": 95, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Verbal Resistance – Grants immunity to conventional lyrical attacks and +10 Stage Presence in any funk, punk, or dub battle. Your combative rhymes energize allies and weaken the resolve of opponents."}},
+{name: "Lyricist: Bootsy Collins (The Funk Oracle)", attributes: {"Lyrical Impact": 85, Storytelling: 80, Popularity: 90, Legacy: 95, Innovation: 100, "Special Ability": "Space Bass Blast – Activates a funk field that boosts groove and creativity for all allies, stunning enemies with cosmic swagger and psychedelic rhythm."}},
+{name: "Lyricist: Busta Rhymes (Rapid-Fire Spitter)", attributes: {"Lyrical Speed": 100, "Energy": 100, "Popularity": 85, "Legacy": 95, "Innovation": 90, "Special Ability": "Break Ya Neck – Unleash a flurry of rapid attacks that strike all enemies with devastating accuracy and speed."}},
+{name: "Lyricist: Cardi B (Chart Dominator)", attributes: {"Lyrical Aggression": 90, "Stage Presence": 100, "Popularity": 95, "Legacy": 85, "Innovation": 90, "Special Ability": "Money Moves – Each victory generates financial bonuses, allowing instant upgrades and access to exclusive benefits."}},
+{name: "Lyricist: Chaeyoung (The Creative Chameleon)", attributes: {"Lyrical Power": 85, "Activist Spirit": 70, Popularity: 95, Legacy: 80, Innovation: 90, "Special Ability": "Painted Flow – Gains +10 to Versatility and Style Sync when shifting between rap, vocals, and visual concepts, making her unpredictable and highly adaptive in any pop battle."}},
+{name: "Lyricist: Cheryl James (Salt – The Empowered Voice)", attributes: {"Lyrical Skill": 90, "Vocal Range": 85, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Empowerment Anthem – Elevates team defense and resilience by delivering powerful messages of self-confidence and empowerment."}},
+{name: "Lyricist: Chuck D (Revolutionary Commander)", attributes: {"Lyrical Aggression": 98, Resilience: 100, Popularity: 90, Legacy: 99, Innovation: 92, "Special Ability": "Fight the Power – Can rally the entire team, temporarily increasing attack, defense, and resilience for all allies through powerful anthems of resistance."}},
+{name: "Lyricist: Coke La Rock (The Original Microphone Messenger)", attributes: {"Lyrical Aggression": 88, Resilience: 92, Popularity: 85, Legacy: 100, Innovation: 85, "Special Ability": "Founder's Flame – Gains +10 to Legacy and Resilience when leading old-school battles, igniting the spirit of hip-hop and inspiring allies."}},
+{name: "Lyricist: Common (The Conscious Architect)", attributes: {"Lyrical Aggression": 80, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 88, "Special Ability": "Word Power – Elevates team wisdom and resistance by channeling socially conscious lyrics, weakening enemy morale through truth-based attacks."}},
+{name: "Lyricist: Coolio (The Gangsta Groove Master)", attributes: {"Lyrical Aggression": 85, "Stage Presence": 95, Popularity: 90, Legacy: 88, Innovation: 85, "Special Ability": "Gangsta’s Paradise – Summons a wave of nostalgic street wisdom that weakens enemy morale while boosting ally resilience and rhythm."}},
+{name: "Lyricist: DMX (Rough Rider)", attributes: {"Lyrical Aggression": 100, "Intensity": 100, "Popularity": 90, "Legacy": 95, "Innovation": 85, "Special Ability": "X Gon’ Give It to Ya – Activates a state of rage that drastically increases attack power and intimidates enemies, reducing their defenses."}},
+{name: "Lyricist: Da Brat", attributes: {"Lyrical Speed": 88, Versatility: 85, Popularity: 85, Legacy: 90, Innovation: 87, "Special Ability": "Funkdafied Frenzy – Increases critical hit chance and lyrical dominance in Midwest and Southern battles, while boosting ally morale with unapologetic flair."}},
+{name: "Lyricist: De Leve (The Satirical Wordsmith)", attributes: {"Lyrical Flow": 88, Charisma: 90, Popularity: 85, Legacy: 87, Innovation: 90, "Special Ability": "Irony Strike – Uses sharp wit to confuse opponents, reducing their defense and increasing his own evasion."}},
+{name: "DJ Hurricane (The Sonic Cyclone)", attributes: {"Lyrical Aggression": 85, Resilience: 90, Popularity: 80, Legacy: 85, Innovation: 90, "Special Ability": "Turntable Havoc – Gains +10 to Battle DJing and Hypeman Energy when mixing scratches and explosive rhymes, elevating allies and disorienting opponents with unpredictable sound waves."}},
+{name: "DJ King (The Beat Architect)", attributes: {"Lyrical Flow": 80, Charisma: 85, Popularity: 75, Legacy: 80, Innovation: 85, "Special Ability": "Rhythm Forge – Constructs complex beats that boost allies' attack speed and disrupt opponents' timing."}},
+{name: "Lyricist: Doechii (The Multidimensional Maverick)", attributes: {"Lyrical Aggression": 90, Resilience: 95, Popularity: 85, Legacy: 80, Innovation: 95, "Special Ability": "Swamp Brilliance – Gains +10 to Versatility and Flow Adaptability when blending rap, R&B, and experimental sounds, disorienting opponents with unpredictable delivery and dynamic vocal shifts."}},
+{name: "Lyricist: Doja Cat (Genre-Bender)", attributes: {"Lyrical Versatility": 95, "Stage Presence": 100, "Popularity": 95, "Legacy": 85, "Innovation": 100, "Special Ability": "Planet Doja – Switch between different musical styles to gain variable bonuses, adapting to the type of battle and confusing opponents."}},
+{name: "Lyricist: Drake (Global Hitmaker)", attributes: {"Melodic Rap": 95, "Charisma": 100, "Popularity": 100, "Legacy": 85, "Innovation": 90, "Special Ability": "Hotline Boost – Summons a wave of global popularity that doubles resource gains and attracts support from powerful allies."}},
+{name: "Lyricist: E-40 (The Slang Sage)", attributes: {"Lyrical Versatility": 92, "Stage Presence": 88, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Dictionaries & Ditties – Gains +10 to Wordplay and Flow Agility when freestyling or performing with Bay Area allies, confounding enemies with rapid slang and linguistic creativity."}},
+{name: "Lyricist: Eazy-E (Compton Kingpin)", attributes: {"Street Cred": 100, "Rebellion": 95, "Popularity": 90, "Legacy": 90, "Innovation": 85, "Special Ability": "Real Compton City G’s – Summons reinforcements from the street scene for group attacks, increasing damage and resistance against authorities or corrupt figures."}},
+{name: "Lyricist: Edi Rock", attributes: {"Lyrical Aggression": 90, Resilience: 95, Popularity: 92, Legacy: 98, Innovation: 88, "Special Ability": "Hip Hop Saves – Restores morale and lyrical strength to allies with powerful verses of transformation, resisting negative effects from enemy taunts."}},
+{name: "Lyricist: Emicida (The Philosophical Warrior)", attributes: {"Lyrical Skill": 98, "Vocal Range": 90, Popularity: 92, Legacy: 95, Innovation: 97, "Special Ability": "Lab Fantasma Flow – Gains +10 to Lyrical Impact and Legacy when channeling Afro-Brazilian history and political consciousness, inspiring allies and dismantling enemy focus through razor-sharp verses."}},
+{name: "Lyricist: Eminem (Rap Machine)", attributes: {"Lyrical Speed": 100, "Versatility": 95, "Popularity": 100, "Legacy": 95, "Innovation": 90, "Special Ability": "Rap God Mode – Unleashes a barrage of fast, precise attacks that can overwhelm multiple enemies in a single turn."}},
+{name: "Lyricist: Eric Barrier (Production General)", attributes: {"Lyrical Aggression": 75, Resilience: 90, Popularity: 85, Legacy: 95, Innovation: 98, "Special Ability": "Paid in Full – Increases team resource generation and boosts the strength of allied artists by enhancing their flows and beats with elite production."}},
+{name: "Percussionist: Eric Bobo", attributes: {"Lyrical Speed": 75, Versatility: 95, Popularity: 85, Legacy: 90, Innovation: 92,"Special Ability": "Cypress Pulse – Generates rhythmic shockwaves that boost ally timing and reduce enemy synchronization in any hip hop or funk battle."}},
+{name: "Lyricist: Erick Sermon (The Green-Eyed Bandit)", attributes: {"Lyrical Insight": 88, Authenticity: 95, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Funky Flow – Erick Sermon uses his MC and producer skills to manipulate the environment, adjusting rhythms and controlling the vibe of the battle to favor his allies."}},
+{name: "Lyricist: Eve (The Ruff Rydin' Femme Fatale)", attributes: {"Lyrical Flow": 90, Charisma: 95, Popularity: 85, Legacy: 88, Innovation: 85, "Special Ability": "Let Me Blow Ya Mind – Gains +10 to Flow and Defense when paired with strong collaborators, stunning enemies with cool confidence and sharp delivery."}},
+{name: "Lyricist: Flavor Flav (The Hypeman Extraordinaire)", attributes: {"Lyrical Aggression": 75, Resilience: 90, Popularity: 95, Legacy: 90, Innovation: 85, "Special Ability": "Fight the Power – Boosts ally morale and stage presence, disrupting opponent focus with high-energy ad-libs and unpredictable charisma."}},
+{name: "Lyricist: Foxy Brown", attributes: {"Lyrical Speed": 90, Versatility: 88, Popularity: 90, Legacy: 85, Innovation: 85,"Special Ability": "Brooklyn Swagger – Gains +10 to Attack and Defense when performing with East Coast allies, disorienting opponents with razor-sharp flow and unshakable confidence."}},
+{name: "Lyricist: Gabriel o Pensador (The Conscious Provoker – Brazil)", attributes: {"Lyrical Power": 92, "Rebellion Spirit": 95, Popularity: 90, Legacy: 90, Innovation: 88, "Special Ability": "Provokes political instability among enemy forces, lowering their defense while rallying allies with critical insight and rhythm."}},
+{name: "Lyricist: Gato Congelado (The Chill Flow Master)", attributes: {"Lyrical Flow": 85, Charisma: 80, Popularity: 70, Legacy: 75, Innovation: 80, "Special Ability": "Frozen Verse – Slows down opponents' actions while maintaining his own rhythm, gaining a strategic advantage."}},
+{name: "Lyricist: George Clinton (The Funk Commander)", attributes: {"Lyrical Power": 88, "Rebellion Spirit": 95, Popularity: 90, Legacy: 100, Innovation: 100, "Special Ability": "Mothership Connection – Invokes a cosmic funk wave that disorients enemies with psychedelic grooves and grants allies +10 to Creativity and Stage Presence for the duration of the battle."}},
+{name: "Lyricist: Ghostface Killah (Masked Avenger)", attributes: {"Lyrical Versatility": 92, "Stage Presence": 95, Popularity: 90, Legacy: 97, Innovation: 90, "Special Ability": "Ironman Flow – Unstoppable Hustle"}},
+{name: "Lyricist: GloRilla (The Memphis Powerhouse)", attributes: {"Lyrical Aggression": 90, Resilience: 95, Popularity: 95, Legacy: 85, Innovation: 85, "Special Ability": "F.N.F. Energy – Gains +10 to Confidence and Crowd Control when delivering raw, high-energy anthems, boosting the morale of allies and destabilizing opponents with a dominating presence."}},
+{name: "Lyricist: GZA: The Genius", attributes: {"Lyrical Versatility": 98, "Stage Presence": 85, Popularity: 88, Legacy: 95, Innovation: 92, "Special Ability": "Liquid Swords – Precision Strike"}},
+{name: "Lyricist: Happin' Hood (Rhythmic Rebel)", attributes: {"Lyrical Versatility": 85, "Stage Presence": 95, Popularity: 90, Legacy: 80, Innovation: 88, "Special Ability": "Rebel Groove – Call the Street Vibes"}},
+{name: "Lyricist: Harriet Tubman (The Freedom Rhymesmith)", attributes: {"Lyrical Aggression": 100, Resilience: 100, Popularity: 85, Legacy: 100, Innovation: 90, "Special Ability": "Underground Cipher – Gains +10 to Leadership and Resistance when delivering verses about liberation and struggle, inspiring allies to resist and reducing the strength of overwhelming opponents."}},
+{name: "Vocalist: Hwang Ye-ji (ITZY)", attributes: {"Lyrical Flow": 80, Charisma: 95, Popularity: 92, Legacy: 80, Innovation: 88, "Special Ability": "ICY Drive – Gains +10 to Speed and Charisma during high-tempo performances, reducing enemy accuracy with dazzling stage control."}},
+{name: "Lyricist: Ice Blue", attributes: {"Lyrical Aggression": 85, Resilience: 90, Popularity: 88, Legacy: 85, Innovation: 84, "Special Ability": "Frontline – Increases defense and lyrical cohesion for allies, countering opponents with calm delivery and sharp street knowledge."}},
+{name: "Lyricist: Ice Cube (Rebel Leader)", attributes: {"Lyrical Power": 95, "Rebellion Spirit": 100, "Popularity": 90, "Legacy": 95, "Innovation": 85, "Special Ability": "Straight Outta Combat – Summons revolutionary allies to launch a massive attack, dealing extra damage against authoritarian enemies."}},
+{name: "Lyricist: Ice-T (Street General)", attributes: {"Lyrical Command": 95, "Street Cred": 100, "Popularity": 85, "Legacy": 90, "Innovation": 85, "Special Ability": "OG Authority – Grants resistance and intimidation bonuses to allies, while reducing the morale of enemies tied to the system or oppression."}},
+{name: "Lyricist: Inspectah Deck (Verse Slicer)", attributes: {"Lyrical Versatility": 94, "Stage Presence": 85, Popularity: 87, Legacy: 92, Innovation: 89, "Special Ability": "Rebel’s Blade – Tactical Assault"}},
+{name: "Lyricist: Ishmael Butler (The Abstract Oracle)", attributes: {"Lyrical Aggression": 85, Resilience: 90, Popularity: 85, Legacy: 95, Innovation: 100, "Special Ability": "Cosmic Cipher – Gains +10 to Experimental Flow and Sonic Innovation when crafting surreal and futuristic rhymes, warping the battlefield with mind-bending wordplay and depth lyricism."}},
+{name: "Lyricist: J. Cole (Conscious Storyteller)", attributes: {"Lyrical Insight": 95, "Authenticity": 100, "Popularity": 90, "Legacy": 90, "Innovation": 90, "Special Ability": "No Role Models – Inspires allies to fight with determination, granting extra resistance and blocking manipulative attacks."}},
+{name: "Lyricist: Ja Rule (Murder Inc. Gladiator)", attributes: {"Lyrical Aggression": 82, Resilience: 85, Popularity: 88, Legacy: 80, Innovation: 83, "Special Ability": "Always On Time – Reduces cooldowns and boosts attack power during team battles, enhancing performance alongside allied artists."}},
+{name: "Lyricist: Jadakiss (The Precision Sniper)", attributes: {"Lyrical Flow": 97, Charisma: 90, Popularity: 88, Legacy: 95, Innovation: 88, "Special Ability": "Top 5 Dead or Alive – Delivers a critical hit with every punchline, reducing enemy resistance while boosting crew morale with surgical wordplay."}},
+{name: "Lyricist/DJ: Jam Master Jay (The Turntable Architect)", attributes: {"Lyrical Aggression": 80, Resilience: 95, Popularity: 90, Legacy: 100, Innovation: 95, "Special Ability": "King of Rock – Enhances allies’ rhythm and flow while disrupting enemy coordination with precise scratches and beat drops, boosting team synergy in any hip-hop battle."}},
+{name: "DJ: KL Jay", attributes: {"Lyrical Aggression": 70, Resilience: 88, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "MPC Mastery – Grants +10 to rhythm control and turntable strategy, empowering allies' flow and disorganizing enemy timing with classic breaks."}},
+{name: "DJ: Spinderella (The Turntable Sorceress)", attributes: {"Lyrical Skill": 80, "Vocal Range": 75, Popularity: 85, Legacy: 90, Innovation: 88, "Special Ability": "Rhythmic Control – Manipulates the flow of battle by seamlessly blending beats, enhancing ally coordination and disrupting enemy tempo."}},
+{name: "Lyricist: Jay-Z (Business Mogul)", attributes: {"Lyrical Skill": 90, "Charisma": 100, "Popularity": 100, "Legacy": 95, "Innovation": 90, "Special Ability": "Empire State of Mind – Generates extra resources (money, influence) for the team, enabling powerful upgrades and strategic takeovers."}},
+{name: "Lyricist: Kamau (The Conscious Flow)", attributes: {"Lyrical Flow": 90, Charisma: 85, Popularity: 80, Legacy: 88, Innovation: 85, "Special Ability": "Mindful Rhythm – Enhances allies' focus and resilience, reducing the impact of opponents' disruptive abilities."}},
+{name: "Lyricist: Karina (aespa) (The Cyber Siren)", attributes: {"Lyrical Aggression": 88, Resilience: 85, Popularity: 95, Legacy: 85, Innovation: 95, "Special Ability": "æSync Pulse – Activates +10 to Digital Flow and Tactical Precision when navigating between virtual and real realms, confusing opponents with holographic lyric delivery and layered identities."}},
+{name: "Lyricist: Kat Williams (The Comedy Rhyme Slayer)", attributes: {"Lyrical Versatility": 90, "Stage Presence": 100, Popularity: 85, Legacy: 80, Innovation: 95, "Special Ability": "Mic Drop Madness – Kat Williams combines razor-sharp humor and improvised rhymes to unsettle opponents, lowering their defenses while increasing her own agility and comedic impact."}},
+{name: "Lyricist: Keith Murray (The Lyrical Technician)", attributes: {"Lyrical Insight": 92, Authenticity: 95, Popularity: 85, Legacy: 88, Innovation: 90, "Special Ability": "Wordplay Cyclone – Keith Murray unleashes a stream of highly technical and metaphorical rhymes, confusing enemies and amplifying the creativity of allies."}},
+{name: "Lyricist: Kendrick Lamar (Conscious Leader)", attributes: {"Lyrical Depth": 100, "Storytelling": 100, "Popularity": 95, "Legacy": 90, "Innovation": 95, "Special Ability": "To Pimp a Nation – Boosts all allies' resolve and influence in political and social-themed battles, inspiring a movement with each performance."}},
+{name: "Lyricist: Killa Cam (Cam'ron – The Harlem Diplomat)", attributes: {"Lyrical Precision": 88, "Flow Mastery": 92, Popularity: 90, Legacy: 90, Innovation: 85, "Special Ability": "Purple Haze Aura – Amplifies charisma and lyrical impact, reducing opponents' defenses in East Coast hip-hop battles."}},
+{name: "Lyricist: Killer Mike (Revolutionary Voice)", attributes: {"Lyrical Power": 95, "Activist Spirit": 100, "Popularity": 85, "Legacy": 90, "Innovation": 90, "Special Ability": "Run the Jewels Strike – Performs a devastating duo attack when paired with Revolutionary allies, dealing massive damage to high-powered enemies."}},
+{name: "Lyricist: King Tee (The West Coast Architect)", attributes: {"Lyrical Skill": 88, "Vocal Range": 80, Popularity: 80, Legacy: 85, Innovation: 85, "Special Ability": "Compton Chronicles – Fortifies team offense by channeling raw street narratives, increasing impact against adversaries with urban roots."}},
+{name: "Lyricist: LL Cool J (The Mic Gladiator)", attributes: {"Lyrical Aggression": 90, Resilience: 95, Popularity: 95, Legacy: 92, Innovation: 88, "Special Ability": "Mama Said Knock You Out – Gains +10 to Lyrical Aggression and Resilience when provoked, unleashing rapid-fire rhymes that overpower opponents and boost his own endurance."}},
+{name: "Lyricist: Ladybug Mecca (The Butterfly Lyricist)", attributes: {"Lyrical Aggression": 85, Resilience: 90, Popularity: 80, Legacy: 90, Innovation: 95, "Special Ability": "Cool Like Dat – Gains +10 to Flow Dexterity and Jazz Fusion when weaving intricate rhymes over unconventional beats, boosting allies' rhythmic adaptability and throwing off enemy timing."}},
+{name: "Lyricist: Larry Smith (The Sonic Architect – USA)", attributes: {"Lyrical Precision": 85, "Flow Mastery": 80, Popularity: 80, Legacy: 95, Innovation: 100, "Special Ability": "Beat Blueprint – Enhances team synergy by boosting production quality, increasing allies' effectiveness in early hip-hop battles."}},
+{name: "Lyricist: Lauryn Hill (Soulful Prophet)", attributes: {"Lyrical Skill": 100, "Vocal Range": 95, "Popularity": 90, "Legacy": 100, "Innovation": 95, "Special Ability": "The Miseducation Aura – Heals allies and boosts wisdom-based stats by delivering profound and soulful performances."}},
+{name: "Lyricist: Lil Wayne (Metaphor King)", attributes: {"Lyrical Skill": 100, "Wordplay": 100, "Popularity": 95, "Legacy": 90, "Innovation": 95, "Special Ability": "Mixtape Madness – Creates unique attacks with improvised rhymes, dealing variable damage based on the creativity and unpredictability of the next verse."}},
+{name: "Lyricist: Lil’ Kim (Rap Empress)", attributes: {"Lyrical Confidence": 95, "Stage Presence": 100, "Popularity": 90, "Legacy": 85, "Innovation": 90, "Special Ability": "Queen Bee Command – Summons a legion of loyal fans to support and reinforce the team, boosting defense and fierce counterattacks."}},
+{name: "Lyricist: Lord Finesse (The Funky Technician)", attributes: {"Lyrical Skill": 95, "Vocal Range": 80, Popularity: 80, Legacy: 90, Innovation: 88, "Special Ability": "Punchline Precision – Delivers intricate rhymes and battle-ready verses that lower enemy confidence and boost ally attack rhythm in lyrical showdowns."}},
+{name: "Lyricist: Ludacris", attributes: {"Lyrical Flow": 95, Charisma: 100, Popularity: 90, Legacy: 90, Innovation: 85, "Special Ability": "Rollout Riot – Launches a rapid-fire verse that stuns opponents and boosts ally energy with comedic timing and aggressive flair."}},
+{name: "Lyricist: Lurdez da Luz (The Urban Poetess)", attributes: {"Lyrical Aggression": 85, Resilience: 90, Popularity: 80, Legacy: 85, Innovation: 95, "Special Ability": "Verso Lunar – Gains +10 to Innovation and Lyrical Aggression under low health, channeling poetic rhythms and Brazilian street flows to disorient opponents and boost ally creativity."}},
+{name: "Lyricist: Maknae Yuna (The K-Pop Dynamo)", attributes: {"Lyrical Skill": 85, "Vocal Range": 90, Popularity: 95, Legacy: 80, Innovation: 88, "Special Ability": "Stage Radiance – Boosts team agility and charm through captivating performances, overwhelming opponents with synchronized brilliance."}},
+{name: "Lyricist: Mano Brown (Philosopher of the Streets)", attributes: {"Lyrical Aggression": 90, Resilience: 100, Popularity: 85, Legacy: 95, Innovation: 88, "Special Ability": "Voice of the Favelas – Gains increased defense and crowd control powers in urban environments, inspiring allies and demoralizing enemies."}},
+{name: "Lyricist: Masta Killa (Silent Assassin)", attributes: {"Lyrical Versatility": 88, "Stage Presence": 82, Popularity: 80, Legacy: 87, Innovation: 85, "Special Ability": "No Said Date – Lyrical Patience"}},
+{name: "Lyricist: MC Carol (The Funk Activist Queen)", attributes: {"Lyrical Power": 90, "Activist Spirit": 95, Popularity: 80, Legacy: 85, Innovation: 88, "Special Ability": "Favela Roar – Gains +10 to Resistance and Crowd Control when performing socially charged funk anthems, empowering allies from the grassroots and disrupting elitist defenses."}},
+{name: "Lyricist: MC Cert", attributes: {"Lyrical Aggression": 82, Resilience: 87, Popularity: 80, Legacy: 79, Innovation: 83, "Special Ability": "Street Code – Gains +10 to Flow Precision and Social Insight when delivering rhymes grounded in urban struggle and survival."}},
+{name: "Lyricist: MC Guimê (The Funk Diplomat)", attributes: {"Lyrical Flow": 85, Charisma: 90, Popularity: 95, Legacy: 80, Innovation: 85, "Special Ability": "Funk Ostentation – Increases ally confidence and charm, lowering enemy resolve with shiny swagger and street savvy."}},
+{name: "Lyricist: MC Hammer (The Showbiz Hustler)", attributes: {"Lyrical Skill": 80, Charisma: 100, Popularity: 100, Legacy: 90, Innovation: 85, "Special Ability": "Can’t Touch This – Gains +10 to Stage Dominance and Commercial Appeal when performing high-energy anthems, boosting ally visibility and overwhelming opponents with flashy spectacle and unstoppable dance moves."}},
+{name: "Lyricist: MC Lyte (Trailblazer)", attributes: {"Lyrical Precision": 95, "Leadership": 90, "Popularity": 85, "Legacy": 100, "Innovation": 90, "Special Ability": "Lyte as a Rock – Grants extra defense and unshakable resistance for herself and her allies, blocking any attempts at manipulation."}},
+{name: "Lyricist: MC Marechal (The Wordsmith Warrior)", attributes: {"Lyrical Flow": 95, Charisma: 85, Popularity: 80, Legacy: 90, Innovation: 88, "Special Ability": "Mental Battle – Delivers philosophical bars that confuse opponents and enhance allies' resistance to lyrical attacks."}},
+{name: "Lyricist: MC Shan (The Bridge Architect)", attributes: {"Lyrical Precision": 88, "Flow Mastery": 85, Popularity: 82, Legacy: 87, Innovation: 86, "Special Ability": "Queensbridge Anthem – Boosts Team Morale and Territorial Control, granting +10 to Influence and Reinforcement Abilities in battles centered on hometown pride and street narratives."}},
+{name: "Lyricist: MCA (Beastie Boys Sage)", attributes: {"Lyrical Aggression": 85, Resilience: 95, Popularity: 90, Legacy: 95, Innovation: 93, "Special Ability": "Sabotage – Triggers a powerful counterattack when ambushed, dismantling traps and defensive structures through pure energy and raw bars."}},
+{name: "Lyricist: Method Man (Shaolin Wordsmith)", attributes: {"Lyrical Versatility": 90, "Stage Presence": 98, Popularity: 92, Legacy: 95, Innovation: 88, "Special Ability": "Iron Lung – Verbal Beatdown"}},
+{name: "Lyricist: MF DOOM (Masked Genius)", attributes: {"Lyrical Complexity": 100, "Mystique": 100, "Popularity": 85, "Legacy": 95, "Innovation": 100, "Special Ability": "Villainous Verse – Activates a sequence of cryptic rhymes that confuse enemies, dealing damage while weakening their abilities."}},
+{name: "Lyricist: Mike D (Beastie Boys Strategist)", attributes: {"Lyrical Aggression": 80, Resilience: 85, Popularity: 95, Legacy: 92, Innovation: 95, "Special Ability": "License to Ill – Can nullify debuffs and mental attacks, flipping them back at opponents with enhanced power through humor and chaos."}},
+{name: "Turntablist: Mix Master Mike (The Sonic Assassin)", attributes: {"Lyrical Power": 70, "Activist Spirit": 75, Popularity: 85, Legacy: 95, Innovation: 98, "Special Ability": "Turntable Takedown – Gains +10 to Sonic Disruption and Speed when deploying battle scratches, confusing enemy rhythm and enhancing team tempo through breakbeat precision."}},
+{name: "Lyricist: Missy Elliott (Rap Futurist)", attributes: {"Lyrical Depth": 85, "Stage Presence": 100, "Popularity": 95, "Legacy": 90, "Innovation": 100, "Special Ability": "Work It Remix – Allows team members to reset and retry failed actions, creating remixed combat or performance moves for maximum versatility."}},
+{name: "Lyricist: Mos Def (The Philosopher)", attributes: {"Lyrical Insight": 100, "Spiritual Power": 95, "Popularity": 85, "Legacy": 90, "Innovation": 95, "Special Ability": "Black Star Wisdom – Awakens ancient knowledge, increasing the intellectual attack power of allies and revealing hidden weaknesses of enemies."}},
+{name: "Lyricist: Mr. Catra (The Polyrhythmic King)", attributes: {"Lyrical Flow": 88, Charisma: 100, Popularity: 95, Legacy: 90, Innovation: 85, "Special Ability": "Forbidden Frenzy – Unleashes a chaotic surge of funk power, boosting team morale and overwhelming defenses."}},
+{name: "Lyricist: MV Bill (The Favela Guardian)", attributes: {"Lyrical Skill": 95, "Vocal Range": 85, Popularity: 85, Legacy: 98, Innovation: 90, "Special Ability": "Cidade Partida – Gains +10 to Lyrical Aggression and Truth-Telling when exposing social injustices, destabilizing opponents with raw, uncompromising narratives."}},
+{name: "Lyricist: Nas (Street Poet)", attributes: {"Lyrical Depth": 100, "Storytelling": 95, "Popularity": 90, "Legacy": 95, "Innovation": 85, "Special Ability": "Illmatic Vision – Reveals hidden enemy strategies and boosts allies' tactical awareness through master-level street wisdom."}},
+{name: "Lyricist: Nicki Minaj (Queen of Bars)", attributes: {"Lyrical Wit": 95, "Stage Presence": 100, "Popularity": 95, "Legacy": 90, "Innovation": 95, "Special Ability": "Monster Verse – When activated, delivers a devastating lyrical finisher that increases in power the more enemies she has faced."}},
+{name: "Lyricist: ODB - Ol' Dirty Bastard (Wild Card)", attributes: {"Lyrical Versatility": 85, "Stage Presence": 100, Popularity: 95, Legacy: 90, Innovation: 100, "Special Ability": "Brooklyn Chaos – Unpredictable Frenzy"}},
+{name: "Lyricist: Playboi Carti (The Vamp Prince)", attributes: {"Lyrical Versatility": 85, "Stage Presence": 98, Popularity: 95, Legacy: 85, Innovation: 95, "Special Ability": "Whole Lotta Chaos – Gains +10 to Stage Presence and Innovation when performing in high-energy settings, overwhelming opponents with hypnotic ad-libs and distorted beats."}},
+{name: "Lyricist: Post Malone (The Genre-Bending Rockstar)", attributes: {"Lyrical Skill": 88, "Vocal Range": 92, Popularity: 100, Legacy: 85, Innovation: 95, "Special Ability": "Melodic Alchemy – Gains +10 to Innovation and Versatility when fusing rap, rock, and pop, creating unpredictable sonic waves that confuse opponents and energize allies."}},
+{name: "Lyricist: Queen Latifah (Royal Voice)", attributes: {"Vocal Power": 95, "Leadership": 100, "Popularity": 90, "Legacy": 100, "Innovation": 85, "Special Ability": "Ladies First – Protects female allies and grants bonus resistance and attack power when leading the group."}},
+{name: "Lyricist: Raekwon (Chef of the Streets)", attributes: {"Lyrical Versatility": 90, "Stage Presence": 88, Popularity: 89, Legacy: 95, Innovation: 93, "Special Ability": "Purple Tape – Street Alchemy"}},
+{name: "Lyricist: Rael (The Conscious Flow – Brazil)", attributes: {"Lyrical Precision": 90, "Flow Mastery": 88, Popularity: 85, Legacy: 88, Innovation: 90, "Special Ability": "Green Verse – Inspires allies with conscious lyrics, increasing resistance and reducing the impact of negative lyrical attacks."}},
+{name: "Lyricist: Rakim Allah (God MC)", attributes: {"Lyrical Precision": 100, "Flow Mastery": 100, "Popularity": 85, "Legacy": 100, "Innovation": 95, "Special Ability": "Microphone Fiend – Increases the accuracy and power of lyrical attacks, ensuring critical hits against slow or predictable enemies."}},
+{name: "Lyricist: Rany Money", attributes: {"Lyrical Aggression": 80, Resilience: 88, Popularity: 82, Legacy: 78, Innovation: 85, "Special Ability": "Voice of the Suburbs – Amplifies street realism and ally unity, boosting lyrical impact and disrupting enemy rhythm with grounded authenticity."}},
+{name: "Lyricist: Rapsody (Soulful Activist)", attributes: {"Lyrical Impact": 95, "Storytelling": 100, "Popularity": 85, "Legacy": 90, "Innovation": 90, "Special Ability": "Crown Verse – Inspires allies with powerful verses, increasing their morale and resilience, while weakening oppressive enemies."}},
+{name: "Lyricist: Redman (The Funk Doctor)", attributes: {"Lyrical Insight": 90, Authenticity: 100, Popularity: 88, Legacy: 95, Innovation: 92, "Special Ability": "Muddy Waters Surge – Redman channels his raw energy and irreverent humor, empowering allies and leaving enemies off guard with rhymes explosives."}},
+{name: "Lyricist: Rick Ross (The Boss of Bars)", attributes: {"Lyrical Skill": 85, "Vocal Range": 80, Popularity: 95, Legacy: 90, Innovation: 85, "Special Ability": "Maybach Empire – Gains +10 to Influence and Resilience when delivering luxury-laced rhymes, intimidating opponents while reinforcing ally morale with his larger-than-life presence."}},
+{name: "Lyricist: Rodrigo Brandão (The Verbal Alchemist)", attributes: {"Lyrical Aggression": 85, Resilience: 95, Popularity: 80, Legacy: 90, Innovation: 95, "Special Ability": "Oráculo Urbano – Gains +10 to Spoken Word Mastery and Improvisation when weaving poetry into beats, creating mystical narratives that empower allies and disorient adversaries with visionary verses."}},
+{name: "Lyricist: Roxanne Shanté (The Battle Queen)", attributes: {"Lyrical Precision": 92, "Flow Mastery": 88, Popularity: 80, Legacy: 90, Innovation: 89, "Special Ability": "Roxanne’s Retort – Gains +15 to Counterattack Speed and Verbal Defense when provoked in lyrical battles, overwhelming opponents with wit and fearless comebacks."}},
+{name: "Lyricist: Run-D.M.C. (Rap Pioneers)", attributes: {"Old-School Power": 100, "Crowd Control": 95, "Popularity": 90, "Legacy": 100, "Innovation": 90, "Special Ability": "King of Rock – Unleash a synchronized trio attack, damaging all enemies and empowering allies with a classic, indestructible spirit."}},
+{name: "Lyricist: Ryujin (The Kinetic Rap Star)", attributes: {"Lyrical Aggression": 85, Resilience: 90, Popularity: 88, Legacy: 80, Innovation: 90, "Special Ability": "Idol Strike – Gains +10 to Speed and Lyrical Precision when blending rap with high-energy performances, dazzling audiences and disrupting enemy rhythm."}},
+{name: "Lyricist: RZA (Mastermind Architect)", attributes: {"Lyrical Versatility": 85, "Stage Presence": 88, Popularity: 90, Legacy: 100, Innovation: 98, "Special Ability": "Bobby Digital – Sonic Chessmaster"}},
+{name: "Lyricist: Sabotage (Urban Alchemist)", attributes: {"Lyrical Versatility": 95, "Stage Presence": 90, Popularity: 85, Legacy: 100, Innovation: 92, "Special Ability": "Rua Sem Fim – Alchemy of the Streets"}},
+{name: "Lyricist: Sandra Denton (Pepa – The Bold Trailblazer)", attributes: {"Lyrical Skill": 90, "Vocal Range": 85, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Bold Expression – Amplifies team confidence and breaks enemy defenses by delivering unapologetic and empowering performances."}},
+{name: "Lyricist: Scott La Rock (The Boogie Down Architect)", attributes: {"Old-School Power": 95, "Crowd Control": 90, Popularity: 85, Legacy: 100, Innovation: 90, "Special Ability": "South Bronx Resonance – Amplifies the strength of allies with heavy beats and sharp rhymes, weakening enemies with direct and unrelenting sonic impact."}},
+{name: "Lyricist: Sen Dog (Cypress Hill Bruiser)", attributes: {"Lyrical Aggression": 88, Resilience: 95, Popularity: 85, Legacy: 85, Innovation: 82, "Special Ability": "Latin Lethal – Boosts team synergy with Latin spirit, amplifying damage and resilience for the whole squad during collaborations."}},
+{name: "Lyricist: Shawlin (a.k.a. Cachorro Magro – The Symbolic Alchemist)", attributes: {"Lyrical Flow": 90, Charisma: 85, Popularity: 80, Legacy: 88, Innovation: 92, "Special Ability": "Symbolic Orchestra – Transforms the battlefield into a surreal narrative, disorienting opponents and enhancing allies' creativity."}},
+{name: "Lyricist: Sheek Louch (The Street Guard)", attributes: {"Lyrical Flow": 85, Charisma: 82, Popularity: 75, Legacy: 85, Innovation: 78, "Special Ability": "Silverback Surge – Gains +10 to Defense and Strength in crew battles, becoming a protective force for allies and a nightmare for enemies."}},
+{name: "Lyricist: Shin Ryu-jin (Ryujin – The K-Pop Rap Empress)", attributes: {"Lyrical Precision": 85, "Flow Mastery": 90, Popularity: 95, Legacy: 80, Innovation: 88, "Special Ability": "Stage Dominance – Elevates the team's performance in pop battles, increasing the precision and impact of performances."}},
+{name: "Lyricist: Sir Johnny", attributes: {"Lyrical Aggression": 78, Resilience: 88, Popularity: 75, Legacy: 80, Innovation: 85, "Special Ability": "Word Dance – Raises the team's cadence with danceable and soft lyricism, reducing tension on the battlefield and confusing opponents with sharp rhythmic style."}},
+{name: "Lyricist: Slick Rick (The Storyteller)", attributes: {"Narrative Skill": 100, "Charisma": 95, "Popularity": 85, "Legacy": 90, "Innovation": 90, "Special Ability": "Children's Story – Creates a narrative so compelling that it distracts and weakens enemies, trapping them in a plot while allies recover health."}},
+{name: "Lyricist: Snoop Dogg (West Coast Icon)", attributes: {"Lyrical Flow": 95, "Charisma": 100, "Popularity": 100, "Legacy": 95, "Innovation": 90, "Special Ability": "Gin & Juice Groove – Reduces allies' stress and applies a relaxing effect that gradually restores energy during battle."}},
+{name: "Lyricist: Speed Freaks (Lyrical Hurricane)", attributes: {"Lyrical Versatility": 95, "Stage Presence": 90, Popularity: 80, Legacy: 85, Innovation: 100, "Special Ability": "Word Hurricane – Unleash an explosive lyrical sequence, increasing +10 Innovation and +10 Rhyme Speed ​​in any hardcore hip-hop or drum & bass battle, dazzling opponents with a barrage of intense words."}},
+{name: "Lyricist: Stephan Peixoto", attributes: {"Lyrical Aggression": 80, Resilience: 90, Popularity: 78, Legacy: 88, Innovation: 80, "Special Ability": "Roots Rap – Conjures national rap heritages in blunt verses, strengthening team cohesion and reducing opponents' lyrical defense with identity and memory flow."}},
+{name: "Lyricist: Stromae (The Electro-Poet)", attributes: {"Lyrical Flow": 90, Charisma: 92, Popularity: 95, Legacy: 90, Innovation: 98, "Special Ability": "Alors on Danse Pulse – Converts emotional tension into rhythmic resilience, restoring morale and focus while disorienting opponents with sharp social commentary over hypnotic beats."}},
+{name: "Lyricist: Styles P (The Ghost Philosopher)", attributes: {"Lyrical Flow": 92, Charisma: 85, Popularity: 80, Legacy: 90, Innovation: 87, "Special Ability": "Ghost Verse – Can phase through defenses with introspective bars and tactical storytelling, gaining +10 to Lyrical Impact in solo matchups."}},
+{name: "Lyricist: Tech N9ne (Lyrical Berserker)", attributes: {"Lyrical Speed": 100, "Energy Surge": 100, "Popularity": 85, "Legacy": 90, "Innovation": 95, "Special Ability": "Speed Demon Flow – Performs a series of lightning-fast verses, dealing multiple consecutive attacks and accurate critical hits against all enemies."}},
+{name: "Lyricist: The Notorious B.I.G. (The King of Flow)", attributes: {"Lyrical Aggression": 100, Resilience: 95, Popularity: 100, Legacy: 100, Innovation: 90, "Special Ability": "Sky’s the Limit – Gains +10 to Flow Mastery and Charisma when delivering vivid street tales, overpowering adversaries with unmatched cadence and strengthening allies with confidence and swagger."}},
+{name: "Lyricist: Travis Scott (Astral Visionary)", attributes: {"Stage Presence": 100, "Visual Impact": 95, "Popularity": 95, "Legacy": 85, "Innovation": 95, "Special Ability": "AstroWorld Surge – Takes combat to a surreal level, wreaking havoc on enemies while boosting allies’ creative power and mind-bending attacks."}},
+{name: "Lyricist: Tupac Shakur (Rap Revolutionary)", attributes: {"Lyrical Depth": 100, "Stage Presence": 95, "Popularity": 100, "Legacy": 100, "Innovation": 90, "Special Ability": "Thug Life Manifesto – Increases resilience and power for all allied rappers, boosting damage when facing adversity or injustice-themed opponents."}},
+{name: "Lyricist: Tyler, The Creator (Artistic Rebel)", attributes: {"Creative Genius": 100, "Versatility": 95, "Popularity": 90, "Legacy": 85, "Innovation": 100, "Special Ability": "Odd Future Shift – Redefines the battlefield by changing rules and introducing unexpected effects that confuse enemies."}},
+{name: "Lyricist: U-God (Golden Arms)", attributes: {"Lyrical Versatility": 82, "Stage Presence": 84, Popularity: 83, Legacy: 85, Innovation: 80, "Special Ability": "Raw Venom – Lethal Delivery"}},
+{name: "Lyricist: Xará (The Soulful Strategist)", attributes: {"Lyrical Flow": 88, Charisma: 80, Popularity: 75, Legacy: 82, Innovation: 87, "Special Ability": "Reflective Verse – Grants calm and critical insight to allies, while decreasing enemy initiative with introspective bars."}},
+{name: "Lyricist: Xis (The Old School Maestro)", attributes: {"Lyrical Flow": 90, Charisma: 85, Popularity: 85, Legacy: 88, Innovation: 82, "Special Ability": "Golden Microphone – Boosts ally synergy and restores flow rhythm when in golden age or boom bap battles."}},
+{name: "Lyricist: Xzibit (Pimp My Flow Technician)", attributes: {"Lyrical Aggression": 89, Resilience: 90, Popularity: 87, Legacy: 85, Innovation: 84, "Special Ability": "X to the Z – Temporarily upgrades his gear, boosting all stats for a short time and gaining heavy armor against lyrical attacks."}},
+{name: "Lyricist: Yasiin Bey (The Sonic Revolutionary)", attributes: {"Lyrical Versatility": 100, "Stage Presence": 95, Popularity: 90, Legacy: 95, Innovation: 95, "Special Ability": "Universal Cipher – Gains +10 to Conscious Rhyming and Flow Adaptability in any jazz, hip-hop, or afro-futurist battle, transcending lyrical barriers and destabilizing opponents with sharp rhymes and expansive vision."}},
+{name: "Lyricist: Yuna (ITZY) (The Sparkstep Dynamo)", attributes: {"Lyrical Aggression": 82, Resilience: 88, Popularity: 90, Legacy: 80, Innovation: 87, "Special Ability": "Dalla Dalla Boost – Gains +10 to Confidence Flow and Countermove Timing when facing high-pressure opponents, reversing negative effects through self-empowering verses."}},
+{name: "Producer: DJ Premier (Scratch Commander)", attributes: {"Turntable Mastery": 100, "Sampling Skill": 100, "Popularity": 85, "Legacy": 100, "Innovation": 90, "Special Ability": "Premier Cuts – Perform a combo of scratches and classic samples that generate multiple lyrical attacks from allies, creating devastating hits in sequence."}},
+{name: "Producer: Dr. Dre (The Beat Architect)", attributes: {"Beat Crafting": 100, "Production Mastery": 100, "Popularity": 95, "Legacy": 100, "Innovation": 90, "Special Ability": "Chronic Wave – Creates a massive impact slam that increases the attack power and accuracy of allies while slowing enemies."}},
+{name: "Producer: Ganja Man (The Dub Alchemist)", attributes: {"Beat Crafting": 95, "Production Mastery": 90, Popularity: 85, Legacy: 92, Innovation: 95, "Special Ability": " Dub Vortex – Ganja Man unleashes a wave of bass and echoes that distort the battlefield, reducing enemy accuracy and increasing ally regeneration for two rounds. In reggae, dub, or dancehall battles, his Production Mastery gains +10, amplifying the sonic impact and prolonging the skill's effect."}},
+{name: "Producer: J Dilla (Soul Alchemist)", attributes: {"Sampling Skill": 100, "Rhythmic Flow": 95, "Popularity": 85, "Legacy": 100, "Innovation": 100, "Special Ability": "Donuts Loop – Generates a sequence of continuous rhythmic attacks that affect all enemies, restoring energy to allies in the process."}},
+{name: "Producer: KRS-One (The Conscious Architect)", attributes: {"Beat Crafting": 88, "Production Mastery": 85, Popularity: 85, Legacy: 100, Innovation: 92, "Special Ability": "Edutainment Burst – Unleashes a knowledge-infused beat that boosts ally Wisdom and Resistance while reducing enemy Lyrical Focus through sharp philosophical disruption."}},
+{name: "Producer: Metro Boomin (Trap Kingpin)", attributes: {"Dark Beats": 100, "Rhythmic Precision": 95, "Popularity": 90, "Legacy": 85, "Innovation": 90, "Special Ability": "Boomin’ Drop – Launches a heavy drop strike that hits all enemies simultaneously, dealing critical damage on each impact."}},
+{name: "Producer: Papatinho", attributes: {"Beat Complexity": 90, "Tactical Brilliance": 88, Popularity: 92, Legacy: 85, Innovation: 90, "Special Ability": "Supreme Beat – Creates addictive beats that increase allies' lyrical attack power and reduce enemies' resistance with grooves that combine favela and finesse."}},
+{name: "Producer: Pharrell Williams (Hitmaker Extraordinaire)", attributes: {"Melodic Genius": 100, "Style & Influence": 100, "Popularity": 95, "Legacy": 90, "Innovation": 100, "Special Ability": "Happy Vibes – Generates a positive wave that restores energy and morale to allies while reducing the power of enemy negative attacks."}},
+{name: "Producer: RZA (Shaolin Mastermind)", attributes: {"Beat Complexity": 100, "Tactical Brilliance": 95, "Popularity": 85, "Legacy": 100, "Innovation": 95, "Special Ability": "36 Chambers Tactics – Summons allied members for a coordinated strategic attack, causing multiple combo attacks and confusion on enemies."}},
+{name: "Producer: Swizz Beatz", attributes: {"Beat Complexity": 90, "Tactical Brilliance": 88, Popularity: 90, Legacy: 92, Innovation: 90, "Special Ability": "Ruff Ryders Anthem – Unleashes a high-energy beat drop that boosts ally aggression by +10 and causes enemy formations to falter from shockwave hype."}},
+{name: "Producer: Timbaland (Sound Wizard)", attributes: {"Percussion Genius": 100, "Sound Experimentation": 100, "Popularity": 90, "Legacy": 95, "Innovation": 100, "Special Ability": "Future Soundwave – Unleash a futuristic beat that scrambles enemy abilities and empowers allies with creative new abilities."}},
+ ];
+const instruments = [
+{name: "Shure SM58 (1966)", attributes: {"Category": "Dynamic Microphone", "Key Features": "Durability, Vocal Clarity, Stage Performance"}},
+{name: "Neumann U87 (1967)", attributes: {"Category": "Studio Microphone", "Key Features": "Studio Standard, Warm Sound, High Sensitivity"}},
+{name: "Vestax PMC-05 Pro II (1997)", attributes: {"Category": "DJ Mixer", "Key Features": "Scratch Performance, Battle Mixer, Sturdy Build"}},
+{name: "Rane TTM 57SL (2006)", attributes: {"Category": "DJ Mixer", "Key Features": "Serato Integration, High-End Sound, MIDI Control"}},
+{name: "Akai MPC60 (1988)", attributes: {"Category": "Sampler/Sequencer", "Key Features": "Legendary Sampling, 16 Pads, Iconic Workflow"}},
+{name: "Roland TR-808 (1980)", attributes: {"Category": "Drum Machine", "Key Features": "Deep Bass Kicks, Iconic Sounds, Studio Legacy"}},
+{name: "E-mu SP-1200 (1987)", attributes: {"Category": "Sampler/Drum Machine", "Key Features": "Lo-Fi Sound, Limited Sample Time, Hip-Hop Classic"}},
+{name: "Technics RP-DH1200 (2000s)", attributes: {"Category": "DJ Headphones", "Key Features": "Sturdy Build, DJ Favorite, Clear Sound"}},
+{name: "Sony MDR-7506 (1991)", attributes: {"Category": "Studio Headphones", "Key Features": "Studio Monitoring, Clear Sound, Comfortable Fit"}},
+{name: "Technics SL-1200 MK2 (1979)", attributes: {"Category": "DJ Turntable", "Key Features": "Direct Drive, Scratch Ready, DJ Standard"}}
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playersCheckbox').checked) selectedCards.push(...players);
+    if (document.getElementById('instrumentsCheckbox').checked) selectedCards.push(...instruments);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  document.getElementById('shuffleRulesButton').addEventListener('click', function() {
+    shuffleDeck(rules, 'rulesResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+		body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

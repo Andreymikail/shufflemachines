@@ -1,0 +1,212 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">NHL</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  <!-- Action Section -->
+  <div style="margin-top: 20px;">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div style="margin-bottom: 20px;">
+        <h3>Action</h3>
+        <p id="actionResult" style="color: white;">-</p>
+        <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+"Power Play - Choose any category and challenge. If you win, I play again.",
+"Hat Trick - If you win three rounds in a row, gain an extra card from the deck.",
+"One-Timer - Challenge two categories at the same time. If you win both, take two cards from your opponent.",
+"Breakaway - Choose an advanced category (Goals, Assists, Speed). If you win, your opponent loses two cards.",
+"Block Shot - Nullify the effect of an opponent's special action.",
+"Penalty Kill - If you lose a round, immediately challenge another category to try to get your card back.",
+"Last Line of Defense - If your last card is for a goalie, double the value of a defensive category when defending your final card.",
+"Shutdown Defense - Choose a defensive category (Defense, Reflexes, Positioning). If you win, immediately challenge a second category.",
+"Coach Challenge - Revisit the last round by challenging the same category again.",
+"Line Change - Swap a card in your hand for one from the top of the deck.",
+"Face-Off - Both players play a card blindly. The winner gets both cards and chooses the next category.",
+"Time-Out - Block a round without losing your card.",
+"Stanley Cup Final - Whoever has the card automatically challenges two categories of their choice and can use any card in their hand.",
+"Game Misconduct - The opponent loses their next turn.",
+"Overtime Hero - If you lose your last card, challenge a bonus category to stay in the game.",
+"Trade Deadline - Trade a card with your opponent without revealing the stats."
+  ];
+  
+  const cards = [
+  {name: "Coach: Barry Trotz", attributes: {"Overall Rating": 96, "Career Wins": 800, "Stanley Cup Titles": 1, "Playoff Wins": 85, "Tactical Genius": 95, "Player Development": 90, "Motivational Power": 92, "Defensive Mind": 98, "Offensive Tactics": 89}},
+{name: "Coach: Bruce Cassidy", attributes: {"Overall Rating": 95, "Career Wins": 450, "Stanley Cup Titles": 1, "Playoff Wins": 80, "Tactical Genius": 96, "Player Development": 91, "Motivational Power": 90, "Defensive Mind": 95, "Offensive Tactics": 93}},
+{name: "Coach: Darryl Sutter", attributes: {"Overall Rating": 95, "Career Wins": 700, "Stanley Cup Titles": 2, "Playoff Wins": 90, "Tactical Genius": 94, "Player Development": 86, "Motivational Power": 96, "Defensive Mind": 97, "Offensive Tactics": 88}},
+{name: "Coach: Jared Bednar", attributes: {"Overall Rating": 94, "Career Wins": 300, "Stanley Cup Titles": 1, "Playoff Wins": 70, "Tactical Genius": 92, "Player Development": 94, "Motivational Power": 93, "Defensive Mind": 90, "Offensive Tactics": 95}},
+{name: "Coach: Jon Cooper", attributes: {"Overall Rating": 97, "Career Wins": 500, "Stanley Cup Titles": 2, "Playoff Wins": 90, "Tactical Genius": 98, "Player Development": 92, "Motivational Power": 95, "Defensive Mind": 93, "Offensive Tactics": 96}},
+{name: "Coach: Lindy Ruff", attributes: {"Overall Rating": 91, "Career Wins": 800, "Stanley Cup Titles": 0, "Playoff Wins": 70, "Tactical Genius": 90, "Player Development": 88, "Motivational Power": 90, "Defensive Mind": 89, "Offensive Tactics": 91}},
+{name: "Coach: Mike Sullivan", attributes: {"Overall Rating": 96, "Career Wins": 450, "Stanley Cup Titles": 2, "Playoff Wins": 85, "Tactical Genius": 94, "Player Development": 89, "Motivational Power": 95, "Defensive Mind": 91, "Offensive Tactics": 94}},
+{name: "Coach: Paul Maurice", attributes: {"Overall Rating": 92, "Career Wins": 800, "Stanley Cup Titles": 0, "Playoff Wins": 70, "Tactical Genius": 91, "Player Development": 88, "Motivational Power": 89, "Defensive Mind": 90, "Offensive Tactics": 92}},
+{name: "Coach: Peter DeBoer", attributes: {"Overall Rating": 93, "Career Wins": 450, "Stanley Cup Titles": 0, "Playoff Wins": 80, "Tactical Genius": 93, "Player Development": 90, "Motivational Power": 88, "Defensive Mind": 91, "Offensive Tactics": 92}},
+{name: "Coach: Rod Brind’Amour", attributes: {"Overall Rating": 95, "Career Wins": 300, "Stanley Cup Titles": 0, "Playoff Wins": 50, "Tactical Genius": 94, "Player Development": 95, "Motivational Power": 98, "Defensive Mind": 94, "Offensive Tactics": 91}},
+{name: "Player: Alex DeBrincat", attributes: {Position: "Right Wing", "Overall Rating": 90, "Goals per Season": 40, "Assists per Season": 35, Speed: 92, Physicality: 80, "Stick Skills": 90, "Hockey IQ": 88, "Team Leadership": 85}},
+{name: "Player: Alex Ovechkin", attributes: {Position: "Left Wing", "Overall Rating": 96, "Goals per Season": 50, "Assists per Season": 35, Speed: 85, Physicality: 95, "Stick Skills": 90, "Hockey IQ": 92, "Team Leadership": 95}},
+{name: "Player: Andrei Vasilevskiy", attributes: {Position: "Goalie", "Overall Rating": 98, "Save Percentage": 0.925, "Goals Against Average": 2.25, Shutouts: 6, Reflexes: 96, Positioning: 98, "Puck Handling": 88, "Playoff Clutch": 100}},
+{name: "Player: Artemi Panarin", attributes: {Position: "Left Wing", "Overall Rating": 94, "Goals per Season": 35, "Assists per Season": 60, Speed: 88, Physicality: 80, "Stick Skills": 95, "Hockey IQ": 94, "Team Leadership": 86}},
+{name: "Player: Auston Matthews", attributes: {Position: "Center", "Overall Rating": 96, "Goals per Season": 60, "Assists per Season": 45, Speed: 88, Physicality: 92, "Stick Skills": 95, "Hockey IQ": 90, "Team Leadership": 85}},
+{name: "Player: Brady Tkachuk", attributes: {Position: "Left Wing", "Overall Rating": 92, "Goals per Season": 35, "Assists per Season": 45, Speed: 87, Physicality: 97, "Stick Skills": 88, "Hockey IQ": 89, "Team Leadership": 96}},
+{name: "Player: Brayden Point", attributes: {Position: "Center", "Overall Rating": 92, "Goals per Season": 45, "Assists per Season": 40, Speed: 93, Physicality: 85, "Stick Skills": 90, "Hockey IQ": 91, "Team Leadership": 87}},
+{name: "Player: Cale Makar", attributes: {Position: "Defenseman", "Overall Rating": 97, "Goals per Season": 22, "Assists per Season": 58, Speed: 95, Physicality: 88, "Stick Skills": 94, "Hockey IQ": 96, "Team Leadership": 87}},
+{name: "Player: Connor Hellebuyck", attributes: {Position: "Goalie", "Overall Rating": 96, "Save Percentage": 0.920, "Goals Against Average": 2.35, Shutouts: 6, Reflexes: 92, Positioning: 95, "Puck Handling": 88, "Playoff Clutch": 93}},
+{name: "Player: Connor McDavid", attributes: {Position: "Center", "Overall Rating": 99, "Goals per Season": 45, "Assists per Season": 75, Speed: 100, Physicality: 85, "Stick Skills": 99, "Hockey IQ": 98, "Team Leadership": 90}},
+{name: "Player: David Pastrňák", attributes: {Position: "Right Wing", "Overall Rating": 95, "Goals per Season": 50, "Assists per Season": 40, Speed: 90, Physicality: 85, "Stick Skills": 96, "Hockey IQ": 92, "Team Leadership": 88}},
+{name: "Player: Elias Pettersson", attributes: {Position: "Center", "Overall Rating": 92, "Goals per Season": 35, "Assists per Season": 55, Speed: 90, Physicality: 82, "Stick Skills": 93, "Hockey IQ": 91, "Team Leadership": 84}},
+{name: "Player: Frederik Andersen", attributes: {Position: "Goalie", "Overall Rating": 92, "Save Percentage": 0.915, "Goals Against Average": 2.45, Shutouts: 4, Reflexes: 90, Positioning: 93, "Puck Handling": 86, "Playoff Clutch": 89}},
+{name: "Player: Gabriel Landeskog", attributes: {Position: "Left Wing", "Overall Rating": 92, "Goals per Season": 35, "Assists per Season": 45, Speed: 86, Physicality: 94, "Stick Skills": 88, "Hockey IQ": 90, "Team Leadership": 96}},
+{name: "Player: Igor Shesterkin", attributes: {Position: "Goalie", "Overall Rating": 97, "Save Percentage": 0.930, "Goals Against Average": 2.10, Shutouts: 7, Reflexes: 99, Positioning: 95, "Puck Handling": 85, "Playoff Clutch": 95}},
+{name: "Player: Ilya Sorokin", attributes: {Position: "Goalie", "Overall Rating": 95, "Save Percentage": 0.924, "Goals Against Average": 2.20, Shutouts: 7, Reflexes: 94, Positioning: 96, "Puck Handling": 85, "Playoff Clutch": 91}},
+{name: "Player: Jack Hughes", attributes: {Position: "Center", "Overall Rating": 93, "Goals per Season": 40, "Assists per Season": 50, Speed: 95, Physicality: 80, "Stick Skills": 96, "Hockey IQ": 92, "Team Leadership": 85}},
+{name: "Player: Jake Oettinger", attributes: {Position: "Goalie", "Overall Rating": 94, "Save Percentage": 0.918, "Goals Against Average": 2.35, Shutouts: 5, Reflexes: 95, Positioning: 92, "Puck Handling": 87, "Playoff Clutch": 96}},
+{name: "Player: Jonathan Huberdeau", attributes: {Position: "Left Wing", "Overall Rating": 91, "Goals per Season": 30, "Assists per Season": 60, Speed: 87, Physicality: 85, "Stick Skills": 90, "Hockey IQ": 93, "Team Leadership": 88}},
+{name: "Player: Juuse Saros", attributes: {Position: "Goalie", "Overall Rating": 94, "Save Percentage": 0.918, "Goals Against Average": 2.40, Shutouts: 5, Reflexes: 95, Positioning: 90, "Puck Handling": 87, "Playoff Clutch": 88}},
+{name: "Player: Kirill Kaprizov", attributes: {Position: "Left Wing", "Overall Rating": 94, "Goals per Season": 45, "Assists per Season": 50, Speed: 92, Physicality: 85, "Stick Skills": 93, "Hockey IQ": 89, "Team Leadership": 84}},
+{name: "Player: Kyle Connor", attributes: {Position: "Left Wing", "Overall Rating": 91, "Goals per Season": 45, "Assists per Season": 40, Speed: 90, Physicality: 85, "Stick Skills": 92, "Hockey IQ": 89, "Team Leadership": 87}},
+{name: "Player: Leon Draisaitl", attributes: {Position: "Center", "Overall Rating": 97, "Goals per Season": 55, "Assists per Season": 60, Speed: 88, Physicality: 94, "Stick Skills": 97, "Hockey IQ": 96, "Team Leadership": 90}},
+{name: "Player: Linus Ullmark", attributes: {Position: "Goalie", "Overall Rating": 95, "Save Percentage": 0.930, "Goals Against Average": 2.10, Shutouts: 6, Reflexes: 93, Positioning: 97, "Puck Handling": 89, "Playoff Clutch": 92}},
+{name: "Player: Matthew Tkachuk", attributes: {Position: "Left Wing", "Overall Rating": 93, "Goals per Season": 40, "Assists per Season": 50, Speed: 87, Physicality: 95, "Stick Skills": 89, "Hockey IQ": 90, "Team Leadership": 90}},
+{name: "Player: Mikko Rantanen", attributes: {Position: "Right Wing", "Overall Rating": 94, "Goals per Season": 50, "Assists per Season": 45, Speed: 89, Physicality: 92, "Stick Skills": 94, "Hockey IQ": 93, "Team Leadership": 88}},
+{name: "Player: Mitch Marner", attributes: {Position: "Right Wing", "Overall Rating": 95, "Goals per Season": 30, "Assists per Season": 65, Speed: 90, Physicality: 80, "Stick Skills": 97, "Hockey IQ": 96, "Team Leadership": 85}},
+{name: "Player: Nathan MacKinnon", attributes: {Position: "Center", "Overall Rating": 98, "Goals per Season": 40, "Assists per Season": 60, Speed: 97, Physicality: 90, "Stick Skills": 96, "Hockey IQ": 95, "Team Leadership": 92}},
+{name: "Player: Nico Hischier", attributes: {Position: "Center", "Overall Rating": 90, "Goals per Season": 35, "Assists per Season": 50, Speed: 89, Physicality: 88, "Stick Skills": 90, "Hockey IQ": 91, "Team Leadership": 95}},
+{name: "Player: Patrice Bergeron", attributes: {Position: "Center", "Overall Rating": 96, "Goals per Season": 25, "Assists per Season": 45, Speed: 85, Physicality: 88, "Stick Skills": 92, "Hockey IQ": 99, "Team Leadership": 100}},
+{name: "Player: Rasmus Dahlin", attributes: {Position: "Defenseman", "Overall Rating": 93, "Goals per Season": 20, "Assists per Season": 55, Speed: 88, Physicality: 90, "Stick Skills": 92, "Hockey IQ": 94, "Team Leadership": 86}},
+{name: "Player: Roman Josi", attributes: {Position: "Defenseman", "Overall Rating": 94, "Goals per Season": 20, "Assists per Season": 55, Speed: 89, Physicality: 91, "Stick Skills": 90, "Hockey IQ": 95, "Team Leadership": 92}},
+{name: "Player: Sebastian Aho", attributes: {Position: "Center", "Overall Rating": 91, "Goals per Season": 35, "Assists per Season": 50, Speed: 90, Physicality: 85, "Stick Skills": 92, "Hockey IQ": 91, "Team Leadership": 88}},
+{name: "Player: Sidney Crosby", attributes: {Position: "Center", "Overall Rating": 98, "Goals per Season": 35, "Assists per Season": 65, Speed: 90, Physicality: 87, "Stick Skills": 97, "Hockey IQ": 99, "Team Leadership": 100}},
+{name: "Player: Steven Stamkos", attributes: {Position: "Center", "Overall Rating": 94, "Goals per Season": 40, "Assists per Season": 50, Speed: 88, Physicality: 90, "Stick Skills": 92, "Hockey IQ": 94, "Team Leadership": 95}},
+{name: "Player: Thatcher Demko", attributes: {Position: "Goalie", "Overall Rating": 93, "Save Percentage": 0.917, "Goals Against Average": 2.45, Shutouts: 4, Reflexes: 94, Positioning: 91, "Puck Handling": 86, "Playoff Clutch": 90}},
+{name: "Player: Tim Stützle", attributes: {Position: "Center", "Overall Rating": 90, "Goals per Season": 40, "Assists per Season": 45, Speed: 93, Physicality: 84, "Stick Skills": 91, "Hockey IQ": 88, "Team Leadership": 86}},
+{name: "Player: Timo Meier", attributes: {Position: "Right Wing", "Overall Rating": 89, "Goals per Season": 35, "Assists per Season": 40, Speed: 88, Physicality: 93, "Stick Skills": 89, "Hockey IQ": 87, "Team Leadership": 84}},
+{name: "Player: Tristan Jarry", attributes: {Position: "Goalie", "Overall Rating": 91, "Save Percentage": 0.915, "Goals Against Average": 2.50, Shutouts: 4, Reflexes: 91, Positioning: 90, "Puck Handling": 85, "Playoff Clutch": 88}},
+{name: "Player: Victor Hedman", attributes: {Position: "Defenseman", "Overall Rating": 95, "Goals per Season": 15, "Assists per Season": 55, Speed: 87, Physicality: 95, "Stick Skills": 88, "Hockey IQ": 96, "Team Leadership": 94}},
+{name: "Player: Wayne Gretzky", attributes: {Position: "Center", "Overall Rating": 99, "Goals per Season": 50, "Assists per Season": 90, Speed: 92, Physicality: 80, "Stick Skills": 99, "Hockey IQ": 100, "Team Leadership": 98}},
+{name: "Stadium: Ball Arena (Colorado Avalanche)", attributes: {"Overall Rating": 94, "Seating Capacity": 18007, Atmosphere: 92, "History & Legacy": 95, "Ice Quality": 93, "Fan Engagement": 91, "Modern Amenities": 93, "Iconic Moments": "9+ (Avalanche Titles)"}},
+{name: "Stadium: Bell Center (Montreal Canadiens)", attributes: {"Overall Rating": 98, "Seating Capacity": 21302, Atmosphere: 100, "History & Legacy": 100, "Ice Quality": 95, "Fan Engagement": 97, "Modern Amenities": 90, "Iconic Moments": "15+ (24 Canadiens Stanley Cup titles)"}},
+{name: "Stadium: Climate Pledge Arena (Seattle Kraken)", attributes: {"Overall Rating": 92, "Seating Capacity": 17100, Atmosphere: 91, "History & Legacy": 80, "Ice Quality": 95, "Fan Engagement": 94, "Modern Amenities": 100, "Iconic Moments": "3+ (early moments and historic games)"}},
+{name: "Stadium: Madison Square Garden (New York Rangers)", attributes: {"Overall Rating": 97, "Seating Capacity": 18006, Atmosphere: 95, "History & Legacy": 100, "Ice Quality": 88, "Fan Engagement": 94, "Modern Amenities": 95, "Iconic Moments": "20+ (various sporting and cultural events)"}},
+{name: "Stadium: PPG Paints Arena (Pittsburgh Penguins)", attributes: {"Overall Rating": 95, "Seating Capacity": 18387, Atmosphere: 94, "History & Legacy": 97, "Ice Quality": 92, "Fan Engagement": 95, "Modern Amenities": 94, "Iconic Moments": "11+ (Penguins Achievements)"}},
+{name: "Stadium: Rogers Arena (Vancouver Canucks)", attributes: {"Overall Rating": 93, "Seating Capacity": 18910, Atmosphere: 90, "History & Legacy": 90, "Ice Quality": 92, "Fan Engagement": 93, "Modern Amenities": 91, "Iconic Moments": "8+ (Playoffs and Iconic Moments)"}},
+{name: "Stadium: Scotiabank Arena (Toronto Maple Leafs)", attributes: {"Overall Rating": 96, "Seating Capacity": 18800, Atmosphere: 94, "History & Legacy": 98, "Ice Quality": 90, "Fan Engagement": 95, "Modern Amenities": 94, "Iconic Moments": "10+ (Playoffs and Memorable Events)"}},
+{name: "Stadium: T-Mobile Arena (Vegas Golden Knights)", attributes: {"Overall Rating": 94, "Seating Capacity": 17500, Atmosphere: 98, "History & Legacy": 85, "Ice Quality": 93, "Fan Engagement": 100, "Modern Amenities": 98, "Iconic Moments": "6+ (Playoffs and events)"}},
+{name: "Stadium: TD Garden (Boston Bruins)", attributes: {"Overall Rating": 95, "Seating Capacity": 17850, Atmosphere: 96, "History & Legacy": 97, "Ice Quality": 90, "Fan Engagement": 94, "Modern Amenities": 92, "Iconic Moments": "12+ (Bruins Titles and Historical Events)"}},
+{name: "Stadium: United Center (Chicago Blackhawks)", attributes: {"Overall Rating": 94, "Seating Capacity": 19717, Atmosphere: 93, "History & Legacy": 96, "Ice Quality": 89, "Fan Engagement": 91, "Modern Amenities": 92, "Iconic Moments": "10+ (Stanley Cup Titles)"}},
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [...cards]; // Clone the cards array
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and display result
+  function shuffleAction() {
+    const randomAction = actions[Math.floor(Math.random() * actions.length)];
+    document.getElementById('actionResult').textContent = randomAction;
+  }
+
+  // Event listeners for the Shuffle Action button
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleAction();
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Shuffle and display cards, but don't shuffle actions
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 80px; /* Aligned with height for proper vertical centering */
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 80px; /* Aligned with height for proper vertical centering */
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

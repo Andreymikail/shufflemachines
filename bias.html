@@ -1,0 +1,156 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Bias</h2>
+  
+  <!-- Elements per page selection -->
+  <div>
+    <label for="elementsPerPage" style="color: white;">Bias per Page:</label><br>
+    <input type="number" id="elementsPerPage" value="1"><br><br>
+  </div>
+
+  <!-- Shuffle Button -->
+  <button id="shuffleButton" class="round-button">Shuffle</button>
+
+  <!-- Rules Display -->
+  <div id="rulesContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const rulesOfAcquisition = [
+    "Confirmation Bias: Tendency to search for or interpret information in a way that confirms one's preconceptions.",
+"Anchoring Bias: Relying too heavily on the first piece of information encountered when making decisions.",
+"Availability Heuristic: Overestimating the importance of information that is readily available.",
+"Hindsight Bias: Seeing past events as being predictable after they have already occurred.",
+"Fundamental Attribution Error: Overemphasizing personal characteristics and underestimating situational factors when judging others' behavior.",
+"Self-Serving Bias: Attributing successes to oneself and failures to external factors.",
+"In-group Bias: Favoring members of one's own group over those in others.",
+"Bandwagon Effect: Doing or believing things because many others do the same.",
+"Dunning-Kruger Effect: Overestimating one's abilities due to a lack of self-awareness.",
+"Halo Effect: Allowing one positive trait to overshadow other, possibly negative, traits.",
+"Horn Effect: Opposite of the halo effect; one negative trait overshadows other, positive traits.",
+"Negativity Bias: Giving more weight to negative experiences than positive ones.",
+"Optimism Bias: Believing that positive things are more likely to happen to oneself.",
+"Pessimism Bias: Believing that negative events are more likely to occur.",
+"Status Quo Bias: Preferring things to remain the same or maintaining a previous decision.",
+"Sunk Cost Fallacy: Continuing a project due to the resources already invested.",
+"Framing Effect: Drawing different conclusions based on how the same information is presented.",
+"Curse of Knowledge: Assuming others have the same background to understand something.",
+"Just-World Hypothesis: Believing that people get what they deserve.",
+"Gambler's Fallacy: Believing that future probabilities are altered by past events.",
+"Overconfidence Bias: Overestimating one's abilities or the accuracy of one's predictions.",
+"Survivorship Bias: Focusing on successful examples while ignoring those that failed.",
+"Stereotyping: Generalizing about a group based on limited information.",
+"Illusory Correlation: Perceiving a relationship between variables even when none exists.",
+"Belief Bias: Accepting or rejecting arguments based on personal beliefs rather than logic.",
+"Groupthink: Prioritizing group harmony over realistic appraisal of alternatives.",
+"Mere Exposure Effect: Developing a preference for things merely because they are familiar.",
+"Reactance: Doing the opposite of what someone wants, due to a perceived threat to freedom.",
+"Egocentric Bias: Relying too heavily on one's own perspective and experiences.",
+"Planning Fallacy: Underestimating the time or resources needed to complete a task.",
+"Recency Bias: Giving more importance to the most recent events.",
+"Outcome Bias: Judging a decision based on its outcome rather than the quality of the decision at the time.",
+"Base Rate Fallacy: Ignoring general statistical information in favor of specific information.",
+"Empathy Gap: Underestimating the influence of emotional states on behavior.",
+"Placebo Effect: Experiencing a benefit after receiving a treatment with no therapeutic effect.",
+"Primacy Effect: Remembering information presented first better than information presented later.",
+"Salience Bias: Focusing on items or information that are more noticeable while ignoring those that are less so.",
+"Zero-Risk Bias: Preferring the complete elimination of a risk even when alternative options produce a greater overall reduction in risk.",
+"Conservatism Bias: Maintaining one's initial beliefs even in the face of new information.",
+"Authority Bias: Attributing greater accuracy to the opinion of an authority figure.",
+"Actor-Observer Bias: Tendency to attribute one's own actions to external factors while attributing others' actions to internal factors.",
+"Ambiguity Effect: Avoiding options with unknown probabilities in favor of those with known probabilities.",
+"Attentional Bias: Focusing attention on certain stimuli while ignoring others, often influenced by emotions.",
+"Automation Bias: Over-relying on automated systems, which can lead to errors if the system is flawed.",
+"Backfire Effect: Strengthening of beliefs even when presented with contradicting evidence.",
+"Barnum Effect (Forer Effect): Believing that vague, general statements are personally meaningful.",
+"Belief Perseverance: Maintaining one's beliefs even after they have been disproven.",
+"Bystander Effect: Individuals are less likely to help a person in need when others are present.",
+"Choice-supportive Bias: Remembering one's choices as better than they were.",
+"Clustering Illusion: Seeing patterns or clusters in random data.",
+"Conservatism (Bayesian): Insufficiently revising one's beliefs when presented with new evidence.",
+"Contrast Effect: Enhancing or diminishing perception when compared with a recently observed contrasting object.",
+"Curse of Knowledge: Assuming that others have the same background or understanding on a topic.",
+"Decoy Effect: Preference changes between two options when presented with a third, less attractive option.",
+"Endowment Effect: Valuing something more highly simply because you own it.",
+"Framing Effect: Reacting differently depending on how information is presented (e.g., loss vs. gain).",
+"Functional Fixedness: Limiting the use of an object to its traditional function.",
+"Gambler's Fallacy: Believing that future probabilities are influenced by past events in a random process.",
+"Halo Effect: Allowing a single trait (positive) to influence overall perception.",
+"Horn Effect: Allowing a single trait (negative) to influence overall perception.",
+"Herd Mentality: Adopting behaviors and beliefs because many others do the same.",
+"Hyperbolic Discounting: Preferring smaller, immediate rewards over larger, delayed rewards.",
+"Illusion of Control: Overestimating one's influence over external events.",
+"Illusory Correlation: Perceiving a relationship between variables when none exists.",
+"In-group Favoritism: Preferring and giving better treatment to people perceived as belonging to one's own group.",
+"Just-World Hypothesis: Believing that the world is inherently fair, and people get what they deserve.",
+"Mere Exposure Effect: Developing a preference for things simply because they are familiar.",
+"Neglect of Probability: Ignoring the actual probability of an event when making decisions.",
+"Observer-expectancy Effect: Researcher's cognitive bias causes them to unconsciously influence participants.",
+"Optimism Bias: Overestimating the likelihood of positive outcomes.",
+"Ostrich Effect: Ignoring obvious negative information.",
+"Outcome Bias: Judging a decision based on its outcome rather than the quality of the decision at the time.",
+"Planning Fallacy: Underestimating the time, costs, and risks of future actions.",
+"Post-purchase Rationalization: Justifying a purchase after the fact to reduce buyer's remorse.",
+"Recency Effect: Better recall of the most recent information.",
+"Salience Bias: Focusing on items that are more prominent and ignoring those that are less so.",
+"Self-Fulfilling Prophecy: Expectations about a situation or person lead to the fulfillment of those expectations.",
+"Status Quo Bias: Preferring for things to stay the same by doing nothing.",
+"Sunk Cost Fallacy: Continuing a venture because of previously invested resources.",
+"Zero-risk Bias: Preferring the complete elimination of a risk even when alternative options produce a greater overall reduction in risk."
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to shuffle and display paginated rules
+  function shuffleRules() {
+    const shuffledRules = shuffleArray(rulesOfAcquisition);
+    const elementsPerPage = parseInt(document.getElementById('elementsPerPage').value, 10);
+    displayPaginatedRules(shuffledRules, elementsPerPage);
+  }
+
+  // Function to display paginated rules
+  function displayPaginatedRules(rules, elementsPerPage) {
+    const rulesContainer = document.getElementById('rulesContainer');
+    rulesContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < rules.length; i += elementsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+      pageDiv.innerHTML = `<h3>Page ${(i / elementsPerPage) + 1}</h3><p>${rules.slice(i, i + elementsPerPage).join('<br>')}</p>`;
+      rulesContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Event listener for the Shuffle button
+  document.getElementById('shuffleButton').addEventListener('click', shuffleRules);
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

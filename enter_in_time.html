@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Second Hand Timing Game</title>
+</head>
+<body>
+  <h1 style="color: white;">Enter in time</h1>
+  <div id="gameContainer">
+    <div id="clockContainer">
+      <div id="clock">
+        <div id="secondHand"></div>
+      </div>
+    </div>
+    <br>
+    <div id="controls">
+      <label for="speedSelect" style="color: white;">Speed:</label>
+      <select id="speedSelect">
+        <option value="1">1x</option>
+        <option value="2" selected>2x</option>
+        <option value="3">3x</option>
+        <option value="4">4x</option>
+        <option value="5">5x</option>
+      </select>
+      <br><br>
+      <label for="durationSelect" style="color: white;">Duration (minutes):</label>
+      <select id="durationSelect">
+        <option value="1" selected>1 minute</option>
+        <option value="2">2 minutes</option>
+        <option value="3">3 minutes</option>
+        <option value="5">5 minutes</option>
+      </select>
+      <br><br>
+      <label for="delaySelect" style="color: white;">Delay (seconds):</label>
+      <select id="delaySelect">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+      </select>
+      <br><br>
+      <label style="color: white;">Second Selector:</label>
+      <div id="secondOptions">
+        <button class="secondOption" data-value="00">00</button>
+        <button class="secondOption" data-value="10">10</button>
+        <button class="secondOption" data-value="20">20</button>
+        <button class="secondOption" data-value="30">30</button>
+        <button class="secondOption" data-value="40">40</button>
+        <button class="secondOption" data-value="50">50</button>
+      </div>
+      <br>
+      <button id="submitGuess" class="round-button">Enter</button>
+    </div>
+    <p id="feedback"></p>
+    <p id="scoreDisplay">Score: 0</p>
+    <p id="timeRemaining">Time Remaining: <span id="minutesRemaining"></span>m <span id="secondsRemaining"></span>s</p>
+  </div>
+  <br>
+  <button id="resetGame" class="round-button">Reset</button>
+  
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const secondHand = document.getElementById('secondHand');
+  const speedSelect = document.getElementById('speedSelect');
+  const delaySelect = document.getElementById('delaySelect');
+  const durationSelect = document.getElementById('durationSelect');
+  const submitGuess = document.getElementById('submitGuess');
+  const resetGame = document.getElementById('resetGame');
+  const feedback = document.getElementById('feedback');
+  const scoreDisplay = document.getElementById('scoreDisplay');
+  const timeRemainingDisplay = document.getElementById('timeRemaining');
+  const minutesRemainingDisplay = document.getElementById('minutesRemaining');
+  const secondsRemainingDisplay = document.getElementById('secondsRemaining');
+  const secondOptions = document.querySelectorAll('.secondOption');
+
+  let score = 0;
+  let rotationSpeed = 2; // Default speed (2x)
+  let isGuessing = false;
+  let animationStartTime;
+  let gameDuration; // Game duration in milliseconds
+  let gameEndTime;
+  let gameTimerInterval;
+  let selectedSecond = null;
+
+  // Function to update the rotation speed and synchronize the animation
+  function updateSpeed() {
+    rotationSpeed = parseInt(speedSelect.value);
+    const duration = 60 / rotationSpeed; // Duration in seconds for one full rotation
+
+    // Remove any existing animation
+    secondHand.style.animation = 'none';
+
+    // Calculate the rotation degree based on current time
+    const currentTime = new Date();
+    const period = 60000 / rotationSpeed; // Total duration of one full rotation in milliseconds
+    const totalElapsedSinceRotationStart = currentTime.getTime() % period;
+    const rotationDegree = (totalElapsedSinceRotationStart / period) * 360;
+
+    // Apply the rotation to the second hand
+    secondHand.style.transform = `rotate(${rotationDegree}deg)`;
+
+    // Force reflow to reset the animation
+    void secondHand.offsetWidth;
+
+    // Start the animation from the current rotation
+    secondHand.style.animation = `rotate ${duration}s linear infinite`;
+    secondHand.style.animationDelay = `-${(totalElapsedSinceRotationStart / 1000)}s`;
+
+    // Record the animation start time
+    animationStartTime = currentTime.getTime() - totalElapsedSinceRotationStart;
+  }
+
+  // Function to start the game
+  function startGame() {
+    score = 0;
+    scoreDisplay.textContent = `Score: ${score}`;
+    feedback.textContent = '';
+    isGuessing = false;
+    submitGuess.disabled = false;
+    updateSpeed();
+    updateGameDuration();
+    startGameTimer();
+    clearSelection();
+  }
+
+  // Function to update the game duration
+  function updateGameDuration() {
+    const selectedMinutes = parseInt(durationSelect.value);
+    gameDuration = selectedMinutes * 60000; // Convert minutes to milliseconds
+    gameEndTime = Date.now() + gameDuration;
+  }
+
+  // Function to update the time remaining
+  function updateTimeRemaining() {
+    const timeRemaining = gameEndTime - Date.now();
+    if (timeRemaining <= 0) {
+      clearInterval(gameTimerInterval);
+      endGame();
+    } else {
+      const minutesRemaining = Math.floor(timeRemaining / 60000);
+      const secondsRemaining = Math.floor((timeRemaining % 60000) / 1000);
+      minutesRemainingDisplay.textContent = minutesRemaining;
+      secondsRemainingDisplay.textContent = secondsRemaining < 10 ? '0' + secondsRemaining : secondsRemaining;
+    }
+  }
+
+  // Function to start the game timer
+  function startGameTimer() {
+    updateTimeRemaining();
+    gameTimerInterval = setInterval(updateTimeRemaining, 1000);
+  }
+
+  // Function to end the game
+  function endGame() {
+    feedback.textContent = 'Time is up! Your final score is ' + score + '.';
+    submitGuess.disabled = true;
+    isGuessing = false;
+  }
+
+  // Function to clear selection
+  function clearSelection() {
+    selectedSecond = null;
+    secondOptions.forEach(option => {
+      option.classList.remove('selected');
+    });
+  }
+
+  // Event listener for selecting a second option
+  secondOptions.forEach(option => {
+    option.addEventListener('click', function() {
+      clearSelection();
+      option.classList.add('selected');
+      selectedSecond = parseInt(option.dataset.value);
+    });
+  });
+
+  // Event listener for speed change
+  speedSelect.addEventListener('change', updateSpeed);
+
+  // Event listener to reset the game
+  resetGame.addEventListener('click', function() {
+    clearInterval(gameTimerInterval);
+    startGame();
+  });
+
+  // Initialize the rotation speed and synchronize the animation
+  updateSpeed();
+
+  // Start the game
+  startGame();
+
+  // Add event listener for key presses
+  document.addEventListener('keydown', function(event) {
+    if (event.key >= '0' && event.key <= '5') {
+      // Map the key press to the corresponding second option
+      const valueMapping = {
+        '0': '00',
+        '1': '10',
+        '2': '20',
+        '3': '30',
+        '4': '40',
+        '5': '50'
+      };
+      const value = valueMapping[event.key];
+      // Select the corresponding button programmatically
+      clearSelection();
+      selectedSecond = parseInt(value);
+      const button = [...secondOptions].find(btn => btn.dataset.value === value);
+      if (button) {
+        button.classList.add('selected');
+      }
+    } else if (event.key === 'Enter') {
+      // Simulate a click on the submit button if Enter is pressed
+      submitGuess.click();
+    }
+  });
+
+  // Function to handle the guess submission
+  submitGuess.addEventListener('click', function() {
+    if (isGuessing) {
+      feedback.textContent = 'Please wait for your current guess to be processed.';
+      return;
+    }
+
+    if (selectedSecond === null) {
+      feedback.textContent = 'Please select a second option.';
+      return;
+    }
+
+    const guess = selectedSecond;
+    const delaySeconds = parseInt(delaySelect.value);
+
+    feedback.textContent = 'Processing your guess...';
+    isGuessing = true;
+    submitGuess.disabled = true;
+
+    // Delay for the selected number of seconds
+    setTimeout(function() {
+      const currentTime = new Date();
+      const elapsedSinceAnimationStart = currentTime.getTime() - animationStartTime;
+      const period = 60000 / rotationSpeed; // Total duration of one full rotation in milliseconds
+      const totalElapsedSinceRotationStart = elapsedSinceAnimationStart % period;
+      const actualSecondFraction = (totalElapsedSinceRotationStart / period) * 60;
+
+      let actualSecond = Math.round(actualSecondFraction) % 60;
+      if (actualSecond === 60) {
+        actualSecond = 0;
+      }
+
+      let difference = Math.abs(actualSecond - guess);
+      if (difference > 30) {
+        difference = 60 - difference;
+      }
+
+      let points = 0;
+      if (difference === 0) {
+        points = 100;
+      } else if (difference === 1) {
+        points = 50;
+      } else if (difference === 2) {
+        points = 25;
+      } else if (difference === 3) {
+        points = 10;
+      }
+
+      if (points > 0) {
+        feedback.textContent = `Great! Your guess was ${guess}s, actual was ${actualSecond}s. You earned ${points} points.`;
+      } else {
+        feedback.textContent = `Too bad! Your guess was ${guess}s, actual was ${actualSecond}s. No points awarded.`;
+      }
+
+      score += points;
+      scoreDisplay.textContent = `Score: ${score}`;
+
+      isGuessing = false;
+      submitGuess.disabled = false;
+      clearSelection();
+
+      if (Date.now() >= gameEndTime) {
+        clearInterval(gameTimerInterval);
+        endGame();
+      }
+
+    }, delaySeconds * 1000);
+  });
+});
+  </script>
+</body>
+</html>
+<style>
+  body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 20px;
+}
+
+#gameContainer {
+  display: inline-block;
+}
+
+#clockContainer {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 20px auto;
+}
+
+#clock {
+  width: 100%;
+  height: 100%;
+  border: 8px solid #333;
+  border-radius: 50%;
+  position: relative;
+}
+
+#clock::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  background: #333;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#secondHand {
+  width: 2px;
+  height: 90px;
+  background: red;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform-origin: bottom;
+}
+  
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#controls {
+  margin-top: 20px;
+}
+
+#secondOptions {
+  display: flex;
+  justify-content: center;
+}
+
+.secondOption {
+  padding: 10px 10px;
+  margin: 1px;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.secondOption.selected {
+  background-color: #007BFF;
+  color: #fff;
+}
+
+#feedback {
+  font-size: 1.2em;
+  margin-top: 20px;
+  color: white;
+}
+
+#scoreDisplay {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: white;
+}
+
+#timeRemaining {
+  font-size: 1.2em;
+  margin-top: 10px;
+  color: white;
+}
+
+.round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+.round-button:hover {
+    background-color: #6E1919;
+  }
+  
+</style>

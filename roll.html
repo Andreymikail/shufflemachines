@@ -1,0 +1,190 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Image Roll</h2>
+
+  <!-- Directory Input -->
+  <div>
+    <label for="directoryInput" style="color: white;">Choose Root Directory:</label><br>
+    <input type="file" id="directoryInput" webkitdirectory mozdirectory style="width: 300px;">
+  </div><br>
+
+  <!-- Sort Order Selector -->
+  <div>
+    <label for="sortOrder" style="color: white;">Sort Order:</label><br>
+    <select id="sortOrder">
+      <option value="name">By Name</option>
+      <option value="date">By Date</option>
+      <option value="random">Random</option>
+    </select>
+  </div><br>
+
+  <!-- Time per Image -->
+  <div>
+    <label for="timePerImage" style="color: white;">Time per Image (seconds):</label><br>
+    <input type="number" id="timePerImage" value="3" min="1" style="width: 50px;">
+  </div><br>
+
+  <!-- Loop and Transition -->
+  <div style="color: white;">
+    <label><input type="checkbox" id="loopCheckbox"> Loop</label><br>
+    <label><input type="checkbox" id="transitionCheckbox"> Smooth Transition</label>
+  </div><br>
+
+<!-- Botões -->
+<button id="rollButton" class="round-button">Roll</button>
+<button id="pauseButton" class="round-button">Pause</button>
+<button id="fullscreenButton" class="round-button">Fullscreen</button>
+
+<!-- Container -->
+<div id="imageContainer" style="margin-top: 20px;"></div>
+
+
+  <!-- Image Display -->
+  <div id="imageContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  let imageFiles = [];
+  let currentIndex = 0;
+  let paused = false;
+  let timeoutId = null;
+  let loop = false;
+  let smooth = false;
+  let timePerImage = 3000;
+
+  document.getElementById('directoryInput').addEventListener('change', function(event) {
+    const files = event.target.files;
+    imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+  });
+
+  function sortImages(order) {
+    if (order === 'name') {
+      imageFiles.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (order === 'date') {
+      imageFiles.sort((a, b) => a.lastModified - b.lastModified);
+    } else if (order === 'random') {
+      imageFiles.sort(() => Math.random() - 0.5);
+    }
+  }
+
+  function displayImageAt(index) {
+    const container = document.getElementById('imageContainer');
+    const img = document.createElement('img');
+
+    img.onload = function () {
+      container.innerHTML = '';
+      container.appendChild(img);
+      if (smooth) {
+        img.style.opacity = 0;
+        setTimeout(() => img.style.opacity = 1, 10);
+      }
+
+      if (!paused) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          currentIndex++;
+          if (currentIndex >= imageFiles.length) {
+            if (loop) currentIndex = 0;
+            else return;
+          }
+          displayImageAt(currentIndex);
+        }, timePerImage);
+      }
+    };
+
+    img.src = URL.createObjectURL(imageFiles[index]);
+    img.style.width = '100%';
+    img.style.height = 'auto';
+    img.style.marginTop = '20px';
+    img.style.transition = smooth ? 'opacity 1s ease-in-out' : 'none';
+  }
+
+  function displayImages() {
+    const sortOrder = document.getElementById('sortOrder').value;
+    timePerImage = parseInt(document.getElementById('timePerImage').value, 10) * 1000;
+    loop = document.getElementById('loopCheckbox').checked;
+    smooth = document.getElementById('transitionCheckbox').checked;
+
+    sortImages(sortOrder);
+    currentIndex = 0;
+    paused = false;
+
+    displayImageAt(currentIndex);
+  }
+
+  document.getElementById('rollButton').addEventListener('click', () => {
+    clearTimeout(timeoutId);
+    displayImages();
+  });
+
+  document.getElementById('pauseButton').addEventListener('click', () => {
+    paused = !paused;
+    if (!paused) {
+      displayImageAt(currentIndex);
+    } else {
+      clearTimeout(timeoutId);
+    }
+    document.getElementById('pauseButton').textContent = paused ? 'Resume' : 'Pause';
+  });
+
+  // FULLSCREEN
+  document.getElementById('fullscreenButton').addEventListener('click', () => {
+    const container = document.getElementById('imageContainer');
+    if (container.requestFullscreen) container.requestFullscreen();
+    else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+    else if (container.mozRequestFullScreen) container.mozRequestFullScreen();
+    else if (container.msRequestFullscreen) container.msRequestFullscreen();
+  });
+
+  // Teclas de navegação
+  document.addEventListener('keydown', (e) => {
+    if (!imageFiles.length) return;
+
+    if (e.key === 'ArrowRight') {
+      currentIndex = (currentIndex + 1) % imageFiles.length;
+      paused = true;
+      clearTimeout(timeoutId);
+      displayImageAt(currentIndex);
+      document.getElementById('pauseButton').textContent = 'Resume';
+    } else if (e.key === 'ArrowLeft') {
+      currentIndex = (currentIndex - 1 + imageFiles.length) % imageFiles.length;
+      paused = true;
+      clearTimeout(timeoutId);
+      displayImageAt(currentIndex);
+      document.getElementById('pauseButton').textContent = 'Resume';
+    }
+  });
+</script>
+
+
+<style>
+  body {
+    background-color: black;
+  }
+
+  .round-button {
+    width: 100px;
+    height: 50px;
+    border-radius: 12px;
+    border: none;
+    background-color: #E4C58A;
+    color: black;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 10px;
+    transition: background-color 0.3s;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+    color: white;
+  }
+
+  img {
+    display: block;
+    margin: 0 auto;
+    max-height: 90vh;
+    object-fit: contain;
+  }
+
+
+</style>

@@ -1,0 +1,265 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Box</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="boxmCheckbox"> Boxer M</label><br>
+    <label><input type="checkbox" id="boxfCheckbox"> Boxer F</label><br>
+    <label><input type="checkbox" id="champmCheckbox"> Championship M</label><br>
+    <label><input type="checkbox" id="champfCheckbox"> Championship F</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+"Iron Mike's Fury - You unleash the aggression of a young Mike Tyson!",
+"Ali's Rope-a-Dope - Your boxer uses Ali’s legendary tactic, tiring the opponent!",
+"Controversial Decision - The judges see the fight differently than expected!",
+"Lucky Punch - Your fighter lands a surprise punch!",
+"Champion’s Resilience - Your boxer refuses to go down!",
+"The Underdog Story - Your weakest fighter finds the strength to shine!",
+"Injury Time-Out - Your opponent suffers an unexpected injury!",
+"Trash Talk - You get inside your opponent’s head!"
+  ];
+
+  
+const boxm = [
+{name: "Aaron Pryor (EUA)", attributes: {Weight: "64 kg (140 lbs)", Wins: 39, KOs: 35, "Total Fights": 40, Stamina: 98, Speed: 96, Power: 92}},
+{name: "Acelino 'Popó' Freitas (BRA)", attributes: {Weight: "61 kg (135 lbs)", Wins: 41, KOs: 34, "Total Fights": 43, Stamina: 95, Speed: 94, Power: 90}},
+{name: "Adilson 'Maguila' Rodrigues (BRA)", attributes: {Weight: "102 kg (225 lbs)", Wins: 77, KOs: 61, "Total Fights": 85, Stamina: 90, Speed: 80, Power: 95}},
+{name: "Archie Moore (EUA)", attributes: {Weight: "79 kg (175 lbs)", Wins: 186, KOs: 132, "Total Fights": 220, Stamina: 98, Speed: 85, Power: 100}},
+{name: "Bernard Hopkins (EUA)", attributes: {Weight: "79 kg (175 lbs)", Wins: 55, KOs: 32, "Total Fights": 67, Stamina: 99, Speed: 88, Power: 90}},
+{name: "Canelo Álvarez (MEX)", attributes: {Weight: "76 kg (168 lbs)", Wins: 60, KOs: 39, "Total Fights": 64, Stamina: 95, Speed: 90, Power: 94}},
+{name: "Carlos Monzón (ARG)", attributes: {Weight: "72 kg (160 lbs)", Wins: 87, KOs: 59, "Total Fights": 100, Stamina: 99, Speed: 88, Power: 95}},
+{name: "Deontay Wilder (EUA)", attributes: {Weight: "97 kg (214 lbs)", Wins: 43, KOs: 42, "Total Fights": 47, Stamina: 85, Speed: 88, Power: 100}},
+{name: "Éder Jofre (BRA)", attributes: {Weight: "54 kg (119 lbs)", Wins: 72, KOs: 50, "Total Fights": 78, Stamina: 98, Speed: 92, Power: 94}},
+{name: "Evander Holyfield (EUA)", attributes: {Weight: "97 kg (215 lbs)", Wins: 44, KOs: 29, "Total Fights": 57, Stamina: 94, Speed: 87, Power: 95}},
+{name: "Floyd Mayweather Jr. (EUA)", attributes: {Weight: "68 kg (150 lbs)", Wins: 50, KOs: 27, "Total Fights": 50, Stamina: 100, Speed: 99, Power: 85}},
+{name: "Gennady Golovkin (KAZ)", attributes: {Weight: "72 kg (160 lbs)", Wins: 42, KOs: 37, "Total Fights": 45, Stamina: 89, Speed: 85, Power: 96}},
+{name: "George Foreman (EUA)", attributes: {Weight: "118 kg (260 lbs)", Wins: 76, KOs: 68, "Total Fights": 81, Stamina: 89, Speed: 80, Power: 100}},
+{name: "Henry Armstrong (EUA)", attributes: {Weight: "66 kg (145 lbs)", Wins: 151, KOs: 101, "Total Fights": 181, Stamina: 100, Speed: 95, Power: 90}},
+{name: "Jack Dempsey (EUA)", attributes: {Weight: "86 kg (190 lbs)", Wins: 54, KOs: 44, "Total Fights": 75, Stamina: 90, Speed: 84, Power: 97}},
+{name: "Jack Johnson (EUA)", attributes: {Weight: "91 kg (200 lbs)", Wins: 73, KOs: 40, "Total Fights": 95, Stamina: 100, Speed: 85, Power: 96}},
+{name: "James Toney (EUA)", attributes: {Weight: "89 kg (197 lbs)", Wins: 77, KOs: 47, "Total Fights": 92, Stamina: 97, Speed: 86, Power: 93}},
+{name: "Joe Frazier (EUA)", attributes: {Weight: "93 kg (205 lbs)", Wins: 32, KOs: 27, "Total Fights": 37, Stamina: 90, Speed: 85, Power: 97}},
+{name: "Joe Louis (EUA)", attributes: {Weight: "91 kg (200 lbs)", Wins: 66, KOs: 52, "Total Fights": 69, Stamina: 95, Speed: 88, Power: 98}},
+{name: "Julio César Chávez (MEX)", attributes: {Weight: "68 kg (150 lbs)", Wins: 107, KOs: 85, "Total Fights": 115, Stamina: 100, Speed: 90, Power: 94}},
+{name: "Lennox Lewis (GBR)", attributes: {Weight: "112 kg (247 lbs)", Wins: 41, KOs: 32, "Total Fights": 44, Stamina: 90, Speed: 85, Power: 98}},
+{name: "Manny Pacquiao (PHL)", attributes: {Weight: "66 kg (145 lbs)", Wins: 62, KOs: 39, "Total Fights": 72, Stamina: 97, Speed: 96, Power: 90}},
+{name: "Mike Tyson (EUA)", attributes: {Weight: "100 kg (220 lbs)", Wins: 50, KOs: 44, "Total Fights": 58, Stamina: 85, Speed: 90, Power: 100}},
+{name: "Muhammad Ali (EUA)", attributes: {Weight: "97 kg (214 lbs)", Wins: 56, KOs: 37, "Total Fights": 61, Stamina: 98, Speed: 100, Power: 92}},
+{name: "Naseem Hamed (GBR)", attributes: {Weight: "57 kg (126 lbs)", Wins: 36, KOs: 31, "Total Fights": 37, Stamina: 88, Speed: 97, Power: 94}},
+{name: "Oscar De La Hoya  (EUA / MEX)", attributes: {Weight: "69 kg (152 lbs)", Wins: 39, KOs: 30, "Total Fights": 45, Stamina: 90, Speed: 95, Power: 92}},
+{name: "Pernell Whitaker (EUA)", attributes: {Weight: "67 kg (147 lbs)", Wins: 40, KOs: 17, "Total Fights": 46, Stamina: 95, Speed: 100, Power: 85}},
+{name: "Ricardo López (MEX)", attributes: {Weight: "49 kg (108 lbs)", Wins: 51, KOs: 38, "Total Fights": 52, Stamina: 100, Speed: 95, Power: 90}},
+{name: "Roberto Durán (PAN)", attributes: {Weight: "70 kg (154 lbs)", Wins: 103, KOs: 70, "Total Fights": 119, Stamina: 97, Speed: 92, Power: 91}},
+{name: "Rocky Marciano (EUA)", attributes: {Weight: "85 kg (187 lbs)", Wins: 49, KOs: 43, "Total Fights": 49, Stamina: 95, Speed: 87, Power: 97}},
+{name: "Ron Lyle (EUA)", attributes: {Peso: "99 kg (218 lbs)", Vitórias: 43, KOs: 31, "Lutas Totais": 51, Stamina: 90, Velocidade: 85, Poder: 95}},
+{name: "Salvador Sánchez (MEX)", attributes: {Weight: "57 kg (126 lbs)", Wins: 44, KOs: 32, "Total Fights": 46, Stamina: 97, Speed: 95, Power: 91}},
+{name: "Sonny Liston (EUA)", attributes: {Weight: "98 kg (215 lbs)", Wins: 50, KOs: 39, "Total Fights": 54, Stamina: 88, Speed: 80, Power: 98}},
+{name: "Sugar Ray Leonard (EUA)", attributes: {Weight: "70 kg (154 lbs)", Wins: 36, KOs: 25, "Total Fights": 40, Stamina: 92, Speed: 98, Power: 89}},
+{name: "Sugar Ray Robinson (EUA)", attributes: {Weight: "72 kg (160 lbs)", Wins: 174, KOs: 109, "Total Fights": 200, Stamina: 100, Speed: 99, Power: 95}},
+{name: "Tyson Fury (GBR)", attributes: {Weight: "121 kg (267 lbs)", Wins: 34, KOs: 24, "Total Fights": 35, Stamina: 96, Speed: 86, Power: 95}},
+{name: "Vitali Klitschko (UA)", attributes: {Weight: "112 kg (247 lbs)", Wins: 45, KOs: 41, "Total Fights": 47, Stamina: 95, Speed: 83, Power: 96}},
+{name: "Wilfredo Gómez (PRI)", attributes: {Weight: "55 kg (121 lbs)", Wins: 44, KOs: 42, "Total Fights": 48, Stamina: 94, Speed: 89, Power: 98}},
+{name: "Wladimir Klitschko (UA)", attributes: {Weight: "110 kg (243 lbs)", Wins: 64, KOs: 53, "Total Fights": 69, Stamina: 92, Speed: 84, Power: 97}},
+ 	];
+ 	
+ 	
+const boxf = [
+
+{name: "Adriana Araújo (BRA)", attributes: {Weight: "64 kg (140 lbs)", Wins: 6, KOs: 1, "Total Fights": 7, Stamina: 92, Speed: 90, Power: 84}},
+{name: "Amanda Serrano (PUR)", attributes: {Weight: "57 kg (126 lbs)", Wins: 46, KOs: 30, "Total Fights": 50, Stamina: 98, Speed: 95, Power: 90}},
+{name: "Cecilia Brækhus (NOR)", attributes: {Weight: "66 kg (147 lbs)", Wins: 37, KOs: 9, "Total Fights": 39, Stamina: 96, Speed: 93, Power: 86}},
+{name: "Christy Martin (USA)", attributes: {Weight: "64 kg (140 lbs)", Wins: 49, KOs: 31, "Total Fights": 59, Stamina: 95, Speed: 90, Power: 92}},
+{name: "Claressa Shields (USA)", attributes: {Weight: "75 kg (165 lbs)", Wins: 14, KOs: 2, "Total Fights": 14, Stamina: 99, Speed: 92, Power: 88}},
+{name: "Daniela Bermúdez (ARG)", attributes: {Weight: "53 kg (117 lbs)", Wins: 29, KOs: 10, "Total Fights": 36, Stamina: 96, Speed: 91, Power: 85}},
+{name: "Delfine Persoon (BEL)", attributes: {Weight: "61 kg (135 lbs)", Wins: 46, KOs: 19, "Total Fights": 50, Stamina: 98, Speed: 93, Power: 89}},
+{name: "Eva Wahlström (FIN)", attributes: {Weight: "59 kg (130 lbs)", Wins: 23, KOs: 3, "Total Fights": 27, Stamina: 94, Speed: 92, Power: 80}},
+{name: "Franchón Crews-Dezurn (USA)", attributes: {Weight: "76 kg (168 lbs)", Wins: 8, KOs: 2, "Total Fights": 10, Stamina: 92, Speed: 85, Power: 90}},
+{name: "Fredia \"The Cheetah\" Gibbs (USA)", attributes: {Weight: "61 kg (135 lbs)", Wins: 16, KOs: 15, "Total Fights": 17, Stamina: 95, Speed: 98, Power: 92}},
+{name: "Hanna Gabriels (CRC)", attributes: {Weight: "69 kg (152 lbs)", Wins: 21, KOs: 12, "Total Fights": 25, Stamina: 93, Speed: 90, Power: 88}},
+{name: "Heather Hardy (USA)", attributes: {Weight: "57 kg (126 lbs)", Wins: 24, KOs: 4, "Total Fights": 27, Stamina: 95, Speed: 91, Power: 83}},
+{name: "Jelena Mrdjenovich (CAN)", attributes: {Weight: "57 kg (126 lbs)", Wins: 41, KOs: 19, "Total Fights": 52, Stamina: 94, Speed: 89, Power: 87}},
+{name: "Jessica McCaskill (USA)", attributes: {Weight: "66 kg (147 lbs)", Wins: 12, KOs: 5, "Total Fights": 14, Stamina: 94, Speed: 91, Power: 86}},
+{name: "Katie Taylor (IRL)", attributes: {Weight: "61 kg (135 lbs)", Wins: 23, KOs: 6, "Total Fights": 24, Stamina: 100, Speed: 98, Power: 85}},
+{name: "Laila Ali (USA)", attributes: {Weight: "79 kg (175 lbs)", Wins: 24, KOs: 21, "Total Fights": 24, Stamina: 97, Speed: 90, Power: 95}},
+{name: "Lucia Rijker (NED)", attributes: {Weight: "63 kg (139 lbs)", Wins: 17, KOs: 14, "Total Fights": 17, Stamina: 96, Speed: 92, Power: 95}},
+{name: "Mariana 'Barby' Juárez (MEX)", attributes: {Weight: "53 kg (117 lbs)", Wins: 55, KOs: 19, "Total Fights": 70, Stamina: 96, Speed: 92, Power: 85}},
+{name: "Mia St. John (USA)", attributes: {Weight: "61 kg (135 lbs)", Wins: 49, KOs: 19, "Total Fights": 65, Stamina: 92, Speed: 90, Power: 86}},
+{name: "Regina Halmich (GER)", attributes: {Weight: "50 kg (110 lbs)", Wins: 54, KOs: 16, "Total Fights": 56, Stamina: 97, Speed: 94, Power: 83}},
+{name: "Rose Volante (BRA)", attributes: {Weight: "61 kg (135 lbs)", Wins: 14, KOs: 8, "Total Fights": 16, Stamina: 90, Speed: 89, Power: 87}},
+ 	];
+ 	
+ 	
+const champm = [
+{name: "Ali Trophy - World Boxing Super Series", attributes: {Founded: 2017, Prestige: 88, "Iconic Champions": 5, Difficulty: 94, "Global Influence": 85}},
+{name: "Commonwealth Boxing Championship", attributes: {Founded: 1954, Prestige: 80, "Iconic Champions": 10, Difficulty: 78, "Global Influence": 75}},
+{name: "European Boxing Union (EBU) Title", attributes: {Founded: 1910, Prestige: 82, "Iconic Champions": 15, Difficulty: 80, "Global Influence": 77}},
+{name: "Golden Gloves Championship", attributes: {Founded: 1928, Prestige: 85, "Iconic Champions": 30, Difficulty: 80, "Global Influence": 87}},
+{name: "IBF World Championship (International Boxing Federation)", attributes: {Founded: 1983, Prestige: 92, "Iconic Champions": 15, Difficulty: 90, "Global Influence": 90}},
+{name: "Lineal Championship", attributes: {Founded: "Traditional (No Official Date)", Prestige: 97, "Iconic Champions": 20, Difficulty: 95, "Global Influence": 95}},
+{name: "Olympic Boxing Gold Medal", attributes: {Founded: 1904, Prestige: 95, "Iconic Champions": 50, Difficulty: 90, "Global Influence": 99}},
+{name: "The Ring Championship (The Ring Magazine)", attributes: {Founded: 1922, Prestige: 97, "Iconic Champions": 30, Difficulty: 93, "Global Influence": 95}},
+{name: "Undisputed Championship", attributes: {Founded: "Varies", Prestige: 100, "Iconic Champions": 10, Difficulty: 100, "Global Influence": 100}},
+{name: "WBA Super Championship (World Boxing Association)", attributes: {Founded: 1921, Prestige: 98, "Iconic Champions": 20, Difficulty: 95, "Global Influence": 98}},
+{name: "WBC Heavyweight Title (World Boxing Council)", attributes: {Founded: 1963, Prestige: 100, "Iconic Champions": 25, Difficulty: 98, "Global Influence": 100}},
+{name: "WBO World Championship (World Boxing Organization)", attributes: {Founded: 1988, Prestige: 90, "Iconic Champions": 15, Difficulty: 88, "Global Influence": 87}},
+  ];
+  
+const champf = [
+{name: "WBA World Championship (Women’s Division)", attributes: {Founded: 2004, Prestige: 92, "Iconic Champions": 18, Difficulty: 90, "Global Influence": 89}},
+{name: "WBC World Championship (Women’s Division)", attributes: {Founded: 2005, Prestige: 100, "Iconic Champions": 22, Difficulty: 95, "Global Influence": 98}},
+{name: "IBF World Championship (Women’s Division)", attributes: {Founded: 2010, Prestige: 88, "Iconic Champions": 14, Difficulty: 87, "Global Influence": 85}},
+{name: "Undisputed Women's Championship", attributes: {Founded: 2019, Prestige: 100, "Iconic Champions": 10, Difficulty: 100, "Global Influence": 100}},
+{name: "Olympic Boxing Gold Medal (Women’s Division)", attributes: {Founded: 2012, Prestige: 95, "Iconic Champions": 12, Difficulty: 93, "Global Influence": 99}},
+{name: "The Ring Championship (Women’s Division)", attributes: {Founded: 2019, Prestige: 97, "Iconic Champions": 8, Difficulty: 94, "Global Influence": 96}},
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('boxmCheckbox').checked) selectedCards.push(...boxm);
+    if (document.getElementById('boxfCheckbox').checked) selectedCards.push(...boxf);
+    if (document.getElementById('champmCheckbox').checked) selectedCards.push(...champm);
+    if (document.getElementById('champfCheckbox').checked) selectedCards.push(...champf);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+		body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

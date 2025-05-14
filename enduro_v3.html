@@ -1,0 +1,575 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Enduro</h2>
+
+  <p style="color: white;">Navigate the track starting and ending at the start square. Pass through points 1, 2, and 3 in sequence, avoiding bushes, rocks, and puddles.</p>
+  <!-- Control buttons -->
+  <div style="margin-top: 20px;">
+    <button id="restartButton" class="round-button" style="color: white;">Restart</button>
+  </div>
+  
+  <!-- Grid selector -->
+  <div>
+    <label for="gridSelector" style="color: white;">Choose a Grid:</label>
+    <select id="gridSelector">
+      <option value="grid1">Grid 1</option>
+      <option value="grid2">Grid 2</option>
+      <option value="grid3">Grid 3</option>
+      <option value="grid4">Grid 4</option>
+      <option value="grid5">Grid 5</option>
+      <option value="grid6">Grid 6</option>
+    </select>
+    <button id="loadGridButton" class="round-button">Load</button>
+  </div>
+<br>
+  <!-- Directional buttons and power -->
+  <div>
+    <label style="color: white;">Power:</label>
+    <div id="powerButtons">
+      <button id="power1" class="round-button2">1</button>
+      <button id="power2" class="round-button2">2</button>
+      <button id="power3" class="round-button2">3</button>
+      <button id="power4" class="round-button2">4</button>
+      <button id="power5" class="round-button2">5</button>
+    </div>
+    <br><br>
+    <button id="leftButton" class="round-button2">←</button>
+    <button id="upButton" class="round-button2">↑</button>
+    <button id="downButton" class="round-button2">↓</button>
+    <button id="rightButton" class="round-button2">→</button>
+  </div>
+
+  <!-- Grid for Enduro -->
+  <div id="enduroGrid" style=
+  	"display: grid; 
+  	grid-template-columns: repeat(10, 40px); 
+  	gap: 0px; 
+  	justify-content: center; 
+  	margin-top: 20px;">
+    <!-- Grid will be generated here -->
+  </div>
+  <!-- Goal display -->
+  <p id="goalMessage" style="color: white;">Goal: Reach point 1</p>
+
+  <!-- Game messages -->
+  <p id="gameMessage"></p>
+  <p style="color: white;">Total Moves: <span id="moveCount">0</span></p>
+  <p style="color: white;">Time: <span id="timeElapsed">0</span> seconds</p>
+
+</div>
+
+<script>
+
+  let lastDirection = 'right';
+  const terrainTypes = {
+    'S': { color: '#a95a1f' },
+    '1': { color: '#a95a1f' },
+    '2': { color: '#a95a1f' },
+    '3': { color: '#a95a1f' },
+    'B': { color: '#a95a1f' },
+    'E': { color: '#a95a1f' },
+    'X': { color: '#a95a1f' },
+  };
+
+const grids = {
+  'grid1': {
+    map: [
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'S', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', '1', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', '2', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', '3', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E']
+    ],
+    backgroundImage: 'https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/07b4adb1-8791-48d8-a39d-126eb175ea4e/Artboard+1%404x.png'
+  },
+  'grid2': {
+    map: [
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'S', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', '2', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', '3', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', '1', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E']
+    ],
+    backgroundImage: 'https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/07b4adb1-8791-48d8-a39d-126eb175ea4e/Artboard+1%404x.png'
+  },
+  'grid3': {
+    map: [
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'S', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', '3', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'B', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', '1', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', '2', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E']
+    ],
+    backgroundImage: 'https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/07b4adb1-8791-48d8-a39d-126eb175ea4e/Artboard+1%404x.png'
+  },
+  'grid4': {
+    map: [
+      ['E', 'E', 'E', 'E', '2', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'X', 'X', 'X', 'E'],
+      ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E'],
+      ['E', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E'],
+      ['X', 'E', 'E', 'E', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['X', 'E', 'X', '1', 'X', 'E', 'E', 'X', 'E', 'E', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['X', 'E', 'X', 'E', 'X', 'E', 'E', 'E', '3', 'E', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'X', 'E', 'X', 'E', 'E', 'X', 'X', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['X', 'X', 'X', 'E', 'E', 'X', 'E', 'X', 'E', 'X', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'X', 'E', 'E', 'E'],
+      ['E', 'X', 'X', 'X', 'E', 'X', 'E', 'X', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E'],
+      ['S', 'E', 'E', 'X', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['E', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['E', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['E', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E']
+    ],
+    backgroundImage: 'https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/e28d8bb7-b512-4d0f-84b6-22a8b6e3f216/Artboard+1%404x.png'
+  },
+  'grid5': {
+    map: [
+      ['S', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'X', 'X', 'X', 'E'],
+      ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E'],
+      ['E', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E'],
+      ['X', 'E', 'E', 'E', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['X', 'E', 'X', 'E', 'X', 'E', 'E', 'X', 'E', 'E', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['X', 'E', 'X', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'X', 'E', 'X', 'E', 'E', 'X', 'X', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['X', 'X', 'X', 'E', 'E', 'X', 'E', 'X', 'E', 'X', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'X', 'E', 'E', 'E'],
+      ['E', 'X', 'X', 'X', 'E', 'X', 'E', 'X', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', '3', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'X', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'E'],
+      ['E', 'E', 'E', '1', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['E', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['E', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', '2', 'X', 'E', 'E'],
+      ['E', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E']
+    ],
+    backgroundImage: 'https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/e28d8bb7-b512-4d0f-84b6-22a8b6e3f216/Artboard+1%404x.png'
+  },
+  'grid6': {
+    map: [
+      ['S', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'X', 'X', 'X', '1'],
+      ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E'],
+      ['E', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E'],
+      ['X', 'E', 'E', 'E', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['X', 'E', 'X', 'E', 'X', 'E', 'E', 'X', 'E', 'E', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['X', 'E', 'X', 'E', 'X', 'E', 'E', 'E', '2', 'E', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'X', 'E', 'X', 'E', 'E', 'X', 'X', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['X', 'X', 'X', 'E', 'E', 'X', 'E', 'X', 'E', 'X', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'X', 'E', 'E', 'E'],
+      ['E', 'X', 'X', 'X', 'E', 'X', 'E', 'X', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'X', 'E', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', '3', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'X', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'X', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['E', 'E', 'E', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['E', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'X', 'E', 'E'],
+      ['E', 'X', 'X', 'X', 'X', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E']
+    ],
+    backgroundImage: 'https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/e28d8bb7-b512-4d0f-84b6-22a8b6e3f216/Artboard+1%404x.png'
+  }
+};
+
+  let currentGrid = {};
+  let currentBackgroundImage = '';
+  let playerPosition = { row: 0, col: 0 };
+  let moveCount = 0;
+  let currentCheckpoint = 0;
+  let selectedPower = 1; // Default power level
+  const checkpoints = ['1', '2', '3'];
+  let timerInterval;
+  let timeElapsed = 0;
+
+  // Function to start the timer
+  function startTimer() {
+    clearInterval(timerInterval);
+    timeElapsed = 0;
+    document.getElementById('timeElapsed').textContent = timeElapsed;
+    timerInterval = setInterval(() => {
+      timeElapsed++;
+      document.getElementById('timeElapsed').textContent = timeElapsed;
+    }, 1000);
+  }
+
+  // Function to stop the timer
+  function stopTimer() {
+    clearInterval(timerInterval);
+  }
+
+  // Function to update the goal message
+  
+  
+  function updateGoalMessage() {
+    if (currentCheckpoint < checkpoints.length) {
+      document.getElementById('goalMessage').textContent = `Goal: Reach point ${checkpoints[currentCheckpoint]}`;
+    } else {
+      document.getElementById('goalMessage').textContent = 'Goal: Return to the start';
+    }
+  }
+
+  // Function to render the course grid
+function renderCourse(course) {
+  const gridContainer = document.getElementById('enduroGrid');
+  gridContainer.innerHTML = ''; // Limpar o grid anterior
+
+  const visibleRows = 10;
+  const visibleCols = 10;
+
+  // Calcular o índice inicial (top-left) da viewport
+  let startRow = playerPosition.row - Math.floor(visibleRows / 2);
+  let startCol = playerPosition.col - Math.floor(visibleCols / 2);
+
+  // Garantir que os índices não sejam menores que 0
+  if (startRow < 0) startRow = 0;
+  if (startCol < 0) startCol = 0;
+
+  // Garantir que a viewport não exceda o tamanho do grid
+  if (startRow + visibleRows > course.length) {
+    startRow = course.length - visibleRows;
+  }
+  if (startCol + visibleCols > course[0].length) {
+    startCol = course[0].length - visibleCols;
+  }
+
+  for (let rowIndex = startRow; rowIndex < startRow + visibleRows; rowIndex++) {
+    for (let colIndex = startCol; colIndex < startCol + visibleCols; colIndex++) {
+      const cellDiv = document.createElement('div');
+      cellDiv.className = 'grid-cell';
+      cellDiv.style.width = '40px';
+      cellDiv.style.height = '40px';
+
+      const cell = course[rowIndex][colIndex];
+
+      // Calcular a posição do fundo para a célula
+      const bgPosX = -(colIndex * 40) + 'px';
+      const bgPosY = -(rowIndex * 40) + 'px';
+
+      // Aplicar a imagem de fundo em todas as células
+      cellDiv.style.backgroundImage = `url("${currentBackgroundImage}")`;
+      cellDiv.style.backgroundSize = `${course[0].length * 40}px ${course.length * 40}px`;
+      cellDiv.style.backgroundPosition = `${bgPosX} ${bgPosY}`;
+
+      // Verificar se é a posição do jogador
+      if (rowIndex === playerPosition.row && colIndex === playerPosition.col) {
+        const img = document.createElement('img');
+        img.src = 'https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/e79f1050-769a-4840-a626-0c217ad25630/motorcycle2.png';
+        img.alt = 'Motorcycle';
+        img.style.width = '40px';
+        img.style.height = '40px';
+
+        // Aplicar espelhamento se a última direção for 'left'
+        if (lastDirection === 'left') {
+          img.style.transform = 'scaleX(-1)';
+        } else {
+          img.style.transform = 'scaleX(1)';
+        }
+
+        cellDiv.appendChild(img);
+      } else {
+        let imgSrc = null;
+        switch (cell) {
+          case '1':
+            imgSrc = "https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/48622588-e5bc-4f83-bb09-b90ffdcf4c06/checkpoint_1.png"; // Caminho para a imagem do checkpoint
+            break;
+          case '2':
+            imgSrc = "https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/c8089e70-ac18-4d3e-af24-e62c5ac23b55/checkpoint_2.png"; // Caminho para a imagem do checkpoint
+            break;
+          case '3':
+            imgSrc = "https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/3bdd0d0f-13fe-4afc-9b85-da1553f4ff53/checkpoint_3.png"; // Caminho para a imagem do checkpoint
+            break;
+          case 'B':
+            imgSrc = 'https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/f23a70ab-6552-46a8-bad0-d0f5344319c2/whale.png'; // Caminho para a imagem do arbusto
+            break;
+          case 'S':
+					  // Verificar se a casa de chegada está bloqueada ou liberada
+					  if (currentCheckpoint < checkpoints.length) {
+					    imgSrc = 'https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/6c8cf280-3b81-4149-bb6f-f690e2209ac9/start.png'; // Imagem da casa de chegada bloqueada
+					  } else {
+					    imgSrc = 'https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/6c8cf280-3b81-4149-bb6f-f690e2209ac9/start.png'; // Imagem da casa de chegada liberada
+					  }
+					  break;
+          default:
+            break;
+        }
+
+        if (imgSrc) {
+          const img = document.createElement('img');
+          img.src = imgSrc;
+          img.alt = cell;
+          img.style.width = '40px';
+          img.style.height = '40px';
+
+          cellDiv.appendChild(img);
+        }
+      }
+
+      gridContainer.appendChild(cellDiv);
+    }
+  }
+}
+
+  // Function to load a new grid
+function loadGrid(gridName) {
+  const selectedGrid = grids[gridName];
+  currentGrid.map = selectedGrid.map;
+  currentBackgroundImage = selectedGrid.backgroundImage;
+  playerPosition = { row: 0, col: 0 };
+  moveCount = 0;
+  currentCheckpoint = 0;
+  updateGoalMessage();
+  document.getElementById('moveCount').textContent = moveCount;
+  document.getElementById('gameMessage').textContent = '';
+  renderCourse(currentGrid.map);
+  startTimer();
+}
+
+  // Function to restart the game
+function restartGame() {
+  playerPosition = { row: 0, col: 0 };
+  moveCount = 0;
+  currentCheckpoint = 0;
+  document.getElementById('moveCount').textContent = moveCount;
+  document.getElementById('gameMessage').textContent = '';
+  updateGoalMessage();
+  renderCourse(currentGrid.map);
+  startTimer();
+}
+
+  // Function to move the player
+function movePlayer(direction) {
+  let newRow = playerPosition.row;
+  let newCol = playerPosition.col;
+
+  // Calcular o movimento baseado na direção e potência selecionada
+  if (direction === 'right') newCol += selectedPower;
+  if (direction === 'left') newCol -= selectedPower;
+  if (direction === 'up') newRow -= selectedPower;
+  if (direction === 'down') newRow += selectedPower;
+  
+  if (direction === 'left' || direction === 'right') {
+    lastDirection = direction;
+  }
+
+  // Garantir que o jogador não saia dos limites do grid
+  newRow = Math.max(0, Math.min(newRow, currentGrid.map.length - 1));
+  newCol = Math.max(0, Math.min(newCol, currentGrid.map[0].length - 1));
+
+  const cellContent = currentGrid.map[newRow][newCol];
+
+  // Verificar se o jogador está tentando entrar na casa de chegada ('S') antes de completar todos os checkpoints
+  if (cellContent === 'S' && currentCheckpoint < checkpoints.length) {
+    document.getElementById('gameMessage').textContent = 'You must complete all checkpoints before returning to the finish line!';
+    return;
+  }
+
+  // Verificar obstáculos
+if (cellContent === 'B' || cellContent === 'X') {
+  document.getElementById('gameMessage').textContent = "You've hit an obstacle! Try another direction.";
+  return;
+}
+
+
+  // Verificar se o jogador alcançou um checkpoint
+  if (cellContent === checkpoints[currentCheckpoint]) {
+    currentCheckpoint++;
+    document.getElementById('gameMessage').textContent = `Checkpoint ${currentCheckpoint} completed!`;
+    updateGoalMessage();
+  }
+
+  // Atualizar a posição do jogador
+  playerPosition = { row: newRow, col: newCol };
+  moveCount++;
+  document.getElementById('moveCount').textContent = moveCount;
+
+  // Verificar se o jogador completou o circuito e retornou à casa de chegada
+  if (cellContent === 'S' && currentCheckpoint === checkpoints.length) {
+    document.getElementById('gameMessage').textContent = 'You have completed the course! Congratulations!';
+    stopTimer();
+    renderCourse(currentGrid.map); // Renderizar a posição final
+    return;
+  }
+
+  renderCourse(currentGrid.map);
+}
+
+
+
+
+document.addEventListener('keydown', function(event) {
+  // Prevenir o scroll da página ao pressionar as teclas direcionais
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+    event.preventDefault();
+  }
+
+  switch(event.key) {
+    case 'ArrowUp':
+      movePlayer('up');
+      break;
+    case 'ArrowDown':
+      movePlayer('down');
+      break;
+    case 'ArrowLeft':
+      movePlayer('left');
+      break;
+    case 'ArrowRight':
+      movePlayer('right');
+      break;
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+      selectedPower = parseInt(event.key);
+      document.getElementById('gameMessage').textContent = `Power set to ${selectedPower}`;
+      break;
+  }
+});
+
+
+  // Handle power selection
+  document.querySelectorAll('#powerButtons button').forEach(button => {
+    button.addEventListener('click', function () {
+      selectedPower = parseInt(this.textContent);
+      document.getElementById('gameMessage').textContent = `Power set to ${selectedPower}`;
+    });
+  });
+
+  // Handle directional buttons
+  document.getElementById('leftButton').addEventListener('click', function () {
+    movePlayer('left');
+  });
+  document.getElementById('upButton').addEventListener('click', function () {
+    movePlayer('up');
+  });
+  document.getElementById('rightButton').addEventListener('click', function () {
+    movePlayer('right');
+  });
+  document.getElementById('downButton').addEventListener('click', function () {
+    movePlayer('down');
+  });
+
+  // Handle the restart button
+  document.getElementById('restartButton').addEventListener('click', function () {
+    restartGame();
+  });
+
+  // Load selected grid when button is clicked
+  document.getElementById('loadGridButton').addEventListener('click', function () {
+    const selectedGrid = document.getElementById('gridSelector').value;
+    loadGrid(selectedGrid);
+  });
+
+  loadGrid('grid1');
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .round-button2 {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px;
+  }
+
+  .round-button2:hover {
+    background-color: #6E1919;
+  }
+
+  .grid-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    border: 0px solid #000;
+    background-color: transparent; /* Garantir que o fundo é transparente */
+    background-repeat: no-repeat;
+    background-size: cover;
+    transition: transform 0.2s;
+  }
+  #gameMessage {
+    font-weight: bold;
+    color: white;
+  }
+</style>

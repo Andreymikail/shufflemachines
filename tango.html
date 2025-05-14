@@ -1,0 +1,389 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Tango</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="playersCheckbox"> Players</label><br>
+    <label><input type="checkbox" id="instrumentsCheckbox"> Instruments</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    <br><br>
+    <div style="margin-bottom: 20px;">
+      <h3>Rules</h3>
+      <p id="rulesResult" style="color: white;">-</p>
+      <button id="shuffleRulesButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+"Encore: Play this card to challenge your opponent to a new round using the same category. If you win, you win their card.",
+"Virtuoso Solo: Choose one of your musicians or instruments and increase +10 points in any attribute for this round.",
+"Tango Duel: Both players choose a new card and compete in a random category. The winner takes two of their opponent's cards.",
+"Time Travel: Swap your current card for any other card from your deck before revealing it.",
+"Improvised Lyrics: Your opponent must use the lowest-scoring card from their card this round.",
+"Milonga Surprise: Change the category of the challenge after both players have revealed their cards.",
+"Lost Sheet Music: The player with the highest score this round automatically loses.",
+"Master Arranger: Take a card from the discard pile and use it this round.",
+"Dramatic Pause: Choose an opponent to skip the next round.",
+"Modern Remix: Swap one of your cards with one from the draw pile."  
+  ];
+
+  const rules = [
+    `Tango 1:
+A (Main Section – Minor Tango Feel)
+Dm6 - A7 - Dm - Gm - A7 - Dm
+Dm6: D Harmonic Minor (D, E, F, G, A, Bb, C#)
+A7: A Phrygian Dominant (A, Bb, C#, D, E, F, G)
+Dm: D Harmonic Minor (D, E, F, G, A, Bb, C#)
+Gm: G Dorian (G, A, Bb, C, D, E, F)
+
+B (Bridge – Modulating with Chromaticism)
+E7 - Am - Dm - Bb7 - A7 - Dm
+E7: E Harmonic Minor (E, F#, G, A, B, C, D#)
+Am: A Harmonic Minor (A, B, C, D, E, F, G#)
+Dm: D Harmonic Minor (D, E, F, G, A, Bb, C#)
+Bb7: Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+A7: A Mixolydian (A, B, C#, D, E, F#, G)
+
+C (Dramatic Ending – Classic Tango Cadence)
+Gm - C#dim7 - Dm/A - A7 - Dm
+Gm: G Harmonic Minor (G, A, Bb, C, D, Eb, F#)
+C#dim7: C# Diminished (C#, E, G, Bb)
+Dm/A: D Harmonic Minor (D, E, F, G, A, Bb, C#)
+A7: A Phrygian Dominant (A, Bb, C#, D, E, F, G)`,
+`Tango 2:
+A (Main Section – Strong, Tension-Building)
+Dm - A7 - Dm - Gm - C#dim7 - A7 - Dm
+Dm: D Harmonic Minor (D, E, F, G, A, Bb, C#)
+A7: A Phrygian Dominant (A, Bb, C#, D, E, F, G)
+Gm: G Harmonic Minor (G, A, Bb, C, D, Eb, F#)
+C#dim7: C# Diminished (C#, E, G, Bb)
+
+B (Bridge – Suspenseful Modulation)
+F - Bb7 - E7 - A7 - Dm - Gm - A7 - Dm
+F: F Major (F, G, A, Bb, C, D, E)
+Bb7: Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+E7: E Harmonic Minor (E, F#, G, A, B, C, D#)
+A7: A Mixolydian (A, B, C#, D, E, F#, G)
+Gm: G Dorian (G, A, Bb, C, D, E, F)`,
+`Tango 3:
+A (Main Section – Emotional, Flowing Chords)
+Dm - C#dim7 - Dm/A - A7 - Dm - Gm - Dm
+Dm: D Harmonic Minor (D, E, F, G, A, Bb, C#)
+C#dim7: C# Diminished (C#, E, G, Bb)
+A7: A Phrygian Dominant (A, Bb, C#, D, E, F, G)
+Gm: G Dorian (G, A, Bb, C, D, E, F)
+
+B (Bridge – Modulation with Rich Colors)
+E7 - Am - D7 - Gm - A7 - Dm
+E7: E Harmonic Minor (E, F#, G, A, B, C, D#)
+Am: A Harmonic Minor (A, B, C, D, E, F, G#)
+D7: D Mixolydian (D, E, F#, G, A, B, C)
+Gm: G Harmonic Minor (G, A, Bb, C, D, Eb, F#)`,
+`Tango 4:
+A (Main Section – Minor & Diminished Movement)
+Dm - A7 - Dm - F#dim7 - Gm - A7 - Dm
+Dm: D Harmonic Minor (D, E, F, G, A, Bb, C#)
+A7: A Phrygian Dominant (A, Bb, C#, D, E, F, G)
+F#dim7: F# Diminished (F#, A, C, Eb)
+Gm: G Dorian (G, A, Bb, C, D, E, F)
+
+B (Bridge – Dark & Moving)
+E7 - Am - Bb7 - A7 - Dm
+E7: E Harmonic Minor (E, F#, G, A, B, C, D#)
+Am: A Harmonic Minor (A, B, C, D, E, F, G#)
+Bb7: Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+A7: A Phrygian Dominant (A, Bb, C#, D, E, F, G)`,
+`Tango 5:
+A (Main Section – Suspense & Longing)
+Dm - A7 - Dm - Gm - E7 - A7 - Dm
+Dm: D Harmonic Minor (D, E, F, G, A, Bb, C#)
+A7: A Phrygian Dominant (A, Bb, C#, D, E, F, G)
+Gm: G Harmonic Minor (G, A, Bb, C, D, Eb, F#)
+E7: E Harmonic Minor (E, F#, G, A, B, C, D#)
+
+B (Bridge – Chromatic Drama & Resolution)
+F - Bb7 - E7 - A7 - Dm - Bb7 - A7 - Dm
+F: F Major (F, G, A, Bb, C, D, E)
+Bb7: Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+E7: E Harmonic Minor (E, F#, G, A, B, C, D#)
+A7: A Mixolydian (A, B, C#, D, E, F#, G)`,
+`Tango 6:
+A (Main Section – Bold and Powerful)
+Dm - A7 - Dm - C7 - F - A7 - Dm
+Dm: D Harmonic Minor (D, E, F, G, A, Bb, C#)
+A7: A Phrygian Dominant (A, Bb, C#, D, E, F, G)
+C7: C Mixolydian (C, D, E, F, G, A, Bb)
+F: F Major (F, G, A, Bb, C, D, E)
+
+B (Bridge – Smooth Modulation with Passion)
+E7 - Am - D7 - Gm - A7 - Dm
+E7: E Harmonic Minor (E, F#, G, A, B, C, D#)
+Am: A Harmonic Minor (A, B, C, D, E, F, G#)
+D7: D Mixolydian (D, E, F#, G, A, B, C)
+Gm: G Dorian (G, A, Bb, C, D, E, F)`,
+`Tango 7:
+A (Main Section – Hauntingly Beautiful)
+Dm - C#dim7 - Dm/A - Gm - C#dim7 - A7 - Dm
+Dm: D Harmonic Minor (D, E, F, G, A, Bb, C#)
+C#dim7: C# Diminished (C#, E, G, Bb)
+Dm/A: D Harmonic Minor with A in the bass (D, E, F, G, A, Bb, C#)
+Gm: G Dorian (G, A, Bb, C, D, E, F)
+
+B (Bridge – Unexpected Turns & Longing)
+Bb7 - A7 - Dm - F#dim7 - Gm - A7 - Dm
+Bb7: Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+A7: A Phrygian Dominant (A, Bb, C#, D, E, F, G)
+F#dim7: F# Diminished (F#, A, C, Eb)
+Gm: G Harmonic Minor (G, A, Bb, C, D, Eb, F#)`,
+`Tango 8:
+A (Main Section – Dramatic Tension)
+Dm - A7 - Dm - F#dim7 - Gm - C#dim7 - A7 - Dm
+Dm: D Harmonic Minor (D, E, F, G, A, Bb, C#)
+A7: A Phrygian Dominant (A, Bb, C#, D, E, F, G)
+F#dim7: F# Diminished (F#, A, C, Eb)
+Gm: G Harmonic Minor (G, A, Bb, C, D, Eb, F#)
+C#dim7: C# Diminished (C#, E, G, Bb)
+
+B (Bridge – Unexpected & Expressive)
+Bb7 - A7 - Dm - E7 - Am - A7 - Dm
+Bb7: Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+A7: A Phrygian Dominant (A, Bb, C#, D, E, F, G)
+E7: E Harmonic Minor (E, F#, G, A, B, C, D#)
+Am: A Harmonic Minor (A, B, C, D, E, F, G#)`,
+`Tango 9:
+A (Main Section – Romantic & Melodic)
+Dm - Gm - A7 - Dm - F - Bb7 - A7 - Dm
+Dm: D Harmonic Minor (D, E, F, G, A, Bb, C#)
+Gm: G Harmonic Minor (G, A, Bb, C, D, Eb, F#)
+A7: A Phrygian Dominant (A, Bb, C#, D, E, F, G)
+F: F Major (F, G, A, Bb, C, D, E)
+Bb7: Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+
+B (Bridge – Expanding the Emotion)
+E7 - Am - D7 - Gm - A7 - Dm
+E7: E Harmonic Minor (E, F#, G, A, B, C, D#)
+Am: A Harmonic Minor (A, B, C, D, E, F, G#)
+D7: D Mixolydian (D, E, F#, G, A, B, C)
+Gm: G Dorian (G, A, Bb, C, D, E, F)`,
+`Tango 10:
+A (Main Section – Cinematic & Powerful)
+Dm - A7 - Dm - C#dim7 - Dm - Gm - A7 - Dm
+Dm: D Harmonic Minor (D, E, F, G, A, Bb, C#)
+A7: A Phrygian Dominant (A, Bb, C#, D, E, F, G)
+C#dim7: C# Diminished (C#, E, G, Bb)
+Gm: G Harmonic Minor (G, A, Bb, C, D, Eb, F#)
+
+B (Bridge – Drama & Resolution)
+F - Bb7 - E7 - A7 - Dm - Bb7 - A7 - Dm
+F: F Major (F, G, A, Bb, C, D, E)
+Bb7: Bb Mixolydian (Bb, C, D, Eb, F, G, Ab)
+E7: E Harmonic Minor (E, F#, G, A, B, C, D#)
+A7: A Phrygian Dominant (A, Bb, C#, D, E, F, G)`
+
+  ];  
+const players = [
+
+{name: "Artist: Adriana Varela (The Modern Tango Voice)", attributes: {Technique: 88, Popularity: 85, Influence: 80, Charisma: 90, Discography: 15}},
+{name: "Artist: Alberto Castillo (The Charmer)", attributes: {Technique: 87, Popularity: 88, Influence: 80, Charisma: 95, Discography: 20}},
+{name: "Artist: Alfredo De Angelis (The Crowd Pleaser)", attributes: {Technique: 91, Popularity: 90, Influence: 80, Charisma: 85, Discography: 50}},
+{name: "Artist: Alfredo Gobbi (The Romantic Violin)", attributes: {Technique: 95, Popularity: 78, Influence: 90, Charisma: 85, Discography: 25}},
+{name: "Artist: Ángel Villoldo (The Pioneer)", attributes: {Technique: 80, Popularity: 85, Influence: 95, Charisma: 78, Discography: 10}},
+{name: "Artist: Aníbal Troilo (The Bandoneón Master)", attributes: {Technique: 97, Popularity: 85, Influence: 90, Charisma: 88, Discography: 60}},
+{name: "Artist: Astor Piazzolla (The Innovator)", attributes: {Technique: 100, Popularity: 90, Influence: 100, Charisma: 85, Discography: 50}},
+{name: "Artist: Atilio Stampone (The Modernist)", attributes: {Technique: 94, Popularity: 75, Influence: 90, Charisma: 80, Discography: 30}},
+{name: "Artist: Cacho Castaña (The Urban Tango Star)", attributes: {Technique: 85, Popularity: 92, Influence: 80, Charisma: 95, Discography: 40}},
+{name: "Artist: Carlos Gardel (The Voice of Tango)", attributes: {Technique: 95, Popularity: 100, Influence: 100, Charisma: 98, Discography: 900}},
+{name: "Artist: Charlo (The Romantic Voice)", attributes: {Technique: 92, Popularity: 85, Influence: 85, Charisma: 88, Discography: 40}},
+{name: "Artist: Christoph H. Müller (The Rhythmic Architect)", attributes: {Technique: 87, Popularity: 84, Influence: 90, Charisma: 78, Discography: 10}},
+{name: "Artist: Edmundo Rivero (The Deep Voice)", attributes: {Technique: 89, Popularity: 80, Influence: 85, Charisma: 87, Discography: 20}},
+{name: "Artist: Eduardo Makaroff (The Tango Rebel)", attributes: {Technique: 90, Popularity: 85, Influence: 92, Charisma: 85, Discography: 11}},
+{name: "Artist: Enrique Cadícamo (The Poet of Tango)", attributes: {Technique: 85, Popularity: 88, Influence: 95, Charisma: 80, Discography: 100}},
+{name: "Artist: Enrique Santos Discépolo (The Philosopher)", attributes: {Technique: 85, Popularity: 90, Influence: 95, Charisma: 90, Discography: 50}},
+{name: "Artist: Ernesto Baffa (The Virtuoso Bandoneonist)", attributes: {Technique: 97, Popularity: 75, Influence: 88, Charisma: 85, Discography: 30}},
+{name: "Artist: Florindo Sassone (The Elegant Conductor)", attributes: {Technique: 90, Popularity: 85, Influence: 80, Charisma: 83, Discography: 40}},
+{name: "Artist: Francisco Canaro (The Showman)", attributes: {Technique: 90, Popularity: 88, Influence: 85, Charisma: 89, Discography: 300}},
+{name: "Artist: Héctor Varela (The Dancefloor Favorite)", attributes: {Technique: 89, Popularity: 92, Influence: 85, Charisma: 87, Discography: 50}},
+{name: "Artist: Homero Manzi (The Soulful Lyricist)", attributes: {Technique: 85, Popularity: 90, Influence: 98, Charisma: 80, Discography: 100}},
+{name: "Artist: Horacio Salgán (The Innovator Pianist)", attributes: {Technique: 98, Popularity: 75, Influence: 90, Charisma: 80, Discography: 30}},
+{name: "Artist: Hugo del Carril (The Voice of Peronism)", attributes: {Technique: 90, Popularity: 85, Influence: 85, Charisma: 90, Discography: 30}},
+{name: "Artist: Juan Carlos Cobián (The Elegant Composer)", attributes: {Technique: 96, Popularity: 80, Influence: 90, Charisma: 85, Discography: 15}},
+{name: "Artist: Juan D'Arienzo (The Rhythm King)", attributes: {Technique: 93, Popularity: 92, Influence: 90, Charisma: 85, Discography: 100}},
+{name: "Artist: Juan José Mosalini (The Tango Ambassador)", attributes: {Technique: 97, Popularity: 80, Influence: 88, Charisma: 85, Discography: 25}},
+{name: "Artist: Juan Maglio Pacho (The Early Innovator)", attributes: {Technique: 90, Popularity: 80, Influence: 85, Charisma: 80, Discography: 40}},
+{name: "Artist: Julio Sosa (The Golden Voice)", attributes: {Technique: 90, Popularity: 85, Influence: 80, Charisma: 95, Discography: 10}},
+{name: "Artist: Leopoldo Federico (The Master Bandoneonist)", attributes: {Technique: 98, Popularity: 82, Influence: 90, Charisma: 88, Discography: 40}},
+{name: "Artist: Lucio Demare (The Romantic)", attributes: {Technique: 92, Popularity: 78, Influence: 85, Charisma: 82, Discography: 30}},
+{name: "Artist: Mariano Mores (The Melodic Genius)", attributes: {Technique: 96, Popularity: 85, Influence: 90, Charisma: 88, Discography: 40}},
+{name: "Artist: Nelly Omar (The Last Diva)", attributes: {Technique: 90, Popularity: 85, Influence: 85, Charisma: 95, Discography: 20}},
+{name: "Artist: Osvaldo Pugliese (The Revolutionary)", attributes: {Technique: 94, Popularity: 80, Influence: 95, Charisma: 92, Discography: 50}},
+{name: "Artist: Pedro Laurenz (The Bandoneón Rebel)", attributes: {Technique: 97, Popularity: 78, Influence: 88, Charisma: 85, Discography: 20}},
+{name: "Artist: Philippe Cohen Solal (The Eclectic Alchemist)", attributes: {Technique: 85, Popularity: 88, Influence: 90, Charisma: 80, Discography: 12}},
+{name: "Artist: Ricardo Tanturi (The Gentleman of Tango)", attributes: {Technique: 88, Popularity: 82, Influence: 80, Charisma: 85, Discography: 30}},
+{name: "Artist: Roberto Firpo (The Classic Maestro)", attributes: {Technique: 95, Popularity: 85, Influence: 90, Charisma: 80, Discography: 120}},
+{name: "Artist: Roberto Goyeneche (The Storyteller)", attributes: {Technique: 88, Popularity: 75, Influence: 85, Charisma: 98, Discography: 30}},
+{name: "Artist: Rodolfo Biagi (The Speedy Fingers)", attributes: {Technique: 95, Popularity: 80, Influence: 85, Charisma: 82, Discography: 40}},
+{name: "Artist: Sebastián Piana (The Milonga Master)", attributes: {Technique: 92, Popularity: 80, Influence: 95, Charisma: 85, Discography: 50}},
+{name: "Artist: Susana Rinaldi (The Dramatic Voice)", attributes: {Technique: 90, Popularity: 85, Influence: 85, Charisma: 95, Discography: 40}},
+{name: "Artist: Tita Merello (The Rebel Woman)", attributes: {Technique: 86, Popularity: 90, Influence: 92, Charisma: 100, Discography: 20}},
+{name: "Artist: Virginia Luque (The Femme Fatale of Tango)", attributes: {Technique: 88, Popularity: 84, Influence: 82, Charisma: 96, Discography: 25}},
+ ];
+const instruments = [
+{name: "Bandola Criolla (The Forgotten Cousin)", attributes: {Technique: 85, Popularity: 30, Expressiveness: 80, "Sonic Impact": 75, "Year of Introduction to Tango": 1900}},
+{name: "Bandoneón (The Soul of Tango)", attributes: {Technique: 98, Popularity: 100, Expressiveness: 100, "Sonic Impact": 95, "Year of Introduction to Tango": 1870}},
+{name: "Cello (The Dramatic Voice)", attributes: {Technique: 92, Popularity: 75, Expressiveness: 98, "Sonic Impact": 85, "Year of Introduction to Tango": 1930}},
+{name: "Double Bass (The Deep Pulse)", attributes: {Technique: 85, Popularity: 88, Expressiveness: 80, "Sound Impact": 92, "Year of Introduction to Tango": 1920}},
+{name: "Flauta (The Forgotten Pioneer)", attributes: {Technique: 88, Popularity: 50, Expressiveness: 85, "Sound Impact": 70, "Year of Introduction to Tango": 1880}},
+{name: "Guitar (The Nostalgic Strings)", attributes: {Technique: 90, Popularity: 80, Expressiveness: 95, "Sound Impact": 85, "Year of Introduction to Tango": 1890}},
+{name: "Percussion (The Unusual Element)", attributes: {Technique: 70, Popularity: 40, Expressiveness: 65, "Sonic Impact": 80, "Year of Introduction to Tango": 1960}},
+{name: "Piano (The Grand Architect)", attributes: {Technique: 95, Popularity: 95, Expressiveness: 90, "Sonic Impact": 98, "Year of Introduction to Tango": 1910}},
+{name: "Viola (The Warm Support)", attributes: {Technique: 90, Popularity: 70, Expressiveness: 85, "Sound Impact": 80, "Year of Introduction to Tango": 1920}},
+{name: "Violin (The Melodic Heart)", attributes: {Technique: 93, Popularity: 90, Expressiveness: 97, "Sonic Impact": 85, "Year of Introduction to Tango": 1900}},
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playersCheckbox').checked) selectedCards.push(...players);
+    if (document.getElementById('instrumentsCheckbox').checked) selectedCards.push(...instruments);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  document.getElementById('shuffleRulesButton').addEventListener('click', function() {
+    shuffleDeck(rules, 'rulesResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+		body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

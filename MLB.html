@@ -1,0 +1,223 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">MLB</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  <!-- Action Section -->
+  <div style="margin-top: 20px;">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div style="margin-bottom: 20px;">
+        <h3>Action</h3>
+        <p id="actionResult" style="color: white;">-</p>
+        <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+    "Home Run Blast! - Automatically wins the current round if the batter's card has Power ≥ 95.",
+"Stolen Base! - Choose an attribute and compare it again using another card of yours (simulates stealing a base).",
+"Hit & Run! - Choose an attribute and roll a die. Odd: Advances +10 in the chosen attribute. Even: Loses -10 in the same attribute.",
+"Clutch Hit! - Adds +15 to the Clutch Factor: attribute in the last round.",
+"Walk-Off Win! - If it is the last round and the player activates this action, he wins the game regardless of the attribute played.",
+"Double Play! - Eliminates two opponent cards if his card has Double Play Efficiency ≥ 90.",
+"Golden Glove Catch! - Interrupts a “Home Run Blast!” and cancels the special effect.",
+"Throw to Home! - Roll a die. 6: Player automatically wins the current round. 1-5: Nothing happens.",
+"Defensive Shift! - Compares two attributes instead of one, simulating an adjusted defense.",
+"Pitcher’s Duel! - If there is a pitcher card in play, the opponent must use the lowest attribute on their card.",
+"Manager Challenge! - Challenge your opponent to an extra round with new cards. The winner takes both rounds.",
+"Injury Timeout! - Force your opponent to discard a card of their choice.",
+"Weather Delay! - The current round is canceled and new cards are played.",
+"Call to the Bullpen! - Swap one of your active cards for one from your discard pile.",
+"Pinch Hitter! - Replace your card with a new one from your deck. Use the new attribute to play the round."
+  ];
+  
+  const cards = [
+  {name: "Player: Aaron Judge", attributes: {Position: "Power Hitter (Right Fielder)", "Batting Average (BA)": 0.310, "Home Runs (HR)": 62, RBIs: 131, Hits: 177, "Stolen Bases (SB)": 16, "Clutch Factor": 95, Speed: 85, Power: 99}},
+{name: "Player: Mookie Betts", attributes: {Position: "Versatile Hitter (Right Fielder / Second Baseman)", "Batting Average (BA)": 0.292, "Home Runs (HR)": 39, RBIs: 107, Hits: 184, "Stolen Bases (SB)": 14, "Clutch Factor": 88, Speed: 90, Power: 87}},
+{name: "Player: Shohei Ohtani", attributes: {Position: "Power Hitter (Designated Hitter / Pitcher)", "Batting Average (BA)": 0.304, "Home Runs (HR)": 44, RBIs: 95, Hits: 151, "Stolen Bases (SB)": 20, "Clutch Factor": 97, Speed: 85, Power: 100}},
+{name: "Player: Juan Soto", attributes: {Position: "Clutch Hitter (Left Fielder)", "Batting Average (BA)": 0.275, "Home Runs (HR)": 35, RBIs: 109, Hits: 160, "Stolen Bases (SB)": 12, "Clutch Factor": 90, Speed: 80, Power: 89}},
+{name: "Player: Ronald Acuña Jr.", attributes: {Position: "Speed Runner (Right Fielder)", "Batting Average (BA)": 0.337, "Home Runs (HR)": 41, RBIs: 106, Hits: 217, "Stolen Bases (SB)": 73, "Clutch Factor": 85, Speed: 100, Power: 91}},
+{name: "Player: Vladimir Guerrero Jr.", attributes: {Position: "Power Hitter (First Baseman)", "Batting Average (BA)": 0.277, "Home Runs (HR)": 28, RBIs: 94, Hits: 166, "Stolen Bases (SB)": 7, "Clutch Factor": 88, Speed: 75, Power: 95}},
+{name: "Player: Bryce Harper", attributes: {Position: "Clutch Hitter (Designated Hitter / First Baseman)", "Batting Average (BA)": 0.293, "Home Runs (HR)": 21, RBIs: 72, Hits: 140, "Stolen Bases (SB)": 9, "Clutch Factor": 94, Speed: 80, Power: 88}},
+{name: "Player: José Altuve", attributes: {Position: "Tactician (Second Baseman)", "Batting Average (BA)": 0.312, "Home Runs (HR)": 17, RBIs: 57, Hits: 149, "Stolen Bases (SB)": 14, "Clutch Factor": 91, Speed: 83, Power: 78}},
+{name: "Player: Freddie Freeman", attributes: {Position: "Consistent Hitter (First Baseman)", "Batting Average (BA)": 0.331, "Home Runs (HR)": 29, RBIs: 102, Hits: 210, "Stolen Bases (SB)": 23, "Clutch Factor": 92, Speed: 80, Power: 87}},
+{name: "Player: Pete Alonso", attributes: {Position: "Home Run Specialist (First Baseman)", "Batting Average (BA)": 0.254, "Home Runs (HR)": 46, RBIs: 118, Hits: 155, "Stolen Bases (SB)": 5, "Clutch Factor": 90, Speed: 72, Power: 98}},
+{name: "Player: Yordan Álvarez", attributes: {Position: "Power Hitter (Designated Hitter / Left Fielder)", "Batting Average (BA)": 0.294, "Home Runs (HR)": 37, RBIs: 112, Hits: 157, "Stolen Bases (SB)": 3, "Clutch Factor": 95, Speed: 70, Power: 97}},
+{name: "Player: Julio Rodríguez", attributes: {Position: "Rising Star (Center Fielder)", "Batting Average (BA)": 0.285, "Home Runs (HR)": 32, RBIs: 103, Hits: 177, "Stolen Bases (SB)": 37, "Clutch Factor": 88, Speed: 92, Power: 90}},
+{name: "Player: Matt Olson", attributes: {Position: "Power Slugger (First Baseman)", "Batting Average (BA)": 0.283, "Home Runs (HR)": 54, RBIs: 139, Hits: 162, "Stolen Bases (SB)": 2, "Clutch Factor": 94, Speed: 68, Power: 99}},
+{name: "Player: Trea Turner", attributes: {Position: "Speed Runner (Shortstop)", "Batting Average (BA)": 0.281, "Home Runs (HR)": 26, RBIs: 88, Hits: 171, "Stolen Bases (SB)": 30, "Clutch Factor": 85, Speed: 97, Power: 86}},
+{name: "Player: Corey Seager", attributes: {Position: "Elite Hitter (Shortstop)", "Batting Average (BA)": 0.327, "Home Runs (HR)": 33, RBIs: 96, Hits: 173, "Stolen Bases (SB)": 5, "Clutch Factor": 92, Speed: 78, Power: 88}},
+{name: "Player: Luis Robert Jr.", attributes: {Position: "Power-Speed Combo (Center Fielder)", "Batting Average (BA)": 0.264, "Home Runs (HR)": 38, RBIs: 90, Hits: 155, "Stolen Bases (SB)": 20, "Clutch Factor": 85, Speed: 90, Power: 93}},
+{name: "Player: Fernando Tatis Jr.", attributes: {Position: "Power-Speed Combo (Right Fielder / Shortstop)", "Batting Average (BA)": 0.275, "Home Runs (HR)": 25, RBIs: 78, Hits: 155, "Stolen Bases (SB)": 29, "Clutch Factor": 87, Speed: 95, Power: 92}},
+{name: "Player: Rafael Devers", attributes: {Position: "Power Hitter (Third Baseman)", "Batting Average (BA)": 0.271, "Home Runs (HR)": 33, RBIs: 115, Hits: 165, "Stolen Bases (SB)": 3, "Clutch Factor": 88, Speed: 75, Power: 94}},
+{name: "Player: Bo Bichette", attributes: {Position: "Consistent Hitter (Shortstop)", "Batting Average (BA)": 0.306, "Home Runs (HR)": 20, RBIs: 80, Hits: 191, "Stolen Bases (SB)": 8, "Clutch Factor": 90, Speed: 83, Power: 87}},
+{name: "Player: Austin Riley", attributes: {Position: "Power Slugger (Third Baseman)", "Batting Average (BA)": 0.281, "Home Runs (HR)": 37, RBIs: 97, Hits: 168, "Stolen Bases (SB)": 2, "Clutch Factor": 89, Speed: 70, Power: 96}},
+{name: "Player: Kyle Tucker", attributes: {Position: "Clutch Hitter (Right Fielder)", "Batting Average (BA)": 0.284, "Home Runs (HR)": 29, RBIs: 112, Hits: 178, "Stolen Bases (SB)": 30, "Clutch Factor": 91, Speed: 88, Power: 90}},
+{name: "Player: Alex Bregman", attributes: {Position: "Playmaker (Third Baseman)", "Batting Average (BA)": 0.277, "Home Runs (HR)": 24, RBIs: 98, Hits: 162, "Stolen Bases (SB)": 6, "Clutch Factor": 89, Speed: 76, Power: 88}},
+{name: "Player: José Ramírez", attributes: {Position: "Switch Hitter (Third Baseman)", "Batting Average (BA)": 0.280, "Home Runs (HR)": 24, RBIs: 97, Hits: 176, "Stolen Bases (SB)": 28, "Clutch Factor": 92, Speed: 89, Power: 91}},
+{name: "Player: Francisco Lindor", attributes: {Position: "All-Around Player (Shortstop)", "Batting Average (BA)": 0.254, "Home Runs (HR)": 31, RBIs: 98, Hits: 167, "Stolen Bases (SB)": 25, "Clutch Factor": 87, Speed: 88, Power: 90}},
+{name: "Player: Paul Goldschmidt", attributes: {Position: "Elite Slugger (First Baseman)", "Batting Average (BA)": 0.289, "Home Runs (HR)": 25, RBIs: 89, Hits: 178, "Stolen Bases (SB)": 11, "Clutch Factor": 91, Speed: 78, Power: 92}},
+{name: "Player: Mike Trout", attributes: {Position: "Legendary Hitter (Center Fielder)", "Batting Average (BA)": 0.303, "Home Runs (HR)": 40, RBIs: 104, Hits: 155, "Stolen Bases (SB)": 22, "Clutch Factor": 97, Speed: 91, Power: 98}},
+{name: "Player: Satchel Paige – The Legend", attributes: {Position: "Pitcher (Legendary Ace)", "ERA (Earned Run Average)": 2.45, "Strikeouts (K)": "1,500+", "Fastball Power": 100, Control: 98, Stamina: 100, "Clutch Factor": 100}},
+{name: "Player: Nolan Arenado", attributes: {Position: "Third Baseman (Defensive Wizard)", FP: 0.980, AS: 94, RNG: 90, DP: 95, DRS: 18, CD: 97}},
+{name: "Player: Matt Chapman", attributes: {Position: "Third Baseman (Field General)", FP: 0.983, AS: 93, RNG: 92, DP: 91, DRS: 15, CD: 94}},
+{name: "Player: Andrelton Simmons (Defensive Legend)", attributes: {Position: "Shortstop (Defensive Genius)", FP: 0.987, AS: 90, RNG: 95, DP: 96, DRS: 20, CD: 95}},
+{name: "Player: Carlos Correa", attributes: {Position: "Shortstop (Defensive Leader)", FP: 0.982, AS: 92, RNG: 89, DP: 93, DRS: 16, CD: 91}},
+{name: "Player: J.T. Realmuto", attributes: {Position: "Catcher (Cannon Arm)", FP: 0.995, AS: 96, RNG: 85, DP: 88, DRS: 14, CD: 93}},
+{name: "Player: José Treviño", attributes: {Position: "Catcher (Defensive Specialist)", FP: 0.994, AS: 92, RNG: 83, DP: 85, DRS: 17, CD: 92}},
+{name: "Player: Mookie Betts", attributes: {Position: "Right Fielder (Gold Glove Winner)", FP: 0.990, AS: 95, RNG: 94, DP: 90, DRS: 19, CD: 95}},
+{name: "Player: Kevin Kiermaier", attributes: {Position: "Center Fielder (Defensive Wizard)", FP: 0.988, AS: 90, RNG: 96, DP: 85, DRS: 20, CD: 94}},
+{name: "Player: Harrison Bader", attributes: {Position: "Center Fielder (Glove Expert)", FP: 0.986, AS: 88, RNG: 95, DP: 87, DRS: 18, CD: 93}},
+{name: "Player: Yadier Molina (Legend)", attributes: {Position: "Catcher (Defensive Commander)", FP: 0.998, AS: 95, RNG: 82, DP: 90, DRS: 20, CD: 99}},
+{name: "Player: Byron Buxton", attributes: {Position: "Center Fielder (Speed Defender)", FP: 0.986, AS: 89, RNG: 97, DP: 84, DRS: 15, CD: 93}},
+{name: "Player: Michael Harris II", attributes: {Position: "Center Fielder (Rookie Star)", FP: 0.987, AS: 87, RNG: 96, DP: 83, DRS: 16, CD: 90}},
+{name: "Player: Christian Vázquez", attributes: {Position: "Catcher (Defensive Specialist)", FP: 0.993, AS: 91, RNG: 85, DP: 88, DRS: 14, CD: 90}},
+{name: "Player: Sean Murphy", attributes: {Position: "Catcher (Cannon Arm)", FP: 0.994, AS: 94, RNG: 86, DP: 89, DRS: 16, CD: 92}},
+{name: "Player: Xander Bogaerts", attributes: {Position: "Shortstop (Field General)", FP: 0.986, AS: 90, RNG: 88, DP: 93, DRS: 12, CD: 89}},
+{name: "Player: Marcus Semien", attributes: {Position: "Second Baseman (All-Around Defender)", FP: 0.985, AS: 88, RNG: 89, DP: 95, DRS: 15, CD: 91}},
+{name: "Player: Jackie Robinson", attributes: {Position: "Second Baseman (Hall of Famer, Trailblazer)", FP: 0.983, AS: 98, RNG: 95, DP: 90, DRS: 15, CD: 100}},
+{name: "Player: Brandon Crawford", attributes: {Position: "Shortstop (Veteran Defender)", FP: 0.987, AS: 89, RNG: 91, DP: 95, DRS: 17, CD: 94}},
+{name: "Player: Daulton Varsho", attributes: {Position: "Left Fielder / Catcher (Utility Defender)", FP: 0.988, AS: 90, RNG: 92, DP: 85, DRS: 18, CD: 91}},
+{name: "Player: Starling Marte", attributes: {Position: "Right Fielder (Speed and Power)", FP: 0.984, AS: 92, RNG: 93, DP: 88, DRS: 14, CD: 90}},
+{name: "Player: Cedric Mullins", attributes: {Position: "Center Fielder (Speed Defender)", FP: 0.986, AS: 88, RNG: 96, DP: 84, DRS: 15, CD: 92}},
+{name: "Player: Willie Mays", attributes: {Position: "Center Fielder (The Say Hey Kid)", FP: 0.981, AS: 95, RNG: 99, DP: 90, DRS: 20, CD: 100}},
+{name: "Player: Anthony Volpe", attributes: {Position: "Shortstop (Emerging Star)", FP: 0.983, AS: 89, RNG: 91, DP: 90, DRS: 12, CD: 88}},
+{name: "Player: Freddie Freeman", attributes: {Position: "First Baseman (Gold Glove Winner)", FP: 0.995, AS: 85, RNG: 83, DP: 92, DRS: 13, CD: 90}},
+{name: "Player: Josh Donaldson", attributes: {Position: "Third Baseman (Veteran Defender)", FP: 0.982, AS: 89, RNG: 87, DP: 91, DRS: 10, CD: 88}},
+{name: "Player: Manny Machado", attributes: {Position: "Third Baseman (Field Commander)", FP: 0.985, AS: 93, RNG: 91, DP: 94, DRS: 17, CD: 96}},
+{name: "Coach: Alex Cora", attributes: {Leadership: 90, "Tactical Mind": 92, "Game Management": 93, "Championship Wins": 1, Experience: "6 Seasons"}},
+{name: "Coach: Brian Snitker", attributes: {Leadership: 91, "Tactical Mind": 90, "Game Management": 94, "Championship Wins": 1, Experience: "7 Seasons"}},
+{name: "Coach: Bruce Bochy", attributes: {Leadership: 95, "Tactical Mind": 94, "Game Management": 96, "Championship Wins": 4, Experience: "26 Seasons"}},
+{name: "Coach: Buck Showalter", attributes: {Leadership: 88, "Tactical Mind": 91, "Game Management": 93, "Championship Wins": 0, Experience: "22 Seasons"}},
+{name: "Coach: Dave Roberts", attributes: {Leadership: 90, "Tactical Mind": 89, "Game Management": 93, "Championship Wins": 1, Experience: "8 Seasons"}},
+{name: "Coach: Dusty Baker", attributes: {Leadership: 96, "Tactical Mind": 91, "Game Management": 94, "Championship Wins": 1, Experience: "26 Seasons"}},
+{name: "Coach: Gabe Kapler", attributes: {Leadership: 88, "Tactical Mind": 92, "Game Management": 91, "Championship Wins": 0, Experience: "6 Seasons"}},
+{name: "Coach: Matt Lisle", attributes: {Leadership: 90, "Tactical Mind": 93, "Game Management": 88, "Championship Wins": 0, Experience: "10+ Seasons"}},
+{name: "Coach: Joe Torre (Legend)", attributes: {Leadership: 98, "Tactical Mind": 95, "Game Management": 97, "Championship Wins": 4, Experience: "29 Seasons"}},
+{name: "Coach: Terry Francona", attributes: {Leadership: 94, "Tactical Mind": 92, "Game Management": 95, "Championship Wins": 2, Experience: "23 Seasons"}},
+{name: "Coach: Tony La Russa (Legend)", attributes: {Leadership: 97, "Tactical Mind": 96, "Game Management": 98, "Championship Wins": 3, Experience: "34 Seasons"}},
+{name: "Stadium: Yankee Stadium", attributes: {Team: "New York Yankees", "Seating Capacity": 47309, "Field Dimensions": "Short (Right Field Favorable)", "HR Factor": 90, "Weather Effect": 70, "Historical Legacy": 100}},
+{name: "Stadium: Fenway Park", attributes: {Team: "Boston Red Sox", "Seating Capacity": 37755, "Field Dimensions": "Unique (Short Left Field, Green Monster)", "HR Factor": 85, "Weather Effect": 75, "Historical Legacy": 100}},
+{name: "Stadium: Dodger Stadium", attributes: {Team: "Los Angeles Dodgers", "Seating Capacity": 56000, "Field Dimensions": "Medium (Balanced)", "HR Factor": 70, "Weather Effect": 60, "Historical Legacy": 95}},
+{name: "Stadium: Wrigley Field", attributes: {Team: "Chicago Cubs", "Seating Capacity": 41649, "Field Dimensions": "Medium (Wind-Dependent)", "HR Factor": "80 (Wind Variable)", "Weather Effect": 95, "Historical Legacy": 100}},
+{name: "Stadium: Oracle Park", attributes: {Team: "San Francisco Giants", "Seating Capacity": 38362, "Field Dimensions": "Medium (Scenic View)", "HR Factor": 70, "Weather Effect": 75, "Historical Legacy": 80}},
+{name: "Stadium: Truist Park", attributes: {Team: "Atlanta Braves", "Seating Capacity": 41084, "Field Dimensions": "Medium (Balanced)", "HR Factor": 80, "Weather Effect": 65, "Historical Legacy": 85}},
+{name: "Stadium: Rogers Centre", attributes: {Team: "Toronto Blue Jays", "Seating Capacity": 49286, "Field Dimensions": "Medium (Retractable Roof)", "HR Factor": 75, "Weather Effect": 30, "Historical Legacy": 75}},
+{name: "Stadium: T-Mobile Park", attributes: {Team: "Seattle Mariners", "Seating Capacity": 47943, "Field Dimensions": "Large (Pitcher-Friendly)", "HR Factor": 65, "Weather Effect": 70, "Historical Legacy": 80}},
+{name: "Stadium: Busch Stadium", attributes: {Team: "St. Louis Cardinals", "Seating Capacity": 45494, "Field Dimensions": "Medium (Balanced)", "HR Factor": 70, "Weather Effect": 75, "Historical Legacy": 90}}
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [...cards]; // Clone the cards array
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and display result
+  function shuffleAction() {
+    const randomAction = actions[Math.floor(Math.random() * actions.length)];
+    document.getElementById('actionResult').textContent = randomAction;
+  }
+
+  // Event listeners for the Shuffle Action button
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleAction();
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Shuffle and display cards, but don't shuffle actions
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 80px; /* Aligned with height for proper vertical centering */
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 80px; /* Aligned with height for proper vertical centering */
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

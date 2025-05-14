@@ -1,0 +1,252 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">NFL</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  <!-- Action Section -->
+  <div style="margin-top: 20px;">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div style="margin-bottom: 20px;">
+        <h3>Action</h3>
+        <p id="actionResult" style="color: white;">-</p>
+        <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+    "Hail Mary Pass: Attempt a long pass for an unexpected touchdown. Roll a dice or compare stats for success.",
+"Trick Play: Surprise the defense, nullifying a defensive card.",
+"Screen Pass: Nullify an enemy blitz attempt.",
+"Quarterback Sneak: Advance a short distance automatically.",
+"Play Action Fake: Confuse the defense; increase your chances on the next pass.",
+"No-Huddle Offense: Play two consecutive offensive cards.",
+"Blitz: Force the opponent to play a protection card or lose their game.",
+"Interception: Steal an offensive play from the opponent and play immediately.",
+"Sack the QB: Cancel the opponent's next pass play.",
+"Goal Line Stand: Nullify a run near the end zone.",
+"Forced Fumble: Force the opponent to discard a valid card.",
+"Pass Deflection: Block a pass and prevent any further advance.",
+"Field Goal Attempt: Attempt score even without a touchdown. Role for success.",
+"Punt for Position: Force the opponent to start their next play from a deeper position.",
+"Onside Kick: Attempt to regain possession after a score.",
+"Kick Return Touchdown: Score instantly if the opponent attacks your kick attempt.",
+"Injury Timeout: The opponent loses their next play.",
+"Challenge Flag: Nullify an opponent's action (limited use).",
+"Weather Shift: Reduce the effectiveness of operational actions for two turns.",
+"Two-Minute Drill: Play two offensive cards in a row before the opponent's next play.",
+"Fan Support: Increase the effectiveness of your next offensive play."
+  ];
+  
+  const cards = [  
+  {name: "Coach: Andy Reid", attributes: {Trophies: 2, Tactics: 9, "Player Development": 9, Leadership: 9, Longevity: 9, "Big Match Performance": 8}},
+{name: "Coach: Bill Belichick", attributes: {Trophies: 8, Tactics: 10, "Player Development": 9, Leadership: 9, Longevity: 10, "Big Match Performance": 10}},
+{name: "Coach: Chuck Noll", attributes: {Trophies: 4, Tactics: 8, "Player Development": 9, Leadership: 9, Longevity: 9, "Big Match Performance": 9}},
+{name: "Coach: Don Shula", attributes: {Trophies: 4, Tactics: 9, "Player Development": 9, Leadership: 9, Longevity: 10, "Big Match Performance": 8}},
+{name: "Coach: Jimmy Johnson", attributes: {Trophies: 2, Tactics: 9, "Player Development": 8, Leadership: 9, Longevity: 7, "Big Match Performance": 9}},
+{name: "Coach: John Madden", attributes: {Trophies: 1, Tactics: 8, "Player Development": 8, Leadership: 10, Longevity: 8, "Big Match Performance": 9}},
+{name: "Coach: Mike Tomlin", attributes: {Trophies: 1, Tactics: 8, "Player Development": 9, Leadership: 9, Longevity: 9, "Big Match Performance": 8}},
+{name: "Coach: Sean Payton", attributes: {Trophies: 1, Tactics: 9, "Player Development": 8, Leadership: 8, Longevity: 9, "Big Match Performance": 8}},
+{name: "Coach: Tom Landry", attributes: {Trophies: 2, Tactics: 9, "Player Development": 8, Leadership: 9, Longevity: 10, "Big Match Performance": 8}},
+{name: "Coach: Vince Lombardi", attributes: {Trophies: 5, Tactics: 9, "Player Development": 8, Leadership: 10, Longevity: 8, "Big Match Performance": 10}},
+{name: "Player: A.J. Brown", attributes: {Position: "Wide Receiver", Receiving: 92, "Clutch Factor": 95, "Career Legacy": 85}},
+{name: "Player: Aaron Donald (DT)", attributes: {Position: "Defensive Line", "Pass Rush": 99, "Football IQ": 98, Legacy: 96}},
+{name: "Player: Aeneas Williams", attributes: {Position: "Cornerback", Coverage: 95, Instincts: 96, Legacy: 94}},
+{name: "Player: Alan Page (DT)", attributes: {Position: "Defensive Line", "Pass Rush": 95, "Football IQ": 98, Legacy: 96}},
+{name: "Player: Anthony Munoz (OT)", attributes: {Position: "Offensive Line", Blocking: 100, Power: 95, "Career Legacy": 96}},
+{name: "Player: Antonio Gates", attributes: {Position: "Tight End", "Red Zone Threat": 98, Hands: 95, Legacy: 93}},
+{name: "Player: Barry Sanders", attributes: {Position: "Running Back", Speed: 99, Elusiveness: 100, "Career Legacy": 96}},
+{name: "Player: Brett Favre", attributes: {Position: "Quarterback", Gunslinger: 99, Toughness: 100, Legacy: 95}},
+{name: "Player: Brian Dawkins (FS)", attributes: {Position: "Safety", Playmaking: 99, Leadership: 98, Legacy: 95}},
+{name: "Player: Bruce Smith (DE)", attributes: {Position: "Defensive Line", "Pass Rush": 100, Tackling: 97, Legacy: 98}},
+{name: "Player: Calvin Johnson (Megatron)", attributes: {Position: "Wide Receiver", Power: 95, "Catch Radius": 100, "Career Legacy": 93}},
+{name: "Player: Casey Weldon", attributes: {Position: "Quarterback", Passing: 85, "Game Strategy": 90, "Career Legacy": 80}},
+{name: "Player: Champ Bailey", attributes: {Position: "Cornerback", Coverage: 98, Speed: 96, Legacy: 95}},
+{name: "Player: Charles Woodson", attributes: {Position: "Cornerback", Versatility: 99, Coverage: 97, Legacy: 96}},
+{name: "Player: Chris Doleman (DE)", attributes: {Position: "Defensive Line", Versatility: 97, Tackling: 94, Legacy: 93}},
+{name: "Player: Cris Carter", attributes: {Position: "Wide Receiver", Hands: 100, "Red Zone Ability": 97, Legacy: 93}},
+{name: "Player: Dan Marino", attributes: {Position: "Quarterback", Passing: 98, "Arm Strength": 100, Legacy: 93}},
+{name: "Player: Darrelle Revis", attributes: {Position: "Cornerback", Coverage: 99, "Football IQ": 98, Legacy: 95}},
+{name: "Player: Deion Sanders", attributes: {Position: "Cornerback", Coverage: 100, Speed: 100, Legacy: 97}},
+{name: "Player: Derrick Brooks (OLB)", attributes: {Position: "Linebacker", Coverage: 98, Tackling: 96, Legacy: 95}},
+{name: "Player: Drew Brees", attributes: {Position: "Quarterback", Accuracy: 100, Passing: 95, Legacy: 96}},
+{name: "Player: Earl Campbell", attributes: {Position: "Running Back", Power: 100, Toughness: 98, Legacy: 94}},
+{name: "Player: Ed Reed (FS)", attributes: {Position: "Safety", "Ball Hawk": 100, "Football IQ": 99, Legacy: 98}},
+{name: "Player: Emmitt Smith", attributes: {Position: "Running Back", Durability: 100, Vision: 95, Legacy: 96}},
+{name: "Player: Eric Dickerson", attributes: {Position: "Running Back", Speed: 98, Power: 94, Legacy: 92}},
+{name: "Player: Gene Upshaw (OG)", attributes: {Position: "Offensive Line", Blocking: 99, Power: 98, Legacy: 94}},
+{name: "Player: Isaac Bruce", attributes: {Position: "Wide Receiver", "Route Running": 95, Speed: 94, Legacy: 92}},
+{name: "Player: Jack Lambert (MLB)", attributes: {Position: "Linebacker", Toughness: 100, Tackling: 95, Legacy: 97}},
+{name: "Player: Jalen Hurts", attributes: {Position: "Quarterback", Accuracy: 88, Passing: 90, Legacy: 85}},
+{name: "Player: Jerry Rice", attributes: {Position: "Wide Receiver", Receiving: 100, "Clutch Factor": 98, "Career Legacy": 100}},
+{name: "Player: Jim Brown", attributes: {Position: "Running Back", Power: 100, Speed: 90, "Career Legacy": 97}},
+{name: "Player: Joe Montana", attributes: {Position: "Quarterback", Passing: 95, "Clutch Factor": 98, "Career Legacy": 96}},
+{name: "Player: John Randle (DT)", attributes: {Position: "Defensive Line", "Pass Rush": 97, Power: 95, Legacy: 94}},
+{name: "Player: Johnny Unitas", attributes: {Position: "Quarterback", "Football IQ": 100, Passing: 95, Legacy: 98}},
+{name: "Player: Jonathan Ogden (OT)", attributes: {Position: "Offensive Line", Power: 97, Durability: 98, "Career Legacy": 95}},
+{name: "Player: Junior Seau (OLB)", attributes: {Position: "Linebacker", Playmaking: 97, Toughness: 98, Legacy: 95}},
+{name: "Player: Kellen Winslow Sr.", attributes: {Position: "Tight End", Receiving: 100, Speed: 95, Legacy: 94}},
+{name: "Player: Kevin Greene (OLB)", attributes: {Position: "Linebacker", "Pass Rush": 98, Power: 96, Legacy: 94}},
+{name: "Player: Khalen Saunders", attributes: {Position: "Defensive Tackle", "Pass Rush": 85, Tackling: 88, Legacy: 80}},
+{name: "Player: LaDainian Tomlinson", attributes: {Position: "Running Back", Versatility: 100, "Scoring Ability": 97, Legacy: 93}},
+{name: "Player: Larry Allen (OG)", attributes: {Position: "Offensive Line", Power: 100, Toughness: 99, Legacy: 95}},
+{name: "Player: Larry Fitzgerald", attributes: {Position: "Wide Receiver", Hands: 100, "Clutch Factor": 98, Legacy: 95}},
+{name: "Player: Lawrence Taylor (OLB)", attributes: {Position: "Linebacker", "Pass Rush": 100, Toughness: 99, Legacy: 100}},
+{name: "Player: LeRoy Butler (SS)", attributes: {Position: "Safety", Coverage: 96, Playmaking: 97, Legacy: 93}},
+{name: "Player: Marshall Faulk", attributes: {Position: "Running Back", Versatility: 100, Speed: 96, Legacy: 95}},
+{name: "Player: Marvin Harrison", attributes: {Position: "Wide Receiver", "Route Running": 98, Hands: 96, Legacy: 94}},
+{name: "Player: Mean Joe Greene (DT)", attributes: {Position: "Defensive Line", Power: 100, Tackling: 95, Legacy: 98}},
+{name: "Player: Mel Blount", attributes: {Position: "Cornerback", Physicality: 100, Toughness: 98, Legacy: 95}},
+{name: "Player: Michael Strahan (DE)", attributes: {Position: "Defensive Line", "Pass Rush": 98, Toughness: 96, Legacy: 95}},
+{name: "Player: Mike Ditka", attributes: {Position: "Tight End", Toughness: 100, Blocking: 93, Legacy: 91}},
+{name: "Player: Mike Singletary (MLB)", attributes: {Position: "Linebacker", Leadership: 100, Tackling: 98, Legacy: 95}},
+{name: "Player: Mike Webster (C)", attributes: {Position: "Offensive Line", Leadership: 100, Toughness: 97, Legacy: 94}},
+{name: "Player: Orlando Pace (OT)", attributes: {Position: "Offensive Line", "Pass Protection": 98, Durability: 97, Legacy: 93}},
+{name: "Player: Peyton Manning", attributes: {Position: "Quarterback", Passing: 98, "Game Strategy": 100, "Career Legacy": 95}},
+{name: "Player: Randy Moss", attributes: {Position: "Wide Receiver", Speed: 97, "Jumping Ability": 100, "Career Legacy": 94}},
+{name: "Player: Ray Lewis (MLB)", attributes: {Position: "Linebacker", Tackling: 100, Leadership: 99, Legacy: 98}},
+{name: "Player: Reggie Wayne", attributes: {Position: "Wide Receiver", Consistency: 95, "Route Running": 94, Legacy: 92}},
+{name: "Player: Reggie White (DE)", attributes: {Position: "Defensive Line", "Pass Rush": 100, Power: 99, Legacy: 100}},
+{name: "Player: Rob Gronkowski", attributes: {Position: "Tight End", Power: 98, "Clutch Factor": 96, "Career Legacy": 94}},
+{name: "Player: Rod Woodson", attributes: {Position: "Cornerback", Coverage: 97, Tackling: 95, Legacy: 96}},
+{name: "Player: Roger Staubach", attributes: {Position: "Quarterback", "Clutch Factor": 100, Mobility: 93, Legacy: 96}},
+{name: "Player: Ronnie Lott (S)", attributes: {Position: "Safety", Tackling: 100, Leadership: 99, Legacy: 98}},
+{name: "Player: Sam Huff (MLB)", attributes: {Position: "Linebacker", Tackling: 96, "Football IQ": 97, Legacy: 93}},
+{name: "Player: Shannon Sharpe", attributes: {Position: "Tight End", Speed: 95, Receiving: 97, Legacy: 94}},
+{name: "Player: Shedeur Sanders (QB)", attributes: {Position: "Quarterback", Passing: 90, "Clutch Factor": 92, "Career Legacy": 85}},
+{name: "Player: Shilo Sanders (DB)", attributes: {Position: "Defensive Back", Coverage: 90, Playmaking: 92, Legacy: 85}},
+{name: "Player: Steve Atwater (SS)", attributes: {Position: "Safety", "Hard Hits": 100, Tackling: 97, Legacy: 94}},
+{name: "Player: Steve Young", attributes: {Position: "Quarterback", Mobility: 95, Passing: 94, Legacy: 92}},
+{name: "Player: Terrell Owens", attributes: {Position: "Wide Receiver", Physicality: 99, Playmaker: 95, Legacy: 92}},
+{name: "Player: Thurman Thomas", attributes: {Position: "Running Back", Vision: 95, Versatility: 97, Legacy: 93}},
+{name: "Player: Tom Brady", attributes: {Position: "Quarterback", Passing: 99, "Clutch Factor": 100, "Career Legacy": 100}},
+{name: "Player: Tony Gonzalez", attributes: {Position: "Tight End", Receiving: 97, Blocking: 85, "Career Legacy": 95}},
+{name: "Player: Troy Polamalu (SS)", attributes: {Position: "Safety", Playmaker: 99, Instincts: 98, Legacy: 96}},
+{name: "Player: Walter Payton", attributes: {Position: "Running Back", Power: 95, Versatility: 100, "Career Legacy": 98}},
+{name: "Player: Willie Roaf (OT)", attributes: {Position: "Offensive Line", Agility: 95, Blocking: 98, Legacy: 92}},
+{name: "Stadium: Allegiant Stadium (Las Vegas Raiders)", attributes: {Capacity: 65000, Technology: 99, Atmosphere: 95, Legacy: "88 (modern and impressive)"}},
+{name: "Stadium: Arrowhead Stadium (Kansas City Chiefs)", attributes: {Capacity: 76416, Atmosphere: "100 (loudest stadium record)", "Home Field Advantage": 100, Legacy: 95}},
+{name: "Stadium: AT&T Stadium (Dallas Cowboys)", attributes: {Capacity: 80000, Technology: "100 (huge screen)", Atmosphere: 95, Legacy: 90}},
+{name: "Stadium: Caesars Superdome (New Orleans Saints)", attributes: {Capacity: 73208, Noise: "98 (extremely loud)", Legacy: 95, "Weather Impact": "0 (indoor stadium)"}},
+{name: "Stadium: Gillette Stadium (New England Patriots)", attributes: {Capacity: 65878, "Home Field Advantage": 100, "Weather Impact": "95 (snow and cold)", Legacy: 98}},
+{name: "Stadium: Heinz Field (Pittsburgh Steelers)", attributes: {Capacity: 68400, Atmosphere: 97, "Weather Impact": "90 (difficult winds)", History: 95}},
+{name: "Stadium: Lambeau Field (Green Bay Packers)", attributes: {Capacity: 81441, Atmosphere: 100, History: 100, "Weather Impact": "100 (known as Frozen Tundra)"}},
+{name: "Stadium: Mile High Stadium (Denver Broncos)", attributes: {Capacity: 76125, Altitude: "100 (real effect on player performance)", Atmosphere: 95, "Weather Impact": 85}},
+{name: "Stadium: SoFi Stadium (Los Angeles Rams/Chargers)", attributes: {Capacity: 70240, Technology: "100 (giant 4K screen)", Comfort: 95, Legacy: "85 (new, but already iconic)"}},
+{name: "Stadium: Soldier Field (Chicago Bears)", attributes: {Capacity: 61500, History: 98, Atmosphere: 95, "Weather Impact": "95 (chilly Chicago winds)"}},
+{name: "Stadium: U.S. Bank Stadium (Minnesota Vikings)", attributes: {Capacity: 66860, Design: "100 (futuristic architecture)", "Home Field Advantage": 97, "Weather Impact": "0 (stadium closed)"}},
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [...cards]; // Clone the cards array
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and display result
+  function shuffleAction() {
+    const randomAction = actions[Math.floor(Math.random() * actions.length)];
+    document.getElementById('actionResult').textContent = randomAction;
+  }
+
+  // Event listeners for the Shuffle Action button
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleAction();
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Shuffle and display cards, but don't shuffle actions
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 80px; /* Aligned with height for proper vertical centering */
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 80px; /* Aligned with height for proper vertical centering */
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

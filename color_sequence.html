@@ -1,0 +1,212 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Memorize the color sequence</h2>
+
+  <p style="color: white;">After it disappears, select the colors in the correct order to proceed.</p>
+  <!-- Restart button -->
+  <button id="restartButton" class="round-button" style="background-color: #E4C58A;" disabled>Restart</button>
+
+  <!-- Options for sequence generation -->
+  <div>
+    <label for="sequenceLength" style="color: white;">Elements:</label>
+    <input type="number" id="sequenceLength" min="1" max="10" value="5">
+  </div>
+<br>
+  <!-- Combo for setting time to display each color -->
+  <div>
+    <label for="timeInput" style="color: white;">Display Time:</label>
+    <select id="timeInput">
+      <option value="1">1 second</option>
+      <option value="2">2 seconds</option>
+      <option value="3">3 seconds</option>
+      <option value="4">4 seconds</option>
+      <option value="5">5 seconds</option>
+    </select>
+  </div>
+<br>
+  <!-- Sequence display -->
+  <h3 id="sequenceDisplay" style="font-size: 24px;"></h3>
+<br>
+  <!-- Palette for user to select colors -->
+  <div id="colorPalette">
+    <button class="color-button" style="background-color: red;" data-color="red"></button>
+    <button class="color-button" style="background-color: blue;" data-color="blue"></button>
+    <button class="color-button" style="background-color: green;" data-color="green"></button>
+    <button class="color-button" style="background-color: yellow;" data-color="yellow"></button>
+    <button class="color-button" style="background-color: purple;" data-color="purple"></button>
+    <button class="color-button" style="background-color: orange;" data-color="orange"></button>
+  </div>
+<br><br>
+  <!-- User's selection area -->
+  <div>
+    <label for="userColorInput" style="color: white;">Your Color Selection:</label>
+    <div id="userColorInput" style="display: flex; justify-content: center; margin-bottom: 10px;"></div>
+    <button id="submitButton" class="round-button" disabled>Submit</button>
+  </div>
+
+  <!-- Game messages -->
+  <p id="gameMessage"></p>
+</div>
+
+<script>
+  const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
+  let sequence = [];
+  let currentRound = 1;
+  let displayTime = 1;
+  let gameActive = false;
+  let userSelection = [];
+
+// Função para gerar uma sequência de cores aleatórias sem repetições consecutivas
+function generateRandomColorSequence(length) {
+  let result = [];
+  for (let i = 0; i < length; i++) {
+    let newColor;
+    do {
+      newColor = colors[Math.floor(Math.random() * colors.length)];
+    } while (i > 0 && newColor === result[i - 1]); // Verifica se a cor é igual à anterior
+    result.push(newColor);
+  }
+  return result;
+}
+
+
+  // Function to start the next round
+  function startNextRound() {
+    if (currentRound <= sequence.length) {
+      userSelection = [];
+      document.getElementById('userColorInput').innerHTML = '';
+      document.getElementById('submitButton').disabled = true;
+
+      const sequenceDisplay = document.getElementById('sequenceDisplay');
+      sequenceDisplay.style.backgroundColor = sequence[currentRound - 1];
+      sequenceDisplay.textContent = '';
+
+      setTimeout(() => {
+        sequenceDisplay.style.backgroundColor = ''; // Hide color
+        document.getElementById('submitButton').disabled = false;
+      }, displayTime * 1000); // Hide after x seconds
+    } else {
+      // Player has completed the sequence
+      document.getElementById('gameMessage').textContent = 'Congratulations! You have completed the sequence!';
+      endGame();
+    }
+  }
+
+  // Function to handle user's color selection
+  function handleColorSelection(color) {
+    const userColorInput = document.getElementById('userColorInput');
+
+    if (userSelection.length < currentRound) {
+      userSelection.push(color);
+      const colorDiv = document.createElement('div');
+      colorDiv.style.backgroundColor = color;
+      colorDiv.style.width = '40px';
+      colorDiv.style.height = '40px';
+      colorDiv.style.margin = '5px';
+      userColorInput.appendChild(colorDiv);
+
+      // Enable the submit button if the selection is complete
+      if (userSelection.length === currentRound) {
+        document.getElementById('submitButton').disabled = false;
+      }
+    }
+  }
+
+  // Function to handle player's input and check the sequence
+  function handleSubmit() {
+    if (userSelection.join('') === sequence.slice(0, currentRound).join('')) {
+      currentRound++;
+      startNextRound();
+    } else {
+      document.getElementById('gameMessage').textContent = 'Game Over! You selected the wrong sequence.';
+      endGame();
+    }
+  }
+
+  // Function to start the game
+  function startGame() {
+    const length = parseInt(document.getElementById('sequenceLength').value);
+    sequence = generateRandomColorSequence(length);
+    currentRound = 1;
+    gameActive = true;
+    document.getElementById('gameMessage').textContent = '';
+    document.getElementById('restartButton').disabled = false;
+    startNextRound();
+  }
+
+  // Function to end the game
+  function endGame() {
+    gameActive = false;
+    document.getElementById('submitButton').disabled = true;
+  }
+
+  // Function to restart the game
+  function restartGame() {
+    startGame();
+  }
+
+  // Event listeners for color buttons
+  document.querySelectorAll('.color-button').forEach(button => {
+    button.addEventListener('click', function () {
+      if (gameActive) {
+        handleColorSelection(this.getAttribute('data-color'));
+      }
+    });
+  });
+
+  // Event listeners for submit and restart buttons
+  document.getElementById('submitButton').addEventListener('click', handleSubmit);
+  document.getElementById('restartButton').addEventListener('click', restartGame);
+  document.getElementById('timeInput').addEventListener('change', function () {
+    displayTime = parseInt(this.value);
+  });
+
+  // Initialize the game
+  startGame();
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .color-button {
+    width: 80px;
+    height: 80px;
+    border: none;
+    border-radius: 50%;
+    margin: 5px;
+    cursor: pointer;
+  }
+
+  #sequenceDisplay {
+    width: 100px;
+    height: 100px;
+    margin: 10px auto;
+    background-color: white;
+    border: 1px solid #000;
+  }
+
+  #userColorInput > div {
+    display: inline-block;
+  }
+  #gameMessage {
+    font-weight: bold;
+    color: white;
+    
+  }
+</style>

@@ -1,0 +1,45 @@
+<!-- HTML Structure -->
+<div>
+  <label for="options">Options (comma separated):</label>
+  <input type="text" id="options" placeholder="Option1, Option2, Option3">
+</div>
+<br>
+<button id="spinButton" class="round-button">Shuffle</button>
+
+<p id="spinnerResult"></p>
+
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('spinButton').addEventListener('click', function() {
+      const options = document.getElementById('options').value.split(',');
+      const trimmedOptions = options.map(option => option.trim());
+      const randomIndex = Math.floor(Math.random() * trimmedOptions.length);
+      const result = trimmedOptions[randomIndex];
+
+      // Display the selected option
+      document.getElementById('spinnerResult').textContent = `Selected Option: ${result}`;
+    });
+  });
+</script>
+
+<!-- CSS for the Round Button -->
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 60px; /* Align text vertically */
+    transition: background-color 0.3s;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+</style>

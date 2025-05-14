@@ -1,0 +1,304 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">F1</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="pilotsCheckbox"> Pilots</label><br>
+    <label><input type="checkbox" id="carsCheckbox"> Cars</label><br>
+    <label><input type="checkbox" id="circuitsCheckbox"> Circuit</label><br>
+    <label><input type="checkbox" id="technologiesCheckbox"> Technologies</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Aggressive Overtake: Take a risky move to overtake the car in front. Roll a die: if the result is 4 or higher, you succeed and move ahead. If lower, you lose a position.",
+"Defensive Maneuver: Block an opponent from overtaking you for one turn. This can only be used once per race.",
+"Late Braking: Gain an advantage by braking later than your opponent into a corner. Move up one position but lose tire durability.",
+"Slipstream Boost: Use the car ahead’s slipstream to gain speed on the straight. You can attempt to pass the car in front without rolling a die.",
+"Pit Crew Radio Call: Coordinate a strategic call to your pit crew. Skip your turn to prepare for a faster pit stop, gaining a speed boost in the next two turns.",
+"Engine Overload: Push the engine to its limit for a speed boost. Gain an extra move this turn, but your car suffers damage, reducing future performance.",
+"Aerodynamic Upgrade: Install a new aerodynamic package. For the next two turns, your car gets a bonus on straight-line speed, allowing easier overtakes.",
+"Tire Degradation: Your tires are wearing out! Skip your next turn to change tires, or risk continuing with reduced performance, making it harder to defend or overtake.",
+"DRS Activation: Open your Drag Reduction System (DRS) to increase top speed. You can attempt an overtake with no penalty, but only if you are within one position of the car in front.",
+"Mechanical Failure: A random malfunction affects your car! Lose one turn while fixing the issue in the pit, but gain a small repair bonus for the remainder of the race.",
+"Safety Car Deployment: A safety car is on the track! All players must slow down for the next two turns. No overtakes are allowed, and positions remain frozen.",
+"Rain on the Track: Unexpected rain begins! All players must switch to wet tires or suffer a significant speed penalty for the next three turns.",
+"Red Flag: The race is temporarily stopped due to a major incident. All players lose one turn while the track is cleared, and positions remain the same.",
+"Track Debris: Debris on the circuit causes chaos! The player in the lead loses a turn while their car undergoes a quick check in the pits.",
+"Virtual Safety Car: The race slows down, but not fully stopped. All players must reduce their pace for one turn, but strategies and pit stops are still allowed.",
+"Undercut Strategy: Pit earlier than your opponents to gain time with fresher tires. Skip a turn to change tires, then gain a bonus on overtaking for the next two turns.",
+"Fuel Management: Conserve fuel to extend your race pace. Sacrifice speed for one turn, but in exchange, gain an extra move in the final two turns of the race.",
+"Overcut Strategy: Stay on the track longer to gain track position. Delay your pit stop by one turn, risking tire wear, but if successful, you overtake one opponent when they pit.",
+"Two-Stop Strategy: Commit to a more aggressive race strategy with two pit stops. Each stop gives you fresh tires, boosting your speed for three turns, but at the cost of losing track time.",
+"Tire Gamble: Take a risk by choosing the wrong tires for current track conditions. Roll a die: if it’s high, you gain significant speed; if it’s low, you suffer a penalty for the next turn."];
+  
+const pilots = [
+{name: "Pilot: Alain Prost", attributes: {Speed: 8, Technique: 9, Aggressiveness: 7, Experience: 10, Championships: 4, Wins: 9}},
+{name: "Pilot: Ayrton Senna", attributes: {Speed: 10, Technique: 10, Aggressiveness: 9, Experience: 8, Championships: 3, Wins: 9}},
+{name: "Pilot: Carlos Sainz Jr.", attributes: {Speed: 8, Technique: 8, Aggressiveness: 7, Experience: 7, Championships: 0, Wins: 5}},
+{name: "Pilot: Charles Leclerc", attributes: {Speed: 9, Technique: 9, Aggressiveness: 8, Experience: 6, Championships: 0, Wins: 6}},
+{name: "Pilot: Damon Hill", attributes: {Speed: 7, Technique: 8, Aggressiveness: 6, Experience: 8, Championships: 1, Wins: 6}},
+{name: "Pilot: David Coulthard", attributes: {Speed: 7, Technique: 8, Aggressiveness: 7, Experience: 9, Championships: 0, Wins: 7}},
+{name: "Pilot: Esteban Ocon", attributes: {Speed: 7, Technique: 7, Aggressiveness: 7, Experience: 7, Championships: 0, Wins: 4}},
+{name: "Pilot: Felipe Massa", attributes: {Speed: 8, Technique: 8, Aggressiveness: 7, Experience: 9, Championships: 0, Wins: 7}},
+{name: "Pilot: Fernando Alonso", attributes: {Speed: 9, Technique: 9, Aggressiveness: 9, Experience: 10, Championships: 2, Wins: 8}},
+{name: "Pilot: Gabriel Bortoleto", attributes: {Speed: 7, Technique: 7, Aggressiveness: 8, Experience: 5, Championships: 0, Wins: 1}},
+{name: "Pilot: George Russell", attributes: {Speed: 8, Technique: 8, Aggressiveness: 7, Experience: 6, Championships: 0, Wins: 3}},
+{name: "Pilot: Gilles Villeneuve", attributes: {Speed: 9, Technique: 8, Aggressiveness: 10, Experience: 7, Championships: 0, Wins: 5}},
+{name: "Pilot: Heinz-Harald Frentzen", attributes: {Speed: 7, Technique: 8, Aggressiveness: 6, Experience: 8, Championships: 0, Wins: 6}},
+{name: "Pilot: Jackie Stewart", attributes: {Speed: 8, Technique: 9, Aggressiveness: 7, Experience: 9, Championships: 3, Wins: 6}},
+{name: "Pilot: James Hunt", attributes: {Speed: 8, Technique: 7, Aggressiveness: 9, Experience: 7, Championships: 1, Wins: 5}},
+{name: "Pilot: Jenson Button", attributes: {Speed: 7, Technique: 8, Aggressiveness: 6, Experience: 9, Championships: 1, Wins: 6}},
+{name: "Pilot: Juan Manuel Fangio", attributes: {Speed: 10, Technique: 10, Aggressiveness: 7, Experience: 9, Championships: 5, Wins: 8}},
+{name: "Pilot: Kimi Räikkönen", attributes: {Speed: 8, Technique: 8, Aggressiveness: 7, Experience: 10, Championships: 1, Wins: 7}},
+{name: "Pilot: Lando Norris", attributes: {Speed: 8, Technique: 8, Aggressiveness: 7, Experience: 6, Championships: 0, Wins: 4}},
+{name: "Pilot: Lewis Hamilton", attributes: {Speed: 10, Technique: 9, Aggressiveness: 8, Experience: 10, Championships: 7, Wins: 10}},
+{name: "Pilot: Max Verstappen", attributes: {Speed: 10, Technique: 9, Aggressiveness: 10, Experience: 8, Championships: 3, Wins: 9}},
+{name: "Pilot: Michael Schumacher", attributes: {Speed: 9, Technique: 10, Aggressiveness: 9, Experience: 10, Championships: 7, Wins: 10}},
+{name: "Pilot: Mika Häkkinen", attributes: {Speed: 9, Technique: 9, Aggressiveness: 8, Experience: 9, Championships: 2, Wins: 8}},
+{name: "Pilot: Nelson Piquet", attributes: {Speed: 8, Technique: 9, Aggressiveness: 7, Experience: 9, Championships: 3, Wins: 7}},
+{name: "Pilot: Nigel Mansell", attributes: {Speed: 8, Technique: 8, Aggressiveness: 9, Experience: 8, Championships: 1, Wins: 7}},
+{name: "Pilot: Niki Lauda", attributes: {Speed: 8, Technique: 9, Aggressiveness: 7, Experience: 10, Championships: 3, Wins: 7}},
+{name: "Pilot: Pierre Gasly", attributes: {Speed: 7, Technique: 8, Aggressiveness: 7, Experience: 7, Championships: 0, Wins: 5}},
+{name: "Pilot: Rubens Barrichello", attributes: {Speed: 7, Technique: 8, Aggressiveness: 6, Experience: 10, Championships: 0, Wins: 5}},
+{name: "Pilot: Sebastian Vettel", attributes: {Speed: 9, Technique: 8, Aggressiveness: 8, Experience: 10, Championships: 4, Wins: 9}},
+{name: "Pilot: Sergio Pérez", attributes: {Speed: 8, Technique: 8, Aggressiveness: 8, Experience: 8, Championships: 0, Wins: 7}},
+{name: "Pilot: Valtteri Bottas", attributes: {Speed: 8, Technique: 8, Aggressiveness: 6, Experience: 8, Championships: 0, Wins: 6}},
+  ];
+
+  const cars = [
+    {name: "Car: Mercedes W11 (2020)", attributes: {Speed: 10, Aerodynamics: 9, Reliability: 9, Power: 10, Innovation: 9, Championship: 10}}, 
+		{name: "Car: Ferrari F2004 (2004)", attributes: {Speed: 10, Aerodynamics: 9, Reliability: 10, Power: 9, Innovation: 8, Championship: 10}}, 
+		{name: "Car: Red Bull RB16B (2021)", attributes: {Speed: 9, Aerodynamics: 9, Reliability: 9, Power: 9, Innovation: 8, Championship: 9}}, 
+		{name: "Car: McLaren MP4/4 (1988)", attributes: {Speed: 10, Aerodynamics: 9, Reliability: 10, Power: 9, Innovation: 9, Championship: 10}}, 
+		{name: "Car: Lotus 72 (1970-1975)", attributes: {Speed: 8, Aerodynamics: 9, Reliability: 8, Power: 8, Innovation: 10, Championship: 9}}, 
+		{name: "Car: Williams FW14B (1992)", attributes: {Speed: 9, Aerodynamics: 9, Reliability: 9, Power: 8, Innovation: 10, Championship: 9}}, 
+		{name: "Car: Renault R26 (2006)", attributes: {Speed: 9, Aerodynamics: 8, Reliability: 9, Power: 8, Innovation: 8, Championship: 9}}, 
+		{name: "Car: Ferrari 312T (1975)", attributes: {Speed: 8, Aerodynamics: 8, Reliability: 9, Power: 8, Innovation: 9, Championship: 8}}, 
+		{name: "Car: Mercedes F1 W07 Hybrid (2016)", attributes: {Speed: 10, Aerodynamics: 9, Reliability: 9, Power: 10, Innovation: 9, Championship: 9}}, 
+		{name: "Car: Red Bull RB9 (2013)", attributes: {Speed: 9, Aerodynamics: 9, Reliability: 9, Power: 9, Innovation: 8, Championship: 9}}, 
+		{name: "Car: McLaren MP4/2 (1984-1986)", attributes: {Speed: 9, Aerodynamics: 8, Reliability: 9, Power: 9, Innovation: 8, Championship: 9}}, 
+		{name: "Car: Ferrari F1-2000 (2000)", attributes: {Speed: 9, Aerodynamics: 8, Reliability: 9, Power: 8, Innovation: 8, Championship: 9}}, 
+		{name: "Car: Brabham BT52 (1983)", attributes: {Speed: 8, Aerodynamics: 8, Reliability: 8, Power: 9, Innovation: 9, Championship: 7}}, 
+		{name: "Car: Lotus 79 (1978)", attributes: {Speed: 9, Aerodynamics: 10, Reliability: 8, Power: 8, Innovation: 10, Championship: 9}}, 
+		{name: "Car: Brawn BGP 001 (2009)", attributes: {Speed: 9, Aerodynamics: 8, Reliability: 8, Power: 8, Innovation: 9, Championship: 9}}, 
+		{name: "Car: Williams FW18 (1996)", attributes: {Speed: 9, Aerodynamics: 9, Reliability: 9, Power: 8, Innovation: 8, Championship: 9}}, 
+		{name: "Car: Alfa Romeo 158 (1950)", attributes: {Speed: 8, Aerodynamics: 7, Reliability: 7, Power: 8, Innovation: 8, Championship: 9}}, 
+		{name: "Car: Ferrari SF70H (2017)", attributes: {Speed: 9, Aerodynamics: 8, Reliability: 8, Power: 9, Innovation: 8, Championship: 8}}, 
+		{name: "Car: Benetton B195 (1995)", attributes: {Speed: 9, Aerodynamics: 8, Reliability: 9, Power: 8, Innovation: 8, Championship: 8}}, 
+		{name: "Car: Renault R25 (2005)", attributes: {Speed: 9, Aerodynamics: 8, Reliability: 9, Power: 8, Innovation: 8, Championship: 9}}, 
+		{name: "Car: Ferrari 641 (1990)", attributes: {Speed: 8, Aerodynamics: 8, Reliability: 8, Power: 9, Innovation: 8, Championship: 7}}, 
+		{name: "Car: McLaren MP4/13 (1998)", attributes: {Speed: 9, Aerodynamics: 9, Reliability: 8, Power: 8, Innovation: 8, Championship: 9}}, 
+		{name: "Car: Williams FW11 (1986-1987)", attributes: {Speed: 9, Aerodynamics: 8, Reliability: 9, Power: 9, Innovation: 8, Championship: 9}}, 
+		{name: "Car: Jordan 191 (1991)", attributes: {Speed: 7, Aerodynamics: 8, Reliability: 7, Power: 7, Innovation: 7, Championship: 5}}, 
+		{name: "Car: Mercedes F1 W05 Hybrid (2014)", attributes: {Speed: 10, Aerodynamics: 9, Reliability: 9, Power: 10, Innovation: 9, Championship: 10}}, 
+		{name: "Car: Brabham BT46B (1978)", attributes: {Speed: 8, Aerodynamics: 9, Reliability: 7, Power: 8, Innovation: 10, Championship: 6}}, 
+		{name: "Car: Toyota TF104 (2004)", attributes: {Speed: 7, Aerodynamics: 7, Reliability: 7, Power: 7, Innovation: 6, Championship: 3}}, 
+		{name: "Car: Honda RA272 (1965)", attributes: {Speed: 8, Aerodynamics: 7, Reliability: 7, Power: 8, Innovation: 8, Championship: 6}}, 
+		{name: "Car: Sauber C19 (2000)", attributes: {Speed: 7, Aerodynamics: 7, Reliability: 7, Power: 7, Innovation: 7, Championship: 4}}, 
+		{name: "Car: Ligier JS11 (1979)", attributes: {Speed: 8, Aerodynamics: 9, Reliability: 7, Power: 8, Innovation: 8, Championship: 6}}
+  ];
+
+const circuits = [
+    {name: "Circuit: Spa-Francorchamps (Belgium)", attributes: {Length: 10, Turns: 9, Speed: 9, Overtaking: 8, History: 10, Excitement: 10}}, 
+		{name: "Circuit: Monza (Italy)", attributes: {Length: 8, Turns: 6, Speed: 10, Overtaking: 9, History: 10, Excitement: 9}}, 
+		{name: "Circuit: Silverstone (United Kingdom)", attributes: {Length: 9, Turns: 8, Speed: 9, Overtaking: 7, History: 10, Excitement: 9}}, 
+		{name: "Circuit: Circuit de Monaco (Monaco)", attributes: {Length: 4, Turns: 9, Speed: 5, Overtaking: 3, History: 10, Excitement: 8}}, 
+		{name: "Circuit: Suzuka (Japan)", attributes: {Length: 8, Turns: 9, Speed: 8, Overtaking: 6, History: 9, Excitement: 9}}, 
+		{name: "Circuit: Circuit of the Americas (COTA) (EUA)", attributes: {Length: 9, Turns: 8, Speed: 7, Overtaking: 7, History: 6, Excitement: 8}}, 
+		{name: "Circuit: Interlagos (Brazil)", attributes: {Length: 7, Turns: 7, Speed: 7, Overtaking: 8, History: 9, Excitement: 10}},  
+		{name: "Circuit: Marina Bay Street Circuit (Singapore)", attributes: {Length: 8, Turns: 9, Speed: 6, Overtaking: 5, History: 7, Excitement: 8}}, 
+		{name: "Circuit: Red Bull Ring (Austria)", attributes: {Length: 6, Turns: 6, Speed: 8, Overtaking: 9, History: 7, Excitement: 8}}, 
+		{name: "Circuit: Circuit Gilles Villeneuve (Canada)", attributes: {Length: 7, Turns: 7, Speed: 8, Overtaking: 8, History: 8, Excitement: 9}}, 
+		{name: "Circuit: Hungaroring (Hungary)", attributes: {Length: 6, Turns: 8, Speed: 6, Overtaking: 5, History: 7, Excitement: 7}}, 
+		{name: "Circuit: Hockenheimring (Germany)", attributes: {Length: 7, Turns: 7, Speed: 8, Overtaking: 7, History: 9, Excitement: 8}}, 
+		{name: "Circuit: Bahrain International Circuit (Bahrain)", attributes: {Length: 8, Turns: 8, Speed: 8, Overtaking: 8, History: 6, Excitement: 8}}, 
+		{name: "Circuit: Imola (Italy)", attributes: {Length: 7, Turns: 8, Speed: 7, Overtaking: 6, History: 9, Excitement: 8}}, 
+		{name: "Circuit: Zandvoort (Netherlands)", attributes: {Length: 6, Turns: 8, Speed: 7, Overtaking: 5, History: 8, Excitement: 8}}, 
+		{name: "Circuit: Jeddah Street Circuit (Saudi Arabia)", attributes: {Length: 8, Turns: 7, Speed: 9, Overtaking: 7, History: 4, Excitement: 8}}, 
+		{name: "Circuit: Paul Ricard (France)", attributes: {Length: 8, Turns: 7, Speed: 8, Overtaking: 7, History: 7, Excitement: 7}}, 
+		{name: "Circuit: Barcelona-Catalunya (Spain)", attributes: {Length: 7, Turns: 7, Speed: 7, Overtaking: 5, History: 8, Excitement: 7}}, 
+		{name: "Circuit: Albert Park (Australia)", attributes: {Length: 7, Turns: 7, Speed: 7, Overtaking: 6, History: 7, Excitement: 8}}, 
+		{name: "Circuit: Las Vegas Street Circuit (EUA)", attributes: {Length: 6, Turns: 6, Speed: 8, Overtaking: 7, History: 4, Excitement: 8}}, 
+		{name: "Circuit: Sepang International Circuit (Malaysia)", attributes: {Length: 8, Turns: 8, Speed: 8, Overtaking: 7, History: 7, Excitement: 8}}, 
+		{name: "Circuit: Autódromo Hermanos Rodríguez (Mexico)", attributes: {Length: 7, Turns: 7, Speed: 8, Overtaking: 8, History: 8, Excitement: 9}}, 
+		{name: "Circuit: Yas Marina Circuit (Abu Dhabi)", attributes: {Length: 8, Turns: 7, Speed: 7, Overtaking: 6, History: 6, Excitement: 8}}, 
+		{name: "Circuit: Valencia Street Circuit (Spain)", attributes: {Length: 7, Turns: 7, Speed: 7, Overtaking: 5, History: 6, Excitement: 7}}, 
+		{name: "Circuit: Kyalami Circuit (South Africa)", attributes: {Length: 7, Turns: 7, Speed: 8, Overtaking: 7, History: 8, Excitement: 8}}, 
+		{name: "Circuit: Fuji Speedway (Japan)", attributes: {Length: 8, Turns: 7, Speed: 8, Overtaking: 7, History: 7, Excitement: 8}}, 
+		{name: "Circuit: Long Beach Circuit (EUA)", attributes: {Length: 6, Turns: 8, Speed: 7, Overtaking: 6, History: 7, Excitement: 8}}, 
+		{name: "Circuit: Adelaide Street Circuit (Australia)", attributes: {Length: 6, Turns: 7, Speed: 7, Overtaking: 6, History: 7, Excitement: 8}}, 
+		{name: "Circuit: Nürburgring GP-Strecke (Germany)", attributes: {Length: 8, Turns: 7, Speed: 8, Overtaking: 7, History: 9, Excitement: 8}}, 
+		{name: "Circuit: Magny-Cours (France)", attributes: {Length: 7, Turns: 7, Speed: 7, Overtaking: 6, History: 7, Excitement: 7}}
+  ];
+
+const technologies = [
+    {name: "Technology: KERS (Kinetic Energy Recovery System)", attributes: {Performance: 8, Reliability: 7, Complexity: 8, Cost: 8, Innovation: 9, Impact: 8}},
+		{name: "Technology: DRS (Drag Reduction System)", attributes: {Performance: 7, Reliability: 9, Complexity: 5, Cost: 6, Innovation: 8, Impact: 9}},
+		{name: "Technology: Hybrid Power Unit (V6 Turbo-Hybrid)", attributes: {Performance: 9, Reliability: 8, Complexity: 10, Cost: 10, Innovation: 10, Impact: 10}},
+		{name: "Technology: Ground Effect (Lotus 79)", attributes: {Performance: 9, Reliability: 7, Complexity: 8, Cost: 7, Innovation: 10, Impact: 9}},
+		{name: "Technology: Active Suspension (Williams FW14B)", attributes: {Performance: 9, Reliability: 8, Complexity: 9, Cost: 9, Innovation: 9, Impact: 10}},
+		{name: "Technology: Carbon Fiber Monocoque", attributes: {Performance: 8, Reliability: 10, Complexity: 7, Cost: 9, Innovation: 10, Impact: 8}},
+		{name: "Technology: Halo (Cockpit Protection)", attributes: {Performance: 4, Reliability: 10, Complexity: 6, Cost: 5, Innovation: 7, Impact: 10}},
+		{name: "Technology: Turbocharger", attributes: {Performance: 9, Reliability: 7, Complexity: 7, Cost: 8, Innovation: 8, Impact: 9}},
+		{name: "Technology: Slick Tyres", attributes: {Performance: 8, Reliability: 8, Complexity: 5, Cost: 6, Innovation: 9, Impact: 8}},
+		{name: "Technology: Paddle-Shift Gearbox", attributes: {Performance: 7, Reliability: 9, Complexity: 6, Cost: 7, Innovation: 8, Impact: 7}},
+		{name: "Technology: Hybrid ERS (Energy Recovery System)", attributes: {Performance: 8, Reliability: 8, Complexity: 9, Cost: 9, Innovation: 9, Impact: 9}},
+		{name: "Technology: Wind Tunnel Testing", attributes: {Performance: 8, Reliability: 10, Complexity: 9, Cost: 10, Innovation: 8, Impact: 7}},
+		{name: "Technology: Active Aerodynamics", attributes: {Performance: 9, Reliability: 8, Complexity: 8, Cost: 8, Innovation: 9, Impact: 8}},
+		{name: "Technology: Telemetry Systems", attributes: {Performance: 7, Reliability: 9, Complexity: 8, Cost: 7, Innovation: 8, Impact: 7}},
+		{name: "Technology: Traction Control", attributes: {Performance: 9, Reliability: 9, Complexity: 8, Cost: 8, Innovation: 8, Impact: 10}},
+		{name: "Technology: Brake-By-Wire", attributes: {Performance: 7, Reliability: 8, Complexity: 7, Cost: 6, Innovation: 8, Impact: 8}},
+		{name: "Technology: Seamless Gearbox", attributes: {Performance: 8, Reliability: 9, Complexity: 8, Cost: 8, Innovation: 8, Impact: 7}},
+		{name: "Technology: Double Diffuser", attributes: {Performance: 9, Reliability: 7, Complexity: 8, Cost: 8, Innovation: 9, Impact: 9}},
+		{name: "Technology: Tire Temperature Sensors", attributes: {Performance: 6, Reliability: 9, Complexity: 7, Cost: 6, Innovation: 7, Impact: 6}},
+		{name: "Technology: ERS-H (Energy Recovery System-Heat)", attributes: {Performance: 8, Reliability: 7, Complexity: 9, Cost: 9, Innovation: 9, Impact: 8}},
+		{name: "Technology: Flow-Viz Paint", attributes: {Performance: 5, Reliability: 9, Complexity: 5, Cost: 5, Innovation: 7, Impact: 5}},
+		{name: "Technology: ERS-K (Energy Recovery System-Kinetic)", attributes: {Performance: 8, Reliability: 8, Complexity: 8, Cost: 8, Innovation: 9, Impact: 9}},
+		{name: "Technology: Blown Diffuser (Red Bull, 2010-2011)", attributes: {Performance: 9, Reliability: 7, Complexity: 8, Cost: 8, Innovation: 8, Impact: 10}},
+		{name: "Technology: Coanda Exhausts", attributes: {Performance: 8, Reliability: 8, Complexity: 7, Cost: 7, Innovation: 8, Impact: 9}},
+		{name: "Technology: Sidepods Design", attributes: {Performance: 7, Reliability: 9, Complexity: 7, Cost: 7, Innovation: 8, Impact: 7}},
+		{name: "Technology: ERS-Hybrid Batteries", attributes: {Performance: 9, Reliability: 8, Complexity: 9, Cost: 9, Innovation: 8, Impact: 9}},
+		{name: "Technology: T-Tray (Front Floor Flexibility)", attributes: {Performance: 8, Reliability: 7, Complexity: 7, Cost: 6, Innovation: 7, Impact: 8}},
+		{name: "Technology: High-Pressure Fuel Injection", attributes: {Performance: 9, Reliability: 9, Complexity: 8, Cost: 8, Innovation: 9, Impact: 8}},
+		{name: "Technology: Anti-Lock Braking System (ABS)", attributes: {Performance: 8, Reliability: 9, Complexity: 8, Cost: 7, Innovation: 8, Impact: 10}},
+		{name: "Technology: Exhaust-Blown Rear Wing (F-Duct, McLaren 2010)", attributes: {Performance: 9, Reliability: 8, Complexity: 8, Cost: 8, Innovation: 9, Impact: 10}}
+  ];
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('pilotsCheckbox').checked) selectedCards.push(...pilots);
+    if (document.getElementById('carsCheckbox').checked) selectedCards.push(...cars);
+    if (document.getElementById('circuitsCheckbox').checked) selectedCards.push(...circuits);
+    if (document.getElementById('technologiesCheckbox').checked) selectedCards.push(...technologies);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

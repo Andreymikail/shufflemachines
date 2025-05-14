@@ -1,0 +1,477 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Acquisition and Profit</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="spaceshipsCheckbox"> Spaceships</label><br>
+    <label><input type="checkbox" id="technologiesCheckbox"> Advanced Technologies</label><br>
+    <label><input type="checkbox" id="empiresCheckbox"> Galactic Empires units</label><br>
+    <label><input type="checkbox" id="planetsCheckbox"> Planets</label><br>
+    <label><input type="checkbox" id="stationsCheckbox"> Space Stations</label><br>
+    <label><input type="checkbox" id="starfleetCheckbox"> Starfleet Members</label><br>
+    <label><input type="checkbox" id="aliensCheckbox"> Alien Races</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    <br><br>
+    <div style="margin-bottom: 20px;">
+      <h3>Rules</h3>
+      <p id="rulesResult" style="color: white;">-</p>
+      <button id="shuffleRulesButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Profit Surge: Draw 3 extra cards.",
+									"Latinum Jackpot: Double your current latinum.",
+									"Clever Negotiation: Swap one card from your hand with any card from the discard pile.",
+									"Insider Trading: Peek at the next 3 cards from the deck.",
+									"Grand Nagus' Blessing: Instantly form one set, regardless of the cards in your hand.",
+									"Strategic Alliance: Trade hands with the Market Ferengi.",
+									"Latinum Windfall: Gain an additional 20 latinum for each set you’ve formed.",
+									"Smooth Talker: Play an additional set during this turn.",
+									"Dabo Victory: Take an extra turn after this one.",
+									"Cutthroat Bargain: Steal a set from the Market Ferengi.",
+									"Aggressive Expansion: Form two sets in this turn without needing to draw cards.",
+									"Latinum Surge: Add 50 latinum to your total.",
+									"Lucky Investor: Draw two extra cards and discard one.",
+									"Risk Pays Off: Multiply the value of your next set by 2.",
+									"Market Collapse (but in your favor): Discard all current penalties affecting you.",
+									"Quick Thinking: Play a random Law of Acquisition from your hand for free.",
+									"Silent Partner: Gain 10 latinum from another player (if multiplayer) or the Market Ferengi.",
+									"Business Genius: Play one card from the discard pile as part of your set.",
+									"Negotiator Bonus: Buy one extra card from the discard pile.",
+									"Latinum Haul: Gain 30 latinum for each completed set this round.",
+									"Bribery Attempt: Discard two cards to gain 50 latinum.",
+									"Risky Investment: Lose one turn but draw 5 cards after.",
+									"High Risk, High Reward: Double your latinum, but discard half your hand.",
+									"Debt Collector: Lose 10 latinum but draw 2 cards.",
+									"Market Disruption: Shuffle the discard pile back into the deck.",
+									"Short-Term Profit: Gain 50 latinum, but discard your highest-value set.",
+									"Opportunity Missed: Lose one turn, but the next time you form a set, it triples in value.",
+									"Gamble with Dabo: Flip a coin. Heads: gain 50 latinum. Tails: lose 50 latinum.",
+									"Risky Maneuver: Trade your entire hand with the top 5 cards from the deck.",
+									"Delayed Reward: Gain 100 latinum, but skip your next draw.",
+									"Market Crash: Lose half of your current latinum.",
+									"Unprofitable Deal: Discard 2 cards from your hand.",
+									"Trade Embargo: Skip your next turn.",
+									"Bribery Gone Wrong: Lose 50 latinum.",
+									"Bad Investment: Discard one complete set.",
+									"Sabotage: The Market Ferengi steals 30 latinum from you.",
+									"Debt Collector Strikes: Pay 40 latinum or lose your next turn.",
+									"Dishonest Partner: Discard your entire hand and draw 5 new cards.",
+									"Business Rival: The Market Ferengi forces you to return your highest-value set.",
+									"Unforeseen Loss: Lose 20 latinum for each incomplete set in your hand."];
+  const rules = ["Rule 1: Once you have their money, never give it back. Steal 20 latinum from the Market Ferengi.",
+									"Rule 9: Opportunity plus instinct equals profit. Draw 2 extra cards.",
+									"Rule 10: Greed is eternal. Double the value of your next set.",
+									"Rule 21: Never place friendship above profit. Steal one card from the Market Ferengi and discard one.",
+									"Rule 22: A wise man can hear profit in the wind. Peek at the top 3 cards of the deck and reorder them.",
+									"Rule 23: Nothing is more important than your health—except for your money. Avoid the next penalty card effect that affects you.",
+									"Rule 31: Never make fun of a Ferengi’s mother. Draw 5 extra cards as compensation for any recent penalty.",
+									"Rule 34: War is good for business. Draw 2 cards for every penalty affecting you.",
+									"Rule 35: Peace is good for business. Neutralize all penalties affecting you or the next round.",
+									"Rule 45: Expand or die. Instantly complete one set from your hand.",
+									"Rule 57: Good customers are as rare as latinum. Treasure them. Keep one discarded set in play for 1 more round.",
+									"Rule 59: Free advice is seldom cheap. Draw 3 cards, then discard 1.",
+									"Rule 62: The riskier the road, the greater the profit. Gamble: Draw 4 cards, but discard 2 after the next round.",
+									"Rule 75: Home is where the heart is, but the stars are made of latinum. Gain 100 latinum for completing a new set.",
+									"Rule 76: Every once in a while, declare peace. It confuses the hell out of your enemies. Skip the next penalty round from the Market Ferengi.",
+									"Rule 95: Expand or die. Add one extra card to your hand immediately.",
+									"Rule 97: Enough… is never enough. Draw 3 extra cards at the beginning of your next turn.",
+									"Rule 111: Treat people in your debt like family… exploit them. Gain 20 latinum for each card discarded by the Market Ferengi.",
+									"Rule 141: Only fools pay retail. Discard one penalty and draw 2 cards.",
+									"Rule 17: A contract is a contract… but only between Ferengi. Negotiate: Choose one card to discard, then draw 2.",
+									"Rule 18: A Ferengi without profit is no Ferengi at all. Lose 10 latinum but gain one extra turn.",
+									"Rule 33: It never hurts to suck up to the boss. Sacrifice one set to gain 50 latinum.",
+									"Rule 39: Don’t tell customers more than they need to know. Lose your next turn, but gain 3 cards after that.",
+									"Rule 48: The bigger the smile, the sharper the knife. Discard 2 cards from your hand, but draw 3 after the next round.",
+									"Rule 74: Knowledge equals profit. Peek at the top 5 cards of the deck but lose 30 latinum.",
+									"Rule 125: You can’t make a deal if you’re dead. Skip your next turn to avoid the current penalty.",
+									"Rule 169: Competition and fair play are mutually exclusive. Discard one card, but force the Market Ferengi to discard two.",
+									"Rule 208: Sometimes the only thing more dangerous than a question is an answer. Take a gamble: lose 20 latinum or gain 50 latinum based on the next card drawn.",
+									"Rule 241: Never trust a man wearing a better suit than your own. Draw 5 cards but lose 50 latinum.",
+									"Rule 16: A deal is a deal. Discard your highest-value set.",
+									"Rule 52: Never ask when you can take. Lose 2 cards to the Market Ferengi.",
+									"Rule 60: Keep your lies consistent. Discard your hand and draw 5 new cards.",
+									"Rule 85: Never let the competition know what you’re thinking. Lose your next turn.",
+									"Rule 95: Expand or die. Discard 1 completed set.",
+									"Rule 97: Enough… is never enough. Lose 50 latinum for each incomplete set in your hand.",
+									"Rule 112: Never have sex with the boss’s sister. Discard half of your current latinum.",
+									"Rule 239: Never be afraid to mislabel a product. Discard your highest-value card.",
+									"Rule 266: When in doubt, lie. Lose 3 cards from your hand.",
+									"Rule 285: No good deed ever goes unpunished. Lose 1 complete set to the Market Ferengi."];  
+const spaceships = [
+    {name: "Spaceship: Millennium Falcon (Star Wars)", attributes: {Speed: 9, Firepower: 7, Shield: 6, Crew: 2, Technology: 8, Size: 3}},
+		{name: "Spaceship: USS Enterprise (NCC-1701) (Star Trek)", attributes: {Speed: 7, Firepower: 8, Shield: 9, Crew: 430, Technology: 10, Size: 7}},
+		{name: "Spaceship: Star Destroyer (Star Wars)", attributes: {Speed: 5, Firepower: 10, Shield: 9, Crew: 37000, Technology: 8, Size: 10}},
+		{name: "Spaceship: Battlestar Galactica (Battlestar Galactica)", attributes: {Speed: 6, Firepower: 8, Shield: 7, Crew: 2800, Technology: 7, Size: 8}},
+		{name: "Spaceship: Serenity (Firefly)", attributes: {Speed: 6, Firepower: 3, Shield: 3, Crew: 5, Technology: 5, Size: 2}},
+		{name: "Spaceship: TARDIS (Doctor Who)", attributes: {Speed: 10, Firepower: 6, Shield: 10, Crew: 1, Technology: 12, Size: 1}},
+		{name: "Spaceship: Borg Cube (Star Trek)", attributes: {Speed: 8, Firepower: 10, Shield: 10, Crew: 64000, Technology: 10, Size: 9}},
+		{name: "Spaceship: Slave I (Star Wars)", attributes: {Speed: 7, Firepower: 6, Shield: 5, Crew: 1, Technology: 7, Size: 3}},
+		{name: "Spaceship: Normandy SR-2 (Mass Effect)", attributes: {Speed: 9, Firepower: 8, Shield: 8, Crew: 60, Technology: 9, Size: 5}},
+		{name: "Spaceship: Razor Crest (The Mandalorian)", attributes: {Speed: 7, Firepower: 7, Shield: 6, Crew: 2, Technology: 7, Size: 4}},
+		{name: "Spaceship: X-Wing (Star Wars)", attributes: {Speed: 8, Firepower: 6, Shield: 5, Crew: 1, Technology: 6, Size: 2}},, , , 
+		{name: "Spaceship: USS Voyager (Star Trek: Voyager)", attributes: {Speed: 9, Firepower: 7, Shield: 8, Crew: 150, Technology: 9, Size: 5}},
+		{name: "Spaceship: Nebuchadnezzar (The Matrix)", attributes: {Speed: 7, Firepower: 4, Shield: 3, Crew: 10, Technology: 6, Size: 3}},
+		{name: "Spaceship: Eagle Transporter (Space: 1999)", attributes: {Speed: 5, Firepower: 4, Shield: 4, Crew: 2, Technology: 5, Size: 4}},
+		{name: "Spaceship: Heart of Gold (The Hitchhiker's Guide to the Galaxy)", attributes: {Speed: 10, Firepower: 5, Shield: 8, Crew: 6, Technology: 11, Size: 6}},
+		{name: "Spaceship: Imperial Shuttle (Star Wars)", attributes: {Speed: 6, Firepower: 5, Shield: 6, Crew: 6, Technology: 6, Size: 4}},
+		{name: "Spaceship: Red Dwarf (Red Dwarf)", attributes: {Speed: 3, Firepower: 4, Shield: 5, Crew: 1169, Technology: 5, Size: 8}},
+		{name: "Spaceship: Andromeda Ascendant (Andromeda)", attributes: {Speed: 9, Firepower: 9, Shield: 9, Crew: 4000, Technology: 10, Size: 9}},
+		{name: "Spaceship: Gunstar One (The Last Starfighter)", attributes: {Speed: 8, Firepower: 9, Shield: 7, Crew: 1, Technology: 8, Size: 3}},
+		{name: "Spaceship: Thunderbird 3 (Thunderbirds)", attributes: {Speed: 6, Firepower: 5, Shield: 4, Crew: 1, Technology: 6, Size: 5}},
+		{name: "Spaceship: Event Horizon (Event Horizon)", attributes: {Speed: 8, Firepower: 7, Shield: 7, Crew: 15, Technology: 9, Size: 6}},
+		{name: "Spaceship: Moya (Farscape)", attributes: {Speed: 9, Firepower: 4, Shield: 7, Crew: 6, Technology: 7, Size: 7}},
+		{name: "Spaceship: Discovery One (2001: A Space Odyssey)", attributes: {Speed: 6, Firepower: 3, Shield: 4, Crew: 5, Technology: 8, Size: 5}},
+		{name: "Spaceship: Sulaco (Aliens)", attributes: {Speed: 7, Firepower: 8, Shield: 7, Crew: 90, Technology: 7, Size: 6}},
+		{name: "Spaceship: Covenant (Alien: Covenant)", attributes: {Speed: 7, Firepower: 6, Shield: 6, Crew: 15, Technology: 8, Size: 7}},
+		{name: "Spaceship: Swordfish II (Cowboy Bebop)", attributes: {Speed: 8, Firepower: 6, Shield: 5, Crew: 1, Technology: 6, Size: 2}},
+		{name: "Spaceship: Scorpio (Blake's 7)", attributes: {Speed: 7, Firepower: 6, Shield: 5, Crew: 6, Technology: 7, Size: 4}},
+		{name: "Spaceship: Elysium (Elysium)", attributes: {Speed: 7, Firepower: 8, Shield: 7, Crew: 100, Technology: 9, Size: 8}},
+		{name: "Spaceship: Lexx (Lexx)", attributes: {Speed: 8, Firepower: 9, Shield: 8, Crew: 4, Technology: 9, Size: 9}},
+		{name: "Spaceship: Arcadia (Space Pirate Captain Harlock)", attributes: {Speed: 7, Firepower: 8, Shield: 7, Crew: 50, Technology: 8, Size: 6}}
+  ];
+
+  const technologies = [
+    {name: "Technology: Teleportation Device (Star Trek)", attributes: {Efficiency: 9, Power: 8, Range: 10, Cost: 7, Adoption: 6, Safety: 8}},
+		{name: "Technology: Lightsaber (Star Wars)", attributes: {Efficiency: 8, Power: 10, Range: 2, Cost: 5, Adoption: 4, Safety: 3}},
+		{name: "Technology: Nanotechnology (Real World/Fiction)", attributes: {Efficiency: 10, Power: 9, Range: 8, Cost: 6, Adoption: 5, Safety: 7}},
+		{name: "Technology: Cloaking Device (Star Trek/Other Sci-Fi)", attributes: {Efficiency: 8, Power: 7, Range: 6, Cost: 7, Adoption: 5, Safety: 7}},
+		{name: "Technology: Exoskeleton Suit (Edge of Tomorrow/Real World)", attributes: {Efficiency: 7, Power: 8, Range: 4, Cost: 6, Adoption: 5, Safety: 6}},
+		{name: "Technology: Replicator (Star Trek)", attributes: {Efficiency: 9, Power: 7, Range: 7, Cost: 6, Adoption: 8, Safety: 9}},
+		{name: "Technology: Hyperloop (Real World/Futuristic Concept)", attributes: {Efficiency: 8, Power: 6, Range: 9, Cost: 8, Adoption: 4, Safety: 7}},
+		{name: "Technology: Artificial Intelligence (AI) (Real World/Fiction)", attributes: {Efficiency: 10, Power: 9, Range: 10, Cost: 4, Adoption: 9, Safety: 6}},
+		{name: "Technology: Quantum Computer (Real World/Fiction)", attributes: {Efficiency: 9, Power: 10, Range: 7, Cost: 9, Adoption: 5, Safety: 8}},
+		{name: "Technology: Force Field (Various Sci-Fi)", attributes: {Efficiency: 8, Power: 9, Range: 7, Cost: 7, Adoption: 6, Safety: 9}},
+		{name: "Technology: Self-Driving Cars (Real World)", attributes: {Efficiency: 7, Power: 6, Range: 8, Cost: 6, Adoption: 7, Safety: 7}},
+		{name: "Technology: 3D Printing (Real World)", attributes: {Efficiency: 9, Power: 7, Range: 6, Cost: 4, Adoption: 8, Safety: 9}},
+		{name: "Technology: Warp Drive (Star Trek)", attributes: {Efficiency: 10, Power: 10, Range: 10, Cost: 9, Adoption: 3, Safety: 8}},
+		{name: "Technology: Mind Uploading (Futuristic Concept)", attributes: {Efficiency: 9, Power: 8, Range: 7, Cost: 7, Adoption: 4, Safety: 5}},
+		{name: "Technology: Bionic Limbs (Real World)", attributes: {Efficiency: 8, Power: 7, Range: 6, Cost: 5, Adoption: 6, Safety: 7}},
+		{name: "Technology: Fusion Reactor (Futuristic/Real World Development)", attributes: {Efficiency: 10, Power: 10, Range: 9, Cost: 8, Adoption: 3, Safety: 7}},
+		{name: "Technology: Augmented Reality (AR) (Real World)", attributes: {Efficiency: 7, Power: 6, Range: 6, Cost: 5, Adoption: 8, Safety: 9}},
+		{name: "Technology: Hologram Technology (Futuristic/Star Wars)", attributes: {Efficiency: 7, Power: 5, Range: 7, Cost: 6, Adoption: 6, Safety: 8}},
+		{name: "Technology: Solar Panels (Real World)", attributes: {Efficiency: 6, Power: 5, Range: 8, Cost: 4, Adoption: 9, Safety: 9}},
+		{name: "Technology: Space Elevator (Futuristic Concept)", attributes: {Efficiency: 9, Power: 8, Range: 10, Cost: 9, Adoption: 2, Safety: 7}},
+		{name: "Technology: Antimatter Reactor (Futuristic Concept/Star Trek)", attributes: {Efficiency: 10, Power: 10, Range: 9, Cost: 10, Adoption: 2, Safety: 5}},
+		{name: "Technology: Hoverboard (Back to the Future/Real World Concept)", attributes: {Efficiency: 6, Power: 5, Range: 4, Cost: 5, Adoption: 7, Safety: 6}},
+		{name: "Technology: Neuralink (Real World/Futuristic Concept)", attributes: {Efficiency: 8, Power: 7, Range: 6, Cost: 7, Adoption: 4, Safety: 6}},
+		{name: "Technology: Invisibility Cloak (Harry Potter/Various Sci-Fi)", attributes: {Efficiency: 9, Power: 7, Range: 8, Cost: 6, Adoption: 3, Safety: 7}},
+		{name: "Technology: Brain-Computer Interface (Real World/Futuristic Concept)", attributes: {Efficiency: 8, Power: 7, Range: 7, Cost: 6, Adoption: 5, Safety: 6}},
+		{name: "Technology: Cryostasis (Various Sci-Fi)", attributes: {Efficiency: 7, Power: 6, Range: 7, Cost: 6, Adoption: 4, Safety: 7}},
+		{name: "Technology: Self-Healing Materials (Real World/Concept)", attributes: {Efficiency: 9, Power: 8, Range: 6, Cost: 6, Adoption: 7, Safety: 9}},
+		{name: "Technology: Drones (Real World/Futuristic)", attributes: {Efficiency: 8, Power: 6, Range: 7, Cost: 5, Adoption: 9, Safety: 7}},
+		{name: "Technology: Genetic Engineering (Real World/Fiction)", attributes: {Efficiency: 9, Power: 8, Range: 7, Cost: 7, Adoption: 6, Safety: 6}},
+		{name: "Technology: Dyson Sphere (Futuristic Concept)", attributes: {Efficiency: 10, Power: 10, Range: 10, Cost: 10, Adoption: 1, Safety: 6}}
+  ];
+
+const empires = [
+    {name: "Galactic Empire unit: Imperial Capital (Capital Imperial)", attributes: {Strategic: 10, Military: 9, Economic: 10, Technology: 10, Population: 10, Environment: 7}},
+		{name: "Galactic Empire unit: Outer Rim Colony", attributes: {Strategic: 6, Military: 5, Economic: 6, Technology: 5, Population: 4, Environment: 6}},
+		{name: "Galactic Empire unit: Core Worlds Trading Hub", attributes: {Strategic: 8, Military: 7, Economic: 9, Technology: 8, Population: 8, Environment: 7}},
+		{name: "Galactic Empire unit: Mining Planet", attributes: {Strategic: 7, Military: 4, Economic: 10, Technology: 5, Population: 3, Environment: 3}},
+		{name: "Galactic Empire unit: Fortress World", attributes: {Strategic: 9, Military: 10, Economic: 4, Technology: 7, Population: 5, Environment: 4}},
+		{name: "Galactic Empire unit: Orbital Research Station", attributes: {Strategic: 8, Military: 6, Economic: 7, Technology: 10, Population: 3, Environment: 8}},
+		{name: "Galactic Empire unit: Desert Outpost", attributes: {Strategic: 5, Military: 4, Economic: 3, Technology: 4, Population: 2, Environment: 2}},
+		{name: "Galactic Empire unit: Agricultural World", attributes: {Strategic: 6, Military: 3, Economic: 8, Technology: 4, Population: 7, Environment: 8}},
+		{name: "Galactic Empire unit: Rebel-Controlled Territory", attributes: {Strategic: 8, Military: 6, Economic: 5, Technology: 6, Population: 6, Environment: 5}},
+		{name: "Galactic Empire unit: Border Defense Station", attributes: {Strategic: 9, Military: 9, Economic: 4, Technology: 7, Population: 3, Environment: 5}},
+		{name: "Galactic Empire unit: Luxury Resort Planet", attributes: {Strategic: 4, Military: 2, Economic: 7, Technology: 8, Population: 4, Environment: 9}},
+		{name: "Galactic Empire unit: Imperial Shipyard", attributes: {Strategic: 10, Military: 8, Economic: 8, Technology: 9, Population: 5, Environment: 4}},
+		{name: "Galactic Empire unit: Black Market World", attributes: {Strategic: 6, Military: 4, Economic: 9, Technology: 6, Population: 7, Environment: 5}},
+		{name: "Galactic Empire unit: Imperial Academy Planet", attributes: {Strategic: 9, Military: 8, Economic: 6, Technology: 8, Population: 6, Environment: 6}},
+		{name: "Galactic Empire unit: Terraforming Colony", attributes: {Strategic: 7, Military: 3, Economic: 8, Technology: 7, Population: 5, Environment: 4}},
+		{name: "Galactic Empire unit: Neutral Zone Outpost", attributes: {Strategic: 8, Military: 7, Economic: 5, Technology: 6, Population: 4, Environment: 5}},
+		{name: "Galactic Empire unit: Prison Planet", attributes: {Strategic: 7, Military: 8, Economic: 4, Technology: 6, Population: 3, Environment: 3}},
+		{name: "Galactic Empire unit: Frozen Mining Colony", attributes: {Strategic: 5, Military: 3, Economic: 7, Technology: 5, Population: 2, Environment: 2}},
+		{name: "Galactic Empire unit: Diplomatic World", attributes: {Strategic: 9, Military: 6, Economic: 7, Technology: 8, Population: 7, Environment: 7}},
+		{name: "Galactic Empire unit: Frontier Research Base", attributes: {Strategic: 7, Military: 5, Economic: 6, Technology: 9, Population: 3, Environment: 6}},
+		{name: "Galactic Empire unit: Asteroid Mining Belt", attributes: {Strategic: 7, Military: 4, Economic: 8, Technology: 6, Population: 3, Environment: 2}},
+		{name: "Galactic Empire unit: Remote Listening Post", attributes: {Strategic: 8, Military: 5, Economic: 3, Technology: 7, Population: 2, Environment: 4}},
+		{name: "Galactic Empire unit: Space Elevator Colony", attributes: {Strategic: 9, Military: 6, Economic: 8, Technology: 9, Population: 6, Environment: 7}},
+		{name: "Galactic Empire unit: Quarantine World", attributes: {Strategic: 5, Military: 7, Economic: 3, Technology: 6, Population: 2, Environment: 1}},
+		{name: "Galactic Empire unit: Pirate Stronghold", attributes: {Strategic: 6, Military: 7, Economic: 7, Technology: 5, Population: 4, Environment: 3}},
+		{name: "Galactic Empire unit: Refugee Settlement Planet", attributes: {Strategic: 5, Military: 4, Economic: 4, Technology: 5, Population: 7, Environment: 6}},
+		{name: "Galactic Empire unit: Secret Research Facility", attributes: {Strategic: 9, Military: 8, Economic: 5, Technology: 10, Population: 3, Environment: 4}},
+		{name: "Galactic Empire unit: Gas Giant Mining Station", attributes: {Strategic: 8, Military: 6, Economic: 9, Technology: 7, Population: 4, Environment: 2}},
+		{name: "Galactic Empire unit: Frontier Defense Colony", attributes: {Strategic: 8, Military: 9, Economic: 5, Technology: 6, Population: 4, Environment: 3}},
+		{name: "Galactic Empire unit: Hollow Planet Outpost", attributes: {Strategic: 7, Military: 8, Economic: 6, Technology: 7, Population: 5, Environment: 5}}
+  ];
+
+const planets = [
+    {name: "Planet: Earth (Real)", attributes: {Size: 7, Gravity: 7, Atmosphere: 9, Habitability: 10, Resources: 8, Temperature: 5}},
+		{name: "Planet: Mars (Real)", attributes: {Size: 6, Gravity: 4, Atmosphere: 3, Habitability: 5, Resources: 6, Temperature: 3}},
+		{name: "Planet: Vulcan (Star Trek)", attributes: {Size: 6, Gravity: 9, Atmosphere: 7, Habitability: 7, Resources: 5, Temperature: 8}},
+		{name: "Planet: Tatooine (Star Wars)", attributes: {Size: 5, Gravity: 6, Atmosphere: 6, Habitability: 4, Resources: 4, Temperature: 9}},
+		{name: "Planet: Pandora (Avatar)", attributes: {Size: 6, Gravity: 8, Atmosphere: 7, Habitability: 9, Resources: 8, Temperature: 6}},
+		{name: "Planet: Arrakis (Dune)", attributes: {Size: 7, Gravity: 6, Atmosphere: 5, Habitability: 3, Resources: 10, Temperature: 10}},
+		{name: "Planet: Krypton (Superman)", attributes: {Size: 8, Gravity: 9, Atmosphere: 8, Habitability: 7, Resources: 7, Temperature: 6}},
+		{name: "Planet: Hoth (Star Wars)", attributes: {Size: 5, Gravity: 5, Atmosphere: 6, Habitability: 2, Resources: 4, Temperature: 1}},
+		{name: "Planet: LV-426 (Alien)", attributes: {Size: 6, Gravity: 6, Atmosphere: 3, Habitability: 1, Resources: 6, Temperature: 3}},
+		{name: "Planet: Endor (Star Wars)", attributes: {Size: 5, Gravity: 5, Atmosphere: 8, Habitability: 8, Resources: 6, Temperature: 5}},
+		{name: "Planet: Kepler-22b (Real/Exoplanet)", attributes: {Size: 8, Gravity: 7, Atmosphere: 7, Habitability: 8, Resources: 7, Temperature: 5}},
+		{name: "Planet: Neptune (Real)", attributes: {Size: 9, Gravity: 9, Atmosphere: 4, Habitability: 1, Resources: 5, Temperature: 2}},
+		{name: "Planet: Dagobah (Star Wars)", attributes: {Size: 5, Gravity: 6, Atmosphere: 6, Habitability: 6, Resources: 4, Temperature: 6}},
+		{name: "Planet: Vega (Contact)", attributes: {Size: 7, Gravity: 6, Atmosphere: 8, Habitability: 7, Resources: 6, Temperature: 7}},
+		{name: "Planet: Titan (Real/Saturn's Moon)", attributes: {Size: 5, Gravity: 2, Atmosphere: 6, Habitability: 4, Resources: 7, Temperature: 2}},
+		{name: "Planet: Proxima b (Real/Exoplanet)", attributes: {Size: 6, Gravity: 7, Atmosphere: 6, Habitability: 6, Resources: 6, Temperature: 5}},
+		{name: "Planet: Coruscant (Star Wars)", attributes: {Size: 7, Gravity: 7, Atmosphere: 8, Habitability: 8, Resources: 6, Temperature: 5}},
+		{name: "Planet: Io (Real/Jupiter's Moon)", attributes: {Size: 5, Gravity: 4, Atmosphere: 3, Habitability: 2, Resources: 6, Temperature: 1}},
+		{name: "Planet: Mustafar (Star Wars)", attributes: {Size: 5, Gravity: 6, Atmosphere: 5, Habitability: 2, Resources: 7, Temperature: 10}},
+		{name: "Planet: Europa (Real/Jupiter's Moon)", attributes: {Size: 4, Gravity: 3, Atmosphere: 3, Habitability: 4, Resources: 6, Temperature: 2}},
+		{name: "Planet: Gallifrey (Doctor Who)", attributes: {Size: 7, Gravity: 8, Atmosphere: 9, Habitability: 8, Resources: 7, Temperature: 5}},
+		{name: "Planet: Oberon (Real/Uranus' Moon)", attributes: {Size: 4, Gravity: 3, Atmosphere: 2, Habitability: 2, Resources: 4, Temperature: 1}},
+		{name: "Planet: Skaro (Doctor Who)", attributes: {Size: 6, Gravity: 6, Atmosphere: 4, Habitability: 3, Resources: 5, Temperature: 6}},
+		{name: "Planet: Helion Prime (The Chronicles of Riddick)", attributes: {Size: 6, Gravity: 6, Atmosphere: 7, Habitability: 7, Resources: 6, Temperature: 7}},
+		{name: "Planet: Charon (Real/Pluto's Moon)", attributes: {Size: 3, Gravity: 1, Atmosphere: 1, Habitability: 1, Resources: 4, Temperature: 1}},
+		{name: "Planet: New Terra (The Expanse)", attributes: {Size: 6, Gravity: 7, Atmosphere: 7, Habitability: 8, Resources: 7, Temperature: 5}},
+		{name: "Planet: Mimas (Real/Saturn’s Moon)", attributes: {Size: 3, Gravity: 1, Atmosphere: 1, Habitability: 2, Resources: 3, Temperature: 2}},
+		{name: "Planet: Ryloth (Star Wars)", attributes: {Size: 6, Gravity: 6, Atmosphere: 5, Habitability: 4, Resources: 5, Temperature: 8}},
+		{name: "Planet: Ego (Guardians of the Galaxy)", attributes: {Size: 10, Gravity: 9, Atmosphere: 8, Habitability: 8, Resources: 9, Temperature: 6}},
+		{name: "Planet: Ilus (The Expanse)", attributes: {Size: 7, Gravity: 7, Atmosphere: 7, Habitability: 6, Resources: 8, Temperature: 6}}
+  ];
+
+    const stations = [
+    {name: "Space Station: Death Star (Star Wars)", attributes: {Size: 10, Crew: 1700000, Defense: 10, Technology: 9, Power: 10, Impact: 10}},
+		{name: "Space Station: Deep Space 9 (Star Trek)", attributes: {Size: 7, Crew: 300, Defense: 8, Technology: 9, Power: 8, Impact: 8}},
+		{name: "Space Station: International Space Station (ISS) (Real World)", attributes: {Size: 6, Crew: 6, Defense: 3, Technology: 8, Power: 7, Impact: 9}},
+		{name: "Space Station: Babylon 5 (Babylon 5)", attributes: {Size: 8, Crew: 250000, Defense: 7, Technology: 8, Power: 8, Impact: 9}},
+		{name: "Space Station: Elysium (Elysium)", attributes: {Size: 9, Crew: 200000, Defense: 7, Technology: 9, Power: 8, Impact: 8}},
+		{name: "Space Station: The Citadel (Mass Effect)", attributes: {Size: 10, Crew: 13000000, Defense: 10, Technology: 10, Power: 10, Impact: 10}},
+		{name: "Space Station: Ringworld (Larry Niven’s Ringworld)", attributes: {Size: 10, Crew: 1000000000, Defense: 8, Technology: 10, Power: 10, Impact: 10}},
+		{name: "Space Station: Cloud City (Star Wars: The Empire Strikes Back)", attributes: {Size: 7, Crew: 5000, Defense: 5, Technology: 7, Power: 6, Impact: 7}},
+		{name: "Space Station: Space Station V (2001: A Space Odyssey)", attributes: {Size: 6, Crew: 300, Defense: 4, Technology: 7, Power: 7, Impact: 7}},
+		{name: "Space Station: Halo (Halo Series)", attributes: {Size: 9, Crew: 500000, Defense: 9, Technology: 9, Power: 9, Impact: 9}},
+		{name: "Space Station: Orbital (The Culture)", attributes: {Size: 10, Crew: 50000000, Defense: 9, Technology: 10, Power: 10, Impact: 10}},
+		{name: "Space Station: Von Braun Station (The Expanse)", attributes: {Size: 7, Crew: 20000, Defense: 8, Technology: 8, Power: 7, Impact: 8}},
+		{name: "Space Station: Heptapod Shell (Arrival)", attributes: {Size: 6, Defense: 6, Technology: 9, Power: 8, Impact: 9}},
+		{name: "Space Station: Endurance (Interstellar)", attributes: {Size: 5, Crew: 12, Defense: 5, Technology: 8, Power: 7, Impact: 8}},
+		{name: "Space Station: Rama (Rendezvous with Rama)", attributes: {Size: 9, Defense: 8, Technology: 10, Power: 9, Impact: 9}},
+		{name: "Space Station: Vesta Station (The Expanse)", attributes: {Size: 7, Crew: 10000, Defense: 7, Technology: 7, Power: 7, Impact: 7}},
+		{name: "Space Station: SDF-1 Macross (Macross/Robotech)", attributes: {Size: 9, Crew: 70000, Defense: 9, Technology: 9, Power: 9, Impact: 9}},
+		{name: "Space Station: Starbase Yorktown (Star Trek Beyond)", attributes: {Size: 8, Crew: 150000, Defense: 7, Technology: 9, Power: 8, Impact: 8}},
+		{name: "Space Station: Icarus II (Sunshine)", attributes: {Size: 5, Crew: 8, Defense: 4, Technology: 7, Power: 8, Impact: 7}},
+		{name: "Space Station: Citadel Station (System Shock)", attributes: {Size: 6, Crew: 2500, Defense: 7, Technology: 8, Power: 7, Impact: 8}},
+		{name: "Space Station: O'Neill Cylinder (Real-World Concept)", attributes: {Size: 9, Crew: 10000000, Defense: 6, Technology: 8, Power: 9, Impact: 9}},
+		{name: "Space Station: Torus Station (The Expanse)", attributes: {Size: 7, Crew: 20000, Defense: 7, Technology: 8, Power: 8, Impact: 7}},
+		{name: "Space Station: TORUS (Elysium)", attributes: {Size: 9, Crew: 250000, Defense: 7, Technology: 9, Power: 8, Impact: 9}},
+		{name: "Space Station: Avalon (Passengers)", attributes: {Size: 7, Crew: 5000, Defense: 6, Technology: 8, Power: 7, Impact: 8}},
+		{name: "Space Station: X-37 Orbital Station (Real-World Concept)", attributes: {Size: 5, Defense: 8, Technology: 7, Power: 6, Impact: 7}},
+		{name: "Space Station: Citadel (Half-Life 2)", attributes: {Size: 8, Defense: 9, Technology: 8, Power: 8, Impact: 9}},
+		{name: "Space Station: Sevastopol Station (Alien: Isolation)", attributes: {Size: 6, Crew: 500, Defense: 5, Technology: 7, Power: 6, Impact: 7}},
+		{name: "Space Station: Freedom (Armageddon)", attributes: {Size: 6, Crew: 200, Defense: 6, Technology: 6, Power: 7, Impact: 8}},
+		{name: "Space Station: Carina Station (The Expanse)", attributes: {Size: 7, Crew: 15000, Defense: 6, Technology: 7, Power: 7, Impact: 7}},
+		{name: "Space Station: Orbital 6 (Altered Carbon)", attributes: {Size: 8, Crew: 10000, Defense: 9, Technology: 9, Power: 9, Impact: 8}}
+  ];
+
+
+  const starfleet = [
+    {name: "Starfleet member: Captain", attributes: {Leadership: 9, Strategy: 8, Diplomacy: 7, Tech: 6, Combat: 8, Morale: 9}},
+		{name: "Starfleet member: Admiral", attributes: {Leadership: 10, Strategy: 10, Diplomacy: 9, Tech: 7, Combat: 9, Morale: 8}},
+		{name: "Starfleet member: First Officer", attributes: {Leadership: 8, Strategy: 8, Diplomacy: 7, Tech: 6, Combat: 8, Morale: 9}},
+		{name: "Starfleet member: Chief Engineer", attributes: {Leadership: 7, Strategy: 6, Diplomacy: 6, Tech: 10, Combat: 5, Morale: 7}},
+		{name: "Starfleet member: Science Officer", attributes: {Leadership: 6, Strategy: 7, Diplomacy: 7, Tech: 10, Combat: 4, Morale: 6}},
+		{name: "Starfleet member: Helmsman", attributes: {Leadership: 6, Strategy: 7, Diplomacy: 6, Tech: 8, Combat: 6, Morale: 7}},
+		{name: "Starfleet member: Tactical Officer", attributes: {Leadership: 7, Strategy: 8, Diplomacy: 5, Tech: 7, Combat: 9, Morale: 7}},
+		{name: "Starfleet member: Chief Medical Officer", attributes: {Leadership: 8, Strategy: 6, Diplomacy: 7, Tech: 9, Combat: 5, Morale: 8}},
+		{name: "Starfleet member: Chief of Operations", attributes: {Leadership: 7, Strategy: 7, Diplomacy: 6, Tech: 9, Combat: 5, Morale: 7}},
+		{name: "Starfleet member: Security Officer", attributes: {Leadership: 6, Strategy: 7, Diplomacy: 5, Tech: 6, Combat: 9, Morale: 6}},
+		{name: "Starfleet member: Communications Officer", attributes: {Leadership: 6, Strategy: 5, Diplomacy: 8, Tech: 7, Combat: 4, Morale: 6}},
+		{name: "Starfleet member: Transporter Chief", attributes: {Leadership: 5, Strategy: 5, Diplomacy: 5, Tech: 9, Combat: 4, Morale: 5}},
+		{name: "Starfleet member: Counselor", attributes: {Leadership: 6, Strategy: 4, Diplomacy: 9, Tech: 6, Combat: 3, Morale: 9}},
+		{name: "Starfleet member: Cadet", attributes: {Leadership: 4, Strategy: 4, Diplomacy: 5, Tech: 5, Combat: 3, Morale: 5}},
+		{name: "Starfleet member: Fleet Admiral", attributes: {Leadership: 10, Strategy: 10, Diplomacy: 9, Tech: 8, Combat: 9, Morale: 10}},
+		{name: "Starfleet member: Logistics Officer", attributes: {Leadership: 6, Strategy: 6, Diplomacy: 6, Tech: 7, Combat: 4, Morale: 5}},
+		{name: "Starfleet member: Ambassador", attributes: {Leadership: 8, Strategy: 7, Diplomacy: 10, Tech: 5, Combat: 3, Morale: 6}},
+		{name: "Starfleet member: Fleet Tactical Officer", attributes: {Leadership: 8, Strategy: 9, Diplomacy: 6, Tech: 7, Combat: 9, Morale: 7}},
+		{name: "Starfleet member: Starship Counselor", attributes: {Leadership: 5, Strategy: 4, Diplomacy: 9, Tech: 5, Combat: 3, Morale: 9}},
+		{name: "Starfleet member: Quartermaster", attributes: {Leadership: 6, Strategy: 5, Diplomacy: 5, Tech: 6, Combat: 4, Morale: 5}},
+		{name: "Starfleet member: Fleet Intelligence Officer", attributes: {Leadership: 7, Strategy: 9, Diplomacy: 6, Tech: 8, Combat: 6, Morale: 6}},
+		{name: "Starfleet member: Starship Tactical Analyst", attributes: {Leadership: 6, Strategy: 8, Diplomacy: 5, Tech: 7, Combat: 8, Morale: 5}},
+		{name: "Starfleet member: Head of Starfleet Academy", attributes: {Leadership: 9, Strategy: 8, Diplomacy: 9, Tech: 7, Combat: 7, Morale: 8}},
+		{name: "Starfleet member: Chief of Starfleet Medical", attributes: {Leadership: 8, Strategy: 7, Diplomacy: 8, Tech: 10, Combat: 4, Morale: 9}},
+		{name: "Starfleet member: Operations Specialist", attributes: {Leadership: 5, Strategy: 6, Diplomacy: 6, Tech: 8, Combat: 5, Morale: 6}},
+		{name: "Starfleet member: Starship Architect", attributes: {Leadership: 6, Strategy: 7, Diplomacy: 5, Tech: 10, Combat: 3, Morale: 7}},
+		{name: "Starfleet member: Warp Field Specialist", attributes: {Leadership: 5, Strategy: 6, Diplomacy: 5, Tech: 10, Combat: 4, Morale: 6}},
+		{name: "Starfleet member: Fleet Communications Specialist", attributes: {Leadership: 6, Strategy: 5, Diplomacy: 7, Tech: 8, Combat: 4, Morale: 7}},
+		{name: "Starfleet member: Diplomatic Envoy", attributes: {Leadership: 8, Strategy: 7, Diplomacy: 10, Tech: 6, Combat: 3, Morale: 7}},
+		{name: "Starfleet member: Starship Logistics Coordinator", attributes: {Leadership: 6, Strategy: 7, Diplomacy: 6, Tech: 7, Combat: 4, Morale: 6}}
+  ];
+
+const aliens = [
+    {name: "Race: Vulcans (Star Trek)", attributes: {Intelligence: 9, Strength: 7, Technology: 9, Diplomacy: 9, Aggressiveness: 3, Population: 6}},
+		{name: "Race: Klingons (Star Trek)", attributes: {Intelligence: 7, Strength: 9, Technology: 8, Diplomacy: 4, Aggressiveness: 9, Population: 7}},
+		{name: "Race: Yautja/Predators (Predator)", attributes: {Intelligence: 7, Strength: 10, Technology: 9, Diplomacy: 2, Aggressiveness: 10, Population: 5}},
+		{name: "Race: Wookiees (Star Wars)", attributes: {Intelligence: 6, Strength: 9, Technology: 7, Diplomacy: 5, Aggressiveness: 7, Population: 6}},
+		{name: "Race: Asari (Mass Effect)", attributes: {Intelligence: 9, Strength: 6, Technology: 9, Diplomacy: 10, Aggressiveness: 3, Population: 7}},
+		{name: "Race: Daleks (Doctor Who)", attributes: {Intelligence: 8, Strength: 8, Technology: 9, Diplomacy: 1, Aggressiveness: 10, Population: 5}},
+		{name: "Race: Xenomorphs (Alien)", attributes: {Intelligence: 6, Strength: 9, Technology: 2, Diplomacy: 1, Aggressiveness: 10, Population: 8}},
+		{name: "Race: Na'vi (Avatar)", attributes: {Intelligence: 7, Strength: 7, Technology: 4, Diplomacy: 8, Aggressiveness: 5, Population: 6}},
+		{name: "Race: Time Lords (Doctor Who)", attributes: {Intelligence: 10, Strength: 6, Technology: 10, Diplomacy: 8, Aggressiveness: 3, Population: 3}},
+		{name: "Race: Thargoids (Elite Dangerous)", attributes: {Intelligence: 8, Strength: 7, Technology: 9, Diplomacy: 2, Aggressiveness: 9, Population: 7}},
+		{name: "Race: Zerg (StarCraft)", attributes: {Intelligence: 6, Strength: 8, Technology: 6, Diplomacy: 1, Aggressiveness: 10, Population: 10}},
+		{name: "Race: Betazoids (Star Trek)", attributes: {Intelligence: 8, Strength: 5, Technology: 7, Diplomacy: 9, Aggressiveness: 3, Population: 5}},
+		{name: "Race: Protoss (StarCraft)", attributes: {Intelligence: 9, Strength: 7, Technology: 9, Diplomacy: 7, Aggressiveness: 6, Population: 4}},
+		{name: "Race: Martians (The War of the Worlds)", attributes: {Intelligence: 8, Strength: 7, Technology: 9, Diplomacy: 2, Aggressiveness: 9, Population: 6}},
+		{name: "Race: Andorians (Star Trek)", attributes: {Intelligence: 7, Strength: 8, Technology: 7, Diplomacy: 6, Aggressiveness: 7, Population: 6}},
+		{name: "Race: Geth (Mass Effect)", attributes: {Intelligence: 8, Strength: 6, Technology: 9, Diplomacy: 3, Aggressiveness: 8, Population: 7}},
+		{name: "Race: Ferengi (Star Trek)", attributes: {Intelligence: 7, Strength: 4, Technology: 6, Diplomacy: 7, Aggressiveness: 5, Population: 6}},
+		{name: "Race: Tau (Warhammer 40K)", attributes: {Intelligence: 8, Strength: 6, Technology: 9, Diplomacy: 8, Aggressiveness: 6, Population: 7}},
+		{name: "Race: Vorlons (Babylon 5)", attributes: {Intelligence: 10, Strength: 8, Technology: 10, Diplomacy: 6, Aggressiveness: 7, Population: 4}},
+		{name: "Race: Romulans (Star Trek)", attributes: {Intelligence: 8, Strength: 7, Technology: 8, Diplomacy: 5, Aggressiveness: 7, Population: 6}},
+		{name: "Race: Twileks (Star Wars)", attributes: {Intelligence: 7, Strength: 6, Technology: 6, Diplomacy: 8, Aggressiveness: 4, Population: 7}},
+		{name: "Race: Kree (Marvel Universe)", attributes: {Intelligence: 8, Strength: 8, Technology: 9, Diplomacy: 6, Aggressiveness: 7, Population: 8}},
+		{name: "Race: Tholians (Star Trek)", attributes: {Intelligence: 7, Strength: 6, Technology: 8, Diplomacy: 3, Aggressiveness: 8, Population: 5}},
+		{name: "Race: Chitauri (Marvel Universe)", attributes: {Intelligence: 6, Strength: 7, Technology: 7, Diplomacy: 2, Aggressiveness: 9, Population: 7}},
+		{name: "Race: Minbari (Babylon 5)", attributes: {Intelligence: 9, Strength: 7, Technology: 9, Diplomacy: 8, Aggressiveness: 5, Population: 6}},
+		{name: "Race: Formics (Ender’s Game)", attributes: {Intelligence: 8, Strength: 6, Technology: 8, Diplomacy: 4, Aggressiveness: 9, Population: 9}},
+		{name: "Race: Hutts (Star Wars)", attributes: {Intelligence: 7, Strength: 5, Technology: 6, Diplomacy: 7, Aggressiveness: 6, Population: 5}},
+		{name: "Race: Narn (Babylon 5)", attributes: {Intelligence: 7, Strength: 8, Technology: 7, Diplomacy: 6, Aggressiveness: 7, Population: 6}},
+		{name: "Race: Trisolarans (The Three-Body Problem)", attributes: {Intelligence: 9, Strength: 6, Technology: 10, Diplomacy: 4, Aggressiveness: 8, Population: 5}},
+		{name: "Race: Jaffa (Stargate SG-1)", attributes: {Intelligence: 6, Strength: 9, Technology: 7, Diplomacy: 5, Aggressiveness: 8, Population: 6}},
+		{name: "Race: Humans (Stargate SG-1)", attributes: {Intelligence: 8, Strength: 6, Technology: 7, Diplomacy: 9, Aggressiveness: 6, Population: 9}}
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('spaceshipsCheckbox').checked) selectedCards.push(...spaceships);
+    if (document.getElementById('technologiesCheckbox').checked) selectedCards.push(...technologies);
+    if (document.getElementById('empiresCheckbox').checked) selectedCards.push(...empires);
+    if (document.getElementById('planetsCheckbox').checked) selectedCards.push(...planets);
+    if (document.getElementById('stationsCheckbox').checked) selectedCards.push(...stations);
+    if (document.getElementById('starfleetCheckbox').checked) selectedCards.push(...starfleet);
+    if (document.getElementById('aliensCheckbox').checked) selectedCards.push(...aliens);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  document.getElementById('shuffleRulesButton').addEventListener('click', function() {
+    shuffleDeck(rules, 'rulesResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

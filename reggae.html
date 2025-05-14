@@ -1,0 +1,451 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Reggae</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="playersCheckbox"> Players</label><br>
+    <label><input type="checkbox" id="instrumentsCheckbox"> Instruments</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    <br><br>
+    <div style="margin-bottom: 20px;">
+      <h3>Rules</h3>
+      <p id="rulesResult" style="color: white;">-</p>
+      <button id="shuffleRulesButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["One Love: All players draw one card and gain +2 to their next action. This represents unity and positivity for all!",
+"Rastafari Blessing: Choose one card from your discard pile and return it to your hand. Gain +3 defense on your next turn as a sign of divine protection.",
+"Jam Session: Both players reveal one card from their hand and play it immediately. If it's a Musician card, add +2 to the card’s value.",
+"Bassline Groove: Boost your next defense by +5 as the deep bass rhythm fortifies your position. This card can be played even outside of your turn as a reaction.",
+"Island Vibes: Skip your turn to draw two extra cards and gain +3 on your next attack. You take a moment to relax and gather strength.",
+"Dub Echo: Copy the effect of the last card played by your opponent and apply it to yourself. The rhythm echoes back in your favor.",
+"Peace and Harmony: Both players cannot attack for the next round. Instead, each player can only play cards that boost defense or heal, promoting peace for one turn.",
+"Revolutionary Spirit: Choose one of your attack cards and double its value. If it's a Reggae Legend card, draw an additional card after playing.",
+"Herbal Meditation: Skip your turn to heal 5 points of damage and draw one card. You find inner peace and clarity.",
+"Roots Reggae Power: Play a Musician or Reggae Legend card with +4 bonus. If the card has Roots in its name, its effect is doubled.",
+"Positive Vibration: Your next attack gains +3, and you can draw one additional card. Let the positive energy flow through the game.",
+"Iration: Heal 4 points of damage, and all your defense cards gain +2 for the next two turns. You tap into the uplifting spirit of the reggae sound.",
+"Reggae Festival: Both players draw two cards, and their next Musician or Reggae Legend cards gain +3. The energy of the crowd boosts everyone's performance.",
+"Rocksteady Groove: Play an attack card with +3 bonus. If the opponent doesn’t play a defense card, their next turn is skipped due to the smooth rhythm catching them off guard.",
+"Nyabinghi Chant: Cancel the effect of the last card played by the opponent and gain +2 defense for the next turn. The spiritual chant brings balance and protection.",
+"Sound Clash: Both players must reveal one attack card from their hand. The card with the higher value wins and gets a +5 bonus. The loser must discard their revealed card.",
+"Roots & Culture: Play a Reggae Legend card from your hand. If it has Roots in the title, it gains +3 attack and defense for the rest of the game, representing the strength of tradition.",
+"Dubwise: Choose one card from the discard pile and return it to your hand. It gains an additional +2 to its next use, as the echoes of the past come back with new energy.",
+"Zion Call: Draw three cards, but you must discard one at the end of your turn. The call of Zion gives insight, but requires sacrifice.",
+"Jah Guidance: Gain +4 defense for the next two turns. If you’re below half health, you also heal 3 points, as divine guidance shields and restores you."];
+
+  const rules = [
+    `A: C - G - Am - F
+B: Dm - G - C - G
+C: C Major (C, D, E, F, G, A, B)
+G: G Mixolydian (G, A, B, C, D, E, F)
+Am: A Minor Pentatonic (A, C, D, E, G)
+F: F Major (F, G, A, Bb, C, D, E)
+Dm: D Dorian (D, E, F, G, A, B, C)`,
+`A: Am - F - C - G
+B: Em - Am - F - G
+Am: A Minor Pentatonic (A, C, D, E, G)
+F: F Major (F, G, A, Bb, C, D, E)
+C: C Major (C, D, E, F, G, A, B)
+G: G Mixolydian (G, A, B, C, D, E, F)
+Em: E Minor Pentatonic (E, G, A, B, D)`,
+`A: D - A - Bm - G
+B: Em - A - D - A
+D: D Major (D, E, F#, G, A, B, C#)
+A: A Mixolydian (A, B, C#, D, E, F#, G)
+Bm: B Minor Pentatonic (B, D, E, F#, A)
+G: G Major (G, A, B, C, D, E, F#)
+Em: E Dorian (E, F#, G, A, B, C#, D)`,
+`A: G - D - Em - C
+B: Am - D - G - D
+G: G Major (G, A, B, C, D, E, F#)
+D: D Mixolydian (D, E, F#, G, A, B, C)
+Em: E Minor Pentatonic (E, G, A, B, D)
+C: C Major (C, D, E, F, G, A, B)
+Am: A Minor Pentatonic (A, C, D, E, G)`,
+`A: A - E - F#m - D
+B: Bm - E - A - E
+A: A Major (A, B, C#, D, E, F#, G#)
+E: E Mixolydian (E, F#, G#, A, B, C#, D)
+F#m: F# Dorian (F#, G#, A, B, C#, D#, E)
+D: D Major (D, E, F#, G, A, B, C#)
+Bm: B Minor Pentatonic (B, D, E, F#, A)`,
+`A: F - C - Dm - Bb
+B: Gm - C - F - C
+F: F Major (F, G, A, Bb, C, D, E)
+C: C Mixolydian (C, D, E, F, G, A, Bb)
+Dm: D Dorian (D, E, F, G, A, B, C)
+Bb: Bb Major (Bb, C, D, Eb, F, G, A)
+Gm: G Minor Pentatonic (G, Bb, C, D, F)`,
+`A: Bb - F - Gm - Eb
+B: Cm - F - Bb - F
+Bb: Bb Major (Bb, C, D, Eb, F, G, A)
+F: F Mixolydian (F, G, A, Bb, C, D, Eb)
+Gm: G Minor Pentatonic (G, Bb, C, D, F)
+Eb: Eb Major (Eb, F, G, Ab, Bb, C, D)
+Cm: C Dorian (C, D, Eb, F, G, A, Bb)`,
+`A: C - Am - F - G
+B: Dm - G - C - G
+C: C Major (C, D, E, F, G, A, B)
+Am: A Minor Pentatonic (A, C, D, E, G)
+F: F Major (F, G, A, Bb, C, D, E)
+G: G Mixolydian (G, A, B, C, D, E, F)
+Dm: D Dorian (D, E, F, G, A, B, C)`,
+`A: D - Bm - G - A
+B: Em - A - D - A
+D: D Major (D, E, F#, G, A, B, C#)
+Bm: B Minor Pentatonic (B, D, E, F#, A)
+G: G Major (G, A, B, C, D, E, F#)
+A: A Mixolydian (A, B, C#, D, E, F#, G)
+Em: E Dorian (E, F#, G, A, B, C#, D)`,
+`A: G - Em - C - D
+B: Am - D - G - D
+G: G Major (G, A, B, C, D, E, F#)
+Em: E Minor Pentatonic (E, G, A, B, D)
+C: C Major (C, D, E, F, G, A, B)
+D: D Mixolydian (D, E, F#, G, A, B, C)
+Am: A Minor Pentatonic (A, C, D, E, G)`,
+`A: A - F#m - D - E
+B: Bm - E - A - E
+A: A Major (A, B, C#, D, E, F#, G#)
+F#m: F# Dorian (F#, G#, A, B, C#, D#, E)
+D: D Major (D, E, F#, G, A, B, C#)
+E: E Mixolydian (E, F#, G#, A, B, C#, D)
+Bm: B Minor Pentatonic (B, D, E, F#, A)`,
+`A: F - Dm - Bb - C
+B: Gm - C - F - C
+F: F Major (F, G, A, Bb, C, D, E)
+Dm: D Dorian (D, E, F, G, A, B, C)
+Bb: Bb Major (Bb, C, D, Eb, F, G, A)
+C: C Mixolydian (C, D, E, F, G, A, Bb)
+Gm: G Minor Pentatonic (G, Bb, C, D, F)`,
+`A: Bb - Gm - Eb - F
+B: Cm - F - Bb - F
+Bb: Bb Major (Bb, C, D, Eb, F, G, A)
+Gm: G Minor Pentatonic (G, Bb, C, D, F)
+Eb: Eb Major (Eb, F, G, Ab, Bb, C, D)
+F: F Mixolydian (F, G, A, Bb, C, D, Eb)
+Cm: C Dorian (C, D, Eb, F, G, A, Bb)`,
+`A: C - G - Am - F
+B: Em - F - C - G
+C: C Major (C, D, E, F, G, A, B)
+G: G Mixolydian (G, A, B, C, D, E, F)
+Am: A Minor Pentatonic (A, C, D, E, G)
+F: F Major (F, G, A, Bb, C, D, E)
+Em: E Dorian (E, F#, G, A, B, C#, D)`,
+`A: D - A - Bm - G
+B: Em - G - D - A
+D: D Major (D, E, F#, G, A, B, C#)
+A: A Mixolydian (A, B, C#, D, E, F#, G)
+Bm: B Minor Pentatonic (B, D, E, F#, A)
+G: G Major (G, A, B, C, D, E, F#)
+Em: E Dorian (E, F#, G, A, B, C#, D)`,
+`A: G - D - Em - C
+B: Am - C - G - D
+G: G Major (G, A, B, C, D, E, F#)
+D: D Mixolydian (D, E, F#, G, A, B, C)
+Em: E Minor Pentatonic (E, G, A, B, D)
+C: C Major (C, D, E, F, G, A, B)
+Am: A Minor Pentatonic (A, C, D, E, G)`,
+`A: A - E - F#m - D
+B: Bm - D - A - E
+A: A Major (A, B, C#, D, E, F#, G#)
+E: E Mixolydian (E, F#, G#, A, B, C#, D)
+F#m: F# Dorian (F#, G#, A, B, C#, D#, E)
+D: D Major (D, E, F#, G, A, B, C#)
+Bm: B Minor Pentatonic (B, D, E, F#, A)`,
+`A: F - C - Dm - Bb
+B: Gm - Bb - F - C
+F: F Major (F, G, A, Bb, C, D, E)
+C: C Mixolydian (C, D, E, F, G, A, Bb)
+Dm: D Dorian (D, E, F, G, A, B, C)
+Bb: Bb Major (Bb, C, D, Eb, F, G, A)
+Gm: G Minor Pentatonic (G, Bb, C, D, F)`,
+`A: Bb - F - Gm - Eb
+B: Cm - Eb - Bb - F
+Bb: Bb Major (Bb, C, D, Eb, F, G, A)
+F: F Mixolydian (F, G, A, Bb, C, D, Eb)
+Gm: G Minor Pentatonic (G, Bb, C, D, F)
+Eb: Eb Major (Eb, F, G, Ab, Bb, C, D)
+Cm: C Dorian (C, D, Eb, F, G, A, Bb)`,
+`A: C - G - Am - F
+B: Dm - F - C - G
+C: C Major (C, D, E, F, G, A, B)
+G: G Mixolydian (G, A, B, C, D, E, F)
+Am: A Minor Pentatonic (A, C, D, E, G)
+F: F Major (F, G, A, Bb, C, D, E)
+Dm: D Dorian (D, E, F, G, A, B, C)`   
+  ];  
+const players = [
+{name: "Artist: Alexandre Carlo (The Reggae Visionary – Natiruts)", attributes: {Vocals: 9, Lyrics: 9, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Alpha Blondy (Vocals - Ivory Coast)", attributes: {Vocals: 9, Lyrics: 8, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: Alton Ellis (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 8, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Andrew Tosh (The Roots Guardian)", attributes: {Vocals: 9, Lyrics: 9, Influence: 10, Creativity: 9, Versatility: 8, Legacy: 10}},
+{name: "Artist: Anthony B (The Fire Messenger)", attributes: {Vocals: 9, Lyrics: 10, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Augustus Pablo (Melodica/Keys - Jamaica)", attributes: {Vocals: 7, Lyrics: 8, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Barrington Levy (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 8, Influence: 9, Creativity: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Ben Harper (The Soulful Troubadour)", attributes: {Vocals: 9, Lyrics: 9, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Beres Hammond (Vocals - Jamaica)", attributes: {Vocals: 10, Lyrics: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Black Uhuru (Vocals/Instruments - Jamaica)", attributes: {Vocals: 9, Lyrics: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Bob Marley (Vocals/Guitar - Jamaica)", attributes: {Vocals: 10, Lyrics: 10, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Buju Banton (Vocals – Jamaica)", attributes: {Vocals: 10, Lyrics: 9, Influence: 10, Creativity: 8, Versatility: 9, Legacy: 9}},
+{name: "Artist: Bunny Wailer (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 9, Influence: 9, Creativity: 8, Versatility: 8, Legacy: 9}},
+{name: "Artist: Burning Spear (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 10, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 10}},
+{name: "Artist: Capleton (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 9, Influence: 8, Creativity: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Clinton Fearon (The Roots Guardian)", attributes: {Vocals: 9, Lyrics: 9, Influence: 8, Creativity: 8, Versatility: 9, Legacy: 9}},
+{name: "Artist: Cocoa Tea (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 9, Influence: 9, Creativity: 8, Versatility: 8, Legacy: 9}},
+{name: "Artist: Damian Marley (Vocals/Rap – Jamaica)", attributes: {Vocals: 9, Lyrics: 10, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: David Hinds (Vocals/Guitar – Steel Pulse)", attributes: {Vocals: 9, Lyrics: 10, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Dennis Bovell (Bass & Production - UK/Barbados)", attributes: {Vocals: 7, Lyrics: 8, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 9}},
+{name: "Artist: Dennis Brown (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 9, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Desmond Dekker (The Ska Prophet)", attributes: {Vocals: 9, Lyrics: 8, Influence: 10, Creativity: 9, Versatility: 8, Legacy: 10}},
+{name: "Artist: Don Carlos (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 8, Influence: 8, Creativity: 8, Versatility: 8, Legacy: 8}},
+{name: "Artist: Duckie Simpson (Vocals – Jamaica)", attributes: {Vocals: 8, Lyrics: 8, Influence: 9, Creativity: 8, Versatility: 8, Legacy: 9}},
+{name: "Artist: Eek-A-Mouse (Vocals - Jamaica)", attributes: {Vocals: 8, Lyrics: 7, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: Fauzi Beydoun (Tribo de Jah)", attributes: {Vocals: 9, Lyrics: 9, Influence : 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Freddie McGregor (Vocals – Jamaica)", attributes: {Vocals: 9, Lyrics: 9, Influence: 9, Creativity: 8, Versatility: 9, Legacy: 9}},
+{name: "Artist: Furmiga Dub (The Bass of the Forest – Brazil)", attributes: {Bass: 10, Production: 10, Influence: 9, Creativity: 10, Versatility: 9, Legacy: 9}},
+{name: "Artist: Gilberto Gil (Vocals/Guitar - Brazil)", attributes: {Vocals: 9, Lyrics: 10, Influence: 10, Creativity: 10, Versatility: 10, Legacy: 10}},
+{name: "Artist: Glen Adams (The Reggae Groovemaker)", attributes: {Vocals: 7, Lyrics: 7, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Gregory Isaacs (Vocals - Jamaica)", attributes: {Vocals: 10, Lyrics: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Ijahman Levi (Vocals - Jamaica)", attributes: {Vocals: 8, Lyrics: 8, Influence: 8, Creativity: 8, Versatility: 8, Legacy: 8}},
+{name: "Artist: Israel Vibration (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 9, Influence: 8, Creativity: 8, Versatility: 8, Legacy: 9}},
+{name: "Artist: Jah Cure (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 8, Influence: 8, Creativity: 8, Versatility: 8, Legacy: 8}},
+{name: "Artist: Jimmy Cliff (Vocals/Guitar - Jamaica)", attributes: {Vocals: 9, Lyrics: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Jorge Dubman (Beats/Production - Argentina)", attributes: {Vocals: 7, Lyrics: 7, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 7}},
+{name: "Artist: Julian Marley (Vocals/Guitar – Jamaica)", attributes: {Vocals: 8, Lyrics: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Junior Marvin (The Wailin’ Groove Master)", attributes: {Vocals: 8, Lyrics: 8, Influence: 10, Creativity: 10, Versatility: 9, Legacy: 10}},
+{name: "Artist: Junior Reid (Vocals - Jamaica)", attributes: {Vocals: 8, Lyrics: 8, Influence: 8, Creativity: 8, Versatility: 8, Legacy: 8}},
+{name: "Artist: Ken Parker (The Soulful Crooner)", attributes: {Vocals: 9, Lyrics: 8, Influence: 8, Creativity: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Luciano (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 9, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Lucky Dube (Vocals/Guitar – South Africa)", attributes: {Vocals: 10, Lyrics: 10, Influence: 10, Creativity: 9, Versatility: 9, Legacy: 10}},
+{name: "Artist: Majek Fashek (Vocals/Guitar – Nigeria)", attributes: {Vocals: 9, Lyrics: 9, Influence: 9, Creativity: 10, Versatility: 8, Legacy: 9}},
+{name: "Artist: Manu Chao (Vocals/Guitar - France/Spain)", attributes: {Vocals: 9, Lyrics: 10, Influence: 9, Creativity: 10, Versatility: 10, Legacy: 9 }},
+{name: "Artist: Manudigital (Bass/Producer - France)", attributes: { Bass: 10,  Production: 10,  Influence: 8,  Creativity: 9,  Versatility: 9,  Legacy: 8}},
+{name: "Artist: Marcia Griffiths (Vocals – Jamaica)", attributes: {Vocals: 10, Lyrics: 8, Influence: 10, Creativity: 9, Versatility: 10, Legacy: 10}},
+{name: "Artist: Max Romeo (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 9, Influence: 8, Creativity: 8, Versatility: 8, Legacy: 8}},
+{name: "Artist: Michael Palmer (The Dancehall Crooner)", attributes: {Vocals: 8, Lyrics: 7, Influence: 8, Creativity: 8, Versatility: 8, Legacy: 8}},
+{name: "Artist: Michael Rose (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 9, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 8}},
+{name: "Artist: Papa Winnie (The Sunshine Ambassador)", attributes: {Vocals: 8, Lyrics: 8, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Perfect Giddimani (Vocals - Jamaica)", attributes: {Vocals: 8, Lyrics: 10, Influence: 8, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Peter Tosh (Vocals/Guitar - Jamaica)", attributes: {Vocals: 9, Lyrics: 10, Influence: 9, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Puma Jones (Vocals - USA/Jamaica)", attributes: {Vocals: 9, Lyrics: 9, Influence: 8, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Renato Matos (Vocals/Guitar – Brazil)", attributes: {Vocals: 8, Lyrics: 9, Influence: 7, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Rita Marley (Vocals - Jamaica)", attributes: {Vocals: 8, Lyrics: 9, Influence: 9, Creativity: 8, Versatility: 8, Legacy: 10}},
+{name: "Artist: Roblove (The Groove Alchemist)", attributes: {Vocals: 8, Lyrics: 9, Influence: 8, Creativity: 10, Versatility: 9, Legacy: 8}},
+{name: "Artist: Sizzla (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 8, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 8}},
+{name: "Artist: Steel Pulse (Vocals/Instruments - UK)", attributes: {Vocals: 8, Lyrics: 9, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Stephen Marley (The Heritage Torchbearer)", attributes: {Vocals: 9, Lyrics: 9, Influence: 9, Creativity: 8, Versatility: 9, Legacy: 9}},
+{name: "Artist: Sugar Minott (Vocals - Jamaica)", attributes: {Vocals: 9, Lyrics: 8, Influence: 8, Creativity: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Third World (Vocals/Instruments - Jamaica)", attributes: {Vocals: 8, Lyrics: 8, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Tiken Jah Fakoly (The African Griot – Ivory Coast)", attributes: {Vocals: 9, Lyrics: 10, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: Toni Garrido (Vocals – Brazil)", attributes: {Vocals: 9, Lyrics: 8, Influence: 9, Creativity: 8, Versatility: 9, Legacy: 8}},
+{name: "Artist: Toots Hibbert (Vocals - Jamaica)", attributes: {Vocals: 10, Lyrics: 8, Influence: 9, Creativity: 9, Versatility: 9, Legacy: 9}},
+{name: "Artist: U-Roy (Vocals/Toasting - Jamaica)", attributes: {Vocals: 7, Lyrics: 8, Influence: 10, Creativity: 9, Versatility: 8, Legacy: 9}},
+{name: "Artist: Ziggy Marley (Vocals/Guitar – Jamaica)", attributes: {Vocals: 9, Lyrics: 9, Influence: 9, Creativity: 9, Versatility: 10, Legacy: 9}},
+{name: "Bass Player: Aston Family Man Barrett (The Wailers - Jamaica)", attributes: {Groove: 10, Creativity: 9, Influence: 10, Versatility: 9, Rhythm: 10, Legacy: 10}},
+{name: "Bass Player: Chris Meredith (Ziggy Marley and The Melody Makers - Jamaica)", attributes: {Groove: 9, Creativity: 8, Influence: 8, Versatility: 9, Rhythm: 9, Legacy: 8}},
+{name: "Bass Player: David Hari Prentice (Burning Spear - Jamaica)", attributes: {Groove: 9, Creativity: 8, Influence: 8, Versatility: 8, Rhythm: 9, Legacy: 8}},
+{name: "Bass Player: Earl Bagga Walker (The Aggrovators - Jamaica)", attributes: {Groove: 8, Creativity: 8, Influence: 8, Versatility: 8, Rhythm: 8, Legacy: 8}},
+{name: "Bass Player: Errol Flabba Holt (The Morwells, Roots Radics - Jamaica)", attributes: {Groove: 9, Creativity: 9, Influence: 9, Versatility: 8, Rhythm: 9, Legacy: 9}},
+{name: "Bass Player: Flabba Holt (Roots Radics - Jamaica)", attributes: {Groove: 9, Creativity: 9, Influence: 9, Versatility: 8, Rhythm: 9, Legacy: 9}},
+{name: "Bass Player: George Fully Fullwood (Soul Syndicate - Jamaica)", attributes: {Groove: 9, Creativity: 8, Influence: 9, Versatility: 8, Rhythm: 9, Legacy: 9}},
+{name: "Bass Player: Lloyd Brevett (The Skatalites - Jamaica)", attributes: {Groove: 9, Creativity: 8, Influence: 10, Versatility: 8, Rhythm: 9, Legacy: 10}},
+{name: "Bass Player: Robbie Lyn (Session Bassist - Jamaica)", attributes: {Groove: 8, Creativity: 8, Influence: 8, Versatility: 9, Rhythm: 8, Legacy: 8}},
+{name: "Bass Player: Robbie Shakespeare (Sly & Robbie - Jamaica)", attributes: {Groove: 10, Creativity: 10, Influence: 10, Versatility: 10, Rhythm: 10, Legacy: 10}},
+{name: "Bass Player: Tiago Sá (The NeoRoots Alchemist – Brazil)", attributes: {Groove: 9, Creativity: 9, Influence: 8, Versatility: 9, Rhythm: 9, Legacy: 8}},
+{name: "Drummer: Alvin Seeco Patterson (The Wailers - Jamaica)", attributes: {Groove: 8, Creativity: 8, Influence: 8, Versatility: 7, Timing: 8, Legacy: 8}},
+{name: "Drummer: Carlton Carly Barrett (The Wailers - Jamaica)", attributes: {Groove: 10, Creativity: 9, Influence: 10, Versatility: 8, Timing: 10, Legacy: 10}},
+{name: "Drummer: Carlton Santa Davis (Peter Tosh, Soul Syndicate - Jamaica)", attributes: {Groove: 9, Creativity: 8, Influence: 8, Versatility: 9, Timing: 9, Legacy: 8}},
+{name: "Drummer: Horsemouth Wallace (The Upsetters, Inner Circle - Jamaica)", attributes: {Groove: 9, Creativity: 9, Influence: 9, Versatility: 9, Timing: 9, Legacy: 9}},
+{name: "Drummer: Leroy Horsemouth Wallace (Burning Spear - Jamaica)", attributes: {Groove: 9, Creativity: 9, Influence: 8, Versatility: 8, Timing: 9, Legacy: 9}},
+{name: "Drummer: Lloyd Knibb (The Skatalites - Jamaica)", attributes: {Groove: 9, Creativity: 9, Influence: 10, Versatility: 9, Timing: 9, Legacy: 10}},
+{name: "Drummer: Santa Davis (Soul Syndicate, Peter Tosh - Jamaica)", attributes: {Groove: 9, Creativity: 8, Influence: 8, Versatility: 8, Timing: 9, Legacy: 8}},
+{name: "Drummer: Sly Dunbar (Sly & Robbie - Jamaica)", attributes: {Groove: 10, Creativity: 10, Influence: 10, Versatility: 10, Timing: 10, Legacy: 10}},
+{name: "Drummer: Style Scott (Roots Radics - Jamaica)", attributes: {Groove: 9, Creativity: 8, Influence: 9, Versatility: 8, Timing: 9, Legacy: 9}},
+{name: "Drummer: Winston Grennan (The Wailers, Toots & the Maytals - Jamaica)", attributes: {Groove: 9, Creativity: 9, Influence: 9, Versatility: 8, Timing: 9, Legacy: 9}},
+{name: "Producer: Augustus Pablo (Jamaica)", attributes: {Quality: 9, Creativity: 10, Influence: 9, "Artist Development": 8, Versatility: 9, Legacy: 9}},
+{name: "Producer: Bobby Digital (Jamaica)", attributes: {Quality: 9, Creativity: 9, Influence: 9, "Artist Development": 9, Versatility: 9, Legacy: 9}},
+{name: "Producer: Buginha Dub", attributes: {Quality: 9, Creativity: 9, Influence: 8, "Artist Development": 9, "Versatility": 9, Legacy: 8}},
+{name: "Producer: Bunny Lee (Jamaica)", attributes: {Quality: 9, Creativity: 9, Influence: 9, "Artist Development": 8, Versatility: 9, Legacy: 9}},
+{name: "Producer: Coxsone Dodd (Studio One - Jamaica)", attributes: {Quality: 9, Creativity: 9, Influence: 10, "Artist Development": 10, Versatility: 8, Legacy: 10}},
+{name: "Producer: Gussie Clarke (Jamaica)", attributes: {Quality: 9, Creativity: 8, Influence: 8, "Artist Development": 8, Versatility: 8, Legacy: 8}},
+{name: "Producer: Joe Gibbs (Jamaica)", attributes: {Quality: 9, Creativity: 9, Influence: 9, "Artist Development": 9, Versatility: 9, Legacy: 9}},
+{name: "Producer: King Tubby (Jamaica)", attributes: {Quality: 10, Creativity: 10, Influence: 10, "Artist Development": 8, Versatility: 9, Legacy: 10}},
+{name: "Producer: Lee Scratch Perry (Jamaica)", attributes: {Quality: 10, Creativity: 10, Influence: 10, "Artist Development": 9, Versatility: 10, Legacy: 10}},
+{name: "Producer: Mad Professor (UK)", attributes: {Quality: 9, Creativity: 9, Influence: 9, "Artist Development": 8, Versatility: 9, Legacy: 8}},
+{name: "Producer: Prince Jammy (Jamaica)", attributes: {Quality: 9, Creativity: 9, Influence: 9, "Artist Development": 8, Versatility: 9, Legacy: 9}},
+{name: "Producer: Sly & Robbie (Jamaica)", attributes: {Quality: 10, Creativity: 10, Influence: 10, "Artist Development": 8, Versatility: 10, Legacy: 10}},
+];
+
+const instruments = [
+{name: "Drum Kit: Ludwig Legacy Mahogany", attributes: {"Year Released": 2011, "Bass Drum Punch": 9, "Snare Crispness": 8, "Reggae Popularity": 85, Versatility: 8, Durability: 9, Description: "With its rich, warm tones and powerful Bass Drum Punch, the Ludwig Legacy Mahogany is perfect for creating that deep, resonant sound essential to roots reggae. Known for its vintage vibe and warmth."}},
+{name: "Drum Kit: Yamaha Absolute Hybrid Maple", attributes: {"Year Released": 2014, "Bass Drum Punch": 8, "Snare Crispness": 9, "Reggae Popularity": 80, Versatility: 9, Durability: 9, Description: "Combining maple and wenge woods, this kit is known for its bright snare and solid bass. The punchy sound makes it versatile enough for roots reggae as well as modern dub and dancehall."}},
+{name: "Drum Kit: Tama Silverstar", attributes: {"Year Released": 2012, "Bass Drum Punch": 7, "Snare Crispness": 9, "Reggae Popularity": 75, Versatility: 8, Durability: 9, Description: "The Tama Silverstar delivers a well-balanced sound with great clarity in the snare. Its affordability and quality make it a popular choice for reggae drummers looking for a reliable kit with great tone."}},
+{name: "Drum Kit: Pearl Masterworks", attributes: {"Year Released": 2003, "Bass Drum Punch": 10, "Snare Crispness": 9, "Reggae Popularity": 90, Versatility: 10, Durability: 10, Description: "A fully customizable kit, the Pearl Masterworks series offers deep, booming bass drums that are perfect for reggae grooves. Known for its high-end craftsmanship and durability, it’s used by top session drummers across genres, including reggae."}},
+{name: "Drum Kit: Gretsch Renown", attributes: {"Year Released": 2001, "Bass Drum Punch": 8, "Snare Crispness": 8, "Reggae Popularity": 85, Versatility: 8, Durability: 9, Description: "Gretsch kits have a long-standing tradition in reggae, and the Renown series delivers a balanced tone with warm bass and crisp snare, ideal for both roots reggae and dub performances."}},
+{name: "Drum Kit: DW Performance Series", attributes: {"Year Released": 2011, "Bass Drum Punch": 9, "Snare Crispness": 9, "Reggae Popularity": 80, Versatility: 9, Durability: 10, Description: "Known for its impeccable build and sound quality, DW's Performance Series offers a versatile setup that works well across reggae subgenres. The bass is punchy, and the snare provides a tight, clean tone."}},
+{name: "Drum Kit: Sonor AQ2", attributes: {"Year Released": 2017, "Bass Drum Punch": 8, "Snare Crispness": 7, "Reggae Popularity": 70, Versatility: 8, Durability: 9, Description: "A compact, versatile kit with strong low-end tones. The Sonor AQ2 is perfect for small gigs and studio recordings, especially in the reggae dub scene, where a clean, controlled sound is key."}},
+{name: "Drum Kit: Mapex Saturn V", attributes: {"Year Released": 2015, "Bass Drum Punch": 10, "Snare Crispness": 9, "Reggae Popularity": 85, Versatility: 9, Durability: 9, Description: "This kit is known for its deep, punchy bass drum, perfect for driving the groove in reggae tracks. The Saturn V’s walnut/maple shells provide a balanced sound, making it suitable for both live performances and studio sessions."}},
+{name: "Drum Kit: SJC Custom Drums", attributes: {"Year Released": 2000, "Bass Drum Punch": 9, "Snare Crispness": 9, "Reggae Popularity": 75, Versatility: 10, Durability: 8, Description: "Known for custom designs and unique builds, SJC kits can be tailored to a reggae drummer’s exact needs. With powerful low-end and bright snares, it’s a flexible choice for a wide range of reggae styles."}},
+{name: "Drum Kit: PDP Concept Maple", attributes: {"Year Released": 2013, "Bass Drum Punch": 8, "Snare Crispness": 8, "Reggae Popularity": 70, Versatility: 8, Durability: 8, Description: "A budget-friendly kit that still delivers a solid reggae sound, the PDP Concept Maple has a punchy bass and snappy snare, making it a great option for up-and-coming reggae drummers or those looking for a backup kit."}},
+{name: "Instrument: Fender Jazz Bass", attributes: {"Year Released": 1960, "Bass Depth": 10, "Tone Warmth": 9, "Reggae Popularity": 100, Versatility: 10, Durability: 9, Description: "The iconic bass guitar used by reggae legends like Aston Family Man Barrett of The Wailers. Known for its deep, resonant low-end and warm tone, it’s the quintessential reggae bass, perfect for both roots and dub."}},
+{name: "Instrument: Roland Space Echo RE-201", attributes: {"Year Released": 1974, "Tone Warmth": 9, "Reggae Popularity": 95, Versatility: 9, Durability: 8, Description: "A crucial tool in dub reggae, the Roland Space Echo adds those signature echo and delay effects that define the genre. Used by pioneers like Lee Scratch Perry, it's essential for crafting atmospheric soundscapes in dub."}},
+{name: "Instrument: Gibson Les Paul Studio", attributes: {"Year Released": 1983, "Bass Depth": 6, "Tone Warmth": 9, "Reggae Popularity": 85, Versatility: 9, Durability: 9, Description: "Known for its rich, warm tone and sustain, the Gibson Les Paul Studio is a favorite for reggae rhythm guitarists. Its ability to produce thick, cutting skanks (offbeat chords) makes it a reggae staple."}},
+{name: "Instrument: Fender Telecaster", attributes: {"Year Released": 1950, "Bass Depth": 6, "Tone Warmth": 8, "Reggae Popularity": 90, Versatility: 9, Durability: 10, Description: "Famous for its bright, punchy tone, the Fender Telecaster is ideal for the crisp skanking guitar rhythms in reggae. Used by artists like Peter Tosh, it's versatile enough for reggae, ska, and rocksteady."}},
+{name: "Instrument: Hohner Clavinet D6", attributes: {"Year Released": 1964, "Tone Warmth": 7, "Reggae Popularity": 85, Versatility: 8, Durability: 7, Description: "A keyboard instrument best known for its use in funk, but also embraced by reggae, particularly in dub and roots reggae. The Clavinet’s percussive sound adds a funky, sharp edge to reggae tracks."}},
+{name: "Instrument: Yamaha DX7 Synthesizer", attributes: {"Year Released": 1983, "Tone Warmth": 8, "Reggae Popularity": 75, Versatility: 9, Durability: 9, Description: "A staple of the digital age in reggae, especially in dancehall and dub. The Yamaha DX7 delivers distinctive digital sounds and bass lines that became essential in modern reggae productions."}},
+{name: "Instrument: Ampeg SVT Bass Amplifier", attributes: {"Year Released": 1969, "Bass Depth": 10, "Tone Warmth": 9, "Reggae Popularity": 95, Versatility: 8, Durability: 10, Description: "Known for its massive low-end power, the Ampeg SVT amplifier is the go-to choice for reggae bassists. Its ability to produce earth-shaking bass tones makes it essential for live performances and studio recordings."}},
+{name: "Instrument: Moog Sub Phatty Synthesizer", attributes: {"Year Released": 2013, "Bass Depth": 10, "Tone Warmth": 8, "Reggae Popularity": 80, Versatility: 9, Durability: 9, Description: "The Moog Sub Phatty brings deep, punchy bass and rich analog warmth, making it a favorite in dub reggae and electronic-infused styles. Perfect for crafting fat basslines and eerie dub effects."}},
+{name: "Instrument: Music Man StingRay Bass", attributes: {"Year Released": 1976, "Bass Depth": 9, "Tone Warmth": 9, "Reggae Popularity": 85, Versatility: 9, Durability: 9, Description: "Known for its punchy and bright tone, the StingRay is a powerful tool for reggae bassists who need clarity and attack, especially in faster styles like ska and rocksteady."}},
+{name: "Instrument: Korg Kaoss Pad KP3", attributes: {"Year Released": 2006, "Tone Warmth": 7, "Reggae Popularity": 75, Versatility: 10, Durability: 8, Description: "A multi-effects processor that has become a crucial tool in modern dub reggae, the Kaoss Pad allows for real-time manipulation of sounds, adding layers of delay, reverb, and filtering for a futuristic dub vibe."}},
+{name: "Instrument: Melodica", attributes: {"Year Released": 1950, "Bass Depth": 5, "Tone Warmth": 8, "Reggae Popularity": 90, Versatility: 8, Durability: 7, Description: "Popularized by Augustus Pablo, the melodica became a signature sound in reggae, particularly in dub and roots reggae. Its haunting, melodic tones add a unique texture to any track."}} 
+   ];
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playersCheckbox').checked) selectedCards.push(...players);
+    if (document.getElementById('instrumentsCheckbox').checked) selectedCards.push(...instruments);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  document.getElementById('shuffleRulesButton').addEventListener('click', function() {
+    shuffleDeck(rules, 'rulesResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+		body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

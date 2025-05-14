@@ -1,0 +1,230 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Memorize the music notes sequence</h2>
+
+  <p style="color: white;">After it finishes, select the notes in the correct order to proceed.</p>
+  <!-- Restart button -->
+  <button id="restartButton" class="round-button" style="background-color: #E4C58A;" disabled>Restart</button>
+
+  <!-- Options for sequence generation -->
+  <div>
+    <label for="sequenceLength" style="color: white;">Elements:</label>
+    <input type="number" id="sequenceLength" min="1" max="10" value="5">
+  </div>
+<br>
+  <!-- Combo for setting time to play each note -->
+  <div>
+    <label for="timeInput" style="color: white;">Time:</label>
+    <select id="timeInput">
+      <option value="1">1 second</option>
+      <option value="2">2 seconds</option>
+      <option value="3">3 seconds</option>
+    </select>
+  </div>
+
+  <!-- Sequence display -->
+  <h3 id="sequenceDisplay" style="font-size: 24px;"></h3>
+
+  <!-- User's selection area for musical notes -->
+  <div>
+    <label style="color: white;">Your Note Selection:</label>
+    <div id="noteButtons" style="margin-bottom: 10px;">
+      <button class="note-button" data-note="C">C</button>
+      <button class="note-button" data-note="D">D</button>
+      <button class="note-button" data-note="E">E</button>
+      <button class="note-button" data-note="F">F</button>
+      <button class="note-button" data-note="G">G</button>
+      <button class="note-button" data-note="A">A</button>
+      <button class="note-button" data-note="B">B</button>
+    </div>
+    <div id="userNoteInput" style="display: flex; justify-content: center; margin-bottom: 10px;"></div>
+    <button id="submitButton" class="round-button" disabled>Submit</button>
+  </div>
+
+  <!-- Game messages -->
+  <p id="gameMessage"></p>
+
+
+</div>
+
+<script>
+  const notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+  let sequence = [];
+  let currentRound = 1;
+  let displayTime = 1;
+  let gameActive = false;
+  let userSelection = [];
+
+  // Function to play a note sound
+  function playNoteSound(note) {
+    const audio = new Audio(`https://pianosounds.s3.amazonaws.com/${note}.mp3`);
+    audio.play();
+  }
+
+// Função para gerar uma sequência de notas musicais aleatórias sem repetições consecutivas
+function generateRandomNoteSequence(length) {
+  let result = [];
+  for (let i = 0; i < length; i++) {
+    let newNote;
+    do {
+      newNote = notes[Math.floor(Math.random() * notes.length)];
+    } while (i > 0 && newNote === result[i - 1]); // Verifica se a nota é igual à anterior
+    result.push(newNote);
+  }
+  return result;
+}
+
+
+  // Function to start the next round
+  function startNextRound() {
+    if (currentRound <= sequence.length) {
+      userSelection = [];
+      document.getElementById('userNoteInput').innerHTML = '';
+      document.getElementById('submitButton').disabled = true;
+
+      let noteIndex = 0;
+      const playSequence = setInterval(() => {
+        if (noteIndex < currentRound) {
+          const note = sequence[noteIndex];
+          playNoteSound(note);
+          document.getElementById('sequenceDisplay').textContent = note;
+          noteIndex++;
+        } else {
+          document.getElementById('sequenceDisplay').textContent = '';
+          clearInterval(playSequence);
+          document.getElementById('submitButton').disabled = false;
+        }
+      }, displayTime * 1000);
+    } else {
+      // Player has completed the sequence
+      document.getElementById('gameMessage').textContent = 'Congratulations! You have completed the sequence!';
+      endGame();
+    }
+  }
+
+  // Function to handle user's note selection
+  function handleNoteSelection(note) {
+    const userNoteInput = document.getElementById('userNoteInput');
+
+    if (userSelection.length < currentRound) {
+      userSelection.push(note);
+      const noteDiv = document.createElement('div');
+      noteDiv.textContent = note;
+      noteDiv.style.margin = '5px';
+      userNoteInput.appendChild(noteDiv);
+
+      // Enable the submit button if the selection is complete
+      if (userSelection.length === currentRound) {
+        document.getElementById('submitButton').disabled = false;
+      }
+    }
+  }
+
+  // Function to handle player's input and check the sequence
+  function handleSubmit() {
+    if (userSelection.join('') === sequence.slice(0, currentRound).join('')) {
+      currentRound++;
+      startNextRound();
+    } else {
+      document.getElementById('gameMessage').textContent = 'Game Over! You selected the wrong sequence.';
+      endGame();
+    }
+  }
+
+  // Function to start the game
+  function startGame() {
+    const length = parseInt(document.getElementById('sequenceLength').value);
+    sequence = generateRandomNoteSequence(length);
+    currentRound = 1;
+    gameActive = true;
+    document.getElementById('gameMessage').textContent = '';
+    document.getElementById('restartButton').disabled = false;
+    startNextRound();
+  }
+
+  // Function to end the game
+  function endGame() {
+    gameActive = false;
+    document.getElementById('submitButton').disabled = true;
+  }
+
+  // Function to restart the game
+  function restartGame() {
+    startGame();
+  }
+
+  // Event listeners for note buttons
+  document.querySelectorAll('.note-button').forEach(button => {
+    button.addEventListener('click', function () {
+      if (gameActive) {
+        handleNoteSelection(this.getAttribute('data-note'));
+      }
+    });
+  });
+
+  // Event listeners for submit and restart buttons
+  document.getElementById('submitButton').addEventListener('click', handleSubmit);
+  document.getElementById('restartButton').addEventListener('click', restartGame);
+  document.getElementById('timeInput').addEventListener('change', function () {
+    displayTime = parseInt(this.value);
+  });
+
+  // Initialize the game
+  startGame();
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .note-button {
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    margin: 5px;
+    cursor: pointer;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    line-height: 50px;
+  }
+
+  #sequenceDisplay {
+    font-size: 24px;
+    margin: 10px auto;
+  }
+
+  #userNoteInput > div {
+    display: inline-block;
+  }
+    #gameMessage {
+    font-weight: bold;
+    color: white;
+  }
+
+  #userNoteInput {
+    font-weight: bold;
+    color: white;
+  }
+
+  #sequenceDisplay {
+    font-weight: bold;
+    color: white;
+  }
+</style>

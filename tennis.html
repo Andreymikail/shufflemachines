@@ -1,0 +1,247 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Tennis</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="playmCheckbox"> Player M</label><br>
+    <label><input type="checkbox" id="playfCheckbox"> Player F</label><br>
+    <label><input type="checkbox" id="courtCheckbox"> Court</label><br>
+    <label><input type="checkbox" id="tournCheckbox"> Tournament</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Break Point!Choose an opponent's player and deduct 2 points from their Mental Toughness category.",
+"Ace Bomb! Choose a serve-based category (e.g. Fastest Serve) and increase your player's score by +3 points for this round.",
+"Long Rally! Swap Mental Toughness for Top Spin Mastery for one of your players for this round.",
+"Surface Change! Choose a new court type and change your strategy.",
+"Crowd Distraction! Deduct 2 points from your opponent's Mental Toughness for one round.",
+"Medical Timeout! Choose one of your players and make them immune to any penalty for one round.",
+"Super Tiebreak! If the players are tied, an extra duel will take place in a randomly selected category.",
+"Underdog Mode! If your player has fewer Grand Slams than your opponent, they will receive +3 Mental Toughness points for this round.",
+"Rain Delay! Skips this round and the players will replay the last match.",
+"Double Fault! Your opponent automatically loses the round if they selected the Fastest Serve category."];
+  
+const playm = [
+    {name: "Alexander Zverev (Germany)", attributes: {"Grand Slam Titles": 0, "ATP Titles": "20+", "Career Win %": "~70%", "Fastest Serve": "235 km/h", "Top Spin Mastery": 86, "Mental Toughness": 90}},
+{name: "Andre Agassi (USA)", attributes: {"Grand Slam Titles": 8, "ATP Titles": 60, "Career Win %": "76%", "Fastest Serve": "215 km/h", "Top Spin Mastery": 94, "Mental Toughness": 90}},
+{name: "Andrey Rublev (Russia)", attributes: {"Grand Slam Titles": 0, "ATP Titles": "15+", "Career Win %": "~69%", "Fastest Serve": "225 km/h", "Top Spin Mastery": 85, "Mental Toughness": 88}},
+{name: "Andy Murray (UK)", attributes: {"Grand Slam Titles": 3, "ATP Titles": 46, "Career Win %": "75.2%", "Fastest Serve": "225 km/h", "Top Spin Mastery": 89, "Mental Toughness": 96}},
+{name: "Björn Borg (Sweden)", attributes: {"Grand Slam Titles": 11, "ATP Titles": 64, "Career Win %": "82.4%", "Fastest Serve": "200 km/h", "Top Spin Mastery": 92, "Mental Toughness": 100}},
+{name: "Boris Becker (Germany)", attributes: {"Grand Slam Titles": 6, "ATP Titles": 49, "Career Win %": "76.9%", "Fastest Serve": "220 km/h", "Top Spin Mastery": 86, "Mental Toughness": 94}},
+{name: "Carlos Alcaraz (Spain)", attributes: {"Grand Slam Titles": 2, "ATP Titles": "12+", "Career Win %": "~77%", "Fastest Serve": "225 km/h", "Top Spin Mastery": 92, "Mental Toughness": 90}},
+{name: "Carlos Alcaraz (Spain)", attributes: {"Grand Slam Titles": 2, "ATP Titles": "12+", "Career Win %": "~77%", "Fastest Serve": "225 km/h", "Top Spin Mastery": 92, "Mental Toughness": 90}},
+{name: "Daniil Medvedev (Russia)", attributes: {"Grand Slam Titles": 1, "ATP Titles": "20+", "Career Win %": "~75%", "Fastest Serve": "230 km/h", "Top Spin Mastery": 85, "Mental Toughness": 94}},
+{name: "Edward Winter", attributes: {"Grand Slam Titles": 0, "ATP Titles": "1 ITF", "Career Win %": "66% (Juniors)", "Fastest Serve": "N/A", "Top Spin Mastery": 80, "Mental Toughness": 85}},
+{name: "Fernando Meligeni (Brazil)", attributes: {"Grand Slam Titles": 0, "ATP Titles": 3, "Career Win %": "~60%", "Fastest Serve": "200 km/h", "Top Spin Mastery": 88, "Mental Toughness": 95}},
+{name: "Frances Tiafoe (USA)", attributes: {"Grand Slam Titles": 0, "ATP Titles": "5+", "Career Win %": "~67%", "Fastest Serve": "230 km/h", "Top Spin Mastery": 84, "Mental Toughness": 85}},
+{name: "Goran Ivanišević (Croatia)", attributes: {"Grand Slam Titles": 1, "ATP Titles": 22, "Career Win %": "68.7%", "Fastest Serve": "235 km/h", "Top Spin Mastery": 80, "Mental Toughness": 85}},
+{name: "Guillermo Vilas (Argentina)", attributes: {"Grand Slam Titles": 4, "ATP Titles": 62, "Career Win %": "79.8%", "Fastest Serve": "195 km/h", "Top Spin Mastery": 95, "Mental Toughness": 92}},
+{name: "Gustavo Kuerten (Brazil)", attributes: {"Grand Slam Titles": 3, "ATP Titles": 20, "Career Win %": "71.3%", "Fastest Serve": "210 km/h", "Top Spin Mastery": 95, "Mental Toughness": 94}},
+{name: "Holger Rune (Denmark)", attributes: {"Grand Slam Titles": 0, "ATP Titles": "5+", "Career Win %": "~65%", "Fastest Serve": "220 km/h", "Top Spin Mastery": 87, "Mental Toughness": 85}},
+{name: "Ivan Lendl (Czechoslovakia / USA)", attributes: {"Grand Slam Titles": 8, "ATP Titles": 94, "Career Win %": "81.5%", "Fastest Serve": "215 km/h", "Top Spin Mastery": 88, "Mental Toughness": 97}},
+{name: "Jannik Sinner (Italy)", attributes: {"Grand Slam Titles": 1, "ATP Titles": "10+", "Career Win %": "~74%", "Fastest Serve": "225 km/h", "Top Spin Mastery": 90, "Mental Toughness": 88}},
+{name: "Jimmy Connors (USA)", attributes: {"Grand Slam Titles": 8, "ATP Titles": 109, "Career Win %": "81.8%", "Fastest Serve": "200 km/h", "Top Spin Mastery": 86, "Mental Toughness": 100}},
+{name: "João Fonseca (Brasil)", attributes: {"Grand Slam Titles": 0, "ATP Titles": 0, "Career Win %": "54.5%", "Fastest Serve": "215 km/h", "Top Spin Mastery": 85, "Mental Toughness": 88}},
+{name: "John McEnroe (USA)", attributes: {"Grand Slam Titles": 7, "ATP Titles": 77, "Career Win %": "81.6%", "Fastest Serve": "209 km/h", "Top Spin Mastery": 87, "Mental Toughness": 95}},
+{name: "Ken Rosewall (Australia)", attributes: {"Grand Slam Titles": 8, "ATP Titles": 133, "Career Win %": "80%", "Fastest Serve": "190 km/h", "Top Spin Mastery": 88, "Mental Toughness": 97}},
+{name: "Mats Wilander (Sweden)", attributes: {"Grand Slam Titles": 7, "ATP Titles": 33, "Career Win %": "75%", "Fastest Serve": "198 km/h", "Top Spin Mastery": 91, "Mental Toughness": 94}},
+{name: "Nick Kyrgios (Australia)", attributes: {"Grand Slam Titles": 0, "ATP Titles": 7, "Career Win %": "~65%", "Fastest Serve": "235 km/h", "Top Spin Mastery": 87, "Mental Toughness": 75}},
+{name: "Novak Djokovic (Serbia)", attributes: {"Grand Slam Titles": 24, "ATP Titles": 98, "Career Win %": "83.5%", "Fastest Serve": "219 km/h", "Top Spin Mastery": 90, "Mental Toughness": 99}},
+{name: "Patrick Rafter (Australia)", attributes: {"Grand Slam Titles": 2, "ATP Titles": 11, "Career Win %": "72%", "Fastest Serve": "220 km/h", "Top Spin Mastery": 89, "Mental Toughness": 90}},
+{name: "Pete Sampras (USA)", attributes: {"Grand Slam Titles": 14, "ATP Titles": 64, "Career Win %": "77.4%", "Fastest Serve": "225 km/h", "Top Spin Mastery": 85, "Mental Toughness": 97}},
+{name: "Rafael Nadal (Spain)", attributes: {"Grand Slam Titles": 22, "ATP Titles": 92, "Career Win %": "83.3%", "Fastest Serve": "217 km/h", "Top Spin Mastery": 100, "Mental Toughness": 100}},
+{name: "Rod Laver (Australia)", attributes: {"Grand Slam Titles": 11, "ATP Titles": "200+", "Career Win %": "78%", "Fastest Serve": "200 km/h", "Top Spin Mastery": 90, "Mental Toughness": 100}},
+{name: "Roger Federer (Switzerland)", attributes: {"Grand Slam Titles": 20, "ATP Titles": 103, "Career Win %": "82.1%", "Fastest Serve": "230 km/h", "Top Spin Mastery": 95, "Mental Toughness": 98}},
+{name: "Stan Wawrinka (Switzerland)", attributes: {"Grand Slam Titles": 3, "ATP Titles": 16, "Career Win %": "63.5%", "Fastest Serve": "232 km/h", "Top Spin Mastery": 92, "Mental Toughness": 93}},
+{name: "Stefan Edberg (Sweden)", attributes: {"Grand Slam Titles": 6, "ATP Titles": 41, "Career Win %": "74%", "Fastest Serve": "205 km/h", "Top Spin Mastery": 85, "Mental Toughness": 90}},
+  ];
+
+  const playf = [
+    {name: "Arantxa Sánchez Vicario (Spain)", attributes: {"Grand Slam Titles": 4, "WTA Titles": 29, "Career Win %": "74%", "Fastest Serve": "180 km/h", "Top Spin Mastery": 93, "Mental Toughness": 95}},
+{name: "Aryna Sabalenka (Belarus)", attributes: {"Grand Slam Titles": 2, "WTA Titles": "14+", "Career Win %": "~72%", "Fastest Serve": "202 km/h", "Top Spin Mastery": 90, "Mental Toughness": 90}},
+{name: "Beatriz Haddad Maia (Brazil)", attributes: {"Grand Slam Titles": 0, "WTA Titles": "2+", "Career Win %": "~66%", "Fastest Serve": "198 km/h", "Top Spin Mastery": 88, "Mental Toughness": 90}},
+{name: "Billie Jean King (USA)", attributes: {"Grand Slam Titles": 12, "WTA Titles": 129, "Career Win %": "81.7%", "Fastest Serve": "175 km/h", "Top Spin Mastery": 88, "Mental Toughness": 100}},
+{name: "Caroline Garcia (France)", attributes: {"Grand Slam Titles": 0, "WTA Titles": "11+", "Career Win %": "~68%", "Fastest Serve": "202 km/h", "Top Spin Mastery": 89, "Mental Toughness": 88}},
+{name: "Chris Evert (USA)", attributes: {"Grand Slam Titles": 18, "WTA Titles": 157, "Career Win %": "89.9%", "Fastest Serve": "180 km/h", "Top Spin Mastery": 88, "Mental Toughness": 99}},
+{name: "Coco Gauff (USA)", attributes: {"Grand Slam Titles": 1, "WTA Titles": "7+", "Career Win %": "~70%", "Fastest Serve": "205 km/h", "Top Spin Mastery": 91, "Mental Toughness": 87}},
+{name: "Elena Rybakina (Kazakhstan)", attributes: {"Grand Slam Titles": 1, "WTA Titles": "6+", "Career Win %": "~72%", "Fastest Serve": "210 km/h", "Top Spin Mastery": 87, "Mental Toughness": 90}},
+{name: "Evonne Goolagong Cawley (Australia)", attributes: {"Grand Slam Titles": 7, "WTA Titles": 86, "Career Win %": "81%", "Fastest Serve": "185 km/h", "Top Spin Mastery": 90, "Mental Toughness": 93}},
+{name: "Eugenie 'Genie' Bouchard (Canada)", attributes: {"Grand Slam Titles": 0, "WTA Titles": 1, "Career Win %": "57%", "Fastest Serve": "182 km/h", "Top Spin Mastery": 85, "Mental Toughness": 82}},
+{name: "Gabriela Sabatini (Argentina)", attributes: {"Grand Slam Titles": 1, "WTA Titles": 27, "Career Win %": "72%", "Fastest Serve": "185 km/h", "Top Spin Mastery": 91, "Mental Toughness": 89}},
+{name: "Iga Świątek (Poland)", attributes: {"Grand Slam Titles": "4+", "WTA Titles": "18+", "Career Win %": "~79%", "Fastest Serve": "195 km/h", "Top Spin Mastery": 92, "Mental Toughness": 92}},
+{name: "Jessica Pegula (USA)", attributes: {"Grand Slam Titles": 0, "WTA Titles": "4+", "Career Win %": "~68%", "Fastest Serve": "195 km/h", "Top Spin Mastery": 88, "Mental Toughness": 89}},
+{name: "Justine Henin (Belgium)", attributes: {"Grand Slam Titles": 7, "WTA Titles": 50, "Career Win %": "83.5%", "Fastest Serve": "185 km/h", "Top Spin Mastery": 94, "Mental Toughness": 96}},
+{name: "Kim Clijsters (Belgium)", attributes: {"Grand Slam Titles": 4, "WTA Titles": 41, "Career Win %": "78%", "Fastest Serve": "195 km/h", "Top Spin Mastery": 90, "Mental Toughness": 97}},
+{name: "Leylah Fernandez (Canada)", attributes: {"Grand Slam Titles": 0, "WTA Titles": "3+", "Career Win %": "~65%", "Fastest Serve": "190 km/h", "Top Spin Mastery": 89, "Mental Toughness": 87}},
+{name: "Lindsay Davenport (USA)", attributes: {"Grand Slam Titles": 3, "WTA Titles": 55, "Career Win %": "79%", "Fastest Serve": "202 km/h", "Top Spin Mastery": 88, "Mental Toughness": 91}},
+{name: "Margaret Court (Australia)", attributes: {"Grand Slam Titles": 24, "WTA Titles": 192, "Career Win %": "91.7%", "Fastest Serve": "180 km/h", "Top Spin Mastery": 92, "Mental Toughness": 99}},
+{name: "Maria Sakkari (Greece)", attributes: {"Grand Slam Titles": 0, "WTA Titles": "2+", "Career Win %": "~66%", "Fastest Serve": "200 km/h", "Top Spin Mastery": 89, "Mental Toughness": 90}},
+{name: "Maria Sharapova (Russia)", attributes: {"Grand Slam Titles": 5, "WTA Titles": 36, "Career Win %": "80.2%", "Fastest Serve": "206 km/h", "Top Spin Mastery": 90, "Mental Toughness": 98}},
+{name: "Markéta Vondroušová (Czech Republic)", attributes: {"Grand Slam Titles": 1, "WTA Titles": "3+", "Career Win %": "~68%", "Fastest Serve": "190 km/h", "Top Spin Mastery": 88, "Mental Toughness": 89}},
+{name: "Martina Hingis (Switzerland)", attributes: {"Grand Slam Titles": 5, "WTA Titles": 43, "Career Win %": "80.5%", "Fastest Serve": "180 km/h", "Top Spin Mastery": 92, "Mental Toughness": 91}},
+{name: "Martina Navratilova (USA / Czech Republic)", attributes: {"Grand Slam Titles": 18, "WTA Titles": 167, "Career Win %": "86.8%", "Fastest Serve": "185 km/h", "Top Spin Mastery": 90, "Mental Toughness": 100}},
+{name: "Monica Seles (USA / Serbia)", attributes: {"Grand Slam Titles": 9, "WTA Titles": 53, "Career Win %": "82%", "Fastest Serve": "190 km/h", "Top Spin Mastery": 91, "Mental Toughness": 97}},
+{name: "Ons Jabeur (Tunisia)", attributes: {"Grand Slam Titles": 0, "WTA Titles": "5+", "Career Win %": "~70%", "Fastest Serve": "195 km/h", "Top Spin Mastery": 93, "Mental Toughness": 88}},
+{name: "Serena Williams (USA)", attributes: {"Grand Slam Titles": 23, "WTA Titles": 73, "Career Win %": "84.9%", "Fastest Serve": "207 km/h", "Top Spin Mastery": 95, "Mental Toughness": 100}},
+{name: "Simona Halep (Romania)", attributes: {"Grand Slam Titles": 2, "WTA Titles": "24+", "Career Win %":" ~76%", "Fastest Serve": "190 km/h", "Top Spin Mastery": 90, "Mental Toughness": 94}},
+{name: "Steffi Graf (Germany)", attributes: {"Grand Slam Titles": 22, "WTA Titles": 107, "Career Win %": "88.7%", "Fastest Serve": "193 km/h", "Top Spin Mastery": 93, "Mental Toughness": 98}},
+{name: "Tracy Austin (USA)", attributes: {"Grand Slam Titles": 2, "WTA Titles": 30, "Career Win %": "78%", "Fastest Serve": "175 km/h", "Top Spin Mastery": 88, "Mental Toughness": 90}},
+{name: "Venus Williams (USA)", attributes: {"Grand Slam Titles": 7, "WTA Titles": 49, "Career Win %": "76.2%", "Fastest Serve": "210 km/h", "Top Spin Mastery": 88, "Mental Toughness": 95}},
+{name: "Veronika Kudermetova (Russia)", attributes: {"Grand Slam Titles": 0, "WTA Titles": "2+", "Career Win %": "~67%", "Fastest Serve": "201 km/h", "Top Spin Mastery": 87, "Mental Toughness": 87}},
+  ];
+
+const court = [
+    {name: "Court: Indian Wells (California, USA)", attributes: {"Court Type": "Hard", Speed: 75, "Ball Bounce": 70, Prestige: 85}},
+		{name: "Court: Monte Carlo Masters (Monaco)", attributes: {"Court Type": "Clay", Speed: 40, "Ball Bounce": 85, Prestige: 80}},
+		{name: "Court: Grass", attributes: {Speed: 90, "Ball Bounce": 40}},
+		{name: "Court: Clay", attributes: {Speed: 40, "Ball Bounce": 85}},
+		{name: "Court: Hard", attributes: {Speed: 75, "Ball Bounce": 70}},
+  ];
+
+const tourn = [
+    {name: "Tournament: Wimbledon (London, UK)", attributes: {"Court Type": "Grass", Speed: 85, "Ball Bounce": 40, "First Held": 1877, "Most Titles (Men)": "Roger Federer (8)", "Most Titles (Women)": "Martina Navratilova (9)", Prestige: 100}},
+{name: "Tournament: Roland Garros (Paris, France)", attributes: {"Court Type": "Clay", Speed: 40, "Ball Bounce": 85, "First Held": 1891, "Most Titles (Men)": "Rafael Nadal (14)", "Most Titles (Women)": "Chris Evert (7)", Prestige: 95}},
+{name: "Tournament: US Open (New York, USA)", attributes: {"Court Type": "Hard", Speed: 75, "Ball Bounce": 70, "First Held": 1881, "Most Titles (Men)": "Jimmy Connors, Pete Sampras, Roger Federer (5)", "Most Titles (Women)": "Serena Williams, Chris Evert (6)", Prestige: 95}},
+{name: "Tournament: Australian Open (Melbourne, Australia)", attributes: {"Court Type": "Hard", Speed: 70, "Ball Bounce": 70, "First Held": 1905, "Most Titles (Men)": "Novak Djokovic (10)", "Most Titles (Women)": "Margaret Court (11)", Prestige: 90}},
+{name: "Tournament: ATP Finals / WTA Finals", attributes: {"Court Type": "Hard (Indoor)", Speed: 80, "Ball Bounce": 70, Prestige: 90}},
+
+  ];
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playmCheckbox').checked) selectedCards.push(...playm);
+    if (document.getElementById('playfCheckbox').checked) selectedCards.push(...playf);
+    if (document.getElementById('courtCheckbox').checked) selectedCards.push(...court);
+    if (document.getElementById('tournCheckbox').checked) selectedCards.push(...tourn);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

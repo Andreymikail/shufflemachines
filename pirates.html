@@ -1,0 +1,258 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Pirates</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+  <!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="crewCheckbox"> Crew</label><br>
+    <label><input type="checkbox" id="captainsCheckbox"> Captains</label><br> <!-- Corrigido id -->
+    <label><input type="checkbox" id="shipsCheckbox"> Ships</label><br>
+    <label><input type="checkbox" id="technologiesCheckbox"> Technologies</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  <!-- Action and Rules Section -->
+  <div style="margin-top: 20px;">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div style="margin-bottom: 20px;">
+        <h3>Action</h3>
+        <p id="actionResult" style="color: white;">-</p>
+        <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+    "Treacherous Storm: Lose 2 turns. A deadly storm forces you to halt your journey while you repair your ship.",
+"Mutiny on Board: Lose 5 points of Charisma for the next round.The loyalty of your crew is in question. It’s time to prove your leadership or risk losing your ship.",
+"Cursed Treasure: Gain 10 points in Strength, but lose 3 points in Endurance for the next 3 rounds. Riches beyond imagination are yours, but at what cost? The curse weakens your crew as they carry the gold.",
+"Marooned on a Desert Island: Skip 1 turn. Stranded and alone, you must survive until rescue arrives.",
+"Kraken Attack: Lose 3 points in Durability and Strength for the next round. The Kraken strikes! Only the strongest ships survive its wrath, but your vessel has taken heavy damage.",
+"Sunken Treasure: Gain 5 points in Cunning and 3 points in Charisma for the next 2 rounds. The glitter of gold fills your coffers, boosting your crew’s morale and increasing your influence.",
+"Captured Merchant Ship: Gain 5 points in Strength and Durability for the next round. Fresh supplies and riches strengthen your crew, making your ship ready for the next battle.",
+"Buried Treasure Map: Skip a Challenge and gain 5 points in Cunning. This ancient map guides you past danger, allowing you to dodge a critical challenge.",
+"Legendary Pirate Alliance: Gain 5 points in Charisma and Strength for the next 3 rounds. With more pirates at your side, your power and influence grow. Together, you’re unstoppable.",
+"Hidden Cove: Restore 10 points of Durability. A hidden refuge allows you to repair your ship and regain your strength before heading back into battle.",
+"Royal Navy Pursuit: Lose 5 points in Speed for the next 2 rounds. The fastest ships have a chance to escape, but slower vessels will feel the Navy's wrath.",
+"Shipwreck: Lose 10 points in Durability. Your ship takes heavy damage, and it may not survive another confrontation without repairs.",
+"Pirate Hunter Ambush: Lose 5 points in Strength and Speed for the next round. This ambush leaves your crew in disarray, struggling to regain control of the ship.",
+"Crew Plague Outbreak: Lose 3 points in Endurance for the next 3 rounds. Your crew is weakened by sickness, making it harder to survive upcoming battles.",
+"Sirens' Song: Lose 5 points in Cunning for the next round. The sirens’ bewitching songs dull your senses, leading you into danger.",
+"Friendly Island Port: Gain 5 points in Durability and Charisma for the next 2 rounds. A safe haven where you can rest, repair, and enjoy the spoils of your latest raid.",
+"Captured Naval Officer: Gain 5 points in Cunning and 5 points in Endurance for the next 2 rounds. With strategic insights, you outsmart your enemies and strengthen your position.",
+"Map to the Fountain of Youth: Gain 10 points in Endurance. Restored vitality courses through your veins, making you and your crew nearly invincible.",
+"Merchant Ship Fleet Captured: Gain 10 points in Wealth (use for custom game rules). A massive windfall of riches from a successful raid, increasing your wealth and influence.",
+"Hidden Pirate Stronghold: Gain 5 points in Strength and 5 points in Durability for the next round. In this secret base, your ship is reinforced, and your crew is prepared for future challenges.",
+"Pirate Betrayal: Lose 5 points in Charisma for the next 2 rounds. The betrayal shakes the crew’s loyalty, making it harder to lead effectively.",
+"Dead Man’s Curse: Lose 5 points in Cunning for the next 3 rounds. The curse clouds your mind, making it difficult to outsmart your foes.",
+"Cannon Malfunction: Lose 5 points in Strength and 3 points in Durability for the next round. With fewer cannons to defend yourself, your firepower is weakened.",
+"Shark-Infested Waters: Lose 3 points in Speed for the next 2 rounds. The lurking predators force your ship to move cautiously, slowing you down.",
+"Rival Pirate Attack: Lose 5 points in Strength for the next round. The attack leaves your crew exhausted and your ship battered, making the next challenge even harder.",
+"Buried Treasure Found: Gain 10 points in Wealth (use for custom game rules). A pirate’s dream come true, increasing your wealth and ability to hire a stronger crew.",
+"Rescue by a Merchant Fleet: Gain 5 points in Durability and Speed for the next 2 rounds. New supplies and upgraded sails make your ship faster and sturdier.",
+"Captured Pirate Ship: Gain 5 points in Strength and Durability for the next 3 rounds. The capture of this ship adds firepower and resilience to your crew, boosting morale.",
+"Ancient Sea Chart: Gain 5 points in Cunning for the next round. With new knowledge of the seas, you can plot courses no other pirate dares to take.",
+"Heroic Crew Rescue: Gain 5 points in Charisma and 3 points in Endurance for the next round. Your heroic actions earn respect and admiration, boosting your leadership and crew’s spirit."  ];
+
+  const crew = [
+  {name: "Crew: Veteran Deckhand", attributes: {Strength: 7, Cunning: 4, Speed: 6, Charisma: 3, Endurance: 8, Description: "A tough and seasoned sailor, always ready for battle or a storm."}},
+{name: "Crew: Gunner with the Iron Hand", attributes: {Strength: 8, Cunning: 5, Speed: 4, Charisma: 2, Endurance: 9, Description: "Lost his hand in a fight, replaced it with iron. A fearsome sight on the cannon deck."}},
+{name: "Crew: One-Eyed Navigator", attributes: {Strength: 4, Cunning: 9, Speed: 5, Charisma: 6, Endurance: 6, Description: "Can chart a course through the most dangerous waters with just one eye."}},
+{name: "Crew: Siren-Whispering Sailor", attributes: {Strength: 3, Cunning: 8, Speed: 5, Charisma: 7, Endurance: 5, Description: "Claims to hear the voices of sirens, guiding the crew away from danger."}},
+{name: "Crew: Cannibal Cook", attributes: {Strength: 5, Cunning: 7, Speed: 3, Charisma: 3, Endurance: 10, Description: "Rumored to have acquired his exotic culinary skills in distant lands."}},
+{name: "Crew: Powder Monkey", attributes: {Strength: 4, Cunning: 6, Speed: 9, Charisma: 4, Endurance: 7, Description: "A young and nimble crew member responsible for carrying gunpowder to the cannons."}},
+{name: "Crew: Cursed Quartermaster", attributes: {Strength: 6, Cunning: 8, Speed: 5, Charisma: 3, Endurance: 9, Description: "Mysteriously cursed, he controls the ship's loot with an iron fist."}},
+{name: "Crew: Singing Sailor", attributes: {Strength: 3, Cunning: 6, Speed: 4, Charisma: 10, Endurance: 5, Description: "His sea shanties lift the crew's spirits during the darkest of nights."}},
+{name: "Crew: Voodoo Priestess", attributes: {Strength: 4, Cunning: 10, Speed: 6, Charisma: 8, Endurance: 6, Description: "Calls upon dark powers to protect the crew—or curse their enemies."}},
+{name: "Crew: Fearless Boatswain", attributes: {Strength: 9, Cunning: 5, Speed: 7, Charisma: 4, Endurance: 10, Description: "Tough and loud, he keeps the crew in line and the ship in working order."}},
+{name: "Crew: Treasure Hunter", attributes: {Strength: 5, Cunning: 9, Speed: 6, Charisma: 7, Endurance: 6, Description: "With a nose for hidden riches, this pirate always seems to know where the gold is buried."}},
+{name: "Crew: Mute Assassin", attributes: {Strength: 7, Cunning: 8, Speed: 8, Charisma: 2, Endurance: 7, Description: "Silent and deadly, he never speaks, but his blade does the talking."}},
+{name: "Crew: Drunken Helmsman", attributes: {Strength: 6, Cunning: 4, Speed: 4, Charisma: 5, Endurance: 9, Description: "Always with a bottle in hand, but somehow manages to steer the ship through the wildest storms."}},
+{name: "Crew: Exiled Nobleman", attributes: {Strength: 5, Cunning: 8, Speed: 6, Charisma: 9, Endurance: 4, Description: "Once rich and powerful, now forced to live a pirate's life—but his charm is hard to resist."}},
+{name: "Crew: Whaler with Harpoon", attributes: {Strength: 8, Cunning: 6, Speed: 5, Charisma: 3, Endurance: 9, Description: "A mighty harpooner, with skills honed from years of hunting the seas' greatest beasts."}},
+{name: "Crew: Ship Surgeon", attributes: {Strength: 4, Cunning: 7, Speed: 5, Charisma: 6, Endurance: 8, Description: "With crude tools and a steady hand, he keeps the crew patched up and ready for battle."}},
+{name: "Crew: Crimson Corsair", attributes: {Strength: 9, Cunning: 6, Speed: 7, Charisma: 4, Endurance: 10, Description: "Known for his blood-red attire and his fierce combat skills, he leads boarding parties into the heart of the fight."}},
+{name: "Crew: Wily Smuggler", attributes: {Strength: 6, Cunning: 9, Speed: 8, Charisma: 5, Endurance: 7, Description: "Able to slip through the tightest blockades, this pirate is a master of getting contraband past any enemy."}},
+{name: "Crew: Deck Swabber", attributes: {Strength: 4, Cunning: 5, Speed: 6, Charisma: 2, Endurance: 8, Description: "The lowest rank on the ship, but essential to keeping it clean and seaworthy—never underestimate the swabber."}},
+{name: "Crew: Storm Whisperer", attributes: {Strength: 5, Cunning: 10, Speed: 7, Charisma: 6, Endurance: 5, Description: "Claims to be able to predict and even control storms. Some think it’s magic, others pure luck."}},
+{name: "Crew: Master Carpenter", attributes: {Strength: 7, Cunning: 6, Speed: 4, Charisma: 3, Endurance: 9, Description: "With quick hands and sharp tools, he can repair the ship even during battle."}},
+{name: "Crew: Ghostly Lookout", attributes: {Strength: 3, Cunning: 9, Speed: 7, Charisma: 4, Endurance: 6, Description: "Rumor has it he never sleeps, always watching the horizon—even on the darkest nights."}},
+{name: "Crew: Dueling Master", attributes: {Strength: 8, Cunning: 7, Speed: 9, Charisma: 5, Endurance: 7, Description: "Skilled with both sword and pistol, he never loses a fight—whether it’s for honor or treasure."}},
+{name: "Crew: Sea Witch", attributes: {Strength: 5, Cunning: 10, Speed: 5, Charisma: 6, Endurance: 7, Description: "Said to possess dark magic, able to summon the seas to aid the ship or curse its enemies."}},
+{name: "Crew: Chain Gang Survivor", attributes: {Strength: 9, Cunning: 4, Speed: 6, Charisma: 3, Endurance: 10, Description: "Freed from a life of imprisonment, his raw strength and determination make him a force to be reckoned with."}},
+{name: "Crew: Blind Fortune Teller", attributes: {Strength: 2, Cunning: 10, Speed: 3, Charisma: 7, Endurance: 6, Description: "Despite his blindness, he can see the future and guide the captain towards victory or wealth."}},
+{name: "Crew: Scarred Veteran", attributes: {Strength: 8, Cunning: 5, Speed: 5, Charisma: 4, Endurance: 9, Description: "Covered in battle scars, this old pirate has survived countless fights and will keep fighting to his last breath."}},
+{name: "Crew: Keg Carrier", attributes: {Strength: 6, Cunning: 4, Speed: 5, Charisma: 3, Endurance: 8, Description: "Always carrying barrels of rum and gunpowder, he’s crucial during combat and celebrations alike."}},
+{name: "Crew: Serpent Tamer", attributes: {Strength: 5, Cunning: 9, Speed: 6, Charisma: 8, Endurance: 6, Description: "Raised with dangerous creatures, he can charm the fiercest beasts to fight by his side."}},
+{name: "Crew: Infiltrator Spy", attributes: {Strength: 4, Cunning: 10, Speed: 8, Charisma: 6, Endurance: 5, Description: "Posing as an enemy sailor, he gathers valuable intelligence, sabotaging rival ships from within."}} ];
+
+  const captains = [
+    {name: "Captain: Blackbeard Edward Teach", attributes: {Strength: 10, Cunning: 8, Speed: 6, Charisma: 9, Endurance: 9, Description: "The most feared pirate of all time, his fiery beard and terrifying presence strike fear into the hearts of his enemies."}},
+{name: "Captain: Anne Bonny", attributes: {Strength: 7, Cunning: 9, Speed: 8, Charisma: 10, Endurance: 7, Description: "A fierce and charismatic leader, known for her sharp mind and quick blade, commanding respect from even the roughest crews."}},
+{name: "Captain: Henry Long Ben Avery", attributes: {Strength: 8, Cunning: 10, Speed: 7, Charisma: 6, Endurance: 8, Description: "One of the few pirates who retired rich and undefeated, his cunning was unmatched on the high seas."}},
+{name: "Captain: Calico Jack Rackham", attributes: {Strength: 6, Cunning: 8, Speed: 7, Charisma: 9, Endurance: 6, Description: "Known for his flamboyant style and love of adventure, he was notorious for sailing with two of the most famous female pirates."}},
+{name: "Captain: Charles Vane", attributes: {Strength: 9, Cunning: 7, Speed: 6, Charisma: 5, Endurance: 10, Description: "A ruthless and brutal pirate, feared for his relentless attacks and his ability to survive the harshest battles."}},
+{name: "Captain: Mary Read", attributes: {Strength: 8, Cunning: 9, Speed: 8, Charisma: 9, Endurance: 7, Description: "Disguised as a man for much of her pirate career, she was as fearless and skilled as any captain on the seas."}},
+{name: "Captain: Samuel Bellamy", attributes: {Strength: 8, Cunning: 8, Speed: 7, Charisma: 10, Endurance: 6, Description: "The Prince of Pirates, known for his gentlemanly conduct and treating his crew fairly, but ruthless when it came to plundering."}},
+{name: "Captain: François l'Olonnais", attributes: {Strength: 9, Cunning: 6, Speed: 6, Charisma: 4, Endurance: 9, Description: "One of the cruelest pirates to sail the Caribbean, his thirst for blood and treasure was legendary."}},
+{name: "Captain: Stede Bonnet", attributes: {Strength: 5, Cunning: 7, Speed: 6, Charisma: 8, Endurance: 6, Description: "The Gentleman Pirate, a former landowner who turned to piracy, his charm and intelligence made him an unusual but notable captain."}},
+{name: "Captain: Bartholomew Roberts (Black Bart)", attributes: {Strength: 9, Cunning: 9, Speed: 8, Charisma: 7, Endurance: 10, Description: "One of the most successful pirates of all time, capturing hundreds of ships and amassing vast wealth with a strategic mind and iron will."}}
+  ];
+
+const ships = [
+    {name: "Ships: Black Pearl", attributes: {Strength: 9, Cunning: 8, Speed: 10, Charisma: 9, Durability: 9, Description: "A legendary ship known for its unmatched speed and ability to appear out of nowhere, captained by the infamous Jack Sparrow."}},
+{name: "Ships: Queen Anne's Revenge", attributes: {Strength: 10, Cunning: 7, Speed: 7, Charisma: 8, Durability: 10, Description: "Once the flagship of Blackbeard, this heavily armed vessel was feared by all, with its terrifying figurehead and vast firepower."}},
+{name: "Ships: The Flying Dutchman", attributes: {Strength: 9, Cunning: 10, Speed: 5, Charisma: 10, Durability: 10, Description: "A ghost ship cursed to sail forever, it can appear and disappear at will, striking fear into the hearts of those who see it."}},
+{name: "Ships: Royal Fortune", attributes: {Strength: 8, Cunning: 9, Speed: 7, Charisma: 8, Durability: 9, Description: "The flagship of Bartholomew Roberts, known for capturing over 400 ships. Fast and well-armed, it was a force to be reckoned with."}},
+{name: "Ships: The Revenge", attributes: {Strength: 6, Cunning: 8, Speed: 8, Charisma: 6, Durability: 7, Description: "Stede Bonnet’s ship, elegant but not the most powerful, relied on cunning and surprise rather than brute force."}},
+{name: "Ships: Adventure Galley", attributes: {Strength: 9, Cunning: 7, Speed: 6, Charisma: 7, Durability: 9, Description: "Captain William Kidd's hybrid ship, equipped with both sails and oars, allowing it to chase down even the fastest vessels."}},
+{name: "Ships: La Concorde", attributes: {Strength: 7, Cunning: 8, Speed: 7, Charisma: 5, Durability: 8, Description: "Originally a French slave ship, it was captured by Blackbeard and became the infamous Queen Anne’s Revenge."}},
+{name: "Ships: Sea Serpent", attributes: {Strength: 8, Cunning: 7, Speed: 9, Charisma: 6, Durability: 7, Description: "A swift and agile ship, it earned its name by outrunning and outmaneuvering larger ships with its serpentine grace."}},
+{name: "Ships: Whydah Gally", attributes: {Strength: 8, Cunning: 9, Speed: 8, Charisma: 8, Durability: 7, Description: "A former slave ship turned pirate vessel, captained by Samuel Bellamy. Known for being loaded with treasure when it sank."}},
+{name: "Ships: The Fancy", attributes: {Strength: 9, Cunning: 9, Speed: 8, Charisma: 7, Durability: 8, Description: "Henry Avery’s flagship, famous for its speed and success in capturing some of the richest prizes ever taken by pirates."}}
+  ];
+
+const technologies = [
+    {name: "Technology: Flintlock Pistol", attributes: {Strength: 6, Cunning: 7, Speed: 8, Charisma: 5, Durability: 6, Description: "A classic pirate weapon, reliable at short range but slow to reload. Perfect for quick duels."}},
+{name: "Technology: Cutlass", attributes: {Strength: 7, Cunning: 5, Speed: 9, Charisma: 6, Durability: 8, Description: "The quintessential pirate sword, lightweight and easy to swing, perfect for boarding enemy ships."}},
+{name: "Technology: Cannon", attributes: {Strength: 10, Cunning: 5, Speed: 3, Charisma: 4, Durability: 9, Description: "The most powerful weapon on a pirate ship, capable of blowing holes in enemy vessels but slow to load and fire."}},
+{name: "Technology: Grappling Hook", attributes: {Strength: 5, Cunning: 8, Speed: 7, Charisma: 4, Durability: 6, Description: "Used to latch onto enemy ships, allowing pirates to board them quickly and efficiently."}},
+{name: "Technology: Spyglass", attributes: {Strength: 3, Cunning: 10, Speed: 5, Charisma: 5, Durability: 7, Description: "An essential tool for spotting enemy ships from a distance and plotting strategic courses."}},
+{name: "Technology: Powder Keg", attributes: {Strength: 9, Cunning: 6, Speed: 4, Charisma: 3, Durability: 7, Description: "Highly explosive and dangerous, these kegs can destroy entire sections of a ship when detonated."}},
+{name: "Technology: Boarding Axe", attributes: {Strength: 8, Cunning: 6, Speed: 7, Charisma: 5, Durability: 8, Description: "A dual-purpose weapon used for both fighting and cutting ropes during boarding actions."}},
+{name: "Technology: Voodoo Doll", attributes: {Strength: 4, Cunning: 10, Speed: 6, Charisma: 8, Durability: 5, Description: "Said to bring misfortune or curses upon enemies, this mystical item strikes fear into superstitious sailors."}},
+{name: "Technology: Armored Hull", attributes: {Strength: 9, Cunning: 7, Speed: 3, Charisma: 4, Durability: 10, Description: "Reinforced plating used to protect pirate ships from cannon fire, making them harder to sink."}},
+{name: "Technology: Swivel Gun", attributes: {Strength: 8, Cunning: 6, Speed: 8, Charisma: 5, Durability: 7, Description: "A small, quick-firing cannon mounted on the side of ships, perfect for fending off boarding parties."}},
+{name: "Technology: Blunderbuss", attributes: {Strength: 8, Cunning: 6, Speed: 4, Charisma: 7, Durability: 6, Description: "A wide-mouthed firearm that can fire shrapnel, making it deadly at close range. Highly intimidating but slow to reload."}},
+{name: "Technology: Fire Ship", attributes: {Strength: 9, Cunning: 8, Speed: 3, Charisma: 5, Durability: 4, Description: "An old or damaged ship set on fire and sent towards enemy fleets to cause chaos and destruction."}},
+{name: "Technology: Chain Shot", attributes: {Strength: 8, Cunning: 7, Speed: 5, Charisma: 4, Durability: 7, Description: "A devastating type of ammunition designed to tear through sails and rigging, slowing down enemy ships and making them easy targets."}},
+{name: "Technology: Sabre", attributes: {Strength: 7, Cunning: 6, Speed: 8, Charisma: 6, Durability: 8, Description: "A curved, lightweight sword used in duels and boarding actions, prized for its agility and cutting power."}},
+{name: "Technology: Hand Grenade", attributes: {Strength: 9, Cunning: 6, Speed: 5, Charisma: 4, Durability: 5, Description: "A crude but effective explosive, perfect for throwing into groups of enemies or onto decks of ships."}},
+{name: "Technology: Ironclad Ram", attributes: {Strength: 10, Cunning: 5, Speed: 4, Charisma: 5, Durability: 9, Description: "A reinforced prow used to smash into enemy ships, devastating them with sheer force and crushing power."}},
+{name: "Technology: Enchanted Compass", attributes: {Strength: 3, Cunning: 10, Speed: 6, Charisma: 8, Durability: 6, Description: "Said to always point to what the captain desires most, this magical compass gives pirates an edge in navigating to treasure or escaping danger."}},
+{name: "Technology: Boomerang Harpoon", attributes: {Strength: 7, Cunning: 8, Speed: 7, Charisma: 6, Durability: 7, Description: "A unique harpoon that can return to its thrower, used to catch sea creatures or tangle enemies in surprise attacks."}},
+{name: "Technology: Double-Barrel Pistol", attributes: {Strength: 8, Cunning: 7, Speed: 7, Charisma: 6, Durability: 6, Description: "A rare and powerful pistol capable of firing two shots in quick succession, making it lethal in close quarters."}},
+{name: "Technology: Diving Bell", attributes: {Strength: 4, Cunning: 9, Speed: 4, Charisma: 5, Durability: 8, Description: "A large bell used for underwater exploration and salvaging sunken treasure, allowing pirates to reach the depths and recover hidden riches."}}
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('crewCheckbox').checked) selectedCards.push(...crew);
+    if (document.getElementById('captainsCheckbox').checked) selectedCards.push(...captains);
+    if (document.getElementById('shipsCheckbox').checked) selectedCards.push(...ships);
+    if (document.getElementById('technologiesCheckbox').checked) selectedCards.push(...technologies);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

@@ -1,0 +1,439 @@
+<!-- HTML Structure -->
+<button id="shuffleButton" class="round-button">Shuffle</button>
+<br>
+<div id="wordSection" class="page"></div>
+
+<!-- Hints Section -->
+<div id="hintsSection" class="page">
+  <h3>Hints</h3>
+  <div id="hint1Section">
+    <button id="toggleHint1Button" class="toggle-button">Show Hint 1</button>
+    <p id="hint1" class="hint-text" style="display: none;"></p>
+  </div>
+  <br>
+  <div id="hint2Section">
+    <button id="toggleHint2Button" class="toggle-button">Show Hint 2</button>
+    <p id="hint2" class="hint-text" style="display: none;"></p>
+  </div>
+  <br>
+  <div id="hint3Section">
+    <button id="toggleHint3Button" class="toggle-button">Show Hint 3</button>
+    <p id="hint3" class="hint-text" style="display: none;"></p>
+  </div>
+</div>
+<br>
+<!-- Letter Guess Section -->
+<div id="guessSection" class="page">
+  <h3>Guess a Letter</h3>
+  <input type="text" id="letterInput" maxlength="1">
+  <button id="guessButton" class="toggle-button">Guess</button>
+  <p id="guessResult"></p>
+</div>
+
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Array of words with hints
+    const words = [
+  {
+    "word": "cryptogram",
+    "hints": ["It's a type of puzzle.", "Involves codes.", "Used in ciphers."]
+  },
+  {
+    "word": "adventure",
+    "hints": ["Often involves exploration.", "Can be exciting or dangerous.", "A popular genre in games and movies."]
+  },
+  {
+    "word": "pendulum",
+    "hints": ["Used in clocks.", "Swings back and forth.", "Demonstrates the concept of time."]
+  },
+  {
+    "word": "algorithm",
+    "hints": ["A step-by-step procedure.", "Common in computer science.", "Used in problem-solving."]
+  },
+  {
+    "word": "hologram",
+    "hints": ["It's a 3D image.", "Often seen in sci-fi.", "Uses light diffraction."]
+  },
+  {
+    "word": "jigsaw",
+    "hints": ["A type of puzzle.", "Pieces fit together.", "Often forms a picture."]
+  },
+  {
+    "word": "labyrinth",
+    "hints": ["A complex maze.", "Often associated with Greek mythology.", "Can be hard to navigate."]
+  },
+  {
+    "word": "marathon",
+    "hints": ["A long-distance race.", "26.2 miles or 42.195 kilometers.", "Named after a historic battle."]
+  },
+  {
+    "word": "vampires",
+    "hints": ["Legendary creatures.", "Known for drinking blood.", "Weakness includes sunlight."]
+  },
+  {
+    "word": "alchemy",
+    "hints": ["Ancient practice.", "Related to transforming metals.", "Predecessor to chemistry."]
+  },
+  {
+    "word": "blueprint",
+    "hints": ["A detailed plan.", "Used in construction.", "Often in a blue color."]
+  },
+  {
+    "word": "parachute",
+    "hints": ["Used in skydiving.", "Slows descent from high altitudes.", "Made of fabric."]
+  },
+  {
+    "word": "catacombs",
+    "hints": ["Underground burial sites.", "Famous in Paris.", "Often associated with ancient cultures."]
+  },
+  {
+    "word": "butterfly",
+    "hints": ["A type of insect.", "Goes through metamorphosis.", "Has colorful wings."]
+  },
+  {
+    "word": "elephant",
+    "hints": ["The largest land animal.", "Has a trunk.", "Known for its memory."]
+  },
+  {
+    "word": "alchemy",
+    "hints": ["Ancient practice.", "Related to transforming metals.", "Predecessor to chemistry."]
+  },
+  {
+    "word": "insomnia",
+    "hints": ["Difficulty sleeping.", "Can be a chronic condition.", "Leads to fatigue."]
+  },
+  {
+    "word": "lighthouse",
+    "hints": ["Guides ships.", "Often found on coasts.", "Emits a light beam."]
+  },
+  {
+    "word": "amethyst",
+    "hints": ["A type of gemstone.", "Purple in color.", "Associated with February."]
+  },
+  {
+    "word": "epiphany",
+    "hints": ["A sudden realization.", "Often leads to insight.", "Can be life-changing."]
+  },
+  {
+    "word": "pandemics",
+    "hints": ["Global disease outbreaks.", "Affects large populations.", "COVID-19 is an example."]
+  },
+  {
+    "word": "fountain",
+    "hints": ["Decorative water feature.", "Often found in parks.", "Can be used for drinking."]
+  },
+  {
+    "word": "lightning",
+    "hints": ["Electrical discharge in storms.", "Faster than sound.", "Often followed by thunder."]
+  },
+  {
+    "word": "mysterious",
+    "hints": ["Full of mystery.", "Difficult to understand.", "Often involves the unknown."]
+  },
+  {
+    "word": "whirlwind",
+    "hints": ["A fast rotating wind.", "Can be destructive.", "Similar to a tornado."]
+  },
+  {
+    "word": "barometer",
+    "hints": ["Measures atmospheric pressure.", "Used in weather forecasting.", "Can predict storms."]
+  },
+  {
+    "word": "sunflower",
+    "hints": ["A type of flower.", "Faces the sun.", "Produces seeds and oil."]
+  },
+  {
+    "word": "volcanoes",
+    "hints": ["Erupt molten rock.", "Found on tectonic plates.", "Can be dormant or active."]
+  },
+  {
+    "word": "labyrinth",
+    "hints": ["A complex maze.", "Often associated with Greek mythology.", "Can be hard to navigate."]
+  },
+  {
+    "word": "rainstorm",
+    "hints": ["Involves heavy rainfall.", "Accompanied by thunder.", "Can lead to flooding."]
+  },
+  {
+    "word": "astronomy",
+    "hints": ["The study of stars and planets.", "Involves telescopes.", "Not to be confused with astrology."]
+  },
+  {
+    "word": "butterfly",
+    "hints": ["A type of insect.", "Goes through metamorphosis.", "Has colorful wings."]
+  },
+  {
+    "word": "alligator",
+    "hints": ["A large reptile.", "Found in swamps.", "Similar to crocodiles."]
+  },
+  {
+    "word": "photograph",
+    "hints": ["Captured image.", "Involves cameras.", "Can be printed or digital."]
+  },
+  {
+    "word": "volunteer",
+    "hints": ["Works without pay.", "Helps others.", "Often seen in charity."]
+  },
+  {
+    "word": "quicksand",
+    "hints": ["Dangerous terrain.", "Can trap people or animals.", "Looks like solid ground."]
+  },
+  {
+    "word": "hurricane",
+    "hints": ["A type of storm.", "Has strong winds and rain.", "Can cause widespread damage."]
+  },
+  {
+    "word": "espionage",
+    "hints": ["Involves spying.", "Common in international relations.", "Often associated with intelligence agencies."]
+  },
+  {
+    "word": "paralysis",
+    "hints": ["Loss of muscle function.", "Can be temporary or permanent.", "Often due to injury or illness."]
+  },
+  {
+    "word": "goldsmith",
+    "hints": ["A craftsperson.", "Works with gold.", "Creates jewelry."]
+  },
+  {
+    "word": "mountains",
+    "hints": ["Large landforms.", "Often covered in snow.", "Formed by tectonic forces."]
+  },
+  {
+    "word": "evolution",
+    "hints": ["Biological process.", "Involves natural selection.", "Explains species change over time."]
+  },
+  {
+    "word": "honeycomb",
+    "hints": ["Made by bees.", "Has hexagonal cells.", "Stores honey."]
+  },
+  {
+    "word": "windswept",
+    "hints": ["Exposed to strong winds.", "Often describes landscapes.", "Can refer to messy hair."]
+  },
+  {
+    "word": "checkpoint",
+    "hints": ["A security stop.", "Often used in races.", "Verifies identity or progress."]
+  },
+  {
+    "word": "nightmare",
+    "hints": ["A bad dream.", "Can cause fear.", "Often remembered upon waking."]
+  },
+  {
+    "word": "enchanted",
+    "hints": ["Under a spell.", "Filled with magic.", "Often seen in fairy tales."]
+  },
+  {
+    "word": "amphibian",
+    "hints": ["Lives on land and water.", "Cold-blooded.", "Examples include frogs and salamanders."]
+  }
+]
+;
+
+    let currentWord = "";
+    let currentHints = [];
+    let displayedLetters = [];
+
+    // Function to shuffle and select a new word
+    function shuffleAndSelectWord() {
+      const selectedCase = words[Math.floor(Math.random() * words.length)];
+      currentWord = selectedCase.word.toLowerCase();
+      currentHints = selectedCase.hints;
+      displayedLetters = Array(currentWord.length).fill("_"); // Start with underscores
+
+      // Display the word boxes
+      displayWordBoxes();
+      
+      // Display the hints
+      document.getElementById('hint1').textContent = currentHints[0];
+      document.getElementById('hint2').textContent = currentHints[1];
+      document.getElementById('hint3').textContent = currentHints[2];
+
+      // Reset hint buttons and visibility
+      resetHintVisibility();
+
+      // Clear guess results
+      document.getElementById('guessResult').textContent = "";
+    }
+
+    // Function to display word boxes
+    function displayWordBoxes() {
+      const wordSection = document.getElementById('wordSection');
+      wordSection.innerHTML = '';
+      displayedLetters.forEach((letter, index) => {
+        const letterBox = document.createElement('button');
+        letterBox.className = 'letter-box';
+        letterBox.textContent = "_";
+        letterBox.setAttribute('data-letter-index', index);
+        wordSection.appendChild(letterBox);
+      });
+    }
+
+    // Function to update the word display after a guess
+    function updateWordDisplay() {
+      document.querySelectorAll('.letter-box').forEach((box, index) => {
+        box.textContent = displayedLetters[index];
+      });
+    }
+
+    // Function to reset hint visibility
+    function resetHintVisibility() {
+      document.getElementById('hint1').style.display = 'none';
+      document.getElementById('hint2').style.display = 'none';
+      document.getElementById('hint3').style.display = 'none';
+      document.getElementById('toggleHint1Button').textContent = 'Show Hint 1';
+      document.getElementById('toggleHint2Button').textContent = 'Show Hint 2';
+      document.getElementById('toggleHint3Button').textContent = 'Show Hint 3';
+    }
+
+    // Event listener for shuffle button (Start New Game)
+    document.getElementById('shuffleButton').addEventListener('click', function() {
+      shuffleAndSelectWord();
+    });
+
+    // Event listeners for hint toggle buttons
+    document.getElementById('toggleHint1Button').addEventListener('click', function() {
+      toggleHintVisibility('hint1', this);
+    });
+
+    document.getElementById('toggleHint2Button').addEventListener('click', function() {
+      toggleHintVisibility('hint2', this);
+    });
+
+    document.getElementById('toggleHint3Button').addEventListener('click', function() {
+      toggleHintVisibility('hint3', this);
+    });
+
+    // Function to toggle hint visibility
+    function toggleHintVisibility(hintId, button) {
+      const hintElement = document.getElementById(hintId);
+      if (hintElement.style.display === 'none') {
+        hintElement.style.display = 'block';
+        button.textContent = `Hide ${button.textContent.split(' ')[1]} ${button.textContent.split(' ')[2]}`;
+      } else {
+        hintElement.style.display = 'none';
+        button.textContent = `Show ${button.textContent.split(' ')[1]} ${button.textContent.split(' ')[2]}`;
+      }
+    }
+
+    // Event listener for guessing a letter
+    document.getElementById('guessButton').addEventListener('click', function() {
+      const inputLetter = document.getElementById('letterInput').value.toLowerCase().trim();
+      if (inputLetter.length === 1) {
+        let found = false;
+        for (let i = 0; i < currentWord.length; i++) {
+          if (currentWord[i] === inputLetter) {
+            displayedLetters[i] = inputLetter;
+            found = true;
+          }
+        }
+        if (found) {
+          document.getElementById('guessResult').textContent = `The letter "${inputLetter}" is in the word!`;
+        } else {
+          document.getElementById('guessResult').textContent = `The letter "${inputLetter}" is not in the word.`;
+        }
+        updateWordDisplay();
+      } else {
+        document.getElementById('guessResult').textContent = "Please enter a valid letter.";
+      }
+      document.getElementById('letterInput').value = ''; // Clear input
+    });
+  });
+</script>
+
+<!-- CSS for Vertical Pagination, Button, and Toggle Buttons -->
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.5; /* Align text vertically */
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .toggle-button {
+    display: inline-block;
+    width: 150px;
+    margin: 10px 5px;
+    padding: 10px;
+    background-color: #E4C58A;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 16px;
+  }
+
+  .toggle-button:hover {
+    background-color: #6E1919;
+  }
+
+  #verticalPagination {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .page {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #f9f9f9;
+  }
+
+  .letter-box {
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    font-size: 24px;
+    text-align: center;
+    line-height: 50px;
+    border-radius: 5px;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
+
+  .letter-box:focus {
+    outline: none;
+    background-color: #ddd;
+  }
+
+  h2, h3 {
+    margin-bottom: 10px;
+    color: #333;
+  }
+
+  p {
+    margin-bottom: 15px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  #letterInput {
+    width: 50px;
+    padding: 10px;
+    margin: 10px 5px;
+    font-size: 24px;
+    text-align: center;
+  }
+
+  #guessResult {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+</style>

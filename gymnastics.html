@@ -1,0 +1,250 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Gymnastics</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="playmCheckbox"> Gymnast M</label><br>
+    <label><input type="checkbox" id="playfCheckbox"> Gymnast F</label><br>
+    <label><input type="checkbox" id="equipCheckbox"> Equipment</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Perfect 10! - Choose one of your gymnasts and increase +10 points in Technique and Difficulty this round.",
+"Slip on the Beam - Your gymnast loses -15 points in Technique this round.",
+"Crowd Favorite - Earn +10 points in Showmanship and challenge any player to a head-to-head duel.",
+"Deduction for Bent Knees - Your gymnast loses -10 points in Technique, unless they are competing on Floor.",
+"Tiebreaker Round - If there is a tie in this round, each player chooses a different attribute to break the tie.",
+"Upgraded Routine - Choose a gymnast and increase +5 points in Difficulty and Technique.",
+"Fall on Dismount - Your gymnast loses -20 points in Technique and Difficulty this round.",
+"Judges Controversy - The player with the lowest score in this round may choose to rematch with a new attribute."];
+  
+const playm = [
+{name: "Alekséi Nemov (RUS)", attributes: {Power: 88, Flexibility: 85, Technique: 94, Difficulty: 92, "Olympic Medals": 12, "Legend Status": 97}},
+{name: "Alexei Voropaev (RUS)", attributes: {Power: 89, Flexibility: 83, Technique: 91, Difficulty: 90, "Olympic Medals": 2, "Legend Status": 88}},
+{name: "Arthur Zanetti (BRA)", attributes: {Power: 95, Flexibility: 80, Technique: 91, Difficulty: 93, "Olympic Medals": 2, "Legend Status": 90}},
+{name: "Artur Dalaloyan (RUS)", attributes: {Power: 93, Flexibility: 85, Technique: 93, Difficulty: 97, "Olympic Medals": 3, "Legend Status": 94}},
+{name: "Bart Conner (USA)", attributes: {Power: 86, Flexibility: 87, Technique: 92, Difficulty: 89, "Olympic Medals": 2, "Legend Status": 90}},
+{name: "Boris Shakhlin (URS)", attributes: {Power: 90, Flexibility: 85, Technique: 94, Difficulty: 92, "Olympic Medals": 13, "Legend Status": 99}},
+{name: "Dmitry Bilozerchev (URS)", attributes: {Power: 92, Flexibility: 87, Technique: 95, Difficulty: 97, "Olympic Medals": 6, "Legend Status": 96}},
+{name: "Eddie Penev (BUL/USA)", attributes: {Power: 88, Flexibility: 86, Technique: 90, Difficulty: 95, "Olympic Medals": 0, "Legend Status": 85}},
+{name: "Epke Zonderland (NED)", attributes: {Power: 85, Flexibility: 82, Technique: 92, Difficulty: 99, "Olympic Medals": 3, "Legend Status": 96}},
+{name: "Fabian Hambüchen (GER)", attributes: {Power: 87, Flexibility: 84, Technique: 94, Difficulty: 93, "Olympic Medals": 3, "Legend Status": 91}},
+{name: "Igor Cassina (ITA)", attributes: {Power: 88, Flexibility: 80, Technique: 90, Difficulty: 96, "Olympic Medals": 1, "Legend Status": 89}},
+{name: "Jake Dalton (USA)", attributes: {Power: 90, Flexibility: 85, Technique: 91, Difficulty: 94, "Olympic Medals": 0, "Legend Status": 85}},
+{name: "Johannes Weißenfels (GER)", attributes: {Power: 85, Flexibility: 87, Technique: 92, Difficulty: 90, "Olympic Medals": 1, "Legend Status": 86}},
+{name: "Kenzo Shirai (JPN)", attributes: {Power: 94, Flexibility: 85, Technique: 90, Difficulty: 99, "Olympic Medals": 4, "Legend Status": 95}},
+{name: "Kōhei Kameyama (JPN)", attributes: {Power: 86, Flexibility: 90, Technique: 94, Difficulty: 95, "Olympic Medals": 1, "Legend Status": 90}},
+{name: "Kohei Uchimura (JAP)", attributes: {Power: 85, Flexibility: 90, Technique: 99, Difficulty: 95, "Olympic Medals": 7, "Legend Status": 100}},
+{name: "Li Ning (CHN)", attributes: {Power: 90, Flexibility: 88, Technique: 94, Difficulty: 92, "Olympic Medals": 6, "Legend Status": 96}},
+{name: "Li Xiaopeng (CHN)", attributes: {Power: 89, Flexibility: 84, Technique: 97, Difficulty: 94, "Olympic Medals": 6, "Legend Status": 94}},
+{name: "Marius Urzică (ROU)", attributes: {Power: 85, Flexibility: 88, Technique: 96, Difficulty: 94, "Olympic Medals": 3, "Legend Status": 92}},
+{name: "Max Whitlock (GBR)", attributes: {Power: 87, Flexibility: 86, Technique: 95, Difficulty: 98, "Olympic Medals": 6, "Legend Status": 95}},
+{name: "Mitja Petkovšek (SLO)", attributes: {Power: 82, Flexibility: 89, Technique: 95, Difficulty: 91, "Olympic Medals": 0, "Legend Status": 85}},
+{name: "Nikita Nagornyy (RUS)", attributes: {Power: 94, Flexibility: 86, Technique: 94, Difficulty: 98, "Olympic Medals": 4, "Legend Status": 95}},
+{name: "Nikolai Andrianov (URS)", attributes: {Power: 92, Flexibility: 86, Technique: 93, Difficulty: 91, "Olympic Medals": 15, "Legend Status": 99}},
+{name: "Paul Hamm (USA)", attributes: {Power: 89, Flexibility: 86, Technique: 92, Difficulty: 94, "Olympic Medals": 2, "Legend Status": 90}},
+{name: "Sawao Kato (JPN)", attributes: {Power: 80, Flexibility: 88, Technique: 96, Difficulty: 90, "Olympic Medals": 12, "Legend Status": 95}},
+{name: "Serguei Kharkov (URS)", attributes: {Power: 88, Flexibility: 85, Technique: 93, Difficulty: 92, "Olympic Medals": 2, "Legend Status": 89}},
+{name: "Takashi Ono (JPN)", attributes: {Power: 88, Flexibility: 86, Technique: 94, Difficulty: 90, "Olympic Medals": 13, "Legend Status": 98}},
+{name: "Uchimura Kenzō (JPN)", attributes: {Power: 85, Flexibility: 90, Technique: 94, Difficulty: 93, "Olympic Medals": 2, "Legend Status": 91}},
+{name: "Valeri Liukin (URS)", attributes: {Power: 86, Flexibility: 89, Technique: 95, Difficulty: 94, "Olympic Medals": 4, "Legend Status": 94}},
+{name: "Viktor Chukarin (URS)", attributes: {Power: 88, Flexibility: 86, Technique: 95, Difficulty: 92, "Olympic Medals": 11, "Legend Status": 98}},
+{name: "Vitaly Scherbo (EUN/BLR)", attributes: {Power: 90, Flexibility: 85, Technique: 93, Difficulty: 96, "Olympic Medals": 10, "Legend Status": 98}},
+{name: "Vladimir Artemov (URS)", attributes: {Power: 87, Flexibility: 89, Technique: 96, Difficulty: 94, "Olympic Medals": 6, "Legend Status": 94}},
+{name: "Yuri Chechi (ITA)", attributes: {Power: 97, Flexibility: 82, Technique: 92, Difficulty: 94, "Olympic Medals": 2, "Legend Status": 93}},
+{name: "Zou Kai (CHN)", attributes: {Power: 90, Flexibility: 86, Technique: 92, Difficulty: 98, "Olympic Medals": 5, "Legend Status": 93}},
+
+
+  ];
+
+  const playf = [
+{name: "Aliya Mustafina (RUS)", attributes: {Power: 86, Flexibility: 90, Technique: 96, Difficulty: 96, "Olympic Medals": 7, "Legend Status": 97}},
+{name: "Anastasia Bliznyuk (RUS)", attributes: {Power: 82, Flexibility: 94, Technique: 92, Difficulty: 90, "Olympic Medals": 3, "Legend Status": 90}},
+{name: "Carly Patterson (USA)", attributes: {Power: 90, Flexibility: 91, Technique: 95, Difficulty: 94, "Olympic Medals": 3, "Legend Status": 94}},
+{name: "Daniela Silivaș (ROU)", attributes: {Power: 86, Flexibility: 98, Technique: 99, Difficulty: 97, "Olympic Medals": 7, "Legend Status": 98}},
+{name: "Daria Spiridonova (RUS)", attributes: {Power: 85, Flexibility: 90, Technique: 95, Difficulty: 92, "Olympic Medals": 1, "Legend Status": 89}},
+{name: "Deng Linlin (CHN)", attributes: {Power: 83, Flexibility: 95, Technique: 95, Difficulty: 92, "Olympic Medals": 2, "Legend Status": 90}},
+{name: "Diane dos Santos (BRA)", attributes: {Power: 98, Flexibility: 92, Technique: 94, Difficulty: 99, "Olympic Medals": 0, "Legend Status": 96}},
+{name: "Dominique Dawes (USA)", attributes: {Power: 86, Flexibility: 90, Technique: 94, Difficulty: 92, "Olympic Medals": 4, "Legend Status": 94}},
+{name: "Elena Mukhina (URS)", attributes: {Power: 87, Flexibility: 94, Technique: 97, Difficulty: 98, "Olympic Medals": 0, "Legend Status": 97}},
+{name: "Elena Produnova (RUS)", attributes: {Power: 98, Flexibility: 88, Technique: 94, Difficulty: 100, "Olympic Medals": 0, "Legend Status": 97}},
+{name: "Elisa Iorio (ITA)", attributes: {Power: 82, Flexibility: 91, Technique: 93, Difficulty: 94, "Olympic Medals": 0, "Legend Status": 85}},
+{name: "Flávia Saraiva (BRA)", attributes: {Power: 88, Flexibility: 96, Technique: 94, Difficulty: 94, "Olympic Medals": 0, "Legend Status": 92}},
+{name: "Gabby Douglas (USA)", attributes: {Power: 88, Flexibility: 92, Technique: 94, Difficulty: 94, "Olympic Medals": 3, "Legend Status": 95}},
+{name: "Galińska-Marić (POL)", attributes: {Power: 85, Flexibility: 92, Technique: 94, Difficulty: 93, "Olympic Medals": 0, "Legend Status": 89}},
+{name: "Kerri Strug (USA)", attributes: {Power: 89, Flexibility: 85, Technique: 92, Difficulty: 90, "Olympic Medals": 1, "Legend Status": 96}},
+{name: "Kim Zmeskal (USA)", attributes: {Power: 88, Flexibility: 86, Technique: 93, Difficulty: 94, "Olympic Medals": 0, "Legend Status": 90}},
+{name: "Larisa Latynina (URS)", attributes: {Power: 87, Flexibility: 92, Technique: 98, Difficulty: 90, "Olympic Medals": 18, "Legend Status": 100}},
+{name: "Lilia Podkopayeva (UKR)", attributes: {Power: 88, Flexibility: 95, Technique: 98, Difficulty: 96, "Olympic Medals": 4, "Legend Status": 96}},
+{name: "Mai Murakami (JPN)", attributes: {Power: 92, Flexibility: 89, Technique: 95, Difficulty: 97, "Olympic Medals": 1, "Legend Status": 92}},
+{name: "Margarita Mamun (RUS)", attributes: {Power: 80, Flexibility: 100, Technique: 98, Difficulty: 96, "Olympic Medals": 1, "Legend Status": 95}},
+{name: "Maria Filatova (URS)", attributes: {Power: 85, Flexibility: 92, Technique: 94, Difficulty: 91, "Olympic Medals": 3, "Legend Status": 90}},
+{name: "Mary Lou Retton (USA)", attributes: {Power: 92, Flexibility: 89, Technique: 95, Difficulty: 96, "Olympic Medals": 5, "Legend Status": 98}},
+{name: "McKayla Maroney (USA)", attributes: {Power: 92, Flexibility: 88, Technique: 95, Difficulty: 97, "Olympic Medals": 2, "Legend Status": 93}},
+{name: "Nadia Comăneci (ROU)", attributes: {Power: 85, Flexibility: 100, Technique: 100, Difficulty: 92, "Olympic Medals": 9, "Legend Status": 100}},
+{name: "Nellie Kim (URS)", attributes: {Power: 89, Flexibility: 92, Technique: 95, Difficulty: 94, "Olympic Medals": 6, "Legend Status": 97}},
+{name: "Nina Derwael (BEL)", attributes: {Power: 83, Flexibility: 95, Technique: 98, Difficulty: 99, "Olympic Medals": 1, "Legend Status": 94}},
+{name: "Oksana Chusovitina (URS/GER/UZB)", attributes: {Power: 92, Flexibility: 80, Technique: 89, Difficulty: 95, "Olympic Medals": 2, "Legend Status": 100}},
+{name: "Olga Korbut (URS)", attributes: {Power: 85, Flexibility: 96, Technique: 98, Difficulty: 95, "Olympic Medals": 6, "Legend Status": 100}},
+{name: "Rebeca Andrade (BRA)", attributes: {Power: 95, Flexibility: 90, Technique: 96, Difficulty: 98, "Olympic Medals": 3, "Legend Status": 97}},
+{name: "Sabrina Vega (USA)", attributes: {Power: 84, Flexibility: 90, Technique: 91, Difficulty: 92, "Olympic Medals": 0, "Legend Status": 87}},
+{name: "Shannon Miller (USA)", attributes: {Power: 85, Flexibility: 92, Technique: 97, Difficulty: 94, "Olympic Medals": 7, "Legend Status": 96}},
+{name: "Shayne Reese (AUS)", attributes: {Power: 84, Flexibility: 88, Technique: 91, Difficulty: 89, "Olympic Medals": 0, "Legend Status": 83}},
+{name: "Simone Biles (USA)", attributes: {Power: 100, Flexibility: 90, Technique: 98, Difficulty: 100, "Olympic Medals": 7, "Legend Status": 100}},
+{name: "Suni Lee (USA)", attributes: {Power: 88, Flexibility: 92, Technique: 96, Difficulty: 97, "Olympic Medals": 3, "Legend Status": 94}},
+{name: "Svetlana Boguinskaia (URS/BLR)", attributes: {Power: 88, Flexibility: 94, Technique: 96, Difficulty: 95, "Olympic Medals": 5, "Legend Status": 96}},
+{name: "Svetlana Khorkina (RUS)", attributes: {Power: 82, Flexibility: 95, Technique: 97, Difficulty: 95, "Olympic Medals": 7, "Legend Status": 98}},
+{name: "Tatiana Gutsu (EUN/UKR)", attributes: {Power: 87, Flexibility: 92, Technique: 94, Difficulty: 96, "Olympic Medals": 2, "Legend Status": 92}},
+{name: "Věra Čáslavská (TCH)", attributes: {Power: 89, Flexibility: 90, Technique: 96, Difficulty: 90, "Olympic Medals": 11, "Legend Status": 99}},
+{name: "Yelena Shushunova (URS)", attributes: {Power: 90, Flexibility: 89, Technique: 94, Difficulty: 96, "Olympic Medals": 4, "Legend Status": 95}},
+{name: "Yordanka Dankova (BUL)", attributes: {Power: 82, Flexibility: 100, Technique: 99, Difficulty: 97, "Olympic Medals": 1, "Legend Status": 94}},
+  ];
+
+const equip = [
+    {name: "Vault", attributes: {Power: 100, Flexibility: 75, Technique: 85, Difficulty: 98, Spectacle: 95}},
+{name: "Uneven Bars", attributes: {Power: 80, Flexibility: 95, Technique: 98, Difficulty: 97, Spectacle: 90}},
+{name: "Balance Beam", attributes: {Power: 75, Flexibility: 100, Technique: 99, Difficulty: 96, Spectacle: 85}},
+{name: "Floor Exercise", attributes: {Power: 90, Flexibility: 100, Technique: 96, Difficulty: 94, Spectacle: 100}},
+{name: "Pommel Horse", attributes: {Power: 85, Flexibility: 90, Technique: 100, Difficulty: 99, Spectacle: 80}},
+{name: "Still Rings", attributes: {Power: 100, Flexibility: 80, Technique: 98, Difficulty: 100, Spectacle: 90}},
+{name: "Parallel Bars", attributes: {Power: 90, Flexibility: 85, Technique: 98, Difficulty: 96, Spectacle: 88}},
+{name: "Horizontal Bar", attributes: {Power: 85, Flexibility: 80, Technique: 97, Difficulty: 98, Spectacle: 100}},
+  ];
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playmCheckbox').checked) selectedCards.push(...playm);
+    if (document.getElementById('playfCheckbox').checked) selectedCards.push(...playf);
+    if (document.getElementById('equipCheckbox').checked) selectedCards.push(...equip);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

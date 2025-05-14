@@ -1,0 +1,161 @@
+<!-- HTML Structure -->
+<button id="spinAllButton" class="round-button">All</button>
+<br><br>
+<div>
+  <h2>Action</h2>
+  <p id="actionResult"></p>
+  <button id="actionButton" class="round-button">Shuffle</button>
+</div>
+<br><br>
+<div>
+  <h2>Event</h2>
+  <p id="eventResult"></p>
+  <button id="eventButton" class="round-button">Shuffle</button>
+</div>
+<br><br>
+<div>
+  <h2>Mission</h2>
+  <p id="missionResult"></p>
+  <button id="missionButton" class="round-button">Shuffle</button>
+</div>
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const actionOptions = [
+      "Engage in a space battle with a rival faction.",
+      "Sabotage an enemy's space station.",
+      "Negotiate a peace treaty with an alien species.",
+      "Launch a surprise attack on an enemy convoy.",
+      "Defend your base against an incoming assault.",
+      "Hack into an enemy's communication network.",
+      "Conduct a covert operation behind enemy lines.",
+      "Establish a new colony on a distant planet.",
+      "Develop advanced weaponry to gain an advantage.",
+      "Spy on a rival faction's activities.",
+      "Recruit allies from neutral planets.",
+      "Interrogate a captured enemy operative.",
+      "Build a fleet of warships to dominate the galaxy.",
+      "Initiate a diplomatic mission to avoid war.",
+      "Raid an enemy supply depot.",
+      "Create an alliance with a powerful alien race.",
+      "Deploy a team of elite soldiers for a critical mission.",
+      "Infiltrate an enemy base and steal vital information.",
+      "Conduct a trade deal for crucial resources.",
+      "Establish a defense perimeter around your territory."
+    ];
+
+    const eventOptions = [
+      "A supernova disrupts all communications.",
+      "A rogue AI takes control of a fleet.",
+      "A mysterious signal is detected from deep space.",
+      "A black hole threatens to consume a key system.",
+      "A powerful solar storm cripples electronic systems.",
+      "An ancient alien race awakens from hibernation.",
+      "A plague sweeps through the galaxy, affecting all factions.",
+      "A new wormhole opens, leading to uncharted space.",
+      "A rebellion erupts on a major colony.",
+      "A secret weapon is unveiled by a rival faction.",
+      "An asteroid belt is discovered with valuable resources.",
+      "Diplomatic tensions escalate to the brink of war.",
+      "A time anomaly causes a rift in the space-time continuum.",
+      "A legendary space pirate resurfaces with a powerful armada.",
+      "An intergalactic council is formed to maintain peace.",
+      "A strange artifact is found with unknown powers.",
+      "A powerful alien race demands tribute.",
+      "A natural disaster devastates a key planet.",
+      "A spy is discovered within your ranks.",
+      "A new technology is developed, changing the balance of power."
+    ];
+
+    const missionOptions = [
+      "Retrieve an ancient artifact from a deserted planet.",
+      "Rescue a captured ambassador from hostile forces.",
+      "Explore an uncharted region of the galaxy.",
+      "Establish a covert listening post on an enemy world.",
+      "Conduct a diplomatic mission to secure a trade deal.",
+      "Sabotage an enemy's research facility.",
+      "Transport a VIP to a secure location.",
+      "Launch a reconnaissance mission in enemy territory.",
+      "Secure a strategic outpost in a contested zone.",
+      "Escort a convoy through hostile space.",
+      "Neutralize a rogue faction causing chaos in the region.",
+      "Recover stolen technology from a rival faction.",
+      "Investigate a mysterious disappearance in deep space.",
+      "Establish contact with a newly discovered alien race.",
+      "Deliver medical supplies to a plague-stricken planet.",
+      "Capture a high-value target behind enemy lines.",
+      "Destroy a superweapon being developed by an enemy.",
+      "Evacuate civilians from a war-torn planet.",
+      "Disable a doomsday device before it can be activated.",
+      "Uncover a conspiracy threatening the stability of the galaxy."
+    ];
+
+    // Function to generate a random option
+    function generateRandomOption(options) {
+      return options[Math.floor(Math.random() * options.length)];
+    }
+
+    // Individual spin buttons
+    document.getElementById('actionButton').addEventListener('click', function() {
+      document.getElementById('actionResult').textContent = generateRandomOption(actionOptions);
+    });
+
+    document.getElementById('eventButton').addEventListener('click', function() {
+      document.getElementById('eventResult').textContent = generateRandomOption(eventOptions);
+    });
+
+    document.getElementById('missionButton').addEventListener('click', function() {
+      document.getElementById('missionResult').textContent = generateRandomOption(missionOptions);
+    });
+
+    // Spin all button
+    document.getElementById('spinAllButton').addEventListener('click', function() {
+      document.getElementById('actionResult').textContent = generateRandomOption(actionOptions);
+      document.getElementById('eventResult').textContent = generateRandomOption(eventOptions);
+      document.getElementById('missionResult').textContent = generateRandomOption(missionOptions);
+    });
+  });
+</script>
+
+<!-- CSS for the Round Buttons -->
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 60px; /* Align text vertically */
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  h2 {
+    margin-top: 20px;
+    color: #333;
+  }
+
+  p {
+  	margin-bottom: 10px;
+    font-size: 16px;
+    margin: 10px 0;
+  }
+
+  #spinAllButton {
+    margin-top: 20px;
+    display: block;
+    width: 80px;
+    height: 80px;
+    line-height: 1.5;
+    font-size: 16px;
+  }
+</style>
+

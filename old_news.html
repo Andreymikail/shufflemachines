@@ -1,0 +1,216 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Old News</h2>
+  
+  <!-- Elements per page selection -->
+  <div>
+    <label for="elementsPerPage" style="color: white;">Old News per Page:</label><br>
+    <input type="number" id="elementsPerPage" value="1"><br><br>
+  </div>
+
+  <!-- Shuffle Button -->
+  <button id="shuffleButton" class="round-button">Shuffle</button>
+
+  <!-- Rules Display -->
+  <div id="rulesContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const rulesOfAcquisition = [
+    "Local Man Discovers His Own Reflection, Calls Authorities for Backup",
+"Scientists Finally Unravel the Mystery of Why Toast Always Lands Butter-Side Down",
+"Town Hall Erupts Over Debate on Whether Pineapple Belongs on Pizza",
+"World's Smallest Car Accident Reported – Two Toy Cars Collide in Local Toy Store",
+"Weather Forecast: 0% Chance of Anything Interesting Happening Today",
+"Cat Running for Mayor Promises Free Tuna for All!",
+"Man Wins Lottery, Loses Ticket, Finds Ticket... Under His Cat",
+"Breaking News: Grandma Masters Video Games, Becomes World Champion in 'Space Invaders'",
+"Study Shows 9 out of 10 Pets Actually Own Their Humans",
+"Exclusive: Local Squirrel Claims He Was Framed for Nut Theft",
+"Traffic Report: Rubbernecking at Flying Saucer Crash Causing Major Delays",
+"Breaking Fashion News: Socks With Sandals Officially Declared Trend of the Year",
+"Bank Robber Foiled by His Own Mask, Forgetting Eye Holes",
+"Local Chicken Learns to Cross Road, Still Doesn't Know Why",
+"New Study Suggests That 95% of Office Emails Could Be Replaced with a Simple Thumbs-Up Emoji",
+"World's First Flying Pig Spotted, Immediately Stuck in Tree",
+"Breaking News: International Pillow Fight Championship Ends in a Fluffy Tie",
+"Man Sets World Record for Most Useless Knowledge, Wins Quiz Show by Accident",
+"Local Dog Opens Own Instagram Account, Gains 10,000 Followers Overnight",
+"Tech Giant Unveils New Phone That Can Also Function as a Sandwich",
+"Local Man Spends Entire Day Looking for His Glasses, Realizes They Were on His Head the Whole Time",
+"Breaking News: Coffee Mug Left in Microwave for Too Long Becomes Unintentionally Hostile",
+"Town Launches Annual Hide-and-Seek Championship, Mayor Still Missing After 3 Days",
+"New Study Finds That Talking to Plants May Result in Them Giving Unsolicited Life Advice",
+"Exclusive: Local Pigeon Refuses to Fly, Opts for Uber Instead",
+"Breaking: Dog Refuses to Chase Stick, Demands Tennis Ball Upgrade",
+"Breaking News: Alarm Clock Breaks Up with Owner, Cites ‘Irreconcilable Snoozing’ as Cause",
+"Scientists Develop AI That Can Write Novels, but Only About Spaghetti",
+"Study Confirms That the ‘5-Second Rule’ Is Actually Just Wishful Thinking",
+"Local Hero Saves Family from Spider, Realizes It Was Just a Piece of Lint",
+"Man Wins Hide-and-Seek Game, Family Didn't Even Know They Were Playing",
+"Breaking: Cat Launches Own Podcast, Entirely Composed of Purring and Occasional Hissing",
+"Area Man Attempts to Build IKEA Furniture Without Instructions, Creates Modern Art Instead",
+"Breaking News: New Fitness Trend Involves Doing Absolutely Nothing – It’s Already a Global Sensation",
+"Study Shows Dogs Can Tell Time, Just Choose Not to Acknowledge It When It's Bath Time",
+"Exclusive: Local Hamster Completes 10,000 Steps, Still Can’t Figure Out Where It Was Going",
+"Traffic Report: All Roads Lead to Rome, but GPS Insists on a 3-Hour Detour",
+"Breaking: Man Attends Meditation Class, Becomes So Relaxed He Forgets to Leave",
+"Local Scientist Claims to Have Invented Time Machine, but Can’t Find Keys to Turn It On",
+"Breaking News: World's Oldest Turtle Finally Speaks – Says 'Can You Turn Off the Lights? I'm Napping'",
+"Exclusive Interview: Fitness Guru Says Best Exercise for Six-Pack Abs is Laughing at Your Own Jokes",
+"Breaking: Local Man Discovers He’s Allergic to Mondays",
+"New Study Finds That People Who Clap When a Plane Lands Are Actually Fueling the Earth's Rotation",
+"Local Chicken Sandwich Wins Michelin Star, Chef Still Insists It’s Just a Sandwich",
+"Area Cat Claims Remote Control as Its Own, Refuses to Let Humans Watch Anything but Nature Documentaries",
+"Breaking News: Man Finally Masters Microwave Popcorn Timing, Celebrates with a Movie Marathon",
+"Study Reveals That 99% of Conversations Start With 'Did You See That Thing on the Internet?'",
+"Local Goose Starts Fashion Line, Promises Feathers Are 'Ethically Sourced'",
+"Breaking: Man Builds Epic Blanket Fort, Refuses to Come Out for ‘Adulting’ Responsibilities",
+"Local Gym Starts Offering 'Nap Yoga,' Already Has Waiting List for Next Year",
+"Local Bakery Accidentally Invents Cake That Never Stops Rising – Kitchen Now a Sugary Mountain",
+"Man Stuck in Revolving Door for Three Hours, Claims ‘I Was Just Enjoying the Ride’",
+"New Study Reveals That the Average Person Spends 7 Years of Their Life Untangling Earphones",
+"Squirrel Holds Town Hostage After Taking Over Power Lines, Demands More Bird Feeders",
+"Local Man Claims He Invented Invisible Ink, Shows Blank Paper as Proof",
+"Weather Report: 80% Chance of Cats and Dogs Literally Falling From the Sky Tomorrow",
+"Study Finds That Yawning Is Even More Contagious Over Zoom Calls",
+"Breaking News: Local Toddler Successfully Negotiates Bedtime Extension Through Dance Performance",
+"Exclusive: Local Dog Starts Freelance Business, Specializes in Fetch and Tug-of-War Consultations",
+"Area Man Declares War on Roomba After It ‘Deliberately’ Knocks Over His Coffee",
+"Town Cancels Annual Duck Parade After Geese Take Over, Cite ‘Security Concerns’",
+"Breaking News: Cat Cafe Turns Into Secret Feline Parliament, Mice Declare It 'Oppressive'",
+"Local Supermarket Introduces Self-Aware Shopping Carts – They Now Judge Your Grocery Choices",
+"Breaking: Man Develops ‘Perfect’ Work-Life Balance, Only to Realize He No Longer Knows What Day It Is",
+"Scientists Reveal: People Who Talk to Themselves Are Actually Holding Board Meetings With Their Brain Cells",
+"Breaking News: Town Holds Vote to Rename Itself 'Unicornland' to Boost Tourism",
+"New Fitness Craze: Running From Your Responsibilities, Literally",
+"Exclusive: Moon Finally Admits to Causing Tides, Says ‘I Just Like Messing With You Guys’",
+"Local Man Builds Treehouse, Moves In Permanently to Avoid Doing Dishes",
+"Breaking News: Lost Tourist Mistakes Statue for Local Resident, Engages in Deep Conversation",
+"Town Celebrates 50th Anniversary of the Day a Balloon Got Stuck in the Mayor's Office Ceiling",
+"Man Swears He Can Hear His Phone Vibrate, Turns Out to Be His Own Nervous Tapping",
+"Scientists Unveil New Superfood: Popcorn, Now Considered a Vegetable",
+"Area Man Decides to 'Live Off the Grid', Only Lasts 3 Hours Without Wi-Fi",
+"Breaking: Local Park to Introduce 'Lazy River' for People Who Prefer to Watch Others Exercise",
+"Exclusive: Astronauts Admit They Played Hide-and-Seek on the Moon During Lunar Mission",
+"Local Chef Accidentally Discovers 52 New Spices, but Still Forgets to Add Salt",
+"Area Dog Becomes TikTok Star, but Owner Struggles to Keep Up with His Celebrity Demands",
+"Breaking News: Local Man Confident He Can 'Fix' TV Remote by Hitting It, Despite Lack of Results for the Past Year",
+"Study Finds That Saying 'I'll Just Watch One Episode' is the Leading Cause of Sleep Deprivation",
+"Local Man Trains Cat to Fetch, Cat Only Retrieves Expensive Electronics",
+"Breaking: Local Toddler Becomes Master of Reverse Psychology, Parents Now Asking for Bedtime Extensions",
+"World's First 'Pet Psychic' Mistakenly Predicts Owner’s Future Instead of Dog’s",
+"Exclusive: Office Plants Demand Vacation Days, Citing 'Burnout from Lack of Sunshine'",
+"Scientists Develop Robot Butler That Only Responds to Sarcasm",
+"Town Cancels Annual Snowman Competition Due to Unseasonably Warm Weather, Declares Sandcastle Contest Instead",
+"Breaking News: Local Man Sets Record for Fastest Nap, Falls Asleep in 2 Seconds After Sitting Down",
+"Area Cat Develops 'Boredom Yelp' – Owners Confused by Sudden Desire for More Entertainment",
+"Local Bird Watcher Spots Rare ‘Invisible Owl’, Claims It Was Right There Until He Blinked",
+"Study Shows 90% of Group Chats Are Made Up of GIFs and Emojis, Actual Words Becoming Extinct",
+"Area Man Blames GPS for Showing 'Shortest Route', Ends Up in a Parallel Universe",
+"Local Fish Tank Becomes Self-Aware, Starts 'Free the Fish' Movement Against Owners",
+"Breaking: Neighborhood Dogs Form Secret Society to Discuss Ways of Ignoring Commands",
+"Local Man Loses Bet, Must Now Refer to His Cat as 'Your Highness' for a Whole Year",
+"Area Family Hosts Annual Talent Show, Dog Wins Again With 'Best Tail Wag' Performance",
+"New Study Finds People Are 30% Happier When Pretending to Understand Sports",
+"Breaking News: Local Gym Introduces 'Virtual Workouts', Customers Just Watch Others Exercise",
+"World's Oldest Turtle Finally Crosses the Road – Town Celebrates with Parade",
+"Local Parrot Develops Fashion Sense, Refuses to Be Seen Without Designer Feathers",
+"Area Man Claims His Dog Can Speak English, Dog Only Ever Says 'Woof' in Reply",
+"Town Introduces New 'Silent Alarm' System, Nobody Knows It’s Been Activated",
+"Local Couple Breaks Up After Monopoly Game, Experts Say This Is ‘Completely Normal’",
+"Breaking News: Local Man 'Accidentally' Puts TV Remote in Fridge, Blames It on Quantum Physics",
+"New Study Finds That Sleeping with One Sock On Enhances Dream Quality by 50%",
+"Area Dog Refuses to Leave Bed Unless Bribed with Treats, Owners Comply Immediately",
+"Local Man Successfully Cooks Dinner Without Burning Anything, Immediately Opens Restaurant",
+"Breaking: New 'Smart Mirror' Tells You Exactly What You Don’t Want to Hear",
+"World's First Underwater Café Opens, Menu Includes 'Water, Water, and More Water'",
+"Exclusive: Alien Tourists Visit Earth, Leave Bad Yelp Review Due to 'Lack of Interesting Landmarks'",
+"Study Shows People Who Always Say 'I’m Fine' Are Actually Fine... but With an Asterisk",
+"Local Man Starts Diet, Accidentally Eats Entire Cake While 'Just Tasting the Frosting'",
+"Scientists Announce New Energy Source: The Frustration From Untangling Christmas Lights",
+"Town Hall Introduces Speed Bumps for Pedestrians Who Walk Too Fast",
+"New Study Reveals 85% of Work Emails Are Just People Replying 'Thanks!'",
+"Local Man Sets New Record for Longest Phone Call with Customer Service, Emerges a Changed Person",
+"Breaking: Office Coffee Machine Unionizes, Demands More Respect from Employees",
+"Area Pigeon Steals Sandwich, Declares Himself ‘King of the Park’",
+"Study Shows Most People Spend More Time Looking for the Remote Than Actually Watching TV",
+"Local Man Finally Puts Together Puzzle After Five Years, Missing Piece Revealed to Be Under Couch All Along",
+"Scientists Discover That Smiling at Your Plants Makes Them Grow Faster – Or at Least Makes You Feel Better",
+"Local Gym Introduces 'Daydream Workout' Where Participants Imagine They're Exercising",
+"Exclusive: Local Cat Teaches Yoga Class, Focuses Entirely on Napping Positions",
+"Breaking: Office Printer Refuses to Print Documents Until Complimented First",
+"Town Hosts Annual 'Longest Line at the DMV' Competition, Crowns New Champion",
+"Local Man Accidentally Orders 1,000 Ping Pong Balls Online, Now Unsure What to Do with Them",
+"Scientists Finally Crack the Code of Dog Logic: 'Chase Everything, Sleep Everywhere'",
+"Breaking: Local Bakery Invents 'Infinite Donut', Customers Never Reach the End of Their Snack",
+"Local Man Becomes 'Pizza Purist', Refuses to Eat Any Slice That Isn't Cut Perfectly Symmetrical",
+"Town Elects Its First Canine Mayor, Platform Focused on 'More Walks, Less Baths'",
+"Study Shows That 90% of People Who Claim to 'Love the Outdoors' Actually Mean 'I Like Looking Out the Window'",
+"Breaking: Local Man Declares Himself 'Master of Household Chores' After Successfully Folding One Towel",
+"Exclusive: Area Man Accidentally Buys Tiny House, Can Now Only Live with Two Pairs of Shoes",
+"Scientists Develop New Phone App That Automatically Rolls Eyes for You When Reading Annoying Messages",
+"Local Supermarket Introduces 'Express Lane for People Who Forgot What They Came For'",
+"Breaking News: Town Holds Parade to Celebrate the First Day in Years Without a Single Traffic Jam",
+"Local Man Organizes Protest Against Alarm Clocks, Demands They Only Ring 'After Coffee'",
+"New Study Finds That People Who Always Forget Their Passwords Are Actually Geniuses",
+"Breaking: Local Weather Reporter Predicts 100% Chance of 'Whatever You're Not Prepared For'",
+"Local Cat Demands Raise in Treats, Claims to Be the 'Real Star' of the Household",
+"Scientists Discover That Complaining About Traffic Actually Makes It Worse"
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to shuffle and display paginated rules
+  function shuffleRules() {
+    const shuffledRules = shuffleArray(rulesOfAcquisition);
+    const elementsPerPage = parseInt(document.getElementById('elementsPerPage').value, 10);
+    displayPaginatedRules(shuffledRules, elementsPerPage);
+  }
+
+  // Function to display paginated rules
+  function displayPaginatedRules(rules, elementsPerPage) {
+    const rulesContainer = document.getElementById('rulesContainer');
+    rulesContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < rules.length; i += elementsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+      pageDiv.innerHTML = `<h3>Topic ${(i / elementsPerPage) + 1}</h3><p>${rules.slice(i, i + elementsPerPage).join('<br>')}</p>`;
+      rulesContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Event listener for the Shuffle button
+  document.getElementById('shuffleButton').addEventListener('click', shuffleRules);
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

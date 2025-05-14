@@ -1,0 +1,219 @@
+<!-- HTML Structure -->
+<button id="generateAllButton" class="round-button">All</button>
+<br><br>
+<div id="journeyStages"></div>
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sciFiOptions = {
+      "Comedic Characters": [
+        "The Hypochondriac",
+				"The Clumsy Romantic",
+				"The Compulsive Liar",
+				"The Gossiping Neighbor",
+				"The Absent-Minded Professor",
+				"The Overly Dramatic Actor",
+				"The Bossy Know-It-All",
+				"The Awkward Intern",
+				"The Eccentric Artist",
+				"The Cowardly Hero",
+				"The Naive Tourist",
+				"The Overconfident Salesperson",
+				"The Forgetful Waiter",
+				"The Sarcastic Teenager",
+				"The Perfectionist",
+				"The Overprotective Parent",
+				"The Misunderstanding Police Officer",
+				"The Easily Distracted Scientist",
+				"The Mischievous Child",
+				"The Sleepwalker"
+      ],
+      "Unexpected Situations": [
+        "Mistaken Identity",
+				"Hidden in Plain Sight",
+				"Crossed Wires",
+				"Misdelivered Love Letter",
+				"Disguises Gone Wrong",
+				"Overheard Secrets",
+				"Accidental Proposal",
+				"The Wrong Bag Switch",
+				"A Midnight Phone Call",
+				"The Surprise Visit",
+				"Mixed Up Invitations",
+				"Cooking Disaster",
+				"A Stuck Door",
+				"The Inappropriate Costume",
+				"A Forgotten Anniversary",
+				"A Trip to the Wrong Venue",
+				"Double-Booked Date",
+				"Misplaced Important Item",
+				"An Unexpected Reunion",
+				"The Misinterpreted Gesture"
+      ],
+      "Funny Objects": [
+        "A Whoopee Cushion",
+				"An Inflatable Sword",
+				"A Rubber Chicken",
+				"A Squeaky Toy",
+				"A Fake Mustache",
+				"A Wig That Won’t Stay On",
+				"A Talking Doll",
+				"A Giant Hat",
+				"A Slippery Soap Bar",
+				"A Juggling Set",
+				"A Tuba That Plays Odd Notes",
+				"A Set of Groucho Glasses",
+				"A Fake Flower That Squirts Water",
+				"A Malfunctioning Microphone",
+				"A Ridiculously Large Phone",
+				"A Tiny Umbrella",
+				"A Bag of Confetti",
+				"A Mirror with a Funny Reflection",
+				"A Hula Hoop",
+				"A Very Old Cell Phone"
+      ],
+      "Dialogues and Catchphrases": [
+        "Did I just say that out loud?",
+				"Well, that escalated quickly!",
+				"This is not what it looks like!",
+				"Oops, wrong person!",
+				"Let me explain…",
+				"I thought you were someone else!",
+				"That’s not in the script!",
+				"Why are you looking at me like that?",
+				"I swear, this never happens.",
+				"You must be joking!",
+				"I can explain everything!",
+				"That’s one way to do it.",
+				"This is a disaster!",
+				"And they say I’m the crazy one?",
+				"That wasn’t supposed to happen.",
+				"You won’t believe what just happened!",
+				"What could possibly go wrong?",
+				"I’ve got a bad feeling about this.",
+				"We’re in big trouble now!",
+				"Is that even legal?"
+      ],
+      "Funny Scenarios": [
+        "An Elevator Full of Strangers",
+				"A Chaotic Kitchen",
+				"A Misplaced Phone Call",
+				"A Broken Stage Prop",
+				"A Confusing Love Triangle",
+				"A Noisy Neighbor",
+				"A Locked Room Mystery",
+				"A Wrong Delivery",
+				"A Surprise Party Gone Wrong",
+				"A Wedding with the Wrong Couple",
+				"A Costume Party with Mismatched Costumes",
+				"A Disasterous Blind Date",
+				"A Misunderstood Text Message",
+				"A Misleading GPS",
+				"A Stuck Window",
+				"A Bathroom Emergency",
+				"A Noisy Animal in the House",
+				"A Fire Drill Gone Wrong",
+				"A Race Against Time",
+				"A Spontaneous Dance-Off"
+      ],
+      "Absurd Plot Twists": [
+        "The Hero is the Villain's Twin",
+				"A Ghost is Actually Alive",
+				"The Villain Falls in Love with the Hero",
+				"The Prize is a Joke",
+				"The Scary Monster is Actually a Pet",
+				"A Secret Door Leads to the Bathroom",
+				"The Big Secret is a Birthday Party",
+				"The Lost Treasure is a Box of Candy",
+				"The Time Traveler Goes Back One Minute",
+				"The Disguised Character is Revealed as Themselves",
+				"A Mysterious Stranger is Just a Tourist",
+				"The Competitor is a Child",
+				"The Last-Minute Rescue is by a Dog",
+				"The Fearsome Leader is Afraid of Mice",
+				"The Big Battle Turns into a Dance-Off",
+				"The Villain Surrenders for Tea",
+				"The Chase Ends in a Hug",
+				"The Dangerous Weapon is a Toy",
+				"The Secret Recipe is Just Water",
+				"The Hero Sleeps Through the Climax"
+      ]
+    };
+
+    const majorArcana = [
+      "Comedic Characters", "Unexpected Situations", "Funny Objects", "Dialogues and Catchphrases", "Funny Scenarios", "Absurd Plot Twists"
+    ];
+
+    // Generate the stages with individual buttons
+    const journeyContainer = document.getElementById('journeyStages');
+    majorArcana.forEach(card => {
+      const stageDiv = document.createElement('div');
+      stageDiv.innerHTML = `
+        <h3>${card}</h3>
+        <p id="${card}Story"></p>
+        <button class="round-button generateButton" data-card="${card}">Shuffle</button>
+      `;
+      journeyContainer.appendChild(stageDiv);
+    });
+
+    // Function to generate a random story for a given card
+    function generateStory(card) {
+      const options = sciFiOptions[card];
+      const randomOption = options[Math.floor(Math.random() * options.length)];
+      document.getElementById(`${card}Story`).textContent = randomOption;
+    }
+
+    // Event listener for individual generate buttons
+    document.querySelectorAll('.generateButton').forEach(button => {
+      button.addEventListener('click', function() {
+        const card = this.getAttribute('data-card');
+        generateStory(card);
+      });
+    });
+
+    // Event listener for generating all stories at once
+    document.getElementById('generateAllButton').addEventListener('click', function() {
+      majorArcana.forEach(card => {
+        generateStory(card);
+      });
+    });
+  });
+</script>
+
+<!-- CSS for the Round Button -->
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 60px; /* Align text vertically */
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  #journeyStages h3 {
+    margin-top: 20px;
+    color: white;
+  }
+
+  #journeyStages p {
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  #generateAllButton {
+    margin-top: 20px;
+    display: block;
+  }
+</style>

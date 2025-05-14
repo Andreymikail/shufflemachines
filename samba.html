@@ -1,0 +1,488 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Samba</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="playersCheckbox"> Players</label><br>
+    <label><input type="checkbox" id="instrumentsCheckbox"> Instruments</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    <br><br>
+    <div style="margin-bottom: 20px;">
+      <h3>Rules</h3>
+      <p id="rulesResult" style="color: white;">-</p>
+      <button id="shuffleRulesButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Explosive Beat – A series of heavy beats that deal area damage.",
+"Tamborim Strike – Fast and precise attacks that hit multiple enemies.",
+"Surdo Smash – A deep sonic blow that deals massive damage to a single enemy.",
+"Repique Duel – Challenges an enemy to a rhythmic duel, dealing continuous damage for the duration of the battle.",
+"Caixa Crush – Unleashes a series of heavy blows that break enemy defenses.",
+"Echo Shield – Creates a sound barrier that absorbs some of the damage taken.",
+"Defensive Rhythm – Improves the defense of all allies for the duration of the beat.",
+"Agogô Guard – Increases allies' resistance to mental or magical attacks with a ceremonial ring.",
+"Tantan Wall – A protective shield created by deep and constant beats.",
+"Whistle of Alert – Interrupts enemy attacks by sounding a loud and strong whistle.",
+"Roda de Samba – Creates a musical wheel that restores energy and morale to all allies.",
+"Healing Melody – A soothing sequence that regenerates health over multiple turns.",
+"Revitalizing Sound – Awakens fallen allies with an energetic beat.",
+"Tropical Vibration – Improves the performance of allies, speeding up their actions for three turns.",
+"Unifying Harmony – Synchronizes the movements of allies, allowing for more powerful combo attacks.",
+"Hypnotic Samba – Disorients enemies, reducing their accuracy and delaying their attacks.",
+"Confusion Rattle – Confuses enemies with a constant rhythmic beat.",
+"Cuíca Howl – A sonorous cry that destabilizes enemies and weakens their resistance.",
+"Whistle Command – Issues orders to allies and interrupts communication between enemies.",
+"Samba Trance – Puts an enemy into a trance, rendering them temporarily unable to act.",
+"Ancestral Beat – Summons the spirits of samba dancers Legendary items to boost attacks and defenses.",
+"Carnival Parade – A grand event that buffs all allies while it lasts.",
+"Cosmic Samba – Creates an aura of joy that heals allies and removes negative effects.",
+"Drum Summon – Brings forth a drum kit of instruments that attacks all enemies simultaneously.",
+"Carnival Power – Dramatically increases all allies' stats for a short duration."];
+
+  const rules = [
+    `Samba (happy and energetic)
+A: C7(9) - F7M(13) - E7(9) - A7(13)
+B: Dm7(9) - G13 - C7(9) - F#dim7
+C7(9): C Mixolydian (C, D, E, F, G, A, Bb)
+F7M(13): F Lydian (F, G, A, B, C, D, E)
+E7(9): E Mixolydian (E, F#, G#, A, B, C#, D)
+A7(13): A Mixolydian (A, B, C#, D, E, F#, G)`,
+    `Chorinho (swinging and virtuous)
+A: G6(9) - A7(9) - D7(13) - G6(9)
+B: Bm7(9) - E7(9) - A7(13) - D7(13)
+G6(9): G Major (G, A, B, C, D, E, F#)
+A7(9): A Mixolydian (A, B, C#, D, E, F#, G)
+D7(13): D Mixolydian (D, E, F#, G, A, B, C)
+Bm7(9): B Dorian (B, C#, D, E, F#, G#, A)`,
+    `Bossa Nova (smooth and sophisticated)
+A: Am7 - D7(9) - G7M(13) - F#7(b13)
+B: Bm7(9) - E7(9) - A7M(13) - C#7(b9)
+Am7: A Dorian (A, B, C, D, E, F#, G)
+D7(9): D Mixolydian (D, E, F#, G, A, B, C)
+G7M(13): G Lydian (G, A, B, C#, D, E, F#)
+F#7(b13): F# Mixolydian b13 (F#, G#, A#, B, C#, D, E)`,
+    `Samba (upbeat and rhythmic)
+A: D7(9) - G13 - C7M(9) - F#7(b9)
+B: Bm7(9) - E7(13) - A7(b13) - D7(9)
+D7(9): D Mixolydian (D, E, F#, G, A, B, C)
+G13: G Mixolydian (G, A, B, C, D, E, F)
+C7M(9): C Major (C, D, E, F, G, A, B)
+F#7(b9): F# Phrygian Dominant (F#, G, A, B, C#, D, E)`,
+    `Choro (playful and melodic)
+A: A7(9) - D7M(13) - G#dim7 - A7(13)
+B: F#m7 - B7(9) - E7M(13) - C#7(b9)
+A7(9): A Mixolydian (A, B, C#, D, E, F#, G)
+D7M(13): D Major (D, E, F#, G, A, B, C#)
+G#dim7: G# Locrian (G#, A, B, C, D, E, F#)
+C#7(b9): C# Phrygian Dominant (C#, D, E, F#, G#, A, B)`,
+    `Bossa Nova (cool and introspective)
+A: C7M(9) - A7(b13) - Dm9 - G13
+B: E7(9) - A7M(9) - F#m7(b5) - B7(b9)
+C7M(9): C Major (C, D, E, F, G, A, B)
+A7(b13): A Mixolydian b13 (A, B, C#, D, E, F, G)
+Dm9: D Dorian (D, E, F, G, A, B, C)
+G13: G Mixolydian (G, A, B, C, D, E, F)
+F#m7(b5): F# Locrian (F#, G, A, B, C, D, E)`,
+    `Samba (dynamic and lively)
+A: G7M(13) - F#7(b13) - Bm7(9) - E7(13)
+B: A7(9) - D13 - G7M(9) - C#7(b9)
+G7M(13): G Lydian (G, A, B, C#, D, E, F#)
+F#7(b13): F# Mixolydian b13 (F#, G#, A#, B, C#, D, E)
+Bm7(9): B Dorian (B, C#, D, E, F#, G#, A)
+E7(13): E Mixolydian (E, F#, G#, A, B, C#, D)
+C#7(b9): C# Phrygian Dominant (C#, D, E, F#, G#, A, B)`,
+    `Choro (intricate and harmonic)
+A: Dm7(9) - G7(13) - C7M(9) - A7(b13)
+B: F7M(13) - B7(9) - E7(b13) - A7(9)
+Dm7(9): D Dorian (D, E, F, G, A, B, C)
+G7(13): G Mixolydian (G, A, B, C, D, E, F)
+C7M(9): C Major (C, D, E, F, G, A, B)
+F7M(13): F Lydian (F, G, A, B, C, D, E)
+B7(9): B Mixolydian (B, C#, D#, E, F#, G#, A)`,
+    `Bossa Nova (romantic and moody)
+A: F#m7(b5) - B7(b9) - E7M(9) - A7(b13)
+B: Dm7(9) - G7(9) - C7M(13) - F7M(9)
+F#m7(b5): F# Locrian (F#, G, A, B, C, D, E)
+B7(b9): B Phrygian Dominant (B, C, D#, E, F#, G, A)
+E7M(9): E Lydian (E, F#, G#, A#, B, C#, D#)
+A7(b13): A Mixolydian b13 (A, B, C#, D, E, F, G)
+G7(9): G Mixolydian (G, A, B, C, D, E, F)`,
+    `Samba (bright and syncopated)
+A: C7(13) - F7M(9) - G7(b13) - A7(13)
+B: Dm7(9) - G13 - C7(9) - E7(b9)
+C7(13): C Mixolydian (C, D, E, F, G, A, Bb)
+F7M(9): F Lydian (F, G, A, B, C, D, E)
+G7(b13): G Mixolydian b13 (G, A, B, C, D, Eb, F)
+E7(b9): E Phrygian Dominant (E, F, G#, A, B, C, D)`,
+    `Choro (joyful and fast-paced)
+A: G7M(9) - A7(13) - Dm7(9) - G7(13)
+B: C7(9) - F#dim7 - Bm7(9) - E7(b13)
+G7M(9): G Lydian (G, A, B, C#, D, E, F#)
+F#dim7: F# Locrian (F#, G, A, B, C, D, E)`,
+    `Bossa Nova (lush and smooth)
+A: E7(b9) - A7(b13) - D7M(9) - G7M(13)
+B: C#m7(9) - F#7(b13) - B7(9) - E7M(9)
+E7(b9): E Phrygian Dominant (E, F, G#, A, B, C, D)
+C#m7(9): C# Dorian (C#, D#, E, F#, G#, A#, B)
+B7(9): B Mixolydian (B, C#, D#, E, F#, G#, A)`,
+    `Samba (uplifting and driving)
+A: A7(9) - D13 - G7M(9) - C#7(b9)
+B: F#m7(b5) - B7(b9) - E7M(13) - A7(b13)
+A7(9): A Mixolydian (A, B, C#, D, E, F#, G)
+D13: D Mixolydian (D, E, F#, G, A, B, C)
+C#7(b9): C# Phrygian Dominant (C#, D, E, F#, G#, A, B)
+F#m7(b5): F# Locrian (F#, G, A, B, C, D, E)`,
+    `Choro (rhythmic and expressive)
+A: Dm7(9) - G13 - C7M(9) - A7(b13)
+B: F7M(9) - B7(9) - E7(b13) - A7(9)
+Dm7(9): D Dorian (D, E, F, G, A, B, C)
+G13: G Mixolydian (G, A, B, C, D, E, F)
+C7M(9): C Major (C, D, E, F, G, A, B)
+F7M(9): F Lydian (F, G, A, B, C, D, E)`,
+    `Bossa Nova (mellow and reflective)
+A: Em7(9) - A13 - D7M(13) - C#7(b9)
+B: F#m7(b5) - B7(b9) - E7M(13) - A7(b13)
+Em7(9): E Dorian (E, F#, G, A, B, C#, D)
+A13: A Mixolydian (A, B, C#, D, E, F#, G)
+D7M(13): D Lydian (D, E, F#, G#, A, B, C#)`,
+    `Samba (bright and energetic)
+A: C7M(9) - F#7(b13) - B7(b9) - E7M(13)
+B: Am7(9) - D7(9) - G13 - C7M(9)
+C7M(9): C Major (C, D, E, F, G, A, B)
+F#7(b13): F# Mixolydian b13 (F#, G#, A#, B, C#, D, E)
+B7(b9): B Phrygian Dominant (B, C, D#, E, F#, G, A)`,
+    `Choro (fast and complex)
+A: G7M(9) - A7(b13) - Dm7(9) - G7(13)
+B: C7M(9) - F#dim7 - B7(9) - E7(b13)
+G7M(9): G Lydian (G, A, B, C#, D, E, F#)
+A7(b13): A Mixolydian b13 (A, B, C#, D, E, F, G)
+F#dim7: F# Locrian (F#, G, A, B, C, D, E)`,
+    `Bossa Nova (romantic and sophisticated)
+A: F#m7(b5) - B7(b9) - E7M(9) - A7(b13)
+B: Dm7(9) - G7(9) - C7M(13) - F7M(9)
+F#m7(b5): F# Locrian (F#, G, A, B, C, D, E)
+B7(b9): B Phrygian Dominant (B, C, D#, E, F#, G, A)
+E7M(9): E Lydian (E, F#, G#, A#, B, C#, D#)`,
+    `Samba (high-energy and festive)
+A: C7M(13) - F7M(9) - G7(b13) - A7(9)
+B: Dm7(9) - G13 - C7(9) - E7(b9)
+C7M(13): C Lydian (C, D, E, F#, G, A, B)
+F7M(9): F Lydian (F, G, A, B, C, D, E)
+G7(b13): G Mixolydian b13 (G, A, B, C, D, Eb, F)`,
+    `Choro (flowing and virtuosic)
+A: G7M(9) - A7(b13) - Dm7(9) - G7(13)
+B: C7M(9) - F#dim7 - Bm7(9) - E7(b13)
+G7M(9): G Lydian (G, A, B, C#, D, E, F#)
+A7(b13): A Mixolydian b13 (A, B, C#, D, E, F, G)`  
+  ];  
+const players = [
+{name: "Artist: Abel Ferreira", attributes: {"Clarinet Brilliance": 100, "Musical Improvisation": 95, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "Melodic Whisper – Plays melodic phrases that confuse enemies and grant extra accuracy to allies' attacks."}},
+{name: "Artist: Adoniran Barbosa", attributes: {"Lyrical Storytelling": 100, "Humor & Wit": 95, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Street Chronicles – Tells comical and touching stories that weaken enemy morale and strengthen allies' defenses against demotivational attacks."}},
+{name: "Artist: Alceu Valença", attributes: {"Melodic Sorcery": 100, "Stage Presence": 95, Popularity: 90, Legacy: 95, Innovation: 95, "Special Ability": "Spellbinding Anthem – Summons a musical spectacle that confounds enemies and empowers allies with wild, creative energy."}},
+{name: "Artist: Alcebíades Barcelos (Bide)", attributes: {"Percussive Mastery": 95, "Songwriting Brilliance": 100, Popularity: 80, Legacy: 90, Innovation: 95, "Special Ability": "Tamborim Tactics – Your rhythmic beats increase synergy between allies, speeding up their actions and disrupting enemy attacks."}},
+{name: "Artist: Alcione", attributes: {"Vocal Power": 100, "Stage Command": 95, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Bronze Thunder – Unleashes a devastating wave of sound that knocks back enemies and empowers allies with renewed courage and energy."}},
+{name: "Artist: Almir Sater", attributes: {Lyricism: 85, Composure: 88, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Viola Encantada – Summons a mystical aura with deep viola caipira melodies, regenerating ally energy while weakening enemy aggression through soothing harmonics."}},
+{name: "Artist: Altamiro Carrilho", attributes: {"Flute Mastery": 100, "Melodic Precision": 95, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "Melodic Breeze – Blows a stream of magical notes that hits enemies at range and grants allies extra speed."}},
+{name: "Artist: Anacleto de Medeiros", attributes: {"Orchestral Command": 100, "Compositional Mastery": 95, Popularity : 80, Legacy: 100, Innovation: 85, "Special Ability": "Symphonic Pulse – Summons a harmonic sound wave that synchronizes allies' abilities, creating devastating combo attacks."}},
+{name: "Artist: Antônio Carlos Jobim", attributes: {"Composition Musical": 100, "Harmony Mastery": 95, Popularity: 90, Legacy: 100, Innovation: 90, "Special Ability": "Wave of Inspiration – Summons a wave of music that harmonizes all allied abilities, making combined performances more powerful and fluid."}},
+{name: "Artist: Arlindo Cruz", attributes: {"Melodic Improvisation": 95, "Cavaquinho Expertise": 90, Popularity: 90, Legacy: 85, Innovation: 85, "Special Ability": "Samba Swing – Generates an irresistible beat that restores allies' health and creates a rhythmic barrier that reflects sound-based attacks."}},
+{name: "Artist: Assis Calixto", attributes: {"Groove Power": 95, "Stage Charisma": 87, Popularity: 72, Legacy: 92, Innovation: 85, "Special Ability": "Alpha Alfaia – Gains +10 to Impact Force and Percussive Leadership when leading a collective batuque, creating sound waves that amplify the power of allies and break the resistance of enemies."}},
+{name: "Artist: Astrud Gilberto", attributes: {"Smooth Vocals": 100, "Stage Elegance": 95, Popularity: 90, Legacy: 100, Innovation: 85, "Special Ability": "Gentle Whisper – Sings softly, charming enemies and increasing the accuracy of allies' attacks for several turns."}},
+{name: "Artist: ​​Baden Powell", attributes: {"Guitar Perfection": 100, "Rhythmic Creativity": 95, Popularity: 90, Legacy: 95, Innovation: 95, "Special Ability": "Afro-Brazilian Fusion – Blends African and Brazilian elements, empowering allies with extra resistance and destabilizing enemy rhythms."}},
+{name: "Artist: Bebel Gilberto", attributes: {"Groove Power": 85, "Stage Charisma": 90, Popularity: 80, Legacy: 88, Innovation: 85, "Special Ability": "Velvet Bossa Aura – Creates a soft, hypnotic atmosphere that calms allies, reducing damage taken and increasing attack accuracy. Enemies enter a state of relaxation, lowering their defenses."}},
+{name: "Artist: Benito di Paula", attributes: {"Piano Flair": 95, "Lyric Boldness": 90, Popularity: 85, Legacy: 85, Innovation: 90, "Special Ability": "Bohemian Swing – Mixes samba with international rhythms, disorienting enemies and granting allies extra movement."}},
+{name: "Artist: Beth Carvalho", attributes: {"Vocal Strength": 95, "Cultural Influence": 100, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Roots Revival – Calls upon musical ancestors to bolster allies, restoring stamina and amplifying their attacks."}},
+{name: "Artist: Bezerra da Silva", attributes: {"Street Knowledge": 100, "Lyric Provocation": 95, Popularity: 90, Legacy: 85, Innovation: 80, "Special Ability": "Urban Truths – Unleashes satirical verses that weaken corrupt enemies and increase allies' resistance to mental manipulation."}},
+{name: "Artist: Caetano Veloso", attributes: {"Powerful Vocals": 88, "Stage Presence": 85, Popularity: 90, Legacy: 100, Innovation: 95, "Special Ability": "Tropicália Pulse – Boundless Creativity"}},
+{name: "Artist: Candeia", attributes: {"Lyrical Depth": 100, "Cultural Wisdom": 95, Popularity: 85, Legacy: 95, Innovation: 85, "Special Ability": "Truthful Verse – Tells powerful stories that remove illusions from enemies and increase allies' resolve."}},
+{name: "Artist: Carmen Miranda", attributes: {"Powerful Vocals": 85, "Stage Presence": 100, Popularity: 95, Legacy: 100, Innovation: 90, "Special Ability": "Fruit Fiesta – Samba Spectacle"}},
+{name: "Artist: Carlinhos Brown", attributes: {"Powerful Vocals": 85, "Stage Presence": 98, Popularity: 90, Legacy: 92, Innovation: 97, "Special Ability": "Carnival of Drums – Summons a percussion storm, creating rhythmic shields that block enemy attacks while stunning opponents with hypnotic beats."}},
+{name: "Artist: Cartola", attributes: {Lyricism: 100, Composure: 95, Popularity: 85, Legacy: 100, Innovation: 80, "Special Ability": "Poetic Resonance – Inspires allies with stirring lyrics, restoring their stamina and increasing their creativity."}},
+{name: "Artist: Chico Buarque", attributes: {"Groove Power": 80, "Stage Charisma": 93, Popularity: 98, Legacy: 100, Innovation: 90, "Special Ability": "Invisible Narrative – Chico's songs reveal hidden truths, revealing enemies' weaknesses and altering the battlefield with stories that protect allies and confuse foes."}},
+{name: "Artist: Chiquinha Gonzaga", attributes: {"Piano Virtuosity": 100, "Compositional Vision": 95, Popularity: 85, Legacy: 100, Innovation: 95, "Special Ability": "Freedom's Anthem – Creates an inspiring melody that removes negative effects from allies and strengthens their mental defenses."}},
+{name: "Artist: Clara Nunes", attributes: {"Vocal Strength": 100, "Spiritual Connection": 95, Popularity: 90, Legacy: 100, Innovation: 85, "Special Ability": "Sacred Rhythm – Channels spiritual forces to create an energy shield that protects allies from attacks and heals wounds."}},
+{name: "Artist: Claudionor Germano", attributes: {Lyricism: 85, Composure: 95, Popularity: 88, Legacy: 100, Innovation: 85, "Special Ability": "Voz do Frevo – Gains +10 to Legacy and Stage Presence when performing frevo anthems, summoning a carnival surge that revitalizes allies and disrupts enemy formations with infectious energy."}},
+{name: "Artist: Clementina de Jesus", attributes: {"Ancestral Force": 100, "Spiritual Energy": 95, Popularity: 85, Legacy: 100, Innovation: 80, "Special Ability": "Sacred Ancestry – Sings sacred chants that invoke protective spiritual forces, absorbing damage and strengthening allies."}},
+{name: "Artist: Damião Calixto", attributes: {"Groove Power": 92, "Stage Charisma": 85, Popularity: 70, Legacy: 90, Innovation: 88, "Special Ability": "Leather Drum Resonance – Gains +10 to Percussion Strength and Rhythmic Endurance when performing traditional maracatu, creating a hypnotic pulse that strengthens allies and weakens the coordination of opponents."}},
+{name: "Artist: Daniela Mercury", attributes: {"Vocal Power": 95, "Musical Improvisation": 90, Popularity: 95, Legacy: 90, Innovation: 90, "Special Ability": "Canto da Cidade – Gains +10 to Rhythm and Energy when performing carnival anthems, elevating allies with electrifying beats and destabilizing adversaries with explosions of percussion and contagious joy."}},
+{name: "Artist: Dayane Calixto", attributes: {"Groove Power": 85, "Stage Charisma": 80, Popularity: 70, Legacy: 83, Innovation: 84, "Special Ability": "Sacred Drum Call – Gains +10 to Spiritual Resonance and Percussive Energy when engaging in ceremonial and ritualistic rhythms, summoning a trance-like focus for allies."}},
+{name: "Artist: Dilermando Reis", attributes: {"Guitar Virtuosity": 100, "Technical Mastery": 95, Popularity: 85, Legacy: 100, Innovation: 90, "Special Ability": "String Symphony – Executes perfect chords that generate a protective aura, reducing damage to allies and increasing their accuracy."}},
+{name: "Artist: Diogo Nogueira", attributes: {"Stage Power": 95, "Rhythmic Precision": 90, Popularity: 90, Legacy: 85, Innovation: 80, "Special Ability": "Samba Pulse – Creates a pulsating beat that speeds up the pace of allies' actions and weakens enemies' defenses."}},
+{name: "Artist: Djavan", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 92, Legacy: 97, Innovation: 95, "Special Ability": "Luz do Sol – Gains +10 to Innovation and Groove when fusing jazz, samba, and MPB, creating unpredictable melodic shifts that destabilize opponents and energize allies."}},
+{name: "Artist: Dominguinhos", attributes: {"Accordion Brilliance": 100, "Musical Improvisation": 95, Popularity: 90, Legacy: 100, Innovation: 90, "Special Ability": "Nordeste Encantado – Unleashes soulful accordion melodies that boost ally endurance and weaken enemy coordination with hypnotic forró rhythms."}},
+{name: "Artist: Dona Ivone Lara", attributes: {"Vocal Emotion": 100, "Spiritual Aura": 95, Popularity: 90, Legacy: 100, Innovation: 85, "Special Ability": "Ancestral Hymn – Calls upon the strength of ancestors to bolster allies and restore emotional health during prolonged battles."}},
+{name: "Artist: Dori Caymmi", attributes: {"Arranging Genius": 95, "Harmonic Complexity": 90, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Harmony Wave – Creates a detailed sound wave that increases the effectiveness of attacks based on duets and musical formations."}},
+{name: "Artist: Dudu Nobre", attributes: {"Groove Power": 95, "Stage Charisma": 90, Popularity: 85, Legacy: 92, Innovation: 89, "Special Ability": "Samba Pulse – Gains +10 to Chord Progression and Improvisational Flow when performing live rodas de samba, uniting the crowd in an irresistible rhythm that boosts team spirit."}},
+{name: "Artist: Edu Lobo", attributes: {"Melodic Expression": 95, "Orchestral Arranging": 90, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Musical Saga – Tells an epic sonic story that increases the attack power of allies while weakening the resolve of enemies."}},
+{name: "Artist: Egberto Gismonti", attributes: {"Instrumental Brilliance": 100, "Musical Improvisation": 100, Popularity: 85, Legacy: 95, Innovation: 100, "Special Ability": "Universal Harmonics – Gains +10 to Innovation and Improvisational Depth when blending classical, jazz, and Brazilian folk music, creating sonic textures that expand the perception of allies and confuse adversaries."}},
+{name: "Artist: Emilio Santiago", attributes: {"Powerful Vocals": 95, "Stage Presence": 92, Popularity: 90, Legacy: 88, Innovation: 85, "Special Ability": "Romantic Serenade – Smooth, romantic vocals soothe opponents, lowering their aggression and boosting the team's regeneration during battle."}},
+{name: "Artist: Elis Regina", attributes: {"Powerful Vocals": 95, "Stage Presence": 90, Popularity: 85, Legacy: 100, Innovation: 80, "Special Ability": "Tropical Storm – Increases the emotional intensity of all allied artists, increasing audience engagement."}},
+{name: "Artist: Elizeth Cardoso", attributes: {"Timeless Voice": 100, "Emotional Interpretation": 100, Popularity: 90, Legacy: 100, Innovation: 85, "Special Ability": "Divine Harmony – Her crystal-clear voice cuts through time and emotions, dispelling negative effects from allies and weakening the resolve of enemies, causing them to hesitate before attacking."}},
+{name: "Artist: Elza Soares", attributes: {"Powerful Vocals": 98, "Stage Presence": 100, Popularity: 95, Legacy: 99, Innovation: 95, "Special Ability": "Samba Fury – When her health drops below 50%, her power doubles, releasing an explosive wave of samba that damages all enemies and revives fallen allies."}},
+{name: "Artist: Época de Ouro", attributes: {"Ensemble Precision": 100, "Musical Harmony": 95, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Timeless Chord – Plays a perfect harmony that synchronizes allies' actions and creates devastating combo attacks."}},
+{name: "Artist: Erasto Vasconcelos", attributes: {"Percussion Magic": 100, "Sound Innovation": 95, Popularity: 80, Legacy: 85, Innovation: 100, "Special Ability": "Percussive Alchemy – Blends exotic sounds that deal random area damage and heal allies with vibrant beats."}},
+{name: "Artist: Erasmo Carlos", attributes: {Lyricism: 85, Composure: 95, Popularity: 92, Legacy: 98, Innovation: 90, "Special Ability": "Tremendão Swagger – Gains +10 to Charisma and Stage Control, using rock and soul-infused grooves to rally allies and disorient opponents with effortless cool."}},
+{name: "Artist: Ernesto Nazareth", attributes: {"Piano Mastery": 100, "Rhythmic Complexity": 95, Popularity: 80, Legacy: 100, Innovation: 90, "Special Mastery Ability": "Syncopated Magic – Creates rhythmically intricate melodies that disrupt enemy synchronization while increasing allies' dexterity."}},
+{name: "Artist: Fabiana Cozza", attributes: {"Vocal Power": 100, "Rhythmic Expression": 95, Popularity: 80, Legacy: 85, Innovation: 90, "Special Ability": "Samba Soulwave – Your voice echoes with such intense vibration that it strengthens your allies' resistance against negative attacks and inspires confidence, increasing the accuracy of rhythmic strikes."}},
+{name: "Artist: Fagner", attributes: {"Powerful Vocals": 88, "Stage Presence": 85, Popularity: 87, Legacy: 90, Innovation: 83, "Special Ability": "Sertão Echo – His voice carries across long distances, dealing persistent damage to enemies while evoking deep emotions that weaken their defenses."}},
+{name: "Artist: Gal Costa", attributes: {"Vocal Power": 95, "Artistic Expression": 100, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Tropical Pulse – Emits a tropical wave of emotions that heals allies and disorients enemies with a sensory impact."}},
+{name: "Artist: Geraldo Vandré", attributes: {"Powerful Vocals": 86, "Stage Presence": 92, Popularity: 85, Legacy: 95, Innovation: 89, "Special Ability": "March of Resistance – Inspires a wave of defiance, granting immunity to fear and debuffs for his entire team while gradually increasing their attack power."}},
+{name: "Artist: Gilberto Alves", attributes: {"Velvet Voice": 100, "Romantic Interpretation": 95, Popularity: 85, Legacy: 80, Innovation: 75, "Special Ability": "Golden Serenade – Your passionate interpretation temporarily disarms opponents and charms allies, granting bonus energy regeneration."}},
+{name: "Artist: Gonzaguinha", attributes: {Lyricism: 90, Composure: 88, Popularity: 85, Legacy: 97, Innovation: 92, "Special Ability": "Caminhos da Vida – Gains +10 to Lyrical Impact when performing socially conscious anthems, inspiring allies while striking opponents with sharp poetic force."}},
+{name: "Artist: Hamilton de Holanda", attributes: {"Mandolin Mastery": 100, "Musical Dexterity": 95, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Lightning Strings – Performs electrifying solos that create a sonic storm, striking enemies in succession."}},
+{name: "Artist: Heitor dos Prazeres", attributes: {"Melodic Genius": 95, "Artistic Versatility": 100, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Bohemian Brushstroke – Switches between visual art and music to confuse opponents and create a hypnotic melody that slows enemy attacks."}},
+{name: "Artist: Henrique Cazes", attributes: {"Cavaquinho Mastery": 100, "Improvisational Skill": 95, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Rapid Strings – Performs rapid strings that confuse enemies and speed up allies' actions."}},
+{name: "Artist: Ilma Calixto", attributes: {"Groove Power": 88, "Stage Charisma": 82, Popularity: 72, Legacy: 86, Innovation: 85, "Special Ability": "Rhythmic Weave – Gains +10 to Percussive Coordination and Syncopation when leading ensemble performances, creating interwoven beats that mesmerize audiences and disorient adversaries."}},
+{name: "Artist: Ivone Lara", attributes: {"Vocal Power": 100, "Spiritual Influence": 95, Popularity: 90, Legacy: 100, Innovation: 85, "Special Ability": "Matriarch’s Blessing – Summons spiritual protection for all allies, granting resistance to emotional damage and amplifying harmony-based attacks."}},
+{name: "Artist: Jacob do Bandolim", attributes: {"Instrumental Mastery": 100, "Stage Presence": 80, Popularity: 70, Legacy: 95, Innovation: 85, "Special Ability": "Echoing Strings – Summons a wave of nostalgic melodies that increase precision and inspiration for allied musicians."}},
+{name: "Artist: Jards Macalé", attributes: {"Artistic Vision": 100, "Lyric Subversion": 95, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Avant-Garde Pulse – Defy musical conventions to weaken enemy defenses and inspire allies with limitless creative power."}},
+{name: "Artist: João Bosco", attributes: {"Guitar Dexterity": 95, "Lyric Innovation": 90, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Dynamic Groove – Plays energetic rhythms that increase allies' agility and delay enemy attacks."}},
+{name: "Artist: João Donato", attributes: {"Powerful Vocals": 75, "Stage Presence": 80, Popularity: 85, Legacy: 98, Innovation: 99, "Special Ability": "Tropical Jazz Flow – Gains +10 to Groove and Improvisation when mixing Latin, jazz, and bossa nova elements, turning any battle into a hypnotic, danceable experience."}},
+{name: "Artist: João Gilberto", attributes: {"Guitar Precision": 100, "Rhythmic Simplicity": 95, Popularity: 95, Legacy: 100, Innovation: 100, "Special Ability": "Quiet Power – Creates an aura of serenity that absorbs attacks and empowers allies with absolute focus and precision."}},
+{name: "Artist: João Nogueira", attributes: {"Vocal Power": 95, "Melodic Creativity": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Roots Revival – Calls upon ancient musical memories that strengthen allies and remove mental weakening effects."}},
+{name: "Artist: João Pernambuco", attributes: {"Guitar Mastery": 100, "Folk Fusion": 95, Popularity: 80, Legacy: 100, Innovation: 90, "Special Ability": "Folk Echo – Performs a fusion of styles that confuses enemies and increases allies' creativity in combo attacks."}},
+{name: "Artist: Joel Nascimento", attributes: {"Bandolim Mastery": 100, "Improvisational Brilliance": 95, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "Mandolin Storm – Creates a sonic storm of fast and precise notes, hitting multiple enemies at once."}},
+{name: "Artist: Jorge Aragão", attributes: {"Vocal Command": 95, "Lyric Craftsmanship": 100, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Poetic Pulse – Unleashes powerful verses that empower allies and demoralize enemies by exploring stories of resilience and resilience."}},
+{name: "Artist: Jorge Ben Jor", attributes: {"Groove Power": 100, "Stage Charisma": 95, Popularity: 90, Legacy: 95, Innovation: 100, "Special Ability": "Funky Samba Pulse – Unleashes an irresistible wave of groove that energizes allies, increases their speed and disorients enemies with contagious rhythms."}},
+{name: "Artist: Jorge Mautner", attributes: {Lyricism: 95, Composure: 85, Popularity: 80, Legacy: 95, Innovation: 100, "Special Ability": "Kaos Poético – Gains +10 to Innovation and Lyricism when fusing surrealism, samba, e rock, creating unpredictable sonic disruptions that confuse enemies and inspire allies."}},
+{name: "Artist: Jovelina Pérola Negra", attributes: {"Vocal Power": 100, "Spiritual Influence": 90, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Partido-Alto Resilience – Gains +10 to Groove and Emotional Impact when performing samba de raiz, strengthening allies with contagious energy and breaking down opponents' defenses with rhythmic authenticity."}},
+{name: "Artist: Joyce Moreno", attributes: {"Vocal Smoothness": 95, "Songwriting Skill": 90, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Ocean's Whisper – Creates a relaxing atmosphere that restores allies' energy and reduces enemy attack accuracy."}},
+{name: "Artist: K-Ximbinho", attributes: {"Saxophone Mastery": 100, Improvisation: 95, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "Jazzed Choro – Mixes jazz and choro in an electrifying performance that accelerates allies and paralyzes enemies with unexpected notes."}},
+{name: "Artist: Leci Brandão", attributes: {"Vocal Authority": 95, "Social Awareness": 100, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Voice of Justice – Her activist lyrics remove negative effects from allies and reduce the effectiveness of enemy manipulation-based abilities."}},
+{name: "Artist: Luiz Bonfá", attributes: {"Guitar Brilliance": 100, "Melodic Innovation": 95, Popularity: 85, Legacy: 100, Innovation: 95, "Special Ability": "Sunset Serenade – Soothing melodies restore health and increase the accuracy of allied attac	ks during the sunset of battle."}},
+{name: "Artist: Luiz Gonzaga", attributes: {Lyricism: 95, Composure: 98, Popularity: 100, Legacy: 100, Innovation: 95, "Special Ability": "Asa Branca Storm – Summons an unstoppable wave of forró rhythms, boosting ally stamina and overwhelming enemies with the pulse of the Northeast."}},
+{name: "Artist: Luiz Melodia", attributes: {"Powerful Vocals": 90, "Stage Presence": 88, Popularity: 85, Legacy: 92, Innovation: 90, "Special Ability": "Blues Samba Surge – Street Poet's Anthem"}},
+{name: "Artist: Luizão Maia", attributes: {"Groove Power": 95, "Stage Charisma": 80, Popularity: 75, Legacy: 95, Innovation: 90, "Special Ability": "Bassline Foundation – Amplifies ally rhythm and harmony by +10 when playing Brazilian genres. His signature groove stabilizes the team’s tempo and weakens opponent synchronization."}},
+{name: "Artist: Lula Calixto", attributes: {"Groove Power": 90, "Stage Charisma": 90, Popularity: 75, Legacy: 88, Innovation: 90, "Special Ability": "Maracatu Incantation – Gains +10 to Trance Effect and Spiritual Connection when conducting rhythmic ceremonies, putting allies in a state of maximum resistance and disorienting opponents with ancestral vibrations."}},
+{name: "Artist: Lula Queiroga (The Poetic Rhythmist)", attributes: {"Groove Power": 88, "Stage Charisma": 85, Popularity: 80, Legacy: 90, Innovation: 92, "Special Ability": "Northeast Psychedelic – Gains +10 to Lyrical Improvisation and Experimental Groove when blending regional rhythms with modern sounds, creating hypnotic sonic landscapes that elevate allies and confound opponents."}},
+{name: "Artist: Luperce Miranda", attributes: {"Mandolin Expertise": 100, "Musical Dexterity": 95, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "String Surge – Unleashes a storm of rapid-fire notes that strike multiple enemies at once."}},
+{name: "Artist: Maciel Salu", attributes: {"Groove Power": 90, "Stage Charisma": 88, Popularity: 75, Legacy: 85, Innovation: 92, "Special Ability": "Arcane Fiddler – Maciel's fiddle summons ancestral spirits of maracatu, increasing area attack. Allies enter a trance state, gaining resistance to effects negative."}},
+{name: "Artist: Marcos Lessa", attributes: {"Vocal Charisma": 92, "Storytelling Expertise": 90, Popularity: 85, Legacy: 88, Innovation: 87, "Special Ability": "Brazilian Velvet – Gains +10 in Harmony and Resilience when interpreting MPB classics with a soft voice, connecting allies to the collective affective memory and reducing enemy evasion."}},
+{name: "Artist: Marcos Valle", attributes: {"Melodic Creativity": 95, "Production Genius": 90, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Summer Vibes – Conjures a summery atmosphere that restores energy and inspires allies to perform more precise and synchronized movements."}},
+{name: "Artist: Maria Bethânia", attributes: {"Powerful Vocals": 95, "Stage Presence": 92, Popularity: 88, Legacy: 95, Innovation: 85, "Special Ability": "Sacred Chant – Timeless Voice"}},
+{name: "Artist: Maria Rita", attributes: {"Powerful Vocals": 92, "Stage Presence": 90, Popularity: 85, Legacy: 90, Innovation: 88, "Special Ability": "Soulful Serenade – Maria Rita channels the essence of samba and jazz into her voice, restoring the energy of allies and disarming enemies with pure emotion."}},
+{name: "Artist: Mariana Aydar (The Forró Vanguardist)", attributes: {"Vocal Power": 90, "Musical Improvisation": 95, Popularity: 85, Legacy: 85, Innovation: 90, "Special Ability": "Trio Nordestino – Gains +10 to Groove and Authenticity when performing forró, keeping allies in tune with swing contagious and leaving opponents bewildered with unpredictable rhythmic changes."}},
+{name: "Artist: Marisa Monte", attributes: {"Powerful Vocals": 93, "Stage Presence": 90, Popularity: 95, Legacy: 97, Innovation: 90, "Special Ability": "Harmonic Nexus – Can shift between genres mid-battle, adapting to any scenario and countering enemy attacks by reflecting their energy back in melodic form."}},
+{name: "Artist: Martinho da Vila", attributes: {"Vocal Charisma": 95, "Storytelling Expertise": 100, Popularity: 90, Legacy: 95, Innovation: 85, "Special Ability": "Carnival Spirit – Summons a musical parade that increases allies' speed and weakens enemy defenses for several turns."}},
+{name: "Artist: Mauricio Carrilho", attributes: {"Guitar Brilliance": 100, "Musical Knowledge": 95, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "Harmonic Web – Plays a sequence of intricate chords that weave allies into a supportive web, increasing their synergy in combo attacks."}},
+{name: "Artist: Maysa", attributes: {"Emotional Intensity": 100, "Vocal Drama": 95, Popularity: 90, Legacy: 90, Innovation: 85, "Special Ability": "Melancholy Wave – Unleashes an intense, emotional melody that reduces enemies' willpower and restores allies' mental energy."}},
+{name: "Artist: Mestra Maria de Lourdes", attributes: {"Groove Power": 90, "Stage Charisma": 88, Popularity: 75, Legacy: 95, Innovation: 85, "Special Ability": "Coconut's Charm – Invokes ancestral chants and circle rhythms that regenerate ally focus and silence enemy abilities for one round, rooted in the strength of matriarchal tradition."}},
+{name: "Artist: Mestre Marçal", attributes: {"Percussion Dominance": 100, "Commanding Presence": 95, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Surdo Supreme – Your deep bass drum beat reverberates across the field, shaking the morale of your opponents and granting your allies extra resistance against physical attacks."}},
+{name: "Artist: Mestre Salustiano", attributes: {"Groove Power": 95, "Stage Charisma": 92, Popularity: 78, Legacy: 97, Innovation: 88, "Special Ability": "Maracatu Totem – Mestre Salustiano summons a percussive totem that boosts the morale of allies, continually restoring their energy. The sound of the drums creates shockwaves that destabilize enemies."}},
+{name: "Artist: Miúcha", attributes: {"Smooth Vocals": 95, "Emotional Expression": 90, Popularity: 85, Legacy: 85, Innovation: 80, "Special Ability": "Timeless Duet – When combined with another character, activates a powerful duet that amplifies all positive effects for two turns."}},
+{name: "Artist: Monarco", attributes: {"Traditional Authority": 100, "Cultural Impact": 95, Popularity: 85, Legacy: 95, Innovation: 80, "Special Ability": "Legacy Chant – Calls upon the strength of samba traditions to strengthen the resistance of all allies, granting immunity to psychological attacks."}},
+{name: "Artist: Moraes Moreira", attributes: {"Vocal Command": 90, "Lyric Craftsmanship": 100, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Frevo Elétrico – Gains +10 to Groove and Improvisation when blending samba, frevo, and rock, creating an unstoppable rhythmic force that energizes allies and overwhelms opponents."}},
+{name: "Artist: Mussum (Originais do Samba)", attributes: {"Percussion Expertise": 100, "Stage Charisma": 95, Popularity: 90, Legacy: 85, Innovation: 80, "Special Ability": "Rhythm Surge – Unleash a comical and powerful sequence of beats that hits enemies in succession and boosts allies' morale with infectious joy."}},
+{name: "Artist: Naná Vasconcelos", attributes: {"Powerful Vocals": 80, "Stage Presence": 90, Popularity: 82, Legacy: 98, Innovation: 95, "Special Ability": "Echoes of the Berimbau – Summons ancestral rhythms that disorient enemies while boosting ally creativity and synergy through hypnotic percussion."}},
+{name: "Artist: Nara Leão", attributes: {"Soothing Voice": 90, "Cultural Influence": 100, Popularity: 85, Legacy: 95, Innovation: 80, "Special Ability": "Social Harmony – Breaks tension in conflicts, creating temporary peace and allowing artistic collaboration bonuses."}},
+{name: "Artist: Nelson Cavaquinho", attributes: {"Emotional Storytelling": 100, "Guitar Craft": 95, Popularity: 85, Legacy: 95, Innovation: 85, "Special Ability": "Melancholic Verse – Performs an emotional ballad that causes deep sadness in enemies, reducing their attack power."}},
+{name: "Artist: Nilze Carvalho", attributes: {"Emotional Storytelling": 90, "Guitar & Bandolim Craft": 98, Popularity: 85, Legacy: 90, Innovation: 88, "Special Ability": "Harmonic Breeze – Delivers a mesmerizing choro melody that soothes allies, increasing their focus and agility, while subtly distracting enemies with its intricate beauty."}},
+{name: "Artist: Nivaldo Ornelas (The Saxophonic Voyager)", attributes: {"Vocal Command": 75, "Lyric Craftsmanship": 80, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "Fusion Cosmos – Gains +10 to Improvisation and Harmonic Exploration when blending jazz, MPB, and progressive elements, creating ethereal sonic landscapes that transcend genres."}},
+{name: "Artist: Noel Rosa", attributes: {"Satirical Lyricism": 100, "Street Smarts": 95, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Sharp Wit – Desarma enemies with sarcastic verses, reducing their effectiveness while strengthening the mental resistance of allies."}},
+{name: "Artist: Noriel Vilela", attributes: {"Groove Power": 95, "Stage Charisma": 85, Popularity: 70, Legacy: 87, Innovation: 83, "Special Ability": "Grave Resonance – Noriel's deep voice echoes like thunder, stunning enemies and bolstering allies' defenses. The bass vibrates in the air, creating rhythmic shockwaves that disarm enemy attacks."}},
+{name: "Artist: Oswaldo Montenegro", attributes: {"Powerful Vocals": 90, "Stage Presence": 85, Popularity: 85, Legacy: 90, Innovation: 88, "Special Ability": "Cantador das Estrelas – Gains +10 to Lyrical Impact and Emotional Resonance when performing poetic ballads, creating a protective aura that enhances ally endurance."}},
+{name: "Artist: Paulinho da Viola", attributes: {"Lyric Mastery": 100, "Cultural Depth": 95, Popularity: 85, Legacy: 100, Innovation: 85, "Special Ability": "Legacy Echo – Sings about the preservation of cultural memory, increasing allies' defense and decreasing manipulation-based attacks."}},
+{name: "Artist: Paulo da Portela", attributes: {"Compositional Mastery": 100, Charisma: 95, Popularity: 90, Legacy: 100, Innovation: 85, "Special Ability": "Founder's Call – Summons the spirits of traditional samba to restore your allies' energy and increase harmony on the field, reducing the impact of chaotic attacks."}},
+{name: "Artist: Paulo Moura", attributes: {"Clarinet Mastery": 100, Improvisation: 95, Popularity: 85, Legacy: 90, Innovation: 90, "Special Ability": "Jazz Infusion – Blends elements of jazz and choro, increasing allies' creativity and destabilizing the enemy formation."}},
+{name: "Artist: Pixinguinha", attributes: {"Songwriting Genius": 100, "Instrumental Versatility": 95, Popularity: 90, Legacy: 100, Innovation: 85, "Special Ability": "Melodic Cascade – Unleashes complex, moving melodies."}},
+{name: "Artist: Presto do Coco", attributes: {"Percussion Mastery": 90, Improvisation: 88, Popularity: 80, Legacy: 85, Innovation: 92, "Special Ability": "Macumbarima Flow – Blends traditional coco rhythms with rap and dub, enhancing ally creativity and disrupting enemy formations with ancestral beats."}},
+{name: "Artist: Radamés Gnattali", attributes: {"Orchestration Skill": 100, "Instrumental Precision": 95, Popularity: 80, Legacy: 100, Innovation: 90, "Special Ability": "Symphonic Fusion – Combines classical and popular elements, creating a melody that synchronizes allied attacks into a powerful collective movement."}},
+{name: "Artist: Raimundo Calixto", attributes: {"Groove Power": 88, "Stage Charisma": 86, Popularity: 70, Legacy: 95, Innovation: 87, "Special Ability": "Timeless Beat – Gains +10 to Legacy Impact and Cultural Strength when preserving traditional rhythms, increasing allies' resistance and weakening enemies by evoking the strength of ancestors."}},
+{name: "Artist: Raphael Rabello", attributes: {"Guitar Virtuosity": 100, "Improvisational Genius": 95, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Perfect Chord – Plays perfect chords that interrupt enemy attacks and amplify ally movements with pinpoint accuracy."}},
+{name: "Artist: Reginaldo Rossi", attributes: {Lyricism: 88, Composure: 95, Popularity: 90, Legacy: 93, Innovation: 85, "Special Ability": "Garçom Melancholy – Gains +10 to Emotional Impact when delivering love ballads, reducing enemy resistance while drawing in massive audience support."}},
+{name: "Artist: Roberto Menescal", attributes: {"Guitar Grooves": 95, "Melodic Creativity": 90, Popularity: 85, Legacy: 90, Innovation: 100, "Special Ability": "Ocean Waves – Creates a soothing sound field that restores energy to allies and slows enemies."}},
+{name: "Artist: Rolando Boldrin", attributes: {"Storytelling Mastery": 100, "Cultural Knowledge": 95, Popularity: 85, Legacy: 90, Innovation: 80, "Special Ability": "Folk Tale Echo – Tells powerful stories that inspire allies, removing negative effects and discouraging enemies with poetic truths."}},
+{name: "Artist: Ronaldo Bôscoli", attributes: {"Vocal Command": 80, "Lyric Craftsmanship": 100, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Samba de Verão – Gains +10 to Lyricism and Melodic Flow when crafting breezy, poetic sambas, disarming adversaries with effortless sophistication and charm."}},
+{name: "Artist: Sandra de Sá", attributes: {"Orchestration Skill": 85, "Instrumental Precision": 90, Popularity: 95, Legacy: 95, Innovation: 90, "Special Ability": "Soul Brasil – Infuses her music with deep soul and funk elements, amplifying allies' energy and rhythm while weakening enemies’ resolve with irresistible groove power."}},
+{name: "Artist: Seu Jorge", attributes: {"Powerful Vocals": 90, "Stage Presence": 88, Popularity: 92, Legacy: 85, Innovation: 87, "Special Ability": "Groove Compass – Lead the Rhythmic Voyage"}},
+{name: "Artist: Severino Araújo", attributes: {"Orchestration Brilliance": 100, "Clarinet Expertise": 95, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Big Band Wave – Calls down a powerful, full-band blast of sound, blasting all enemies and energizing allies with a thunderous rhythm."}},
+{name: "Artist: Siba", attributes: {"Powerful Vocals": 87, "Stage Presence": 83, Popularity: 80, Legacy: 84, Innovation: 90, "Special Ability": "Mestre of the Maracatu – Summons folkloric spirits through his maracatu roots, boosting his own attack and calling ethereal allies to assist in battle."}},
+{name: "Artist: Silvério Pessoa", attributes: {Lyricism: 90, Composure: 85, Popularity: 80, Legacy: 88, Innovation: 95, "Special Ability": "Mangue Cantador – Gains +10 to Innovation and Legacy when fusing maracatu, forró, and rock, summoning an ancestral rhythm that strengthens allies and confuses opponents."}},
+{name: "Artist: Sylvia Telles", attributes: {"Vocal Grace": 95, "Interpretative Depth": 90, Popularity: 85, Legacy: 90, Innovation: 80, "Special Ability": "Gentle Breeze – Sings serene melodies that heal wounds and restore emotional energy of allies."}},
+{name: "Artist: Tamba Trio", attributes: {"Musical Synergy": 100, "Jazz Fusion": 95, Popularity: 90, Legacy: 95, Innovation: 95, "Special Ability": "Trio Harmony – Performs flawless musical combinations that increase the power of allies when acting together."}},
+{name: "Artist: Thalma de Freitas", attributes: {"Powerful Vocals": 85, "Stage Presence": 90, Popularity: 80, Legacy: 82, Innovation: 86, "Special Ability": "Soul Alchemy – Blends jazz, samba, and soul to enchant the audience, gradually boosting allies' morale and restoring health over time."}},
+{name: "Artist: Tim Maia", attributes: {"Vocal Power": 100, "Groove Mastery": 95, Popularity: 95, Legacy: 100, Innovation: 90, "Special Ability": "Cosmic Vibes – Emits a blast of soul and funk that empowers allies and disorients enemies with an irresistible wave of sound."}},
+{name: "Artist: Tiné (The Forró Groovemaster)", attributes: {"Musical Synergy": 95, "Jazz Fusion": 85, Popularity: 85, Legacy: 90, Innovation: 92, "Special Ability": "Nordeste Swing – Gains +10 to Groove and Stage Presence when blending forró, samba, and jazz, boosting ally rhythm while disorienting opponents with infectious beats."}},
+{name: "Artist: Toquinho", attributes: {"Powerful Vocals": 85, "Stage Presence": 80, Popularity: 90, Legacy: 95, Innovation: 87, "Special Ability": "Bossa Perfeita – Gains +10 to Technical Skill and Legacy when performing acoustic guitar-based sets, soothing allies while countering enemy aggression with harmonic precision."}},
+{name: "Artist: Tom Zé", attributes: {"Improvisational Wit": 100, "Popular Appeal": 80, "Stage Charisma": 90, Legacy: 95, Innovation: 100, "Special Ability": "Tropicalist Disruptor – Unleashes unpredictable musical patterns that confuse opponents, boost ally creativity, and shift the battlefield into an experimental sonic playground."}},
+{name: "Artist: Urea (The Percussive Visionary)", attributes: {"Musical Synergy": 98, "Jazz Fusion": 90, Popularity: 80, Legacy: 85, Innovation: 95, "Special Ability": "Batida Cósmica – Gains +10 to Improvisation and Groove when integrating percussive textures into fusion arrangements, amplifying ally creativity while destabilizing enemy timing."}},
+{name: "Artist: Vanessa da Mata", attributes: {"Powerful Vocals": 92, "Stage Presence": 87, Popularity: 90, Legacy: 85, Innovation: 88, "Special Ability": "Nature’s Chorus – Summons the essence of nature, creating vines and flowers that restrain enemies while healing allies."}},
+{name: "Artist: Vinícius de Moraes", attributes: {"Lyric Genius": 100, "Emotional Depth": 95, Popularity: 90, Legacy: 100, Innovation: 85, "Special Ability": "Romantic Verse – Reciting poetic lyrics creates a wave of charm that pacifies enemies and strengthens allied bonds."}},
+{name: "Artist: Viva Damares Calixto", attributes: {"Groove Power": 90, "Stage Charisma": 88, Popularity: 75, Legacy: 85, Innovation: 87, "Special Ability": "Echoes of Tradition – Gains +10 to Vocal Projection and Harmony Mastery when performing ancestral rhythms, amplifying the resonance of cultural heritage in every performance."}},
+{name: "Artist: Waldir Azevedo", attributes: {"Cavaquinho Mastery": 100, "Musical Dexterity": 95, Popularity: 85, Legacy: 95, Innovation: 90, "Special Ability": "Cavaquinho Blaze – Plays fiery chords that strike enemies quickly, amplifying allies' rhythm for chain attacks."}},
+{name: "Artist: Wanda Sá", attributes: {"Vocal Charm": 95, "Guitar Melody": 90, Popularity: 85, Legacy: 90, Innovation: 80, "Special Ability": "Soft Serenade – Sings softly, calming conflict and allowing allies to regain energy and focus."}},
+{name: "Artist: Wilson das Neves", attributes: {"Percussion Mastery": 100, "Rhythmic Defense": 95, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Drum Wall – Creates a rhythmic barrier that absorbs enemy attacks while amplifying the speed of allies."}},
+{name: "Artist: Yamandu Costa", attributes: {"Guitar Mastery": 100, "Improvisation Skill": 95, Popularity: 85, Legacy: 90, Innovation: 95, "Special Ability": "String Tempest – Unleashes a storm of rapid, precise notes, dealing continuous damage to enemies and increasing allies' accuracy."}},
+{name: "Artist: Xande de Pilares", attributes: {Lyricism: 88, Composure: 90, Popularity: 92, Legacy: 85, Innovation: 87, "Special Ability": "Samba de Resiliência – Gains +10 to Composure and Ally Morale when performing powerful pagode and samba anthems, reinforcing team endurance while disrupting enemy rhythm."}},
+{name: "Artist: Zé da Velha", attributes: {"Trombone Mastery": 100, "Musical Presence": 95, Popularity: 85, Legacy: 90, Innovation: 85, "Special Ability": "Brass Blast – Emits a powerful blast of trombone sound that knocks back enemies and buffs nearby allies with extra resistance."}},
+{name: "Artist: Zé Ramalho", attributes: {"Lyric Mysticism": 100, "Vocal Intensity": 95, Popularity: 90, Legacy: 95, Innovation: 90, "Special Ability": "Prophetic Song – Sings prophetic verses that create a mystical field, protecting allies from attacks and reducing enemy accuracy."}},
+{name: "Artist: Zeca Pagodinho", attributes: {"Improvisational Wit": 100, "Popular Appeal": 95, "Stage Charisma": 90, Legacy: 85, Innovation: 80, "Special Ability": "Samba Circle – Summons a samba circle that boosts allies' morale, restores energy, and weakens enemy sound-based attacks."}},
+ ];
+
+const instruments = [
+{name: "Deaf Guardian", attributes: {"Rhythmic Power": 100, "Defensive Strength": 95, "Stage Presence": 85, Legacy: 90, Innovation: 80, "Special Ability": "Bass Pulse – Emits a low-pitched beat that creates a protective sound barrier for allies and reduces the offensive power of enemies."}},
+{name: "Tamborim Trickster", attributes: {"Speed": 100, "Percussive Accuracy": 90, Agility: 95, Popularity: 85, Innovation: 90, "Special Ability": "Rhythmic Blitz – Attacks in a rapid sequence of beats, dealing multiple critical hits against unsuspecting enemies."}},
+{name: "Cavaquinho Virtuoso", attributes: {"Melodic Mastery": 100, "String Dexterity": 95, Charisma: 90, Popularity: 85, Innovation: 90, "Special Ability": "Melodic Charm – Plays a catchy melody that disorients enemies and strengthens allies, increasing their morale and accuracy."}},
+{name: "Agogô Shaman", attributes: {"Spiritual Power": 95, "Resonant Frequency": 100, Popularity: 80, Legacy: 90, Innovation: 85, "Special Ability": "Sacred Call – Emits a ceremonial sound that summons spiritual protection for the team and slows enemy actions."}},
+{name: "Cuíca Sorcerer", attributes: {"Mystical Sound": 100, "Hypnotic Rhythm": 95, "Stage Presence": 85, Legacy: 85, Innovation: 90, "Special Ability": "Hypnotic Echo – Unleashes a sequence of hypnotizing sounds that confuse enemies and force mistakes into your actions."}},
+{name: "Pandeiro Master", attributes: {"Percussion Precision": 100, "Rhythmic Flair": 95, Popularity: 90, Agility: 85, Innovation: 90, "Special Ability": "Rhythmic Barrage – Performs a sequence of rapid strikes, dealing area damage and increasing allies' resistance to fatigue."}},
+{name: "Reco-Reco Whisperer", attributes: {"Subtle Harmonics": 95, "Textural Depth": 90, "Stealth Attack": 85, Legacy: 80, Innovation: 85, "Special Ability": "Hidden Groove – Performs a nearly imperceptible rhythm that escapes enemy detection, triggering surprise attacks."}},
+{name: "Ganzá Echo", attributes: {"Rhythmic Flow": 100, "Sound Waves": 90, "Stage Presence": 85, Legacy: 85, Innovation: 80, "Special Ability": "Shimmering Beat – Creates a continuous wave of sound that restores allies' health and demoralizes enemies with nonstop beats."}},
+{name: "Caixa Commander", attributes: {"Rhythmic Control": 100, "Precision Strikes": 95, "Stage Authority": 90, Legacy: 85, Innovation: 90, "Special Ability": "Marching Order – Controls the battlefield with a military rhythm, organizing allies for synchronized attacks and increasing their defense."}},
+{name: "Repique Duelist", attributes: {"Speed": 100, "Percussive Power": 95, "Battle Reflexes": 90, Legacy: 85, Innovation: 90, "Special Ability": "Rhythm Clash – Challenges enemies to duels rhythmic beats, reducing your defense while increasing allies' attacks during battle."}},
+{name: "Tantan Guardian", attributes: {"Defensive Rhythm": 100, "Endurance": 95, "Sound Stability": 90, Legacy: 85, Innovation: 80, "Special Ability": "Echo Shield – Creates a sound barrier that absorbs enemy attacks and reflects some damage with deep beats."}},
+{name: "Whistle Caller", attributes: {"Command Frequency": 100, "Leadership Aura": 95, "Tactical Insight": 90, Legacy: 85, Innovation: 85, "Special Ability": "Command Signal – Gives rhythmic signals that improve the accuracy of allies' attacks and disrupt enemy communication."}},
+{name: "Mystic Drum", attributes: {"Spiritual Resonance": 100, "Sound Intensity": 95, "Mystic Aura": 90, Legacy: 85, Innovation: 85, "Special Ability": "Ancient Pulse – Channels an ancient beat that empowers allies with spiritual power and weakens enemies over time."}},
+{name: "Chocalho Enchanter", attributes: {"Sound Wave Control": 100, "Percussive Charm": 95, "Energy Flow": 90, Legacy: 85, Innovation: 85, "Special Ability": "Sound Surge – Emits a vibrating wave that energizes allies, increasing their speed and resistance for several turns."}},
+{name: "Berimbau Sage", attributes: {"Spiritual Wisdom": 100, "Melodic Focus": 95, "Combat Awareness": 90, Legacy: 90, Innovation: 85, "Special Ability": "Harmony Strike – Plays a rhythmic melody that activates hidden powers in allies, increasing their accuracy and allowing for synchronized special attacks."}},
+{name: "Agogô Summoner", attributes: {"Dual-tone Control": 100, "Summoning Rhythms": 95, "Mystical Vibes": 90, Legacy: 90, Innovation: 85, "Special Ability": "Echoing Spirits – Summons sonic spirits to attack enemies and protect allies, creating an aura of inspiration."}},
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playersCheckbox').checked) selectedCards.push(...players);
+    if (document.getElementById('instrumentsCheckbox').checked) selectedCards.push(...instruments);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  document.getElementById('shuffleRulesButton').addEventListener('click', function() {
+    shuffleDeck(rules, 'rulesResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

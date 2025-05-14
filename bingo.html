@@ -1,0 +1,45 @@
+<!-- HTML Structure -->
+<div>
+  <label for="stones">Number of Stones:</label>
+  <input type="number" id="stones" value="75" min="1" max="100">
+</div>
+<br>
+<button id="rollBingoButton" class="round-button">Shuffle</button>
+
+<p id="bingoResult"></p>
+
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('rollBingoButton').addEventListener('click', function() {
+      const stones = parseInt(document.getElementById('stones').value);
+      let drawnNumbers = Array.from({ length: stones }, (_, i) => i + 1);
+      drawnNumbers = drawnNumbers.sort(() => Math.random() - 0.5);
+
+      // Display the drawn numbers
+      document.getElementById('bingoResult').textContent = 
+        `Drawn Numbers: ${drawnNumbers.join(', ')}`;
+    });
+  });
+</script>
+
+<!-- CSS for the Round Button -->
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 60px; /* Align text vertically */
+    transition: background-color 0.3s;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+</style>

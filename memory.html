@@ -1,0 +1,244 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Memory</h2>
+
+  <p style="color: white;">Memorize the positions of the icons. After the set time, select two icons by providing their coordinates (e.g., A1, B3). If they match, they stay visible!</p>
+<button id="restartButton" class="round-button" style="background-color: #E4C58A;">Restart</button>
+
+  <br>
+  <!-- Options for display time -->
+  <div>
+    <label for="timeInput" style="color: white;">Display Time (seconds):</label>
+    <input type="number" id="timeInput" value="5" min="1" max="30" step="1">
+  </div>
+<br>
+  <!-- Options for selecting grid size -->
+  <div>
+    <label for="pairCount" style="color: white;">Select Number of Pairs:</label>
+    <select id="pairCount">
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+    </select>
+  </div>
+
+  <!-- Grid of icons with row/column labels -->
+  <div id="gridContainer" style="display: flex; flex-direction: column; align-items: center; margin-top: 20px;">
+    <!-- Grid labels and items will be generated here -->
+  </div>
+
+  <!-- Input for selecting two coordinates -->
+  <div style="margin-top: 20px;">
+    <label for="coord1" style="color: white;">Enter First Coordinate (e.g., A1):</label>
+    <input type="text" id="coord1" placeholder="A1">
+    <br><br>
+    <label for="coord2" style="color: white;">Enter Second Coordinate (e.g., B3):</label>
+    <input type="text" id="coord2" placeholder="B3">
+    <br>
+    <button id="revealButton" class="round-button" disabled>Reveal</button>
+  </div>
+
+  <!-- Game messages -->
+  <p id="gameMessage"></p>
+  <p style="color: white;">Total Moves: <span id="moveCount">0</span></p>
+
+  <!-- Restart button -->
+  </div>
+
+<script>
+  const icons = ['🍎', '🍌', '🍇', '🍓', '🍉', '🍒', '🍍', '🥝', '🍑', '🍋'];
+  let grid = [];
+  let firstSelection = null;
+  let secondSelection = null;
+  let revealedIcons = [];
+  let moves = 0;
+  let rows = 2, cols;
+
+  // Function to shuffle the icons and fill the grid
+  function initializeGrid(pairs) {
+    const iconPairs = icons.slice(0, pairs).concat(icons.slice(0, pairs)); // Create pairs
+    iconPairs.sort(() => 0.5 - Math.random()); // Shuffle the icons
+    cols = pairs; // Number of columns matches the number of pairs
+
+    grid = [];
+    for (let i = 0; i < rows; i++) {
+      grid.push(iconPairs.slice(i * cols, (i + 1) * cols)); // Fill the grid
+    }
+
+    generateGridHTML();
+  }
+
+  // Function to generate HTML for the grid with labels
+  function generateGridHTML() {
+    const gridContainer = document.getElementById('gridContainer');
+    gridContainer.innerHTML = ''; // Clear previous grid
+
+    // Add column labels (1, 2, 3...)
+    const colLabels = document.createElement('div');
+    colLabels.style.display = 'flex';
+    colLabels.style.marginBottom = '5px';
+    colLabels.innerHTML = '<div style="width: 40px;"></div>'; // Empty cell for alignment
+    for (let col = 1; col <= cols; col++) {
+      const label = document.createElement('div');
+      label.textContent = col;
+      label.style.width = '60px';
+      label.style.textAlign = 'center';
+      colLabels.appendChild(label);
+    }
+    gridContainer.appendChild(colLabels);
+
+    // Add rows with row labels (A, B) and icons
+    const rowLabels = ['A', 'B'];
+    for (let row = 0; row < rows; row++) {
+      const rowContainer = document.createElement('div');
+      rowContainer.style.display = 'flex';
+      rowContainer.style.marginBottom = '5px';
+
+      // Row label (A, B)
+      const rowLabel = document.createElement('div');
+      rowLabel.textContent = rowLabels[row];
+      rowLabel.style.width = '40px';
+      rowLabel.style.textAlign = 'center';
+      rowContainer.appendChild(rowLabel);
+
+      // Add grid cells
+      for (let col = 0; col < cols; col++) {
+        const cell = document.createElement('div');
+        cell.textContent = grid[row][col] || ''; // Prevent undefined values
+        cell.classList.add('grid-cell');
+        cell.dataset.row = row;
+        cell.dataset.col = col;
+        rowContainer.appendChild(cell);
+      }
+      gridContainer.appendChild(rowContainer);
+    }
+  }
+
+  // Function to hide all icons after the display time
+  function hideIcons() {
+    const gridContainer = document.querySelectorAll('.grid-cell');
+    for (const cell of gridContainer) {
+      cell.textContent = ''; // Hide icon
+    }
+    document.getElementById('revealButton').disabled = false; // Enable reveal button after hiding icons
+  }
+
+  // Function to reveal icons based on player input
+  function revealIcons() {
+    const coord1 = parseCoord(document.getElementById('coord1').value);
+    const coord2 = parseCoord(document.getElementById('coord2').value);
+
+    if (coord1 && coord2 && (coord1.row !== coord2.row || coord1.col !== coord2.col)) {
+      const row1 = coord1.row, col1 = coord1.col;
+      const row2 = coord2.row, col2 = coord2.col;
+
+      const gridContainer = document.querySelectorAll('.grid-cell');
+
+      firstSelection = grid[row1][col1];
+      secondSelection = grid[row2][col2];
+
+      gridContainer[row1 * cols + col1].textContent = firstSelection;
+      gridContainer[row2 * cols + col2].textContent = secondSelection;
+
+      moves++;
+      document.getElementById('moveCount').textContent = moves;
+
+      if (firstSelection === secondSelection) {
+        revealedIcons.push(firstSelection);
+        document.getElementById('gameMessage').textContent = 'Match found! You can play again.';
+        checkWin();
+      } else {
+        document.getElementById('gameMessage').textContent = 'No match. Try again.';
+        setTimeout(() => {
+          gridContainer[row1 * cols + col1].textContent = '';
+          gridContainer[row2 * cols + col2].textContent = '';
+        }, 1000); // Hide icons again after 1 second if they don't match
+      }
+    } else {
+      document.getElementById('gameMessage').textContent = 'Invalid coordinates or same box selected. Try again.';
+    }
+  }
+
+  // Function to parse coordinates like A1, B3 into row and column indices
+  function parseCoord(coord) {
+    const letter = coord.charAt(0).toUpperCase();
+    const number = parseInt(coord.charAt(1), 10);
+    const row = letter.charCodeAt(0) - 65;
+    const col = number - 1;
+    if (validateCoordinates(row, col)) {
+      return { row, col };
+    }
+    return null;
+  }
+
+  // Function to validate coordinates
+  function validateCoordinates(row, col) {
+    return row >= 0 && row < rows && col >= 0 && col < cols;
+  }
+
+  // Function to check if the player has found all pairs
+  function checkWin() {
+    if (revealedIcons.length === Math.floor((rows * cols) / 2)) {
+      document.getElementById('gameMessage').textContent = 'Congratulations! You found all pairs.';
+      document.getElementById('revealButton').disabled = true;
+    }
+  }
+
+  // Function to restart the game
+  function restartGame() {
+    moves = 0;
+    revealedIcons = [];
+    document.getElementById('moveCount').textContent = 0;
+    document.getElementById('gameMessage').textContent = '';
+    document.getElementById('revealButton').disabled = true;
+    const pairs = parseInt(document.getElementById('pairCount').value);
+    initializeGrid(pairs);
+    const displayTime = parseInt(document.getElementById('timeInput').value);
+    setTimeout(hideIcons, displayTime * 1000);
+  }
+
+  // Event listeners
+  document.getElementById('revealButton').addEventListener('click', revealIcons);
+  document.getElementById('restartButton').addEventListener('click', restartGame);
+
+  // Initialize game
+  restartGame(); // Start the game when page loads
+</script>
+
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .grid-cell {
+    width: 60px;
+    height: 60px;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    border: 1px solid #000;
+    cursor: pointer;
+  }
+
+#gameMessage {
+    font-weight: bold;
+    color: white;
+    
+  }
+</style>

@@ -1,0 +1,444 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Invention</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="ivtrCheckbox"> Inventors</label><br>
+    <label><input type="checkbox" id="inventCheckbox"> Inventions</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Eureka! - The player may choose to replace an inventor or invention from their hand before the round is played.",
+"Registered Patent - If the player loses a round, they may prevent the opponent's card from being used in the next round.",
+"Unfair Competition - The player may steal an invention from the opponent and exchange it for one from their hand.",
+"Planned Obsolescence - The player may make the opponent discard a random card from their hand and draw a new one from the deck.",
+"Visionary Genius - Choose an inventor or invention from your hand and increase one attribute by +5 points before the round is played.",
+"Crisis of Inspiration - The opponent may not use special abilities or actions this round.",
+"Technological Leap - If your invention or inventor is from the 20th or 21st century, add +3 points to all attributes.",
+"Historical Influence - If your invention or inventor is from before 1900, add +3 points to Global Influence.",
+"Team Bonus - If the inventor on your card is from before 1900, add +5 points to Global Influence.",
+"Team Bonus - If the inventor on your card is from before 1900, add +5 points to Global Influence.",
+"Team Bonus - If the inventor on your card is from before collaborated with another inventor in the game, earn +5 Impact Score points.",
+"Brilliant Mistake - If your invention was discovered by accident (example: Penicillin, Microwave, Superglue), earn +5 Innovation Level points."
+];
+  
+const ivtr = [
+{name: "Ada Lovelace (First Computer Program)", attributes: {"Genius Level": 94, "Impact Score": 90, "Innovation Speed": 85, "Breakthrough Year": 1843, "Legacy Power": 97}},
+{name: "Ada Yonath (Ribosome Structure - Medicine & Genetics)", attributes: {"Genius Level": 96, "Impact Score": 94, "Innovation Speed": 88, "Breakthrough Year": 2000, "Legacy Power": 98}},
+{name: "Al-Jazari (Mechanical Engineering, Water Pumps, Automata - Early Robots!)", attributes: {"Genius Level": 97, "Impact Score": 93, "Innovation Speed": 90, "Breakthrough Year": 1206, "Legacy Power": 95}},
+{name: "Al-Khwarizmi (Father of Algebra, Algorithm Development)", attributes: {"Genius Level": 98, "Impact Score": 90, "Innovation Speed": 85, "Breakthrough Year": "~825 CE", "Legacy Power": 97}},
+{name: "Alan Kay (Personal Computing Concept, Graphical User Interfaces - Xerox PARC)", attributes: {"Genius Level": 98, "Impact Score": 99, "Innovation Speed": 95, "Breakthrough Year": 1973, "Legacy Power": 100}},
+{name: "Alan Turing", attributes: {"Genius Level": 98, "Impact Score": 95, "Innovation Speed": 90, "Breakthrough Year": "1936 (Turing Machine Concept)", "Legacy Power": 96}},
+{name: "Albert Einstein", attributes: {"Genius Level": 100, "Impact Score": 96, "Innovation Speed": 85, "Breakthrough Year": "1905 (Theory of Relativity)", "Legacy Power": 99}},
+{name: "Alessandro Volta (Electric Battery, Voltage Concept)", attributes: {"Genius Level": 94, "Impact Score": 96, "Innovation Speed": 89, "Breakthrough Year": 1800, "Legacy Power": 97}},
+{name: "Alexander Fleming (Discovery of Penicillin)", attributes: {"Genius Level": 92, "Impact Score": 100, "Innovation Speed": 82, "Breakthrough Year": 1928, "Legacy Power": 98}},
+{name: "Alexander Graham Bell", attributes: {"Genius Level": 90, "Impact Score": 92, "Innovation Speed": 80, "Breakthrough Year": "1876 (Telephone)", "Legacy Power": 88}},
+{name: "Anders Hejlsberg (Turbo Pascal, Delphi, C#)", attributes: {"Genius Level": 90, "Impact Score": 92, "Innovation Speed": 88, "Breakthrough Year": 1983, "Legacy Power": 91}},
+{name: "Andrew Wiles (Proved Fermat’s Last Theorem - 358-Year-Old Math Mystery Solved)", attributes: {"Genius Level": 99, "Impact Score": 96, "Innovation Speed": 92, "Breakthrough Year": 1994, "Legacy Power": 98}},
+{name: "Andy Jassy & Chris Pinkham (AWS Founders - Revolutionized Cloud Computing)", attributes: {"Genius Level": 94, "Impact Score": 99, "Innovation Speed": 96, "Breakthrough Year": 2006, "Legacy Power": 98}},
+{name: "Ann Tsukamoto (Stem Cell Isolation - Pioneering Regenerative Medicine)", attributes: {"Genius Level": 93, "Impact Score": 96, "Innovation Speed": 90, "Breakthrough Year": 1991, "Legacy Power": 98}},
+{name: "Annie Easley (NASA Computer Scientist - Paved the Way for Spaceflight Computing)", attributes: {"Genius Level": 96, "Impact Score": 94, "Innovation Speed": 92, "Breakthrough Year": 1955, "Legacy Power": 97}},
+{name: "Archimedes (Mathematics, Leverage, Archimedean Screw)", attributes: {"Genius Level": 99, "Impact Score": 85, "Innovation Speed": 80, "Breakthrough Year": "~250 BCE", "Legacy Power": 94}},
+{name: "Artur Fischer (Over 1,100 Patents - Wall Plugs, Synchronized Flash for Photography)", attributes: {"Genius Level": 92, "Impact Score": 90, "Innovation Speed": 95, "Breakthrough Year": 1949, "Legacy Power": 94}},
+{name: "Benjamin Franklin (Electricity, Bifocals, Franklin Stove)", attributes: {"Genius Level": 91, "Impact Score": 88, "Innovation Speed": 89, "Breakthrough Year": "1752 (Lightning Experiment)", "Legacy Power": 90}},
+{name: "Benoît Dageville, Thierry Cruanes & Marcin Żukowski (Founders of Snowflake - Revolution in Cloud Data Warehousing)", attributes: {"Genius Level": 94, "Impact Score": 99, "Innovation Speed": 96, "Breakthrough Year": 2012, "Legacy Power": 98}},
+{name: "Beulah Louise Henry (Over 100 Inventions - Typewriter Improvements, Sewing Machines, Toys)", attributes: {"Genius Level": 91, "Impact Score": 90, "Innovation Speed": 88, "Breakthrough Year": "1920s", "Legacy Power": 92}},
+{name: "Bill Gates (Microsoft, Windows, Software Revolution)", attributes: {"Genius Level": 98, "Impact Score": 100, "Innovation Speed": 95, "Breakthrough Year": 1975, "Legacy Power": 100}},
+{name: "Bjarne Stroustrup (Creator of C++ - The Foundation for Complex Software and Games)", attributes: {"Genius Level": 95, "Impact Score": 98, "Innovation Speed": 93, "Breakthrough Year": 1985, "Legacy Power": 99}},
+{name: "Blaise Pascal (Pascal's Triangle, Probability Theory, Pascaline Calculator)", attributes: {"Genius Level": 96, "Impact Score": 88, "Innovation Speed": 84, "Breakthrough Year": 1654, "Legacy Power": 94}},
+{name: "Brahmagupta (Zero as a Number, Early Algebra and Mathematics Concepts)", attributes: {"Genius Level": 99, "Impact Score": 95, "Innovation Speed": 88, "Breakthrough Year": "628 CE", "Legacy Power": 97}},
+{name: "Brendan Eich (Creator of JavaScript - Web Language, Creator of Brave Browser)", attributes: {"Genius Level": 94, "Impact Score": 100, "Innovation Speed": 96, "Breakthrough Year": 1995, "Legacy Power": 99}},
+{name: "Brian Acton & Jan Koum (Creators of WhatsApp - Revolutionized Mobile Communication)", attributes: {"Genius Level": 94, "Impact Score": 100, "Innovation Speed": 97, "Breakthrough Year": 2009, "Legacy Power": 99}},
+{name: "Carl Benz (First Automobile - Gasoline-Powered Car)", attributes: {"Genius Level": 88, "Impact Score": 94, "Innovation Speed": 85, "Breakthrough Year": 1885, "Legacy Power": 93}},
+{name: "Caroline Herschel (First Woman to Discover a Comet, Astronomy Pioneer)", attributes: {"Genius Level": 95, "Impact Score": 92, "Innovation Speed": 88, "Breakthrough Year": 1786, "Legacy Power": 96}},
+{name: "Cecilia Payne-Gaposchkin (Discovered that Stars are Mostly Hydrogen & Helium)", attributes: {"Genius Level": 97, "Impact Score": 94, "Innovation Speed": 91, "Breakthrough Year": 1925, "Legacy Power": 97}},
+{name: "Charles Babbage (Concept of the First Computer)", attributes: {"Genius Level": 98, "Impact Score": 94, "Innovation Speed": 80, "Breakthrough Year": 1837, "Legacy Power": 97}},
+{name: "Charles Drew (Blood Banks, Blood Plasma Preservation)", attributes: {"Genius Level": 94, "Impact Score": 97, "Innovation Speed": 88, "Breakthrough Year": "1940s", "Legacy Power": 96}},
+{name: "Charles Goodyear (Vulcanized Rubber - Basis for Modern Tires)", attributes: {"Genius Level": 88, "Impact Score": 94, "Innovation Speed": 86, "Breakthrough Year": 1839, "Legacy Power": 95}},
+{name: "Charles Hall (Aluminum Extraction Process - Made Aluminum Widely Available)", attributes: {"Genius Level": 93, "Impact Score": 96, "Innovation Speed": 90, "Breakthrough Year": 1886, "Legacy Power": 97}},
+{name: "Charles Proteus Steinmetz (Alternating Current Electrical Engineering Pioneer)", attributes: {"Genius Level": 94, "Impact Score": 95, "Innovation Speed": 89, "Breakthrough Year": "1890s", "Legacy Power": 97}},
+{name: "Chien-Shiung Wu (Nuclear Physics - Disproved Law of Parity in Quantum Mechanics)", attributes: {"Genius Level": 98, "Impact Score": 96, "Innovation Speed": 92, "Breakthrough Year": 1956, "Legacy Power": 98}},
+{name: "Daniel Ek & Martin Lorentzon (Spotify - Music Streaming Revolution)", attributes: {"Genius Level": 94, "Impact Score": 98, "Innovation Speed": 95, "Breakthrough Year": 2006, "Legacy Power": 98}},
+{name: "Demis Hassabis (DeepMind - Creator of AlphaGo, Revolution in AI)", attributes: {"Genius Level": 99, "Impact Score": 100, "Innovation Speed": 98, "Breakthrough Year": 2014, "Legacy Power": 100}},
+{name: "Denis Papin (Pressure Cooker, Early Steam Engine Concepts)", attributes: {"Genius Level": 89, "Impact Score": 91, "Innovation Speed": 86, "Breakthrough Year": 1679, "Legacy Power": 92}},
+{name: "Dennis Ritchie (Creator of the C Language, Co-Creator of Unix - The Foundation for All Modern Software)", attributes: {"Genius Level": 99, "Impact Score": 100, "Innovation Speed": 95, "Breakthrough Year": 1969, "Legacy Power": 100}},
+{name: "Edith Clarke (Electrical Engineering, Power Transmission Improvements)", attributes: {"Genius Level": 93, "Impact Score": 91, "Innovation Speed": 86, "Breakthrough Year": 1921, "Legacy Power": 94}},
+{name: "Edwin Hubble (Hubble's Law, Expanding Universe Theory)", attributes: {"Genius Level": 97, "Impact Score": 94, "Innovation Speed": 89, "Breakthrough Year": 1929, "Legacy Power": 98}},
+{name: "Ellen Ochoa (First Latina in Space, Optical Imaging Systems for NASA)", attributes: {"Genius Level": 94, "Impact Score": 95, "Innovation Speed": 90, "Breakthrough Year": 1993, "Legacy Power": 97}},
+{name: "Ellen Swallow Richards (Environmental Chemistry & Water Sanitation Pioneer)", attributes: {"Genius Level": 92, "Impact Score": 94, "Innovation Speed": 88, "Breakthrough Year": "1890s", "Legacy Power": 97}},
+{name: "Elon Musk (Tesla, SpaceX, Neuralink, OpenAI, Starlink - Technological Disruptor)", attributes: {"Genius Level": 98, "Impact Score": 100, "Innovation Speed": 99, "Breakthrough Year": 2002, "Legacy Power": 100}},
+{name: "Émilie du Châtelet (Physics, Energy Conservation Theorem - Paved the Way for Einstein)", attributes: {"Genius Level": 96, "Impact Score": 92, "Innovation Speed": 88, "Breakthrough Year": 1740, "Legacy Power": 95}},
+{name: "Emmanuelle Charpentier & Jennifer Doudna (CRISPR Gene Editing Technology)", attributes: {"Genius Level": 99, "Impact Score": 100, "Innovation Speed": 95, "Breakthrough Year": 2012, "Legacy Power": 100}},
+{name: "Ernest Rutherford (Father of Nuclear Physics - Discovered Atomic Nucleus)", attributes: {"Genius Level": 99, "Impact Score": 98, "Innovation Speed": 94, "Breakthrough Year": 1911, "Legacy Power": 99}},
+{name: "Evangelista Torricelli (Barometer, Atmospheric Pressure Theory)", attributes: {"Genius Level": 92, "Impact Score": 89, "Innovation Speed": 84, "Breakthrough Year": 1643, "Legacy Power": 93}},
+{name: "Eugene Roshal (RAR Compression & WinRAR)", attributes: {"Genius Level": 92, "Impact Score": 90, "Innovation Speed": 88, "Breakthrough Year": 1993, "Legacy Power": 89}},
+{name: "Ferdinand Porsche (First Hybrid Car, Volkswagen Beetle, Porsche Cars)", attributes: {"Genius Level": 90, "Impact Score": 95, "Innovation Speed": 87, "Breakthrough Year": 1934, "Legacy Power": 94}},
+{name: "Florence Parpart (Refrigerator Technology Improvements - Early Modern Fridge)", attributes: {"Genius Level": 90, "Impact Score": 91, "Innovation Speed": 87, "Breakthrough Year": 1914, "Legacy Power": 92}},
+{name: "Frances Arnold (Directed Evolution - Engineered Enzymes for Green Chemistry)", attributes: {"Genius Level": 98, "Impact Score": 97, "Innovation Speed": 95, "Breakthrough Year": 1993, "Legacy Power": 99}},
+{name: "Frank Whittle (Jet Engine - Modern Aviation Boost)", attributes: {"Genius Level": 92, "Impact Score": 96, "Innovation Speed": 90, "Breakthrough Year": 1930, "Legacy Power": 96}},
+{name: "Freeman Dyson (Advanced Space Colonization Concepts - Dyson Sphere)", attributes: {"Genius Level": 99, "Impact Score": 95, "Innovation Speed": 94, "Breakthrough Year": 1960, "Legacy Power": 98}},
+{name: "Galileo Galilei (Telescope Improvements, Heliocentrism Proofs)", attributes: {"Genius Level": 98, "Impact Score": 97, "Innovation Speed": 89, "Breakthrough Year": 1610, "Legacy Power": 99}},
+{name: "Garrett Morgan (Gas Mask, Modern Traffic Light)", attributes: {"Genius Level": 89, "Impact Score": 92, "Innovation Speed": 86, "Breakthrough Year": 1923, "Legacy Power": 94}},
+{name: "Geoffrey Hinton (Pioneer of Deep Learning)", attributes: {"Genius Level": 99, "Impact Score": 99, "Innovation Speed": 98, "Breakthrough Year": "2010s", "Legacy Power": 100}},
+{name: "George de Mestral (Velcro - Inspired by Burrs Sticking to Clothes)", attributes: {"Genius Level": 86, "Impact Score": 90, "Innovation Speed": 84, "Breakthrough Year": 1941, "Legacy Power": 90}},
+{name: "George Eastman (Kodak - Mass Production of Cameras, Film Innovation)", attributes: {"Genius Level": 88, "Impact Score": 94, "Innovation Speed": 85, "Breakthrough Year": 1888, "Legacy Power": 94}},
+{name: "George Washington Carver (Crop Rotation, Peanut-based Innovations)", attributes: {"Genius Level": 90, "Impact Score": 94, "Innovation Speed": 88, "Breakthrough Year": "1890s", "Legacy Power": 92}},
+{name: "Gerty Cori (Carbohydrate Metabolism Research - First Woman to Win Nobel in Physiology)", attributes: {"Genius Level": 97, "Impact Score": 96, "Innovation Speed": 91, "Breakthrough Year": 1947, "Legacy Power": 98}},
+{name: "Giulio Natta (Polypropylene Plastic - Used in Everything from Packaging to Medicine)", attributes: {"Genius Level": 95, "Impact Score": 97, "Innovation Speed": 92, "Breakthrough Year": 1954, "Legacy Power": 98}},
+{name: "Grace Hopper (Computer Programming, COBOL Language)", attributes: {"Genius Level": 95, "Impact Score": 92, "Innovation Speed": 88, "Breakthrough Year": 1952, "Legacy Power": 96}},
+{name: "Guglielmo Marconi (Radio Communication, Wireless Telegraphy)", attributes: {"Genius Level": 90, "Impact Score": 92, "Innovation Speed": 86, "Breakthrough Year": 1895, "Legacy Power": 93}},
+{name: "Guido van Rossum (Creator of Python - Today's Dominant Programming Language)", attributes: {"Genius Level": 96, "Impact Score": 99, "Innovation Speed": 95, "Breakthrough Year": 1991, "Legacy Power": 100}},
+{name: "hang Yiming (TikTok - Short-Form Video & AI Algorithm Mastery)", attributes: {"Genius Level": 96, "Impact Score": 99, "Innovation Speed": 98, "Breakthrough Year": 2016, "Legacy Power": 98}},
+{name: "Hans Lippershey (First Practical Telescope - Inspired Galileo's Work)", attributes: {"Genius Level": 85, "Impact Score": 88, "Innovation Speed": 82, "Breakthrough Year": 1608, "Legacy Power": 91}},
+{name: "Harald Haas (Li-Fi - High-Speed Wireless Internet Through Light)", attributes: {"Genius Level": 95, "Impact Score": 97, "Innovation Speed": 93, "Breakthrough Year": 2011, "Legacy Power": 98}},
+{name: "Hedy Lamarr (Wireless Communication - precursor to Wi-Fi & GPS)", attributes: {"Genius Level": 92, "Impact Score": 91, "Innovation Speed": 85, "Breakthrough Year": 1942, "Legacy Power": 94}},
+{name: "Henrietta Lacks (HeLa Cells - Immortal Cell Line Used in Medical Research)", attributes: {"Genius Level": 93, "Impact Score": 100, "Innovation Speed": 85, "Breakthrough Year": 1951, "Legacy Power": 100}},
+{name: "Henry Ford (Assembly Line, Mass Production)", attributes: {"Genius Level": 85, "Impact Score": 93, "Innovation Speed": 88, "Breakthrough Year": 1913, "Legacy Power": 90}},
+{name: "Hernando Barragán (Creator of Wiring – Colombia)", attributes: {"Genius Level": 85, "Impact Score": 88, "Innovation Speed": 86, "Breakthrough Year": 2003, "Legacy Power": 90}},
+{name: "Heron of Alexandria (Ancient Automata, First Steam Engine Concept - Aeolipile)", attributes: {"Genius Level": 95, "Impact Score": 87, "Innovation Speed": 80, "Breakthrough Year": "~60 CE", "Legacy Power": 90}},
+{name: "Hideo Kojima (Video Game Innovation - Storytelling in Gaming, Metal Gear Series)", attributes: {"Genius Level": 93, "Impact Score": 94, "Innovation Speed": 91, "Breakthrough Year": 1987, "Legacy Power": 97}},
+{name: "Hiram Maxim (Machine Gun Invention, Early Aircraft Engineering)", attributes: {"Genius Level": 90, "Impact Score": 93, "Innovation Speed": 88, "Breakthrough Year": 1884, "Legacy Power": 92}},
+{name: "Hugo Gernsback (Radio, Science Fiction - Predicted Radar & Television)", attributes: {"Genius Level": 90, "Impact Score": 89, "Innovation Speed": 87, "Breakthrough Year": 1925, "Legacy Power": 91}},
+{name: "Hypatia of Alexandria (Mathematics, Astronomy, Early Scientific Philosophy)", attributes: {"Genius Level": 98, "Impact Score": 92, "Innovation Speed": 88, "Breakthrough Year": "~400 CE", "Legacy Power": 99}},
+{name: "Ibn al-Haytham (Optics, Scientific Method Pioneer)", attributes: {"Genius Level": 96, "Impact Score": 91, "Innovation Speed": 86, "Breakthrough Year": "~1021 CE", "Legacy Power": 95}},
+{name: "Igor Sikorsky (Helicopter Development, Large Aircraft Design)", attributes: {"Genius Level": 91, "Impact Score": 95, "Innovation Speed": 89, "Breakthrough Year": 1939, "Legacy Power": 95}},
+{name: "Isaac Newton", attributes: {"Genius Level": 100, "Impact Score": 100, "Innovation Speed": 92, "Breakthrough Year": "1687 (Publication of Principia Mathematica)", "Legacy Power": 100}},
+{name: "Jack Kilby (Integrated Circuit - Basis for Modern Computers)", attributes: {"Genius Level": 95, "Impact Score": 99, "Innovation Speed": 91, "Breakthrough Year": 1958, "Legacy Power": 98}},
+{name: "Jacques Cousteau (SCUBA Diving Technology & Marine Conservation)", attributes: {"Genius Level": 91, "Impact Score": 94, "Innovation Speed": 90, "Breakthrough Year": 1943, "Legacy Power": 96}},
+{name: "James Clerk Maxwell (Electromagnetic Wave Theory - Basis for Radio & Wireless Tech)", attributes: {"Genius Level": 99, "Impact Score": 98, "Innovation Speed": 90, "Breakthrough Year": 1864, "Legacy Power": 99}},
+{name: "James Gosling (Creator of Java - Used on 3 Billion Devices!)", attributes: {"Genius Level": 96, "Impact Score": 100, "Innovation Speed": 94, "Breakthrough Year": 1995, "Legacy Power": 100}},
+{name: "James Lovelock (Gaia Hypothesis - Earth as a Self-Regulating System)", attributes: {"Genius Level": 97, "Impact Score": 95, "Innovation Speed": 93, "Breakthrough Year": 1972, "Legacy Power": 97}},
+{name: "James Watt (Steam Engine Improvements)", attributes: {"Genius Level": 85, "Impact Score": 96, "Innovation Speed": 83, "Breakthrough Year": 1765, "Legacy Power": 92}},
+{name: "Jan Ernst Matzeliger (Mass Production of Shoes - Shoe Lasting Machine)", attributes: {"Genius Level": 89, "Impact Score": 90, "Innovation Speed": 84, "Breakthrough Year": 1883, "Legacy Power": 91}},
+{name: "Jan Oort (Discovered Oort Cloud - Shaped Our Understanding of the Solar System)", attributes: {"Genius Level": 98, "Impact Score": 95, "Innovation Speed": 93, "Breakthrough Year": 1950, "Legacy Power": 99}},
+{name: "Jay Graber & Jack Dorsey (Bluesky - Decentralized Social Networking Attempt)", attributes: {"Genius Level": 92, "Impact Score": 85, "Innovation Speed": 90, "Breakthrough Year": 2021, "Legacy Power": 80}},
+{name: "Jeff Bezos (Amazon, AWS - Cloud Computing & E-Commerce Empire)", attributes: {"Genius Level": 96, "Impact Score": 100, "Innovation Speed": 97, "Breakthrough Year": 1994, "Legacy Power": 99}},
+{name: "Jennifer Doudna & Emmanuelle Charpentier (CRISPR Gene Editing - Changed the Future of Medicine!)", attributes: {"Genius Level": 99, "Impact Score": 100, "Innovation Speed": 97, "Breakthrough Year": 2012, "Legacy Power": 100}},
+{name: "Jensen Huang (NVIDIA Founder - GPUs & Generative AI)", attributes: {"Genius Level": 97, "Impact Score": 100, "Innovation Speed": 97, "Breakthrough Year": 1993, "Legacy Power": 100}},
+{name: "João Amaral Gurgel", attributes: {"Genius Level": 90, "Impact Score": 88, "Innovation Speed": 85, "Breakthrough Year": 1975, "Legacy Power": 92}},
+{name: "Johannes Gutenberg (Printing Press)", attributes: {"Genius Level": 88, "Impact Score": 100, "Innovation Speed": 80, "Breakthrough Year": 1440, "Legacy Power": 95}},
+{name: "John Bardeen (Transistor & Superconductivity - Only Physicist with Two Nobel Prizes!)", attributes: {"Genius Level": 99, "Impact Score": 100, "Innovation Speed": 94, "Breakthrough Year": 1947, "Legacy Power": 100}},
+{name: "John Logie Baird (Television Development)", attributes: {"Genius Level": 88, "Impact Score": 91, "Innovation Speed": 85, "Breakthrough Year": 1926, "Legacy Power": 90}},
+{name: "John McCarthy (Coincer of the Term “Artificial Intelligence”, LISP, AI Pioneer)", attributes: {"Genius Level": 99, "Impact Score": 100, "Innovation Speed": 95, "Breakthrough Year": 1956, "Legacy Power": 100}},
+{name: "John Shepherd-Barron (ATM Machine - Automated Banking Concept)", attributes: {"Genius Level": 89, "Impact Score": 95, "Innovation Speed": 87, "Breakthrough Year": 1967, "Legacy Power": 94}},
+{name: "John von Neumann (Game Theory, Stored-Program Computer Concept)", attributes: {"Genius Level": 99, "Impact Score": 97, "Innovation Speed": 92, "Breakthrough Year": 1945, "Legacy Power": 98}},
+{name: "Jony Ive (iPhone, iMac, iPad Designer - Tech Design Revolution)", attributes: {"Genius Level": 94, "Impact Score": 97, "Innovation Speed": 93, "Breakthrough Year": 1998, "Legacy Power": 99}},
+{name: "Joseph Lister (Antiseptic Surgery, Sterilization in Medicine)", attributes: {"Genius Level": 91, "Impact Score": 96, "Innovation Speed": 85, "Breakthrough Year": 1867, "Legacy Power": 94}},
+{name: "Joseph-Michel & Jacques-Étienne Montgolfier (Hot Air Balloon Flight)", attributes: {"Genius Level": 91, "Impact Score": 92, "Innovation Speed": 88, "Breakthrough Year": 1783, "Legacy Power": 94}},
+{name: "Juan de la Cierva (Autogyro - Predecessor to the Helicopter)", attributes: {"Genius Level": 93, "Impact Score": 94, "Innovation Speed": 90, "Breakthrough Year": 1923, "Legacy Power": 95}},
+{name: "Karl Landsteiner (Blood Type Discovery - Enabled Safe Blood Transfusions)", attributes: {"Genius Level": 96, "Impact Score": 99, "Innovation Speed": 91, "Breakthrough Year": 1901, "Legacy Power": 99}},
+{name: "Katalin Karikó (mRNA Vaccine Development - Basis for COVID-19 Vaccines)", attributes: {"Genius Level": 98, "Impact Score": 100, "Innovation Speed": 95, "Breakthrough Year": 2005, "Legacy Power": 100}},
+{name: "Katherine Burr Blodgett (Non-Reflective Glass - Used in Cameras, Eyeglasses, and Screens)", attributes: {"Genius Level": 90, "Impact Score": 92, "Innovation Speed": 86, "Breakthrough Year": 1938, "Legacy Power": 94}},
+{name: "Katherine Johnson (NASA Mathematician - Apollo Missions)", attributes: {"Genius Level": 96, "Impact Score": 92, "Innovation Speed": 90, "Breakthrough Year": "1969 (Apollo 11)", "Legacy Power": 97}},
+{name: "Ken Thompson (Co-Creator of Unix, Go Language - Father of Modern Operating Systems)", attributes: {"Genius Level": 98, "Impact Score": 99, "Innovation Speed": 94, "Breakthrough Year": 1969, "Legacy Power": 99}},
+{name: "Larry Ellison (Co-Founder of Oracle - Modern Enterprise Database)", attributes: {"Genius Level": 96, "Impact Score": 99, "Innovation Speed": 94, "Breakthrough Year": 1977, "Legacy Power": 99}},
+{name: "Larry Page & Sergey Brin (Google - Search Engine & AI Revolution)", attributes: {"Genius Level": 98, "Impact Score": 100, "Innovation Speed": 97, "Breakthrough Year": 1998, "Legacy Power": 100}},
+{name: "Larry Wall (Perl)", attributes: {"Genius Level": 85, "Impact Score": 87, "Innovation Speed": 90, "Breakthrough Year": 1987, "Legacy Power": 88}},
+{name: "László Bíró (Ballpoint Pen Inventor)", attributes: {"Genius Level": 87, "Impact Score": 89, "Innovation Speed": 80, "Breakthrough Year": 1938, "Legacy Power": 89}},
+{name: "Leonardo da Vinci", attributes: {"Genius Level": 100, "Impact Score": 85, "Innovation Speed": 80, "Breakthrough Year": "1490 (Flying Machine Sketches)", "Legacy Power": 99}},
+{name: "Leonardo Torres Quevedo (First Remote Control System, Early AI Concepts in Chess)", attributes: {"Genius Level": 94, "Impact Score": 92, "Innovation Speed": 90, "Breakthrough Year": 1912, "Legacy Power": 96}},
+{name: "Lewis Latimer (Improved Carbon Filament for Light Bulbs, Telephone Patent Contributor)", attributes: {"Genius Level": 92, "Impact Score": 93, "Innovation Speed": 87, "Breakthrough Year": 1881, "Legacy Power": 95}},
+{name: "Linus Torvalds (Creator of Linux, Git - Revolutionary Open Source)", attributes: {"Genius Level": 98, "Impact Score": 100, "Innovation Speed": 96, "Breakthrough Year": 1991, "Legacy Power": 100}},
+{name: "Lonnie Johnson (Super Soaker Invention - NASA Engineer!)", attributes: {"Genius Level": 89, "Impact Score": 90, "Innovation Speed": 87, "Breakthrough Year": 1990, "Legacy Power": 92}},
+{name: "Louis Pasteur (Pasteurization, Germ Theory, Vaccines)", attributes: {"Genius Level": 95, "Impact Score": 99, "Innovation Speed": 87, "Breakthrough Year": 1864, "Legacy Power": 98}},
+{name: "Luis Miramontes (Co-Inventor of the Birth Control Pill - Revolutionized Reproductive Health)", attributes: {"Genius Level": 95, "Impact Score": 98, "Innovation Speed": 92, "Breakthrough Year": 1951, "Legacy Power": 99}},
+{name: "Luis von Ahn (CAPTCHA, Duolingo - Revolutionized AI and Language Learning)", attributes: {"Genius Level": 95, "Impact Score": 94, "Innovation Speed": 98, "Breakthrough Year": 2003, "Legacy Power": 97}},
+{name: "Marc Benioff & Parker Harris (Salesforce - Creators of the First CRM in the Cloud)", attributes: {"Genius Level": 95, "Impact Score": 100, "Innovation Speed": 96, "Breakthrough Year": 1999, "Legacy Power": 99}},
+{name: "Margaret E. Knight (Paper Bag Machine - Known as “The Female Edison”)", attributes: {"Genius Level": 91, "Impact Score": 92, "Innovation Speed": 89, "Breakthrough Year": 1871, "Legacy Power": 95}},
+{name: "Margaret Hamilton (Apollo Mission Software Development - NASA)", attributes: {"Genius Level": 97, "Impact Score": 96, "Innovation Speed": 89, "Breakthrough Year": 1969, "Legacy Power": 98}},
+{name: "Maria Telkes (Solar-Powered Home & Renewable Energy Innovations)", attributes: {"Genius Level": 92, "Impact Score": 95, "Innovation Speed": 90, "Breakthrough Year": 1947, "Legacy Power": 96}},
+{name: "Marian Croak (Voice Over IP Trailblazer)", attributes: {"Genius Level": 90, "Impact Score": 95, "Innovation Speed": 92, "Breakthrough Year": 1995, "Legacy Power": 90}},
+{name: "Marie Curie", attributes: {"Genius Level": 95, "Impact Score": 98, "Innovation Speed": 88, "Breakthrough Year": "1898 (Discovery of Radium & Polonium)", "Legacy Power": 97}},
+{name: "Mark Zuckerberg (Facebook/Meta - The Social Media Revolution)", attributes: {"Genius Level": 97, "Impact Score": 100, "Innovation Speed": 96, "Breakthrough Year": 2004, "Legacy Power": 99}},
+{name: "Mary Anderson (Windshield Wiper Inventor)", attributes: {"Genius Level": 86, "Impact Score": 90, "Innovation Speed": 83, "Breakthrough Year": 1903, "Legacy Power": 91}},
+{name: "Mary Anning (Paleontology - Discovered Complete Ichthyosaur Fossil)", attributes: {"Genius Level": 92, "Impact Score": 91, "Innovation Speed": 87, "Breakthrough Year": 1811, "Legacy Power": 95}},
+{name: "Mary Jackson (NASA Engineer - Broke Barriers for Women in STEM)", attributes: {"Genius Level": 95, "Impact Score": 94, "Innovation Speed": 92, "Breakthrough Year": 1958, "Legacy Power": 97}},
+{name: "Mary Walton (Noise Reduction for Trains, Pollution Control)", attributes: {"Genius Level": 88, "Impact Score": 90, "Innovation Speed": 85, "Breakthrough Year": 1879, "Legacy Power": 91}},
+{name: "Masahiro Hara (QR Code Creator – Japan)", attributes: {"Genius Level": 87, "Impact Score": 95, "Innovation Speed": 90, "Breakthrough Year": 1994, "Legacy Power": 93}},
+{name: "Michio Kaku (String Field Theory - Theoretical Physics Popularizer)", attributes: {"Genius Level": 98, "Impact Score": 95, "Innovation Speed": 94, "Breakthrough Year": 1994, "Legacy Power": 97}},
+{name: "Narinder Singh Kapany (Father of Fiber Optics - Modern Internet & Communication Tech)", attributes: {"Genius Level": 94, "Impact Score": 98, "Innovation Speed": 91, "Breakthrough Year": 1954, "Legacy Power": 97}},
+{name: "Neil deGrasse Tyson", attributes: {"Genius Level": 92, "Impact Score": 95, "Innovation Speed": 88, "Breakthrough Year": 1996, "Legacy Power": 94}},
+{name: "Niels Bohlin (Three-Point Seatbelt - Revolutionized Car Safety)", attributes: {"Genius Level": 89, "Impact Score": 97, "Innovation Speed": 85, "Breakthrough Year": 1959, "Legacy Power": 98}},
+{name: "Niels Bohr (Atomic Structure & Quantum Theory Contributions)", attributes: {"Genius Level": 99, "Impact Score": 97, "Innovation Speed": 91, "Breakthrough Year": 1913, "Legacy Power": 99}},
+{name: "Nikola Tesla", attributes: {"Genius Level": 98, "Impact Score": 90, "Innovation Speed": 95, "Breakthrough Year": "1891 (Tesla Coil)", "Legacy Power": 95}},
+{name: "Nikolaus Otto (Inventor of the Four-Stroke Engine - Internal Combustion)", attributes: {"Genius Level": 85, "Impact Score": 92, "Innovation Speed": 84, "Breakthrough Year": 1876, "Legacy Power": 91}},
+{name: "Norbert Wiener (Cybernetics, Early Artificial Intelligence Concepts)", attributes: {"Genius Level": 98, "Impact Score": 94, "Innovation Speed": 90, "Breakthrough Year": 1948, "Legacy Power": 96}},
+{name: "Orkut Büyükkökten (Orkut - Social Networking Pioneer)", attributes: {"Genius Level": 90, "Impact Score": 88, "Innovation Speed": 85, "Breakthrough Year": 2004, "Legacy Power": 85}},
+{name: "Otis Boykin (Pacemaker Control Unit - Electronic Components)", attributes: {"Genius Level": 90, "Impact Score": 91, "Innovation Speed": 87, "Breakthrough Year": 1954, "Legacy Power": 94}},
+{name: "Otis Elevators (Elisha Otis) (Safety Elevator System - Modern Skyscrapers Possible)", attributes: {"Genius Level": 88, "Impact Score": 92, "Innovation Speed": 85, "Breakthrough Year": 1853, "Legacy Power": 93}},
+{name: "Patricia Bath (Laser Cataract Surgery Device - Ophthalmology Pioneer)", attributes: {"Genius Level": 92, "Impact Score": 93, "Innovation Speed": 86, "Breakthrough Year": 1986, "Legacy Power": 95}},
+{name: "Pavel & Nikolai Durov (Telegram – “The Encrypted Visionaries”)", attributes: {"Genius Level": 93, "Impact Score": 90, "Innovation Speed": 92, "Breakthrough Year": 2013, "Legacy Power": 88}},
+{name: "Percy Lavon Julian (Synthesis of Cortisone, Steroids, and Hormones)", attributes: {"Genius Level": 93, "Impact Score": 94, "Innovation Speed": 87, "Breakthrough Year": "1940s", "Legacy Power": 96}},
+{name: "Peter Higgs (Higgs Boson Discovery - Explained Mass in Physics)", attributes: {"Genius Level": 99, "Impact Score": 98, "Innovation Speed": 94, "Breakthrough Year": 1964, "Legacy Power": 99}},
+{name: "Rachel Carson (Environmental Science - “Silent Spring” Led to Environmental Movement)", attributes: {"Genius Level": 95, "Impact Score": 97, "Innovation Speed": 90, "Breakthrough Year": 1962, "Legacy Power": 99}},
+{name: "Raj Reddy (Artificial Intelligence Pioneer - Speech Recognition Systems)", attributes: {"Genius Level": 98, "Impact Score": 96, "Innovation Speed": 93, "Breakthrough Year": 1974, "Legacy Power": 97}},
+{name: "Ralph Kimball (Father of Dimensional Data Warehousing - Creator of the Star Model)", attributes: {"Genius Level": 97, "Impact Score": 98, "Innovation Speed": 94, "Breakthrough Year": 1996, "Legacy Power": 99}},
+{name: "Rasmus Lerdorf (PHP)", attributes: {"Genius Level": 82, "Impact Score": 90, "Innovation Speed": 86, "Breakthrough Year": 1995, "Legacy Power": 89}},
+{name: "Ray Kurzweil (AI Pioneer, Futurist - Technological Singularity, Virtual Assistants)", attributes: {"Genius Level": 99, "Impact Score": 98, "Innovation Speed": 98, "Breakthrough Year": "2000s", "Legacy Power": 100}},
+{name: "Rebecca Richards-Kortum (Low-Cost Medical Technologies for Developing Countries)", attributes: {"Genius Level": 94, "Impact Score": 97, "Innovation Speed": 91, "Breakthrough Year": "2000s", "Legacy Power": 97}},
+{name: "Reid Hoffman (LinkedIn - Professional Networking Pioneer)", attributes: {"Genius Level": 93, "Impact Score": 97, "Innovation Speed": 92, "Breakthrough Year": 2003, "Legacy Power": 97}},
+{name: "Richard Branson (Virgin Visionary)", attributes: {"Genius Level": 88, "Impact Score": 90, "Innovation Speed": 92, "Breakthrough Year": 1970, "Legacy Power": 94}},
+{name: "Richard Feynman (Quantum Mechanics, Nanotechnology)", attributes: {"Genius Level": 99, "Impact Score": 90, "Innovation Speed": 89, "Breakthrough Year": 1948, "Legacy Power": 97}},
+{name: "Richard Stallman (GNU, Free Software Movement - Open Source Advocate)", attributes: {"Genius Level": 97, "Impact Score": 98, "Innovation Speed": 94, "Breakthrough Year": 1983, "Legacy Power": 100}},
+{name: "Richard Trevithick (First Steam Locomotive - Rail Transport Pioneer)", attributes: {"Genius Level": 90, "Impact Score": 94, "Innovation Speed": 87, "Breakthrough Year": 1804, "Legacy Power": 94}},
+{name: "Robert Moog (Synthesizer - Revolutionized Music & Sound Tech)", attributes: {"Genius Level": 92, "Impact Score": 95, "Innovation Speed": 91, "Breakthrough Year": 1964, "Legacy Power": 97}},
+{name: "Robert Noyce (Co-Inventor of the Microchip - Intel Founder)", attributes: {"Genius Level": 92, "Impact Score": 97, "Innovation Speed": 88, "Breakthrough Year": 1959, "Legacy Power": 96}},
+{name: "Rodney Brooks (Robotics & AI - Co-Founder of iRobot (Roomba), MIT Professor)", attributes: {"Genius Level": 96, "Impact Score": 97, "Innovation Speed": 95, "Breakthrough Year": 1986, "Legacy Power": 98}},
+{name: "Rosalind Franklin (DNA Structure Discovery - Crucial to Watson & Crick's Model)", attributes: {"Genius Level": 96, "Impact Score": 95, "Innovation Speed": 87, "Breakthrough Year": 1952, "Legacy Power": 97}},
+{name: "Rudolf Diesel (Diesel Engine Inventor)", attributes: {"Genius Level": 89, "Impact Score": 91, "Innovation Speed": 85, "Breakthrough Year": 1897, "Legacy Power": 90}},
+{name: "Ruzena Bajcsy (AI & Robotics - Machine Perception and Learning)", attributes: {"Genius Level": 97, "Impact Score": 94, "Innovation Speed": 89, "Breakthrough Year": "1980s", "Legacy Power": 96}},
+{name: "Sam Altman (CEO of OpenAI - GPT & Artificial Intelligence Revolution)", attributes: {"Genius Level": 96, "Impact Score": 100, "Innovation Speed": 98, "Breakthrough Year": 2023, "Legacy Power": 99}},
+{name: "Samuel Colt (Revolver Mechanism, Mass Production in Weaponry)", attributes: {"Genius Level": 85, "Impact Score": 94, "Innovation Speed": 89, "Breakthrough Year": 1836, "Legacy Power": 92}},
+{name: "Samuel Morse (Morse Code, Telegraph)", attributes: {"Genius Level": 87, "Impact Score": 90, "Innovation Speed": 85, "Breakthrough Year": 1837, "Legacy Power": 91}},
+{name: "Santos Dumont (Father of Aviation, Creator of the 14-Bis and the Modern Airship)", attributes: {"Genius Level": 96, "Impact Score": 99, "Innovation Speed": 95, "Breakthrough Year": 1906, "Legacy Power": 100}},
+{name: "Satya Nadella (Microsoft CEO - Cloud Expansion and AI at Microsoft)", attributes: {"Genius Level": 96, "Impact Score": 97, "Innovation Speed": 95, "Breakthrough Year": 2014, "Legacy Power": 98}},
+{name: "Shigeru Miyamoto (Video Game Innovation - Mario, Zelda, Donkey Kong)", attributes: {"Genius Level": 95, "Impact Score": 97, "Innovation Speed": 90, "Breakthrough Year": 1981, "Legacy Power": 98}},
+{name: "Shirley Ann Jackson (Quantum Physics & Telecommunications Research - Caller ID & Fiber Optics)", attributes: {"Genius Level": 97, "Impact Score": 95, "Innovation Speed": 93, "Breakthrough Year": 1973, "Legacy Power": 98}},
+{name: "Shuji Nakamura (Blue LED - Revolutionized Energy-Efficient Lighting)", attributes: {"Genius Level": 94, "Impact Score": 98, "Innovation Speed": 91, "Breakthrough Year": 1993, "Legacy Power": 97}},
+{name: "Sophia Kovalevskaya (Mathematical Physics & First Female Professor in Europe)", attributes: {"Genius Level": 97, "Impact Score": 92, "Innovation Speed": 89, "Breakthrough Year": 1884, "Legacy Power": 97}},
+{name: "Stephanie Kwolek (Kevlar - Bulletproof Material)", attributes: {"Genius Level": 92, "Impact Score": 95, "Innovation Speed": 88, "Breakthrough Year": 1965, "Legacy Power": 97}},
+{name: "Steve Chen, Chad Hurley & Jawed Karim (YouTube - The Video Sharing Revolution)", attributes: {"Genius Level": 95, "Impact Score": 100, "Innovation Speed": 96, "Breakthrough Year": 2005, "Legacy Power": 99}},
+{name: "Steve Jobs (Apple, iPhone, GUI Revolution)", attributes: {"Genius Level": 94, "Impact Score": 98, "Innovation Speed": 90, "Breakthrough Year": "2007 (iPhone Launch)", "Legacy Power": 96}},
+{name: "Steve Wozniak (Apple Co-Founder, Creator of Apple I and II)", attributes: {"Genius Level": 98, "Impact Score": 100, "Innovation Speed": 96, "Breakthrough Year": 1976, "Legacy Power": 99}},
+{name: "Sumio Iijima (Carbon Nanotubes - Future of Nanotechnology & Materials Science)", attributes: {"Genius Level": 96, "Impact Score": 97, "Innovation Speed": 94, "Breakthrough Year": 1991, "Legacy Power": 98}},
+{name: "Susan Solomon (Discovered Cause of Ozone Layer Depletion - Led to Global Policy Changes)", attributes: {"Genius Level": 96, "Impact Score": 97, "Innovation Speed": 94, "Breakthrough Year": 1986, "Legacy Power": 99}},
+{name: "Syukuro Manabe (Climate Modeling - Predicted Global Warming Effects)", attributes: {"Genius Level": 97, "Impact Score": 98, "Innovation Speed": 92, "Breakthrough Year": 1967, "Legacy Power": 99}},
+{name: "Temple Grandin (Humane Animal Handling Systems - Livestock Industry Revolutionized)", attributes: {"Genius Level": 92, "Impact Score": 93, "Innovation Speed": 89, "Breakthrough Year": "1980s", "Legacy Power": 96}},
+{name: "The Wright Brothers", attributes: {"Genius Level": 91, "Impact Score": 95, "Innovation Speed": 94, "Breakthrough Year": "1903 (First Powered Flight)", "Legacy Power": 92}},
+{name: "Thomas Edison", attributes: {"Genius Level": 92, "Impact Score": 97, "Innovation Speed": 85, "Breakthrough Year": "1879 (Light Bulb Patent)", "Legacy Power": 90}},
+{name: "Tim Berners-Lee (World Wide Web)", attributes: {"Genius Level": 92, "Impact Score": 99, "Innovation Speed": 87, "Breakthrough Year": 1989, "Legacy Power": 98}},
+{name: "Timnit Gebru (AI Ethics - Bias in Machine Learning & Algorithmic Fairness)", attributes: {"Genius Level": 95, "Impact Score": 96, "Innovation Speed": 92, "Breakthrough Year": 2018, "Legacy Power": 98}},
+{name: "Tom Anderson & Chris DeWolfe (MySpace - Early Social Networking Boom)", attributes: {"Genius Level": 90, "Impact Score": 85, "Innovation Speed": 88, "Breakthrough Year": 2003, "Legacy Power": 80}},
+{name: "Ursula Franklin (Pioneered Archaeometry - Science Applied to Archaeology)", attributes: {"Genius Level": 92, "Impact Score": 90, "Innovation Speed": 88, "Breakthrough Year": "1970s", "Legacy Power": 94}},
+{name: "Vint Cerf & Bob Kahn (Fathers of the Internet - TCP/IP Protocols)", attributes: {"Genius Level": 96, "Impact Score": 100, "Innovation Speed": 90, "Breakthrough Year": 1974, "Legacy Power": 99}},
+{name: "Vinton Cerf & Bob Kahn (Creators of the TCP/IP Protocol - Father of the Internet)", attributes: {"Genius Level": 100, "Impact Score": 100, "Innovation Speed": 96, "Breakthrough Year": 1974, "Legacy Power": 100}},
+{name: "Walter Hunt (Safety Pin, Early Sewing Machine Prototype)", attributes: {"Genius Level": 85, "Impact Score": 89, "Innovation Speed": 83, "Breakthrough Year": 1849, "Legacy Power": 90}},
+{name: "Willis Carrier (Modern Air Conditioning)", attributes: {"Genius Level": 87, "Impact Score": 92, "Innovation Speed": 85, "Breakthrough Year": 1902, "Legacy Power": 91}},
+{name: "Wright Brothers (First Powered Flight - Orville & Wilbur Wright)", attributes: {"Genius Level": 91, "Impact Score": 95, "Innovation Speed": 94, "Breakthrough Year": 1903, "Legacy Power": 92}},
+{name: "Yann LeCun (Deep Learning & AI - Creator of Facebook AI Research Lab)", attributes: {"Genius Level": 98, "Impact Score": 99, "Innovation Speed": 97, "Breakthrough Year": "2010s", "Legacy Power": 99}},
+{name: "Yoshio Nishi (Lithium-Ion Battery - Revolutionized Mobile Tech!)", attributes: {"Genius Level": 90, "Impact Score": 99, "Innovation Speed": 93, "Breakthrough Year": 1991, "Legacy Power": 98}},
+{name: "Youyou Tu (Discovered Artemisinin - Malaria Cure)", attributes: {"Genius Level": 96, "Impact Score": 99, "Innovation Speed": 92, "Breakthrough Year": 1972, "Legacy Power": 99}},
+{name: "Yukihiro Matsumoto (Ruby)", attributes: {"Genius Level": 88, "Impact Score": 85, "Innovation Speed": 87, "Breakthrough Year": 1995, "Legacy Power": 90}},
+{name: "Zhang Heng (Seismometer, Improved Water Clocks, Celestial Globe)", attributes: {"Genius Level": 94, "Impact Score": 90, "Innovation Speed": 85, "Breakthrough Year": "~132 CE", "Legacy Power": 93}},
+{name: "Zhenan Bao (Electronic Skin, Flexible Electronics for Wearable Tech)", attributes: {"Genius Level": 97, "Impact Score": 96, "Innovation Speed": 95, "Breakthrough Year": "2010s", "Legacy Power": 98}},
+
+];
+
+  const invent = [      
+{name: "The Wheel (~3500 B.C.)", attributes: {"Impact Score": 100, "Innovation Level": 95, "Year of Discovery": "~3500 B.C.", "Global Influence": 100}},
+{name: "Writing (~3100 B.C.)", attributes: {"Impact Score": 100, "Innovation Level": 97, "Year of Discovery": "~3100 B.C.", "Global Influence": 100}},
+{name: "Electricity (Experiments since 1752, Domination in the 19th century)", attributes: {"Impact Score": 100, "Innovation Level": 100, "Year of Discovery": 1752, "Global Influence": 100}},
+{name: "The Internet (1960s-1990s)", attributes: {"Impact Score": 100, "Innovation Level": 99, "Year of Discovery": 1969, "Global Influence": 100}},
+{name: "The Vaccine (1796 - Edward Jenner)", attributes: {"Impact Score": 100, "Innovation Level": 99, "Year of Discovery": 1796, "Global Influence": 100}},
+{name: "The Printing (Gutenberg Press) (1450 - Johannes Gutenberg)", attributes: {"Impact Score": 98, "Innovation Level": 96, "Year of Discovery": 1450, "Global Influence": 100}},
+{name: "The Telescope (1608 - Hans Lippershey / Galileo Galilei)", attributes: {"Impact Score": 95, "Innovation Level": 97, "Year of Discovery": 1608, "Global Influence": 97}},
+{name: "The Automobile (1886 - Karl Benz)", attributes: {"Impact Score": 96, "Innovation Level": 97, "Year of Discovery": 1886, "Global Influence": 98}},
+{name: "The Computer (1940s - Alan Turing, ENIAC)", attributes: {"Impact Score": 99, "Innovation Level": 100, "Year of Discovery": "1940s", "Global Influence": 100}},
+{name: "The Clock (14th Century - Mechanical watches in Europe)", attributes: {"Impact Score": 92, "Innovation Level": 90, "Year of Discovery": "1300s", "Global Influence": 95}},
+{name: "Radio (1895 - Guglielmo Marconi, Nikola Tesla)", attributes: {"Impact Score": 95, "Innovation Level": 94, "Year of Discovery": 1895, "Global Influence": 98}},
+{name: "Airplane (1903 - Wright Brothers / 1906 - Santos Dumont)", attributes: {"Impact Score": 99, "Innovation Level": 98, "Year of Discovery": "1903 / 1906", "Global Influence": 100}},
+{name: "Antibiotic (1928 - Alexander Fleming, Discovery of Penicillin)", attributes: {"Impact Score": 100, "Innovation Level": 97, "Year of Discovery": 1928, "Global Influence": 100}},
+{name: "The Steam Engine (1712 - Thomas Newcomen / 1769 - James Watt)", attributes: {"Impact Score": 98, "Innovation Level": 95, "Year of Discovery": "1712 / 1769", "Global Influence": 100}},
+{name: "The Telephone (1876 - Alexander Graham Bell)", attributes: {"Impact Score": 97, "Innovation Level": 96, "Year of Discovery": 1876, "Global Influence": 100}},
+{name: "GPS (1973 - Global Positioning System)", attributes: {"Impact Score": 96, "Innovation Level": 98, "Year of Discovery": 1973, "Global Influence": 99}},
+{name: "Artificial Intelligence (1950s - Alan Turing, John McCarthy)", attributes: {"Impact Score": 100, "Innovation Level": 100, "Year of Discovery": "1950s", "Global Influence": 100}},
+{name: "Bar Code (1952 - Norman Joseph Woodland & Bernard Silver)", attributes: {"Impact Score": 90, "Innovation Level": 88, "Year of Discovery": 1952, "Global Influence": 97}},
+{name: "Solar Energy (1954 - First Modern Photovoltaic Cell)", attributes: {"Impact Score": 98, "Innovation Level": 97, "Year of Discovery": 1954, "Global Influence": 100}},
+{name: "Paper Money (7th Century - China)", attributes: {"Impact Score": 96, "Innovation Level": 94, "Year of Discovery": "7th Century", "Global Influence": 100}},
+{name: "The Microchip (1958 - Jack Kilby & Robert Noyce)", attributes: {"Impact Score": 99, "Innovation Level": 100, "Year of Discovery": 1958, "Global Influence": 100}},
+{name: "The Refrigerator (1834 - Jacob Perkins - First Mechanical Refrigeration)", attributes: {"Impact Score": 96, "Innovation Level": 94, "Year of Discovery": 1834, "Global Influence": 100}},
+{name: "The Plastic (1907 - Leo Baekeland - Bakelite)", attributes: {"Impact Score": 95, "Innovation Level": 97, "Year of Discovery": 1907, "Global Influence": 100}},
+{name: "The Combustion Engine (1860 - Étienne Lenoir / 1876 - Nikolaus Otto)", attributes: {"Impact Score": 98, "Innovation Level": 96, "Year of Discovery": 1860, "Global Influence": 100}},
+{name: "Artificial Lightning (1752 - Benjamin Franklin - Experiments with Electricity)", attributes: {"Impact Score": 97, "Innovation Level": 98, "Year of Discovery": 1752, "Global Influence": 100}},
+{name: "Cement (1824 - Joseph Aspdin - Portland Cement)", attributes: {"Impact Score": 96, "Innovation Level": 94, "Year of Discovery": 1824, "Global Influence": 100}},
+{name: "Mirror (Antique - Metal Polishing / Glass - 1st Century d.C.)", attributes: {"Impact Score": 90, "Innovation Level": 88, "Year of Discovery": "Antiquity", "Global Influence": 100}},
+{name: "The Paper (105 AD - Cai Lun, China)", attributes: {"Impact Score": 98, "Innovation Level": 95, "Year of Discovery": "105 AD", "Global Influence": 100}},
+{name: "O Cinema (1895 - Lumière Brothers)", attributes: {"Impact Score": 95, "Innovation Level": 97, "Year of Discovery": 1895, "Global Influence": 100}},
+{name: "Nuclear Energy (1942 - First Controlled Reaction - Enrico Fermi)", attributes: {"Impact Score": 99, "Innovation Level": 100, "Year of Discovery": 1942, "Global Influence": 100}},
+{name: "The Artificial Satellite (1957 - Sputnik 1, Soviet Union)", attributes: {"Impact Score": 98, "Innovation Level": 97, "Year of Discovery": 1957, "Global Influence": 100}},
+{name: "The Electric Lamp (1879 - Thomas Edison, improved by Nikola Tesla & Humphry Davy)", attributes: {"Impact Score": 99, "Innovation Level": 96, "Year of Discovery": 1879, "Global Influence": 100}},
+{name: "The Modern Elevator (1853 - Elisha Otis - Safety System)", attributes: {"Impact Score": 94, "Innovation Level": 92, "Year of Discovery": 1853, "Global Influence": 98}},
+{name: "The Space Rocket (1926 - Robert Goddard - First Liquid-Fueled Rocket)", attributes: {"Impact Score": 100, "Innovation Level": 100, "Year of Discovery": 1926, "Global Influence": 100}},
+{name: "The X-Ray (1895 - Wilhelm Röntgen)", attributes: {"Impact Score": 98, "Innovation Level": 97, "Year of Discovery": 1895, "Global Influence": 100}},
+{name: "The Microwave (1945 - Percy Spencer - Radar and Cooking by Microondas)", attributes: {"Impact Score": 92, "Innovation Level": 90, "Year of Discovery": 1945, "Global Influence": 100}},
+{name: "The Drone (1917 - First Models; 2000s - Commercial Popularization)", attributes: {"Impact Score": 95, "Innovation Level": 98, "Year of Discovery": "1917 / 2000s", "Global Influence": 99}},
+{name: "The 3D Printer (1983 - Chuck Hull - Stereolithography)", attributes: {"Impact Score": 96, "Innovation Level": 99, "Year of Discovery": 1983, "Global Influence": 97}},
+{name: "The Compass (2nd Century - China, Natural Magnetism)", attributes: {"Impact Score": 95, "Innovation Level": 93, "Year of Discovery": "2nd Century", "Global Influence": 100}},
+{name: "The Water Purifier (1950s - First Industrial Filters; 2000s - Portable and Home Filters)", attributes: {"Impact Score": 98, "Innovation Level": 95, "Year of Discovery": "1950s", "Global Influence": 100}},
+{name: "The Wristwatch (1868 - Patek Philippe / Popularized in the 20th Century)", attributes: {"Impact Score": 92, "Innovation Level": 90, "Year of Discovery": 1868, "Global Influence": 98}},
+{name: "Photography (1826 - Nicéphore Niépce / 1839 - Daguerreotype)", attributes: {"Impact Score": 96, "Innovation Level": 95, "Year of Discovery": 1826, "Global Influence": 99}},
+{name: "The Typewriter (1868 - Christopher Latham Sholes)", attributes: {"Impact Score": 94, "Innovation Level": 92, "Year of Discovery": 1868, "Global Influence": 98}},
+{name: "The Zipper (1893 - Whitcomb Judson / 1913 - Gideon Sundback)", attributes: {"Impact Score": 89, "Innovation Level": 85, "Year of Discovery": 1893, "Global Influence": 100}},
+{name: "The Vacuum Cleaner (1901 - Hubert Cecil Booth / 1908 - James Murray Spangler)", attributes: {"Impact Score": 92, "Innovation Level": 90, "Year of Discovery": 1901, "Global Influence": 100}},
+{name: "The Tractor (1892 - John Froelich - Gasoline Tractor)", attributes: {"Impact Score": 95, "Innovation Level": 94, "Year of Discovery": 1892, "Global Influence": 98}},
+{name: "The Morse Code (1837 - Samuel Morse & Alfred Vail)", attributes: {"Impact Score": 94, "Innovation Level": 92, "Year of Discovery": 1837, "Global Influence": 97}},
+{name: "Wi-Fi (1990s - CSIRO, Vic Hayes, IEEE 802.11)", attributes: {"Impact Score": 100, "Innovation Level": 99, "Year of Discovery": "1990s", "Global Influence": 100}},
+{name: "The Pacemaker (1958 - Wilson Greatbatch / John Hopps - Previous Versions)", attributes: {"Impact Score": 97 , "Innovation Level": 96, "Year of Discovery": 1958, "Global Influence": 100}},
+{name: "Toilet Paper (1857 - Joseph Gayetty / Popularized in 1890s)", attributes: {"Impact Score": 90, "Innovation Level": 88, "Year of Discovery": 1857, "Global Influence": 100}},
+{name: "Soda Pop (1767 - Joseph Priestley - Carbonated Water)", attributes: {"Impact Score": 90, "Innovation Level": 85, "Year of Discovery": 1767, "Global Influence": 100}},
+{name: "Sanitation (Ancient Civilizations - Popularized in the 19th Century)", attributes: {"Impact Score": 100, "Innovation Level": 90, "Year of Discovery": "Ancient / 19th Century", "Global Influence": 100}},
+{name: "Skateboarding (1950s - California Surfing Culture)", attributes: {"Impact Score": 85, "Innovation Level": 88, "Year of Discovery": "1950s", "Global Influence": 95}},
+{name: "The Motorcycle (1885 - Gottlieb Daimler & Wilhelm Maybach)", attributes: {"Impact Score": 96, "Innovation Level": 95, "Year of Discovery": 1885, "Global Influence": 99}},
+{name: "The Rhythm of Digital Recording (MP3) (1987 - Karlheinz Brandenburg)", attributes: {"Impact Score": 97, "Innovation Level": 98, "Year of Discovery": 1987, "Global Influence": 100}},
+{name: "The Air Conditioner (1902 - Willis Carrier)", attributes: {"Impact Score": 97, "Innovation Level": 96, "Year of Discovery": 1902, "Global Influence": 100}},
+{name: "The Tinfoil (1910 - Robert Victor Neher)", attributes: {"Impact Score": 89, "Innovation Level": 90, "Year of Discovery": 1910, "Global Influence": 98}},
+{name: "The Headphone (1910 - Nathaniel Baldwin / 1958 - John C. Koss - Stereo)", attributes: {"Impact Score": 95, "Innovation Level": 96, "Year of Discovery": "1910 / 1958", "Global Influence": 100}},
+{name: "The Safety Belt (1959 - Nils Bohlin - Three-Point Model)", attributes: {"Impact Score": 98, "Innovation Level": 94, "Year of Discovery": 1959, "Global Influence": 100}},
+{name: "The QR Code (1994 - Masahiro Hara - Denso Wave)", attributes: {"Impact Score": 95, "Innovation Level": 97, "Year of Discovery": 1994, "Global Influence": 100}},
+{name: "The Cannon (1320s - China, Europe in the 14th Century)", attributes: {"Impact Score": 92, "Innovation Level": 95, "Year of Discovery": "1320s", "Global Influence": 98}},
+{name: "The Umbrella (11th Century BC - China)", attributes: {"Impact Score": 88, "Innovation Level": 85, "Year of Discovery": "~1100 BC.", "Global Influence": 100}},
+{name: "The Lighter (1823 - Johann Wolfgang Döbereiner)", attributes: {"Impact Score": 90, "Innovation Level": 89, "Year of Discovery": 1823, "Global Influence": 98}},
+{name: "The Photocopier (1938 - Chester Carlson - Xerox popularized in 1959)", attributes: {"Impact Score": 94, "Innovation Level": 93, "Year of Discovery": "1938 / 1959", "Global Influence": 100}},
+{name: "The Tennis Shoe (1917 - First Versions; Popularization in the 1970s)", attributes: {"Impact Score": 92, "Innovation Level": 88, "Year of Discovery": 1917, "Global Influence": 100}},
+{name: "The Delivery Drone (2013 - Amazon Prime Air - Recent Popularization)", attributes: {"Impact Score": 94, "Innovation Level": 98, "Year of Discovery": 2013, "Global Influence": 97}},
+{name: "The Wheelchair (6th Century - China; Modern Models in 1930s)", attributes: {"Impact Score": 98, "Innovation Level": 95, "Year of Discovery": "6th Century / 1930s", "Global Influence": 100}},
+{name: "The Pen Ballpoint Pen (1938 - László Bíró)", attributes: {"Impact Score": 93, "Innovation Level": 92, "Year of Discovery": 1938, "Global Influence": 100}},
+{name: "The Electric Oven (1892 - First Commercial Models)", attributes: {"Impact Score": 94, "Innovation Level": 93, "Year of Discovery": 1892, "Global Influence": 99}},
+{name: "The Washing Machine (1851 - James King / 1908 - Electric Models)", attributes: {"Impact Score": 95, "Innovation Level": 94, "Year of Discovery": "1851 / 1908", "Global Influence": 100}},
+{name: "The Metal Detector (1881 - Alexander Graham Bell - Modern Versions in 1920s)", attributes: {"Impact Score": 90, "Innovation Level": 92, "Year of Discovery": "1881 / 1920s", "Global Influence": 97}},
+{name: "The Bar Codes (1952 - Norman Joseph Woodland & Bernard Silver)", attributes: {"Impact Score": 95, "Innovation Level": 93, "Year of Discovery": 1952, "Global Influence": 100}},
+{name: "The Electric Dynamo (1831 - Michael Faraday / 1867 - Werner von Siemens)", attributes: {"Impact Score": 96, "Innovation Level": 95, "Year of Discovery": "1831 / 1867", "Global Influence": 100}},
+{name: "The Digital Camera (1975 - Steven Sasson, Kodak)", attributes: {"Impact Score": 97, "Innovation Level": 98, "Year of Discovery": 1975, "Global Influence": 100}},
+{name: "The GPS (1973 - First Satellites; Available to the Public in 1990s)", attributes: {"Impact Score": 98, "Innovation Level": 99, "Year of Discovery": 1973, "Global Influence": 100}},
+{name: "Vacuum Packaging (1940s - Karl Busch - Food Industry)", attributes: {"Impact Score": 92, "Innovation Level": 91, "Year of Discovery": "1940s", "Global Influence": 100}},
+{name: "The Scanner (1957 - Russell Kirsch - First Digitized Image)", attributes: {"Impact Score": 95, "Innovation Level": 94, "Year of Discovery": 1957, "Global Influence": 100}},
+{name: "The Seat Belt (1959 - Nils Bohlin - Three Points)", attributes: {"Impact Score": 98, "Innovation Level": 94, "Year of Discovery": 1959, "Global Influence": 100}},
+{name: "The QR Code (1994 - Masahiro Hara - Denso Wave)", attributes: {"Impact Score": 95, "Innovation Level": 97, "Year of Discovery": 1994, "Global Influence": 100}},
+{name: "Streaming (2000s - Netflix, YouTube, Spotify Popularize the Model)", attributes: {"Impact Score": 100, "Innovation Level": 98, "Year of Discovery": "2000s", "Global Influence": 100}},
+ 	 ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('ivtrCheckbox').checked) selectedCards.push(...ivtr);
+    if (document.getElementById('inventCheckbox').checked) selectedCards.push(...invent);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

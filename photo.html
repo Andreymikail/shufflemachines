@@ -1,0 +1,815 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Photo</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="phtCheckbox"> Photographer</label><br>
+    <label><input type="checkbox" id="equipCheckbox"> Equipment</label><br>
+    <label><input type="checkbox" id="genreCheckbox"> Genre</label><br>
+    <label><input type="checkbox" id="locCheckbox"> Place / Event</label><br>
+    <label><input type="checkbox" id="birdCheckbox"> Bird</label><br>
+    <label><input type="checkbox" id="flowerCheckbox"> Flower</label><br>
+    <label><input type="checkbox" id="mountCheckbox"> Mountain</label><br>
+    <label><input type="checkbox" id="natpCheckbox"> National Park</label><br>
+    <label><input type="checkbox" id="trailCheckbox"> Trail</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+"Out of Focus! – Choose one opponent and make them skip their next turn because their shot was blurry!",
+"Low Battery! – One player must discard one of their best cards, as their camera died mid-shoot.",
+"Bad Weather! – All players lose one turn, as rain or fog ruins the shoot.",
+"Golden Hour! – You get to draw two extra cards because the lighting is perfect!",
+"Perfect Focus! – Pick one discarded card and bring it back into your hand.",
+"Memory Card Corrupted! – Choose one opponent and make them shuffle their hand back into the deck and draw new cards.",
+"Creative Inspiration! – Swap one card from your hand with an opponent’s.",
+"Right Place, Right Time! – Look at the top three cards of the deck and choose one to keep. Shuffle the rest back in.",
+"Photo Contest Winner! – Show your best card and if its total value is higher than all others, you get an extra turn.",
+"Unusual Perspective! – Flip the game mechanics for one round! The lowest values win instead of the highest.",
+"Fast Shutter Speed! – Take an extra turn immediately.",
+"Long Exposure! – You may reuse the effect of the last action card played.",
+"Collaboration! – Choose an opponent and swap hands for one turn, then swap back.",
+  ];
+
+  
+const pht = [
+{name: "Adam Hliva (Poland)", attributes: {"Photo Genre": "Architectural and Urban Photography", Influence: 82, Awards: 3, Innovation: 85, "Exhibition Count": 12, "Years Active": 15}},
+{name: "Albert Dros (Netherlands)", attributes: {"Photo Genre": "Landscape & Atmospheric Photography", Influence: 88, Awards: 7, Innovation: 92, "Exhibition Count": 35, "Years Active": 20}},
+{name: "Ana Ribeiro", attributes: {"Photo Genre": "Weddings & Events", "Influence": 80, Awards: 3, Innovation: 85, "Exhibition Count": 15, "Years Active": 10}},
+{name: "André Kertész (Hungary/USA)", attributes: {"Photo Genre": "Documentary & Abstract Photography", Influence: 95, Awards: 7, Innovation: 92, "Exhibition Count": 50, "Years Active": 60}},
+{name: "Anna Theolinda (Brazil)", attributes: {"Photo Genre": "Poetic Realism & Experimental Portraiture", Influence: 85, Awards: 6, Innovation: 90, "Exhibition Count": 25, "Years Active": 15}},
+{name: "Andreas Gursky (Germany)", attributes: {"Photo Genre": "Large-Scale & Conceptual", "Influence": 96, Awards: 9, Innovation: 95, "Exhibition Count": 60, "Years Active": 40}},
+{name: "Annie Leibovitz (USA)", attributes: {"Photo Genre": "Portrait & Fashion", "Influence": 95, Awards: 8, Innovation: 90, "Exhibition Count": 50, "Years Active": 50}},
+{name: "Ansel Adams (USA)", attributes: {"Photo Genre": "Landscape", "Influence": 98, Awards: 9, Innovation: 85, "Exhibition Count": 60, "Years Active": 50}},
+{name: "Arden", attributes: {"Photo Genre": "Urban & Aerial Photography", Influence: 90, Awards: 5, Innovation: 92, "Exhibition Count": 20, "Years Active": 8}},
+{name: "August Sander (Germany)", attributes: {"Photo Genre": "Portrait & Documentary", "Influence": 94, Awards: 8, Innovation: 90, "Exhibition Count": 50, "Years Active": 45}},
+{name: "Berenice Abbott (USA)", attributes: {"Photo Genre": "Architecture & Science", "Influence": 90, Awards: 7, Innovation: 88, "Exhibition Count": 40, "Years Active": 50}},
+{name: "Bettina Rheims (The Feminine Provocateur)", attributes: {"Photo Genre": "Portrait & Fashion Eroticism", Influence: 90, Awards: 11, Innovation: 88, "Exhibition Count": 50, "Years Active": 40}},
+{name: "Brassaï (Hungary/France)", attributes: {"Photo Genre": "Street & Night Photography", "Influence": 90, Awards: 7, Innovation: 85, "Exhibition Count": 45, "Years Active": 50}},
+{name: "Bruce Weber (USA)", attributes: {"Photo Genre": "Fashion & Portrait Photography", Influence: 88, Awards: 10, Innovation: 82, "Exhibition Count": 50, "Years Active": 45}},
+{name: "Burk Uzzle (USA)", attributes: {"Photo Genre": "Documentary & Humanist Photography", Influence: 91, Awards: 12, Innovation: 89, "Exhibition Count": 65, "Years Active": 60}},
+{name: "Cindy Sherman (USA)", attributes: {"Photo Genre": "Conceptual & Self-Portraiture", "Influence": 94, Awards: 9, Innovation: 98, "Exhibition Count": 70, "Years Active": 50}},
+{name: "Clarence Sinclair Bull (USA, 1896–1979)", attributes: {"Photo Genre": "Classic Hollywood Glamour", Influence: 90, Awards: 5, Innovation: 80, "Exhibition Count": 40, "Years Active": 50}},
+{name: "Daido Moriyama (Japan)", attributes: {"Photo Genre": "Street & Avant-Garde", "Influence": 92, Awards: 7, Innovation: 93, "Exhibition Count": 50, "Years Active": 60}},
+{name: "Daniel Aucoin (Canada)", attributes: {"Photo Genre": "Nature and Macro Photography", Influence: 90, Awards: 5, Innovation: 92, "Exhibition Count": 25, "Years Active": 20}},
+{name: "David Dubnitskiy (Ukraine)", attributes: {"Photo Genre": "Artistic Portraiture and Fine Art", Influence: 85, Awards: 5, Innovation: 88, "Exhibition Count": 30, "Years Active": 15}},
+{name: "Diane Arbus (USA)", attributes: {"Photo Genre": "Portraiture & Unusual Subjects", "Influence": 93, Awards: 8, Innovation: 92, "Exhibition Count": 40, "Years Active": 20}},
+{name: "Don Hunstein (USA)", attributes: {"Photo Genre": "Music & Portrait Photography", Influence: 90, Awards: 5, Innovation: 80, "Exhibition Count": 25, "Years Active": 45}},
+{name: "Dorothea Lange (USA)", attributes: {"Photo Genre": "Documentary & Social Issues", "Influence": 92, Awards: 7, Innovation: 85, "Exhibition Count": 30, "Years Active": 40}},
+{name: "Édouard Boubat (France)", attributes: {"Photo Genre": "Humanist & Poetic Realism", Influence: 90, Awards: 6, Innovation: 80, "Exhibition Count": 40, "Years Active": 45}},
+{name: "Edward Steichen", attributes: {"Photo Genre": "Portrait, Pictorialism & Fashion", Influence: 100, Awards: 10, Innovation: 95, "Exhibition Count": 60, "Years Active": 70}},
+{name: "Edward Weston (USA)", attributes: {"Photo Genre": "Still Life & Nude", "Influence": 95, Awards: 9, Innovation: 90, "Exhibition Count": 45, "Years Active": 50}},
+{name: "Elliott Erwitt (France/USA)", attributes: {"Photo Genre": "Street & Humor", "Influence": 92, Awards: 8, Innovation: 87, "Exhibition Count": 50, "Years Active": 70}},
+{name: "Eric Paré (Canadá)", attributes: {"Photo Genre": "Light Painting & Bullet-Time Photography", Influence: 90, Awards: 7, Innovation: 95, "Exhibition Count": 40, "Years Active": 15}},
+{name: "Fan Ho (China/Hong Kong)", attributes: {"Photo Genre": "Street & Fine Art", "Influence": 90, Awards: 7, Innovation: 88, "Exhibition Count": 35, "Years Active": 50}},
+{name: "Francesco Scavullo (The Glamour Provocateur)", attributes: {"Photo Genre": "Fashion and Celebrity Portraiture", Influence: 92, Awards: 6, Innovation: 85, "Exhibition Count": 40, "Years Active": 50}},
+{name: "Franz Hubmann (The Cultural Chronicler)", attributes: {"Photo Genre": "Documentary and Portrait", Influence: 90, Awards: 5, Innovation: 88, "Exhibition Count": 50, "Years Active": 60}},
+{name: "Gary P Hayes (Australia)", attributes: {"Photo Genre": "Landscape & Conceptual Photography", Influence: 85, Awards: 5, Innovation: 88, "Exhibition Count": 25, "Years Active": 20}},
+{name: "George Hurrell (The Glamour Sculptor)", attributes: {"Photo Genre": "Hollywood Portraiture & Studio Lighting", Influence: 95, Awards: 10, Innovation: 85, "Exhibition Count": 40, "Years Active": 50}},
+{name: "Gerencsér-Fehér Edina (Hungary)", attributes: {"Photo Genre": "Abstract Emotion & Conceptual Symbolism", Influence: 82, Awards: 5, Innovation: 92, "Exhibition Count": 20, "Years Active": 12}},
+{name: "Gilles Bensimon", attributes: {"Photo Genre": "Fashion & Celebrity Portraits", Influence: 90, Awards: 7, Innovation: 85, "Exhibition Count": 40, "Years Active": 50}},
+{name: "Gordon Parks (USA)", attributes: {"Photo Genre": "Documentary & Civil Rights", "Influence": 95, Awards: 9, Innovation: 90, "Exhibition Count": 55, "Years Active": 60}},
+{name: "Graciela Iturbide (Mexico)", attributes: {"Photo Genre": "Documentary & Indigenous Culture", "Influence": 90, Awards: 9, Innovation: 88, "Exhibition Count": 50, "Years Active": 50}},
+{name: "Hans Namuth (Germany/USA)", attributes: {"Photo Genre": "Artist Portraits & Documentation of Creative Processes", Influence: 94, Awards: 7, Innovation: 90, "Exhibition Count": 60, "Years Active": 50}},
+{name: "Helga Stentzel (Russia/UK)", attributes: {"Photo Genre": "Household Surrealism", Influence: 85, Awards: 1, Innovation: 95, "Exhibition Count": 30, "Years Active": 10}},
+{name: "Helmut Newton (Germany/Australia)", attributes: {"Photo Genre": "Fashion & Erotic", "Influence": 90, Awards: 7, Innovation: 85, "Exhibition Count": 40, "Years Active": 60}},
+{name: "Henri Cartier-Bresson (France)", attributes: {"Photo Genre": "Street & Documentary", "Influence": 100, Awards: 10, Innovation: 95, "Exhibition Count": 80, "Years Active": 60}},
+{name: "Hiroshi Sugimoto (Japan)", attributes: {"Photo Genre": "Conceptual & Minimalist", "Influence": 94, Awards: 9, Innovation: 95, "Exhibition Count": 60, "Years Active": 50}},
+{name: "Irving Penn (USA)", attributes: {"Photo Genre": "Fashion & Portrait", "Influence": 93, Awards: 8, Innovation: 87, "Exhibition Count": 45, "Years Active": 60}},
+{name: "Jack Davison (UK)", attributes: {"Photo Genre": "Portrait & Documentary", Influence: 90, Awards: 5, Innovation: 90, "Exhibition Count": 25, "Years Active": 15}},
+{name: "Jacques Beneich (France)", attributes: {"Photo Genre": "Fashion & Portrait Photography", Influence: 78, Awards: 2, Innovation: 85, "Exhibition Count": 15, "Years Active": 35}},
+{name: "James Nachtwey (USA)", attributes: {"Photo Genre": "War & Conflict Photography", "Influence": 97, Awards: 10, Innovation: 92, "Exhibition Count": 55, "Years Active": 40}},
+{name: "Joel Meyerowitz (USA)", attributes: {"Photo Genre": "Street & Color Photography", "Influence": 91, Awards: 7, Innovation: 90, "Exhibition Count": 45, "Years Active": 60}},
+{name: "João Paulo Barbosa (Brazil)", attributes: {"Photo Genre": "Landscape & Cultural Documentary", Influence: 88, Awards: 10, Innovation: 85, "Exhibition Count": 50, "Years Active": 25}},
+{name: "John Harding (The Color Street Sentinel)", attributes: {"Photo Genre": "Street & Color Photography", Influence: 85, Awards: 6, Innovation: 88, "Exhibition Count": 25, "Years Active": 40}},
+{name: "Jonas Hornehoj (Dinamarca)", attributes: {"Photo Genre": "Travel and Lifestyle Photography", "Influence": 88, "Awards": 5, "Innovation": 90, "Exhibition Count": 20, "Years Active": 8}},
+{name: "Jorge Diehl (Brazil)", attributes: {"Photo Genre": "Street & Documentary Photography", Influence: 80, Awards: 3, Innovation: 82, "Exhibition Count": 15, "Years Active": 25}},
+{name: "Josh London (USA)", attributes: {"Photo Genre": "Portrait & Lifestyle Photography", Influence: 78, Awards: 2, Innovation: 80, "Exhibition Count": 12, "Years Active": 20}},
+{name: "JR (France)", attributes: {"Photo Genre": "Street Art & Photography", "Influence": 92, Awards: 7, Innovation: 95, "Exhibition Count": 55, "Years Active": 20}},
+{name: "Larry Burrows (UK)", attributes: {"Photo Genre": "War Photography (Vietnam)", "Influence": 93, Awards: 8, Innovation: 89, "Exhibition Count": 35, "Years Active": 25}},
+{name: "Leena Henningsen (Germany)", attributes: {"Photo Genre": "Documentary and Landscape", Influence: 85, Awards: 5, Innovation: 88, "Number of Exhibitions": 15, "Years of Activity": 10}},
+{name: "Linda McCartney (USA)", attributes: {"Photo Genre": "Portrait and Music Photography", Influence: 95, Awards: 8, Innovation: 90, "Number of Exhibitions": 25, "Years of Activity": 30}},
+{name: "Lu Guang (China)", attributes: {"Photo Genre": "Environmental & Documentary", "Influence": 89, Awards: 8, Innovation: 87, "Exhibition Count": 40, "Years Active": 30}},
+{name: "Luigi Bilancio (Italy)", attributes: {"Photo Genre": "Portrait & Conceptual", Influence: 75, Awards: 5, Innovation: 80, "Exhibition Count": 30, "Years Active": 30}},
+{name: "Man Ray (USA/France)", attributes: {"Photo Genre": "Surrealism & Experimental", "Influence": 99, Awards: 8, Innovation: 100, "Exhibition Count": 60, "Years Active": 50}},
+{name: "Marc Riboud (France)", attributes: {"Photo Genre": "Documentary & Travel", "Influence": 92, Awards: 8, Innovation: 89, "Exhibition Count": 45, "Years Active": 60}},
+{name: "Mark Seliger (USA)", attributes: {"Photo Genre": "Portrait & Editorial Photography", Influence: 92, Awards: 9, Innovation: 88, "Exhibition Count": 50, "Years Active": 40}},
+{name: "Marina Cano (Spain)", attributes: {"Photo Genre": "Wildlife & Nature", Influence: 85, Awards: 6, Innovation: 88, "Exhibition Count": 40, "Years Active": 25}},
+{name: "Margaret Bourke-White (The Steel & Story Pioneer)", attributes: {"Photo Genre": "Documentary & Industrial Photojournalism", Influence: 100, Awards: 12, Innovation: 90, "Exhibition Count": 60, "Years Active": 40}},
+{name: "Mary Ellen Mark (USA)", attributes: {"Photo Genre": "Documentary & Portrait", "Influence": 92, Awards: 8, Innovation: 88, "Exhibition Count": 50, "Years Active": 50}},
+{name: "Mary McCartney (UK)", attributes: {"Photo Genre": "Portrait & Documentary", "Influence": 85, Awards: 7, Innovation: 80, "Exhibition Count": 40, "Years Active": 30}},
+{name: "Mel Zagers (The Landscape Explorer)", attributes: {"Photo Genre": "Landscape and Travel", Influence: 80, Awards: 3, Innovation: 85, "Exhibition Count": 10, "Years Active": 5}},
+{name: "Michael Putland (The Rock Historian)", attributes: {"Photo Genre": "Music & Candid Portraiture", Influence: 85, Awards: 6, Innovation: 78, "Exhibition Count": 35, "Years Active": 45}},
+{name: "Milad Safabakhsh", attributes: {"Photo Genre": "Minimalist & Conceptual", Influence: 85, Awards: 10, Innovation: 90, "Exhibition Count": 25, "Years Active": 15}},
+{name: "Nan Goldin (USA)", attributes: {"Photo Genre": "Intimate & LGBTQ+ Culture", "Influence": 95, Awards: 9, Innovation: 93, "Exhibition Count": 55, "Years Active": 45}},
+{name: "Nick Ut (Vietnam/USA)", attributes: {"Photo Genre": "War & Documentary", "Influence": 95, Awards: 9, Innovation: 88, "Exhibition Count": 35, "Years Active": 50}},
+{name: "Norma Pereira Rego (Brazil)", attributes: {"Photo Genre": "Portrait & Event Photography", Influence: 70, Awards: 3, Innovation: 75, "Exhibition Count": 20, "Years Active": 25}},
+{name: "Paolo Roversi (Italy)", attributes: {"Photo Genre": "Fashion & Portrait", "Influence": 91, Awards: 8, Innovation: 89, "Exhibition Count": 50, "Years Active": 50}},
+{name: "Patrick Noack (Germany)", attributes: {"Photo Genre": "Cityscapes & Architecture", Influence: 75, Awards: 3, Innovation: 80, "Exhibition Count": 15, "Years Active": 10}},
+{name: "Peter Coulson", attributes: {"Photo Genre": "Portrait & Fashion (Black and White)", Influence: 85, Awards: 7, Innovation: 88, "Exhibition Count": 30, "Years Active": 25}},
+{name: "Peter Lindbergh (Germany)", attributes: {"Photo Genre": "Fashion & Black-and-White Portraits", "Influence": 93, Awards: 8, Innovation: 90, "Exhibition Count": 45, "Years Active": 45}},
+{name: "Raghu Rai (India)", attributes: {"Photo Genre": "Documentary & Photojournalism", "Influence": 89, Awards: 8, Innovation: 85, "Exhibition Count": 40, "Years Active": 50}},
+{name: "Ralph Crane (Germany/USA)", attributes: {"Photo Genre": "Photojournalism & Editorial", Influence: 85, Awards: 1, Innovation: 80, "Exhibition Count": 5, "Years Active": 40}},
+{name: "Razvan Vitionescu (Romania)", attributes: {"Photo Genre": "Street & Fine Art Photography", Influence: 80, Awards: 4, Innovation: 85, "Exhibition Count": 20, "Years Active": 15}},
+{name: "Rennan Peixe (Brazil)", attributes: {"Photo Genre": "Afrofuturism & Cultural Identity", Influence: 85, Awards: 5, Innovation: 90, "Exhibition Count": 15, "Years Active": 10}},
+{name: "Richard Avedon (USA)", attributes: {"Photo Genre": "Fashion & Portrait", "Influence": 95, Awards: 9, Innovation: 90, "Exhibition Count": 55, "Years Active": 57}},
+{name: "Robert Capa (Hungary)", attributes: {"Photo Genre": "War & Documentary", "Influence": 96, Awards: 8, Innovation: 90, "Exhibition Count": 50, "Years Active": 22}},
+{name: "Robert Doisneau (France)", attributes: {"Photo Genre": "Street & Humanist Photography", Influence: 95, Awards: 10, Innovation: 85, "Exhibition Count": 60, "Years Active": 60}},
+{name: "Robert Frank (Switzerland/USA)", attributes: {"Photo Genre": "Documentary & Street", "Influence": 97, Awards: 9, Innovation: 94, "Exhibition Count": 55, "Years Active": 60}},
+{name: "Sandra Bencicova (The Surreal Strategist)", attributes: {"Photo Genre": "Conceptual & Surreal Portraiture", Influence: 85, Awards: 10, Innovation: 92, "Exhibition Count": 30, "Years Active": 15}},
+{name: "Sarah Moon (France)", attributes: {"Photo Genre": "Fashion & Fine Art", "Influence": 90, Awards: 7, Innovation: 88, "Exhibition Count": 40, "Years Active": 40}},
+{name: "Saul Leiter (USA)", attributes: {"Photo Genre": "Color Photography & Street", "Influence": 88, Awards: 6, Innovation: 89, "Exhibition Count": 40, "Years Active": 60}},
+{name: "Sebastián Liste (Spain)", attributes: {"Photo Genre": "Documentary & Humanitarian", "Influence": 85, Awards: 7, Innovation: 87, "Exhibition Count": 30, "Years Active": 20}},
+{name: "Sebastião Salgado (Brazil)", attributes: {"Photo Genre": "Documentary & Humanitarian", "Influence": 97, Awards: 9, Innovation: 88, "Exhibition Count": 55, "Years Active": 50}},
+{name: "Shawn Theodore (USA)", attributes: {"Photo Genre": "Afrosurrealism & Cultural Identity", Influence: 90, Awards: 6, Innovation: 92, "Exhibition Count": 25, "Years Active": 12}},
+{name: "Shōmei Tōmatsu (Japan)", attributes: {"Photo Genre": "Post-War Documentary", "Influence": 91, Awards: 8, Innovation: 89, "Exhibition Count": 45, "Years Active": 50}},
+{name: "Steve McCurry (USA)", attributes: {"Photo Genre": "Documentary & Travel", "Influence": 90, Awards: 7, Innovation: 85, "Exhibition Count": 40, "Years Active": 45}},
+{name: "Tatsuya Tanaka (Japan)", attributes: {"Photo Genre": "Miniature Art & Conceptual Photography", Influence: 85, Awards: 5, Innovation: 95, "Exhibition Count": 20, "Years Active": 15}},
+{name: "Tim Bonython (Australia)", attributes: {"Photo Genre": "Surf & Big Wave Cinematography", Influence: 90, Awards: 7, Innovation: 92, "Exhibition Count": 50, "Years Active": 45}},
+{name: "Tina Modotti (Italy/Mexico)", attributes: {"Photo Genre": "Political & Documentary", "Influence": 87, Awards: 6, Innovation: 85, "Exhibition Count": 30, "Years Active": 20}},
+{name: "Tristan Zhou (EUA)", attributes: {"Photo Genre": "Urban & Architectural Photography", Influence: 88, Awards: 5, Innovation: 90, "Exhibition Count": 30, "Years Active": 10}},
+{name: "Vivian Maier (USA)", attributes: {"Photo Genre": "Street Photography", "Influence": 88, Awards: 6, Innovation: 85, "Exhibition Count": 25, "Years Active": 50}},
+{name: "William Eggleston (USA)", attributes: {"Photo Genre": "Color Photography & Street", "Influence": 96, Awards: 9, Innovation: 98, "Exhibition Count": 60, "Years Active": 60}},
+{name: "Yousuf Karsh (Canada/Armenia)", attributes: {"Photo Genre": "Portraiture", "Influence": 94, Awards: 8, Innovation: 85, "Exhibition Count": 35, "Years Active": 60}},
+{name: "Zélia Gattai (The Intimate Chronicler)", attributes: {"Photo Genre": "Memoir & Social Documentation", Influence: 80, Awards: 7, Innovation: 78, "Exhibition Count": 20, "Years Active": 50}},
+ 	];
+ 	
+ 	
+const equip = [
+
+{name: "Equipment: Canon EOS R5 (Camera)", attributes: {Resolution: "45 MP", "Max ISO": "51,200", Weight: "738g"}},
+{name: "Equipment: Nikon Z9 (Camera)", attributes: {Resolution: "45.7 MP", "Max ISO": "102,400", Weight: "1,340g"}},
+{name: "Equipment: Sony A7 IV (Camera)", attributes: {Resolution: "33 MP", "Max ISO": "204,800", Weight: "658g"}},
+{name: "Equipment: Fujifilm X-T5 (Camera)", attributes: {Resolution: "40 MP", "Max ISO": "51,200", Weight: "557g"}},
+{name: "Equipment: Canon RF 85mm f/1.2L (Lens)", attributes: {Type: "Prime Lens", Aperture: "f/1.2", Weight: "1,195g"}},
+{name: "Equipment: Sony FE 70-200mm f/2.8 GM OSS II (Lens)", attributes: {Type: "Telephoto Zoom Lens", Aperture: "f/2.8", Weight: "1,045g"}},
+{name: "Equipment: Nikon Z 24-70mm f/2.8 S (Lens)", attributes: {Type: "Zoom Lens", Aperture: "f/2.8", Weight: "805g"}},
+{name: "Equipment: Godox V1 (Flash)", attributes: {Type: "Speedlight", "Guide Number": "92 ft (28m)", Weight: "530g"}},
+{name: "Equipment: Manfrotto Befree Advanced (Tripod)", attributes: {Type: "Travel Tripod", "Max Height": "150cm", Weight: "1,590g"}},
+{name: "Equipment: Leica M11 (Camera)", attributes: {Resolution: "60 MP", "Max ISO": "50,000", Weight: "640g"}},
+ 	];
+ 	
+ 	
+const genre = [
+{name: "Genre: Portrait Photography", attributes: {Difficulty: 75, Creativity: 85, "Equipment Needs": 70, Popularity: 95, Impact: 90}},
+{name: "Genre: Street Photography", attributes: {Difficulty: 85, Creativity: 90, "Equipment Needs": 50, Popularity: 80, Impact: 85}},
+{name: "Genre: Wildlife Photography", attributes: {Difficulty: 95, Creativity: 80, "Equipment Needs": 100, Popularity: 70, Impact: 90}},
+{name: "Genre: Landscape Photography", attributes: {Difficulty: 70, Creativity: 85, "Equipment Needs": 60, Popularity: 85, Impact: 80}},
+{name: "Genre: Photojournalism", attributes: {Difficulty: 90, Creativity: 70, "Equipment Needs": 80, Popularity: 75, Impact: 100}},
+{name: "Genre: Astrophotography", attributes: {Difficulty: 98, Creativity: 70, "Equipment Needs": 100, Popularity: 60, Impact: 75}},
+{name: "Genre: Macro Photography", attributes: {Difficulty: 85, Creativity: 90, "Equipment Needs": 95, Popularity: 65, Impact: 70}},
+{name: "Genre: Fashion Photography", attributes: {Difficulty: 80, Creativity: 95, "Equipment Needs": 85, Popularity: 90, Impact: 95}},
+{name: "Genre: Fine Art Photography", attributes: {Difficulty: 75, Creativity: 100, "Equipment Needs": 60, Popularity: 70, Impact: 85}},
+{name: "Genre: Aerial Photography", attributes: {Difficulty: 90, Creativity: 75, "Equipment Needs": 90, Popularity: 65, Impact: 80}},
+  ];
+  
+ const loc = [
+{name: "Place: Aït Benhaddou, Morocco", attributes: { "Best Photo Genre": "Architecture & Desert Photography", "Scenic Beauty": 95, "Cultural Richness": 100, "Photographer Popularity": 80, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Albuquerque International Balloon Fiesta, USA", attributes: { "Best Photo Genre": "Aerial & Event Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 85, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: Amsterdam, Netherlands", attributes: { "Best Photo Genre": "Street & Canal Photography", "Scenic Beauty": 100, "Cultural Richness": 95, "Photographer Popularity": 90, Accessibility: 90, "Unique Factor": 100}},
+{name: "Place: Angkor Wat, Cambodia", attributes: { "Best Photo Genre": "Architecture & Travel Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 65, "Unique Factor": 100}},
+{name: "Place: Antarctica", attributes: { "Best Photo Genre": "Landscape & Extreme Adventure Photography", "Scenic Beauty": 100, "Cultural Richness": 60, "Photographer Popularity": 75, Accessibility: 30, "Unique Factor": 100}},
+{name: "Place: Antelope Canyon, USA", attributes: { "Best Photo Genre": "Landscape & Abstract Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 85, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Aogashima Volcano, Japan", attributes: { "Best Photo Genre": "Landscape & Aerial Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 65, Accessibility: 30, "Unique Factor": 100}},
+{name: "Place: Atacama Desert, Chile", attributes: { "Best Photo Genre": "Night & Landscape Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 85, Accessibility: 55, "Unique Factor": 100}},
+{name: "Place: Avenue of the Baobabs, Madagascar", attributes: { "Best Photo Genre": "Landscape & Nature Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 70, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Bamboo Forest, Kyoto, Japan", attributes: { "Best Photo Genre": "Landscape & Zen Photography", "Scenic Beauty": 100, "Cultural Richness": 95, "Photographer Popularity": 85, Accessibility: 80, "Unique Factor": 100}},
+{name: "Place: Banff National Park, Canada", attributes: { "Best Photo Genre": "Landscape & Wildlife", "Scenic Beauty": 100, "Cultural Richness": 70, "Photographer Popularity": 90, Accessibility: 75, "Unique Factor": 95}},
+{name: "Place: Baobab Alley, Madagascar", attributes: { "Best Photo Genre": "Landscape & Nature Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 70, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Bhangarh Fort, India", attributes: { "Best Photo Genre": "Urban Exploration & Mystery Photography", "Scenic Beauty": 85, "Cultural Richness": 90, "Photographer Popularity": 65, Accessibility: 55, "Unique Factor": 100}},
+{name: "Place: Bisti Badlands, USA", attributes: { "Best Photo Genre": "Landscape & Abstract Photography", "Scenic Beauty": 100, "Cultural Richness": 60, "Photographer Popularity": 70, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: Bora Bora, French Polynesia", attributes: { "Best Photo Genre": "Landscape & Aerial Photography", "Scenic Beauty": 100, "Cultural Richness": 65, "Photographer Popularity": 85, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Brasília, Brazil", attributes: { "Best Photo Genre": "Architecture & Urban Photography", "Scenic Beauty": 85, "Cultural Richness": 95, "Photographer Popularity": 80, Accessibility: 90, "Unique Factor": 100}},
+{name: "Place: Bryce Canyon, USA", attributes: { "Best Photo Genre": "Landscape & Adventure Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 80, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Burning Man Festival, USA", attributes: { "Best Photo Genre": "Portrait & Artistic Photography", "Scenic Beauty": 90, "Cultural Richness": 95, "Photographer Popularity": 80, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Buzludzha Monument, Bulgaria", attributes: { "Best Photo Genre": "Urban Exploration & Brutalist Architecture", "Scenic Beauty": 85, "Cultural Richness": 90, "Photographer Popularity": 60, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Cappadocia, Turkey", attributes: { "Best Photo Genre": "Landscape & Aerial (Hot Air Balloons)", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 90, Accessibility: 80, "Unique Factor": 100}},
+{name: "Place: Carhenge, Nebraska, USA", attributes: { "Best Photo Genre": "Surreal & Roadside Photography", "Scenic Beauty": 85, "Cultural Richness": 70, "Photographer Popularity": 65, Accessibility: 80, "Unique Factor": 100}},
+{name: "Place: Carnival of Venice, Italy", attributes: { "Best Photo Genre": "Portrait & Fashion Photography", "Scenic Beauty": 90, "Cultural Richness": 100, "Photographer Popularity": 90, Accessibility: 80, "Unique Factor": 95}},
+{name: "Place: Chernobyl Nuclear Power Plant, Ukraine", attributes: { "Best Photo Genre": "Urban Exploration & Abandoned Places", "Scenic Beauty": 70, "Cultural Richness": 100, "Photographer Popularity": 75, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: Cherry Blossom Festival, Japan", attributes: { "Best Photo Genre": "Landscape & Street Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 90, Accessibility: 80, "Unique Factor": 100}},
+{name: "Place: Chichén Itzá, Mexico", attributes: { "Best Photo Genre": "Architecture & History Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Cinque Terre, Italy", attributes: { "Best Photo Genre": "Landscape & Travel Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 90, Accessibility: 70, "Unique Factor": 95}},
+{name: "Place: Cueva de los Cristales, Mexico (Giant Crystal Cave)", attributes: { "Best Photo Genre": "Science & Surreal Photography", "Scenic Beauty": 90, "Cultural Richness": 85, "Photographer Popularity": 60, Accessibility: 20, "Unique Factor": 100}},
+{name: "Place: Day of the Dead, Mexico", attributes: { "Best Photo Genre": "Portrait & Cultural Photography", "Scenic Beauty": 85, "Cultural Richness": 100, "Photographer Popularity": 90, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: Deadvlei, Namibia", attributes: { "Best Photo Genre": "Desert & Surreal Photography", "Scenic Beauty": 100, "Cultural Richness": 70, "Photographer Popularity": 75, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Death Valley, USA", attributes: { "Best Photo Genre": "Desert & Extreme Landscape Photography", "Scenic Beauty": 100, "Cultural Richness": 70, "Photographer Popularity": 80, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Dia de Reis Festival, Spain", attributes: { "Best Photo Genre": "Cultural & Street Photography", "Scenic Beauty": 85, "Cultural Richness": 100, "Photographer Popularity": 75, Accessibility: 80, "Unique Factor": 100}},
+{name: "Place: Doorway to the Underworld, Siberia", attributes: { "Best Photo Genre": "Landscape & Extreme Environment Photography", "Scenic Beauty": 90, "Cultural Richness": 70, "Photographer Popularity": 50, Accessibility: 30, "Unique Factor": 100}},
+{name: "Place: Dubai Miracle Garden, UAE", attributes: { "Best Photo Genre": "Macro & Colorful Photography", "Scenic Beauty": 100, "Cultural Richness": 70, "Photographer Popularity": 85, Accessibility: 80, "Unique Factor": 95}},
+{name: "Place: Dubai, UAE", attributes: { "Best Photo Genre": "Architecture & Urban Photography", "Scenic Beauty": 90, "Cultural Richness": 75, "Photographer Popularity": 95, Accessibility: 95, "Unique Factor": 90}},
+{name: "Place: Dubrovnik, Croatia", attributes: { "Best Photo Genre": "Architecture & Pop Culture Photography", "Scenic Beauty": 100, "Cultural Richness": 95, "Photographer Popularity": 85, Accessibility: 80, "Unique Factor": 100}},
+{name: "Place: Fairy Pools, Isle of Skye, Scotland", attributes: { "Best Photo Genre": "Landscape & Nature Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 80, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Faroe Islands, Denmark", attributes: { "Best Photo Genre": "Landscape & Nature Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 75, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Fushimi Inari Shrine, Japan", attributes: { "Best Photo Genre": "Architecture & Street Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 90, Accessibility: 85, "Unique Factor": 100}},
+{name: "Place: Ghost Town of Kolmanskop, Namibia", attributes: { "Best Photo Genre": "Urban Exploration & Sand Photography", "Scenic Beauty": 90, "Cultural Richness": 85, "Photographer Popularity": 75, Accessibility: 45, "Unique Factor": 100}},
+{name: "Place: Giant’s Causeway, Northern Ireland", attributes: { "Best Photo Genre": "Landscape & Geological Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 80, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: Glowworm Caves, New Zealand", attributes: { "Best Photo Genre": "Night & Nature Photography", "Scenic Beauty": 100, "Cultural Richness": 70, "Photographer Popularity": 75, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Goblin Valley State Park, USA", attributes: { "Best Photo Genre": "Landscape & Fantasy Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 70, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Grand Prismatic Spring, Yellowstone, USA", attributes: { "Best Photo Genre": "Landscape & Aerial Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 85, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Great Barrier Reef, Australia", attributes: { "Best Photo Genre": "Underwater & Wildlife Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 80, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Great Blue Hole, Belize", attributes: { "Best Photo Genre": "Underwater & Aerial Photography", "Scenic Beauty": 100, "Cultural Richness": 70, "Photographer Popularity": 65, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: Great Wall of China, China", attributes: { "Best Photo Genre": "Landscape & Architecture", "Scenic Beauty": 95, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Guilin, China", attributes: { "Best Photo Genre": "Landscape & Travel Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 80, Accessibility: 70, "Unique Factor": 95}},
+{name: "Place: Ha Long Bay, Vietnam", attributes: { "Best Photo Genre": "Landscape & Travel Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 85, Accessibility: 65, "Unique Factor": 100}},
+{name: "Place: Hallgrimskirkja, Iceland", attributes: { "Best Photo Genre": "Architecture & Landscape", "Scenic Beauty": 95, "Cultural Richness": 85, "Photographer Popularity": 80, Accessibility: 75, "Unique Factor": 90}},
+{name: "Place: Hallstatt, Austria", attributes: { "Best Photo Genre": "Landscape & Travel Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 80, Accessibility: 75, "Unique Factor": 95}},
+{name: "Place: Harbin Ice Festival, China", attributes: { "Best Photo Genre": "Night & Winter Photography", "Scenic Beauty": 100, "Cultural Richness": 95, "Photographer Popularity": 85, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Havasu Falls, Arizona, USA", attributes: { "Best Photo Genre": "Landscape & Waterfall Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 80, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: Hells Gate, New Zealand", attributes: { "Best Photo Genre": "Landscape & Surreal Photography", "Scenic Beauty": 95, "Cultural Richness": 85, "Photographer Popularity": 75, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Himeji Castle, Japan", attributes: { "Best Photo Genre": "Architecture & History Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 80, "Unique Factor": 100}},
+{name: "Place: Hobbiton, New Zealand", attributes: { "Best Photo Genre": "Fantasy & Travel Photography", "Scenic Beauty": 100, "Cultural Richness": 70, "Photographer Popularity": 85, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: Holi Festival, India", attributes: { "Best Photo Genre": "Portrait & Cultural Photography", "Scenic Beauty": 90, "Cultural Richness": 100, "Photographer Popularity": 95, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: Iceland (Entire Country!)", attributes: { "Best Photo Genre": "Landscape & Adventure Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 90, Accessibility: 65, "Unique Factor": 100}},
+{name: "Place: Inti Raymi Festival, Peru", attributes: { "Best Photo Genre": "Cultural & Portrait Photography", "Scenic Beauty": 85, "Cultural Richness": 100, "Photographer Popularity": 80, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Jasper National Park, Canada", attributes: { "Best Photo Genre": "Wildlife & Adventure Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 80, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: Jigokudani Monkey Park, Japan", attributes: { "Best Photo Genre": "Wildlife & Winter Photography", "Scenic Beauty": 95, "Cultural Richness": 75, "Photographer Popularity": 85, Accessibility: 65, "Unique Factor": 100}},
+{name: "Place: Jodhpur, The Blue City, India", attributes: { "Best Photo Genre": "Street & Color Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: Karakoram Highway, Pakistan/China", attributes: { "Best Photo Genre": "Landscape & Road Trip Photography", "Scenic Beauty": 100, "Cultural Richness": 90, "Photographer Popularity": 65, Accessibility: 30, "Unique Factor": 100}},
+{name: "Place: Katskhi Pillar, Georgia", attributes: { "Best Photo Genre": "Architecture & Landscape Photography", "Scenic Beauty": 95, "Cultural Richness": 90, "Photographer Popularity": 65, Accessibility: 30, "Unique Factor": 100}},
+{name: "Place: Kawah Ijen, Indonesia", attributes: { "Best Photo Genre": "Landscape & Adventure Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 70, Accessibility: 45, "Unique Factor": 100}},
+{name: "Place: Kiev (Kyiv), Ukraine", attributes: { "Best Photo Genre": "Architecture & Urban Exploration", "Scenic Beauty": 90, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 80, "Unique Factor": 100}},
+{name: "Place: Komodo National Park, Indonesia", attributes: { "Best Photo Genre": "Wildlife & Underwater Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 70, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Krampusnacht, Austria & Germany", attributes: { "Best Photo Genre": "Portrait & Cultural Photography", "Scenic Beauty": 85, "Cultural Richness": 100, "Photographer Popularity": 75, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Kruger National Park, South Africa", attributes: { "Best Photo Genre": "Wildlife & Safari Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 80, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Kyoto, Japan", attributes: { "Best Photo Genre": "Street & Nature Photography", "Scenic Beauty": 95, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 80, "Unique Factor": 95}},
+{name: "Place: Lake Baikal, Russia", attributes: { "Best Photo Genre": "Ice & Landscape Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 70, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: Lake Bled, Slovenia", attributes: { "Best Photo Genre": "Landscape & Nature Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 85, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: Lake Kaindy, Kazakhstan (Sunken Forest)", attributes: { "Best Photo Genre": "Landscape & Surreal Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 70, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Lake Natron, Tanzania", attributes: { "Best Photo Genre": "Surreal & Wildlife Photography", "Scenic Beauty": 95, "Cultural Richness": 80, "Photographer Popularity": 60, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: Lapland, Finland", attributes: { "Best Photo Genre": "Northern Lights & Winter Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 85, Accessibility: 55, "Unique Factor": 100}},
+{name: "Place: Lençóis Maranhenses, Brazil", attributes: { "Best Photo Genre": "Landscape & Aerial Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 80, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Lofoten Islands, Norway", attributes: { "Best Photo Genre": "Landscape & Arctic Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 80, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Los Angeles, USA", attributes: { "Best Photo Genre": "Street & Cinematic Photography", "Scenic Beauty": 85, "Cultural Richness": 95, "Photographer Popularity": 100, Accessibility: 90, "Unique Factor": 95}},
+{name: "Place: Lviv, Ukraine", attributes: { "Best Photo Genre": "Colonial & Cultural Photography", "Scenic Beauty": 95, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: Machu Picchu, Peru", attributes: { "Best Photo Genre": "Landscape & Travel", "Scenic Beauty": 100, "Cultural Richness": 95, "Photographer Popularity": 85, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Marble Caves, Chile", attributes: { "Best Photo Genre": "Landscape & Water Photography", "Scenic Beauty": 100, "Cultural Richness": 70, "Photographer Popularity": 75, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Mendenhall Ice Caves, Alaska, USA", attributes: { "Best Photo Genre": "Ice & Adventure Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 75, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: Meteora, Greece", attributes: { "Best Photo Genre": "Architecture & Landscape Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Moai Statues, Easter Island, Chile", attributes: { "Best Photo Genre": "Landscape & History Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 75, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Monteverde Cloud Forest, Costa Rica", attributes: { "Best Photo Genre": "Wildlife & Nature Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 80, Accessibility: 65, "Unique Factor": 100}},
+{name: "Place: Monument Valley, USA", attributes: { "Best Photo Genre": "Landscape & Western-Style Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 85, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Mount Erebus, Antarctica", attributes: { "Best Photo Genre": "Extreme Adventure & Volcanic Photography", "Scenic Beauty": 95, "Cultural Richness": 60, "Photographer Popularity": 50, Accessibility: 20, "Unique Factor": 100}},
+{name: "Place: Mount Everest Base Camp, Nepal", attributes: { "Best Photo Genre": "Adventure & Landscape Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 70, Accessibility: 30, "Unique Factor": 100}},
+{name: "Place: Mount Fuji, Japan", attributes: { "Best Photo Genre": "Landscape & Travel Photography", "Scenic Beauty": 100, "Cultural Richness": 90, "Photographer Popularity": 85, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Mount Roraima, Venezuela/Brazil/Guyana", attributes: { "Best Photo Genre": "Landscape & Adventure Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 70, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: Musa Bay, Saudi Arabia", attributes: { "Best Photo Genre": "Underwater & Marine Photography", "Scenic Beauty": 100, "Cultural Richness": 70, "Photographer Popularity": 60, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: Nagoro, The Doll Village, Japan", attributes: { "Best Photo Genre": "Urban Exploration & Mystery Photography", "Scenic Beauty": 70, "Cultural Richness": 80, "Photographer Popularity": 50, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Namib Desert, Namibia", attributes: { "Best Photo Genre": "Landscape & Wildlife Photography", "Scenic Beauty": 100, "Cultural Richness": 70, "Photographer Popularity": 80, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Neuschwanstein Castle, Germany", attributes: { "Best Photo Genre": "Architecture & Landscape", "Scenic Beauty": 100, "Cultural Richness": 90, "Photographer Popularity": 85, Accessibility: 75, "Unique Factor": 95}},
+{name: "Place: New York City, USA", attributes: { "Best Photo Genre": "Street & Urban Photography", "Scenic Beauty": 85, "Cultural Richness": 95, "Photographer Popularity": 100, Accessibility: 100, "Unique Factor": 85}},
+{name: "Place: Northern Lights (Aurora Borealis, Various Locations)", attributes: { "Best Photo Genre": "Night & Landscape Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 90, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Oktoberfest, Germany", attributes: { "Best Photo Genre": "Street & Event Photography", "Scenic Beauty": 75, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 85, "Unique Factor": 90}},
+{name: "Place: Okunoshima, Japan (Rabbit Island)", attributes: { "Best Photo Genre": "Wildlife & Cute Photography", "Scenic Beauty": 90, "Cultural Richness": 75, "Photographer Popularity": 80, Accessibility: 80, "Unique Factor": 100}},
+{name: "Place: Oradour-sur-Glane, France (Ghost Town from WWII)", attributes: { "Best Photo Genre": "Urban Exploration & Historical Photography", "Scenic Beauty": 85, "Cultural Richness": 100, "Photographer Popularity": 65, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Pamukkale, Turkey", attributes: { "Best Photo Genre": "Landscape & Unique Formations", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 80, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Pangong Lake, India/Tibet", attributes: { "Best Photo Genre": "Landscape & Reflection Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 70, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Paraty, Brazil", attributes: { "Best Photo Genre": "Colonial & Landscape Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: Paris, France", attributes: { "Best Photo Genre": "Street & Architecture", "Scenic Beauty": 95, "Cultural Richness": 100, "Photographer Popularity": 98, Accessibility: 95, "Unique Factor": 90}},
+{name: "Place: Patagonia, Argentina/Chile", attributes: { "Best Photo Genre": "Landscape & Adventure Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 85, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Perito Moreno Glacier, Argentina", attributes: { "Best Photo Genre": "Landscape & Nature Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 80, Accessibility: 65, "Unique Factor": 100}},
+{name: "Place: Petra, Jordan", attributes: { "Best Photo Genre": "Landscape & Architecture", "Scenic Beauty": 95, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 65, "Unique Factor": 100}},
+{name: "Place: Pink Beach, Komodo Island, Indonesia", attributes: { "Best Photo Genre": "Landscape & Beach Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 75, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Pinnacles Desert, Australia", attributes: { "Best Photo Genre": "Landscape & Surreal Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 70, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Poveglia Island, Italy", attributes: { "Best Photo Genre": "Urban Exploration & Horror Photography", "Scenic Beauty": 80, "Cultural Richness": 100, "Photographer Popularity": 60, Accessibility: 30, "Unique Factor": 100}},
+{name: "Place: Pripyat, Ukraine (Chernobyl Exclusion Zone)", attributes: { "Best Photo Genre": "Urban Exploration & Abandoned Places", "Scenic Beauty": 80, "Cultural Richness": 95, "Photographer Popularity": 75, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: Rainbow Mountains, China", attributes: { "Best Photo Genre": "Landscape & Surreal Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 75, Accessibility: 55, "Unique Factor": 100}},
+{name: "Place: Red Beach, China", attributes: { "Best Photo Genre": "Landscape & Aerial Photography", "Scenic Beauty": 100, "Cultural Richness": 70, "Photographer Popularity": 65, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Red Square, Moscow, Russia", attributes: { "Best Photo Genre": "Architecture & Street Photography", "Scenic Beauty": 90, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 80, "Unique Factor": 90}},
+{name: "Place: Reykjavik, Iceland", attributes: { "Best Photo Genre": "Landscape & Urban Photography", "Scenic Beauty": 90, "Cultural Richness": 85, "Photographer Popularity": 85, Accessibility: 80, "Unique Factor": 90}},
+{name: "Place: Rio Carnival, Brazil", attributes: { "Best Photo Genre": "Portrait & Street Photography", "Scenic Beauty": 90, "Cultural Richness": 100, "Photographer Popularity": 95, Accessibility: 85, "Unique Factor": 100}},
+{name: "Place: Rome, Italy", attributes: { "Best Photo Genre": "Architecture & History Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 95, Accessibility: 85, "Unique Factor": 100}},
+{name: "Place: Rothenburg ob der Tauber, Germany", attributes: { "Best Photo Genre": "Medieval & Street Photography", "Scenic Beauty": 100, "Cultural Richness": 95, "Photographer Popularity": 80, Accessibility: 80, "Unique Factor": 100}},
+{name: "Place: Salar de Uyuni, Bolivia", attributes: { "Best Photo Genre": "Landscape & Surreal Photography", "Scenic Beauty": 100, "Cultural Richness": 70, "Photographer Popularity": 85, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: San Francisco, USA", attributes: { "Best Photo Genre": "Urban & Foggy Landscape Photography", "Scenic Beauty": 100, "Cultural Richness": 95, "Photographer Popularity": 90, Accessibility: 85, "Unique Factor": 100}},
+{name: "Place: Santorini, Greece", attributes: { "Best Photo Genre": "Landscape & Architecture", "Scenic Beauty": 95, "Cultural Richness": 80, "Photographer Popularity": 90, Accessibility: 85, "Unique Factor": 90}},
+{name: "Place: Serengeti National Park, Tanzania", attributes: { "Best Photo Genre": "Wildlife & Safari Photography", "Scenic Beauty": 95, "Cultural Richness": 80, "Photographer Popularity": 85, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Sighisoara, Romania", attributes: { "Best Photo Genre": "Gothic & Medieval Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 75, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Skellig Michael, Ireland", attributes: { "Best Photo Genre": "Landscape & Pop Culture Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 75, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: Soccer City, Johannesburg, South Africa (2022 World Cup Venue)", attributes: { "Best Photo Genre": "Sports & Event Photography", "Scenic Beauty": 85, "Cultural Richness": 100, "Photographer Popularity": 80, Accessibility: 85, "Unique Factor": 100}},
+{name: "Place: Socotra Island, Yemen", attributes: { "Best Photo Genre": "Landscape & Alien-Like Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 60, Accessibility: 30, "Unique Factor": 100}},
+{name: "Place: Sossusvlei, Namibia", attributes: { "Best Photo Genre": "Desert & Landscape Photography", "Scenic Beauty": 100, "Cultural Richness": 65, "Photographer Popularity": 75, Accessibility: 45, "Unique Factor": 100}},
+{name: "Place: Spotted Lake, Canada", attributes: { "Best Photo Genre": "Landscape & Unique Nature Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 65, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: St. Basil’s Cathedral, Moscow, Russia", attributes: { "Best Photo Genre": "Architecture & Travel Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 80, "Unique Factor": 100}},
+{name: "Place: Stonehenge, UK", attributes: { "Best Photo Genre": "Architecture & Landscape Photography", "Scenic Beauty": 90, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Taj Mahal, India", attributes: { "Best Photo Genre": "Architecture & Landscape", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 95, Accessibility: 80, "Unique Factor": 100}},
+{name: "Place: Taktsang Palphug Monastery (Tiger’s Nest), Bhutan", attributes: { "Best Photo Genre": "Architecture & Spiritual Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 80, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: The Black Forest, Germany", attributes: { "Best Photo Genre": "Landscape & Mystery Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 75, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: The Blue City of Chefchaouen, Morocco", attributes: { "Best Photo Genre": "Street & Color Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 80, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: The Cliffs of Moher, Ireland", attributes: { "Best Photo Genre": "Landscape & Adventure Photography", "Scenic Beauty": 100, "Cultural Richness": 90, "Photographer Popularity": 80, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: The Dead Sea, Jordan/Israel", attributes: { "Best Photo Genre": "Landscape & Abstract Photography", "Scenic Beauty": 95, "Cultural Richness": 100, "Photographer Popularity": 80, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: The Door to Hell, Turkmenistan", attributes: { "Best Photo Genre": "Night & Adventure Photography", "Scenic Beauty": 90, "Cultural Richness": 70, "Photographer Popularity": 75, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: The Floating Markets, Thailand", attributes: { "Best Photo Genre": "Street & Cultural Photography", "Scenic Beauty": 90, "Cultural Richness": 100, "Photographer Popularity": 80, Accessibility: 70, "Unique Factor": 95}},
+{name: "Place: The Forbidden City, Beijing, China", attributes: { "Best Photo Genre": "Architecture & Cultural Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 80, "Unique Factor": 100}},
+{name: "Place: The Great Ocean Road, Australia", attributes: { "Best Photo Genre": "Landscape & Road Trip Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 80, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: The Hand in the Desert, Chile", attributes: { "Best Photo Genre": "Surreal & Conceptual Photography", "Scenic Beauty": 90, "Cultural Richness": 75, "Photographer Popularity": 60, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: The Hanging Monastery, China", attributes: { "Best Photo Genre": "Architecture & Landscape Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 70, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: The Ice Hotel, Sweden", attributes: { "Best Photo Genre": "Night & Ice Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 75, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: The Ilulissat Icefjord, Greenland", attributes: { "Best Photo Genre": "Ice & Adventure Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 70, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: The Island of Dolls, Mexico", attributes: { "Best Photo Genre": "Urban Exploration & Horror Photography", "Scenic Beauty": 70, "Cultural Richness": 90, "Photographer Popularity": 60, Accessibility: 55, "Unique Factor": 100}},
+{name: "Place: The Pyramids of Giza, Egypt", attributes: { "Best Photo Genre": "Architecture & Landscape Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 90, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: The Salar de Tara, Chile", attributes: { "Best Photo Genre": "Landscape & Wildlife Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 70, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: The Wave, Arizona, USA", attributes: { "Best Photo Genre": "Landscape & Abstract Photography", "Scenic Beauty": 100, "Cultural Richness": 60, "Photographer Popularity": 85, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: Tikal, Guatemala", attributes: { "Best Photo Genre": "Archaeology & Landscape Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 70, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Tokyo, Japan", attributes: { "Best Photo Genre": "Street & Neon Night Photography", "Scenic Beauty": 85, "Cultural Richness": 95, "Photographer Popularity": 90, Accessibility: 95, "Unique Factor": 92}},
+{name: "Place: Trollfjord, Norway", attributes: { "Best Photo Genre": "Fjords & Landscape Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 75, Accessibility: 55, "Unique Factor": 100}},
+{name: "Place: Trolltunga, Norway", attributes: { "Best Photo Genre": "Landscape & Adventure Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 80, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Trona Pinnacles, USA", attributes: { "Best Photo Genre": "Science Fiction & Landscape Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 70, Accessibility: 50, "Unique Factor": 100}},
+{name: "Place: Tsingy de Bemaraha, Madagascar", attributes: { "Best Photo Genre": "Landscape & Unique Formations", "Scenic Beauty": 95, "Cultural Richness": 80, "Photographer Popularity": 70, Accessibility: 45, "Unique Factor": 100}},
+{name: "Place: Tsingy Rouge, Madagascar", attributes: { "Best Photo Genre": "Landscape & Unique Nature Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 65, Accessibility: 40, "Unique Factor": 100}},
+{name: "Place: Tuscany, Italy", attributes: { "Best Photo Genre": "Landscape & Rural Photography", "Scenic Beauty": 100, "Cultural Richness": 90, "Photographer Popularity": 85, Accessibility: 70, "Unique Factor": 100}},
+{name: "Place: Valley of Fire, Nevada, USA", attributes: { "Best Photo Genre": "Landscape & Adventure Photography", "Scenic Beauty": 95, "Cultural Richness": 75, "Photographer Popularity": 80, Accessibility: 55, "Unique Factor": 95}},
+{name: "Place: Valley of the Moon, Argentina", attributes: { "Best Photo Genre": "Landscape & Surreal Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 70, Accessibility: 45, "Unique Factor": 100}},
+{name: "Place: Venice, Italy", attributes: { "Best Photo Genre": "Street & Water Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 95, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: Victoria Falls, Zambia/Zimbabwe", attributes: { "Best Photo Genre": "Landscape & Nature Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 80, Accessibility: 65, "Unique Factor": 100}},
+{name: "Place: Wadi Rum, Jordan", attributes: { "Best Photo Genre": "Desert & Adventure Photography", "Scenic Beauty": 100, "Cultural Richness": 80, "Photographer Popularity": 75, Accessibility: 55, "Unique Factor": 100}},
+{name: "Place: Wulingyuan Scenic Area, China", attributes: { "Best Photo Genre": "Landscape & Fantasy-Like Photography", "Scenic Beauty": 100, "Cultural Richness": 90, "Photographer Popularity": 80, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Yi Peng Lantern Festival, Thailand", attributes: { "Best Photo Genre": "Night & Cultural Photography", "Scenic Beauty": 100, "Cultural Richness": 100, "Photographer Popularity": 85, Accessibility: 75, "Unique Factor": 100}},
+{name: "Place: Zhangjiajie National Forest Park, China", attributes: { "Best Photo Genre": "Landscape & Fantasy-Like Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 85, Accessibility: 60, "Unique Factor": 100}},
+{name: "Place: Yosemite National Park, USA", attributes: { "Best Photo Genre": "Landscape & Wildlife Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 90, Accessibility: 60, "Unique Factor": 100}},
+
+  ];
+
+const bird = [
+{name: "Bird: African Grey Parrot", attributes: {Wingspan: "46 cm", Speed: "50 km/h", Lifespan: "60 years", Intelligence: 95, Rarity: 6}},
+{name: "Bird: African Jacana", attributes: {Wingspan: "50 cm", Speed: "35 km/h", Lifespan: "7 years", Intelligence: 45, Rarity: 7}},
+{name: "Bird: Albatross (Wandering Albatross)", attributes: {Wingspan: "340 cm (Largest in the world!)", Speed: "79 km/h", Lifespan: "50 years", Intelligence: 55, Rarity: 6}},
+{name: "Bird: Amazon Kingfisher", attributes: {Wingspan: "35 cm", Speed: "50 km/h", Lifespan: "12 years", Intelligence: 55, Rarity: 5}},
+{name: "Bird: Andean Condor", attributes: {Wingspan: "320 cm", Speed: "55 km/h", Lifespan: "70 years", Intelligence: 60, Rarity: 9}},
+{name: "Bird: Arctic Tern", attributes: {Wingspan: "85 cm", Speed: "40 km/h", Lifespan: "30 years", Intelligence: 50, Rarity: 8}},
+{name: "Bird: Atlantic Puffin", attributes: {Wingspan: "55 cm", Speed: "88 km/h", Lifespan: "25 years", Intelligence: 55, Rarity: 7}},
+{name: "Bird: Bald Eagle", attributes: {Wingspan: "210 cm", Speed: "120 km/h", Lifespan: "25 years", Intelligence: 65, Rarity: 4}},
+{name: "Bird: Barn Owl", attributes: {Wingspan: "95 cm", Speed: "80 km/h", Lifespan: "10 years", Intelligence: 65, Rarity: 4}},
+{name: "Bird: Bearded Vulture", attributes: {Wingspan: "280 cm", Speed: "70 km/h", Lifespan: "45 years", Intelligence: 60, Rarity: 9}},
+{name: "Bird: Bee-eater", attributes: {Wingspan: "30 cm", Speed: "40 km/h", Lifespan: "9 years", Intelligence: 50, Rarity: 4}},
+{name: "Bird: Black Swan", attributes: {Wingspan: "200 cm", Speed: "65 km/h", Lifespan: "40 years", Intelligence: 55, Rarity: 6}},
+{name: "Bird: Black-capped Chickadee", attributes: {Wingspan: "20 cm", Speed: "28 km/h", Lifespan: "2 years", Intelligence: 50, Rarity: 3}},
+{name: "Bird: Blue Jay", attributes: {Wingspan: "40 cm", Speed: "40 km/h", Lifespan: "7 years", Intelligence: 70, Rarity: 3}},
+{name: "Bird: Bohemian Waxwing", attributes: {Wingspan: "35 cm", Speed: "40 km/h", Lifespan: "13 years", Intelligence: 50, Rarity: 7}},
+{name: "Bird: Cassin’s Finch", attributes: {Wingspan: "25 cm", Speed: "40 km/h", Lifespan: "9 years", Intelligence: 40, Rarity: 4}},
+{name: "Bird: Cassowary", attributes: {Wingspan: "0 cm (Flightless)", Speed: "50 km/h", Lifespan: "40 years", Intelligence: 40, Rarity: 10}},
+{name: "Bird: Cockatoo (Sulphur-crested)", attributes: {Wingspan: "110 cm", Speed: "65 km/h", Lifespan: "60 years", Intelligence: 90, Rarity: 6}},
+{name: "Bird: Common Starling", attributes: {Wingspan: "40 cm", Speed: "70 km/h", Lifespan: "5 years", Intelligence: 50, Rarity: 2}},
+{name: "Bird: Crested Caracara", attributes: {Wingspan: "130 cm", Speed: "55 km/h", Lifespan: "20 years", Intelligence: 60, Rarity: 7}},
+{name: "Bird: Emperor Penguin", attributes: {Wingspan: "0 cm (Flightless)", Speed: "8 km/h (swimming)", Lifespan: "20 years", Intelligence: 55, Rarity: 8}},
+{name: "Bird: Eurasian Hoopoe", attributes: {Wingspan: "46 cm", Speed: "35 km/h", Lifespan: "10 years", Intelligence: 50, Rarity: 6}},
+{name: "Bird: European Robin", attributes: {Wingspan: "21 cm", Speed: "32 km/h", Lifespan: "2 years", Intelligence: 40, Rarity: 3}},
+{name: "Bird: Fairy Wren", attributes: {Wingspan: "16 cm", Speed: "28 km/h", Lifespan: "6 years", Intelligence: 45, Rarity: 5}},
+{name: "Bird: Golden Eagle", attributes: {Wingspan: "230 cm", Speed: "320 km/h (in dive)", Lifespan: "35 years", Intelligence: 70, Rarity: 8}},
+{name: "Bird: Golden Pheasant", attributes: {Wingspan: "70 cm", Speed: "30 km/h", Lifespan: "15 years", Intelligence: 45, Rarity: 8}},
+{name: "Bird: Great Horned Owl", attributes: {Wingspan: "140 cm", Speed: "65 km/h", Lifespan: "28 years", Intelligence: 60, Rarity: 6}},
+{name: "Bird: Greater Flamingo", attributes: {Wingspan: "165 cm", Speed: "60 km/h", Lifespan: "40 years", Intelligence: 50, Rarity: 7}},
+{name: "Bird: Greater Rhea", attributes: {Wingspan: "0 cm (Flightless)", Speed: "60 km/h", Lifespan: "15 years", Intelligence: 45, Rarity: 6}},
+{name: "Bird: Green Jay", attributes: {Wingspan: "34 cm", Speed: "40 km/h", Lifespan: "10 years", Intelligence: 65, Rarity: 4}},
+{name: "Bird: Harlequin Duck", attributes: {Wingspan: "70 cm", Speed: "80 km/h", Lifespan: "12 years", Intelligence: 55, Rarity: 7}},
+{name: "Bird: Harpy Eagle", attributes: {Wingspan: "220 cm", Speed: "80 km/h", Lifespan: "35 years", Intelligence: 70, Rarity: 9}},
+{name: "Bird: Helmeted Guineafowl", attributes: {Wingspan: "75 cm", Speed: "35 km/h", Lifespan: "12 years", Intelligence: 45, Rarity: 4}},
+{name: "Bird: Himalayan Monal", attributes: {Wingspan: "62 cm", Speed: "30 km/h", Lifespan: "12 years", Intelligence: 50, Rarity: 7}},
+{name: "Bird: Hoatzin", attributes: {Wingspan: "65 cm", Speed: "30 km/h", Lifespan: "15 years", Intelligence: 40, Rarity: 9}},
+{name: "Bird: Hoopoe", attributes: {Wingspan: "46 cm", Speed: "40 km/h", Lifespan: "10 years", Intelligence: 45, Rarity: 8}},
+{name: "Bird: Hummingbird", attributes: {Wingspan: "12 cm", Speed: "54 km/h", Lifespan: "5 years", Intelligence: 45, Rarity: 7}},
+{name: "Bird: Indian Peafowl (Peacock)", attributes: {Wingspan: "140 cm", Speed: "16 km/h", Lifespan: "20 years", Intelligence: 50, Rarity: 5}},
+{name: "Bird: Kakapo", attributes: {Wingspan: "0 cm (Flightless)", Speed: "5 km/h", Lifespan: "90 years", Intelligence: 60, Rarity: 10}},
+{name: "Bird: Kingfisher", attributes: {Wingspan: "42 cm", Speed: "40 km/h", Lifespan: "6 years", Intelligence: 55, Rarity: 5}},
+{name: "Bird: Kiwi Chick", attributes: {Wingspan: "0 cm (Flightless)", Speed: "2 km/h", Lifespan: "30 years", Intelligence: 45, Rarity: 10}},
+{name: "Bird: Kiwi", attributes: {Wingspan: "0 cm (Flightless!)", Speed: "3 km/h", Lifespan: "30 years", Intelligence: 50, Rarity: 10}},
+{name: "Bird: Kookaburra", attributes: {Wingspan: "90 cm", Speed: "60 km/h", Lifespan: "20 years", Intelligence: 65, Rarity: 6}},
+{name: "Bird: Lilac-breasted Roller", attributes: {Wingspan: "50 cm", Speed: "60 km/h", Lifespan: "10 years", Intelligence: 50, Rarity: 7}},
+{name: "Bird: Lyrebird", attributes: {Wingspan: "76 cm", Speed: "32 km/h", Lifespan: "15 years", Intelligence: 75, Rarity: 9}},
+{name: "Bird: Macaw (Blue-and-Yellow)", attributes: {Wingspan: "120 cm", Speed: "56 km/h", Lifespan: "50 years", Intelligence: 85, Rarity: 6}},
+{name: "Bird: Magpie", attributes: {Wingspan: "55 cm", Speed: "40 km/h", Lifespan: "20 years", Intelligence: 95, Rarity: 4}},
+{name: "Bird: Northern Cardinal", attributes: {Wingspan: "30 cm", Speed: "45 km/h", Lifespan: "3 years", Intelligence: 45, Rarity: 3}},
+{name: "Bird: Peregrine Falcon", attributes: {Wingspan: "110 cm", Speed: "390 km/h (Fastest animal on Earth!)", Lifespan: "15 years", Intelligence: 60, Rarity: 5}},
+{name: "Bird: Philippine Eagle", attributes: {Wingspan: "220 cm", Speed: "70 km/h", Lifespan: "40 years", Intelligence: 65, Rarity: 10}},
+{name: "Bird: Phoenix (Mythical Super Trump)", attributes: {Wingspan: "∞ cm (Legendary)", Speed: "∞ km/h", Lifespan: "Immortal", Intelligence: 100, Rarity: 11}},
+{name: "Bird: Raven (Common Raven)", attributes: {Wingspan: "120 cm", Speed: "45 km/h", Lifespan: "21 years", Intelligence: 98, Rarity: 4}},
+{name: "Bird: Red Avadavat", attributes: {Wingspan: "18 cm", Speed: "28 km/h", Lifespan: "3 years", Intelligence: 40, Rarity: 5}},
+{name: "Bird: Red-crowned Crane", attributes: {Wingspan: "250 cm", Speed: "80 km/h", Lifespan: "70 years", Intelligence: 65, Rarity: 9}},
+{name: "Bird: Red-legged Seriema", attributes: {Wingspan: "150 cm", Speed: "60 km/h (running)", Lifespan: "20 years", Intelligence: 50, Rarity: 6}},
+{name: "Bird: Resplendent Quetzal", attributes: {Wingspan: "60 cm", Speed: "65 km/h", Lifespan: "7 years", Intelligence: 50, Rarity: 9}},
+{name: "Bird: Scarlet Ibis", attributes: {Wingspan: "95 cm", Speed: "60 km/h", Lifespan: "20 years", Intelligence: 50, Rarity: 7}},
+{name: "Bird: Secretary Bird", attributes: {Wingspan: "215 cm", Speed: "30 km/h (running!)", Lifespan: "15 years", Intelligence: 50, Rarity: 9}},
+{name: "Bird: Shoebill Chick (Rare Special Card)", attributes: {Wingspan: "35 cm (when chick)", Speed: "5 km/h", Lifespan: "35 years", Intelligence: 50, Rarity: 10}},
+{name: "Bird: Shoebill", attributes: {Wingspan: "260 cm", Speed: "50 km/h", Lifespan: "35 years", Intelligence: 55, Rarity: 10}},
+{name: "Bird: Snowy Owl", attributes: {Wingspan: "145 cm", Speed: "80 km/h", Lifespan: "10 years", Intelligence: 65, Rarity: 7}},
+{name: "Bird: Southern Cassowary Chick", attributes: {Wingspan: "0 cm (Flightless)", Speed: "8 km/h", Lifespan: "40 years", Intelligence: 45, Rarity: 10}},
+{name: "Bird: Superb Fairywren", attributes: {Wingspan: "18 cm", Speed: "26 km/h", Lifespan: "7 years", Intelligence: 45, Rarity: 4}},
+{name: "Bird: Swallow (Barn Swallow)", attributes: {Wingspan: "32 cm", Speed: "46 km/h", Lifespan: "8 years", Intelligence: 50, Rarity: 4}},
+{name: "Bird: Toucan (Keel-billed)", attributes: {Wingspan: "60 cm", Speed: "64 km/h", Lifespan: "20 years", Intelligence: 50, Rarity: 6}},
+{name: "Bird: Turaco (Violet Turaco)", attributes: {Wingspan: "50 cm", Speed: "40 km/h", Lifespan: "15 years", Intelligence: 55, Rarity: 6}},
+{name: "Bird: White Stork", attributes: {Wingspan: "215 cm", Speed: "80 km/h", Lifespan: "30 years", Intelligence: 55, Rarity: 5}},
+{name: "Bird: White-bellied Sea Eagle", attributes: {Wingspan: "220 cm", Speed: "70 km/h", Lifespan: "30 years", Intelligence: 60, Rarity: 7}},
+{name: "Bird: Yellow Warbler", attributes: {Wingspan: "20 cm", Speed: "30 km/h", Lifespan: "10 years", Intelligence: 45, Rarity: 3}},
+{name: "Bird: Yellow-collared Lovebird", attributes: {Wingspan: "28 cm", Speed: "48 km/h", Lifespan: "15 years", Intelligence: 65, Rarity: 5}},
+  ];
+  
+const flower = [
+{name: "Flower: African Violet", attributes: {Height: "20 cm", Fragrance: "25", Lifespan: "30 days", Toxicity: 2, Rarity: 3}},
+{name: "Flower: Anemone", attributes: {Height: "50 cm", Fragrance: "35", Lifespan: "7 days", Toxicity: 3, Rarity: 6}},
+{name: "Flower: Belladonna Lily", attributes: {Height: "90 cm", Fragrance: "70", Lifespan: "7 days", Toxicity: 9, Rarity: 7}},
+{name: "Flower: Bird of Paradise", attributes: {Height: "180 cm", Fragrance: "50", Lifespan: "14 days", Toxicity: 3, Rarity: 4}},
+{name: "Flower: Black Bat Flower", attributes: {Height: "90 cm", Fragrance: "20", Lifespan: "14 days", Toxicity: 5, Rarity: 9}},
+{name: "Flower: Bleeding Heart", attributes: {Height: "90 cm", Fragrance: "55", Lifespan: "10 days", Toxicity: 6, Rarity: 8}},
+{name: "Flower: Blue Lotus", attributes: {Height: "25 cm", Fragrance: "85", Lifespan: "7 days", Toxicity: 5, Rarity: 8}},
+{name: "Flower: Cactus Flower (Saguaro)", attributes: {Height: "1,200 cm (as plant)", Fragrance: "85", Lifespan: "1 day", Toxicity: 1, Rarity: 8}},
+{name: "Flower: Calla Lily", attributes: {Height: "90 cm", Fragrance: "65", Lifespan: "7 days", Toxicity: 8, Rarity: 5}},
+{name: "Flower: Camellia", attributes: {Height: "300 cm (bush)", Fragrance: "75", Lifespan: "20 days", Toxicity: 2, Rarity: 4}},
+{name: "Flower: Cerrado Bloom", attributes: {Height: "40 cm", Fragrance: "60", Lifespan: "45 days", Toxicity: 3, Rarity: 7}},
+{name: "Flower: Cherry Blossom", attributes: {Height: "500 cm (as tree)", Fragrance: "60", Lifespan: "7 days", Toxicity: 1, Rarity: 6}},
+{name: "Flower: Chocolate Cosmos", attributes: {Height: "60 cm", Fragrance: "90 (smells like chocolate!)", Lifespan: "10 days", Toxicity: 2, Rarity: 8}},
+{name: "Flower: Chrysanthemum", attributes: {Height: "120 cm", Fragrance: "55", Lifespan: "25 days", Toxicity: 2, Rarity: 3}},
+{name: "Flower: Corpse Flower (Titan Arum)", attributes: {Height: "300 cm", Fragrance: "5 (smells terrible!)", Lifespan: "3 days", Toxicity: 1, Rarity: 10}},
+{name: "Flower: Dahlia (Dinnerplate)", attributes: {Height: "120 cm", Fragrance: "50", Lifespan: "12 days", Toxicity: 2, Rarity: 4}},
+{name: "Flower: Dandelion", attributes: {Height: "40 cm", Fragrance: "20", Lifespan: "5 days", Toxicity: 0, Rarity: 2}},
+{name: "Flower: Edelweiss", attributes: {Height: "20 cm", Fragrance: "40", Lifespan: "15 days", Toxicity: 0, Rarity: 9}},
+{name: "Flower: Foxglove", attributes: {Height: "150 cm", Fragrance: "65", Lifespan: "14 days", Toxicity: 10, Rarity: 7}},
+{name: "Flower: Frangipani", attributes: {Height: "800 cm (tree)", Fragrance: "100", Lifespan: "10 days", Toxicity: 5, Rarity: 6}},
+{name: "Flower: Fuchsia", attributes: {Height: "120 cm", Fragrance: "50", Lifespan: "15 days", Toxicity: 1, Rarity: 4}},
+{name: "Flower: Ghost Flower (Rare desert bloom)", attributes: {Height: "30 cm", Fragrance: "70", Lifespan: "3 days", Toxicity: 0, Rarity: 10}},
+{name: "Flower: Ghost Orchid", attributes: {Height: "40 cm", Fragrance: "80", Lifespan: "21 days", Toxicity: 0, Rarity: 10}},
+{name: "Flower: Hydrangea", attributes: {Height: "250 cm (bush)", Fragrance: "30", Lifespan: "30 days", Toxicity: 8, Rarity: 4}},
+{name: "Flower: Jade Vine", attributes: {Height: "180 cm (vine)", Fragrance: "75", Lifespan: "10 days", Toxicity: 3, Rarity: 9}},
+{name: "Flower: Lavender", attributes: {Height: "75 cm", Fragrance: "95", Lifespan: "30 days", Toxicity: 1, Rarity: 3}},
+{name: "Flower: Lily of the Valley", attributes: {Height: "15 cm", Fragrance: "95", Lifespan: "14 days", Toxicity: 9, Rarity: 5}},
+{name: "Flower: Lotus (Sacred Lotus)", attributes: {Height: "150 cm", Fragrance: "95", Lifespan: "7 days", Toxicity: 1, Rarity: 6}},
+{name: "Flower: Magnolia", attributes: {Height: "1,200 cm (tree)", Fragrance: "90", Lifespan: "10 days", Toxicity: 3, Rarity: 6}},
+{name: "Flower: Marigold", attributes: {Height: "60 cm", Fragrance: "40", Lifespan: "10 days", Toxicity: 2, Rarity: 3}},
+{name: "Flower: Morning Glory", attributes: {Height: "300 cm (vine)", Fragrance: "45", Lifespan: "1 day (blooms and dies)", Toxicity: 6, Rarity: 5}},
+{name: "Flower: Night-Blooming Jasmine", attributes: {Height: "300 cm", Fragrance: "100", Lifespan: "1 day (blooms at night only!)", Toxicity: 4, Rarity: 6}},
+{name: "Flower: Passion Flower", attributes: {Height: "600 cm (vine)", Fragrance: "85", Lifespan: "5 days", Toxicity: 4, Rarity: 6}},
+{name: "Flower: Peony", attributes: {Height: "90 cm", Fragrance: "85", Lifespan: "7 days", Toxicity: 2, Rarity: 5}},
+{name: "Flower: Persian Buttercup", attributes: {Height: "45 cm", Fragrance: "60", Lifespan: "10 days", Toxicity: 5, Rarity: 4}},
+{name: "Flower: Poppy (Opium Poppy)", attributes: {Height: "100 cm", Fragrance: "30", Lifespan: "7 days", Toxicity: 9, Rarity: 8}},
+{name: "Flower: Protea (King Protea)", attributes: {Height: "150 cm", Fragrance: "40", Lifespan: "30 days", Toxicity: 1, Rarity: 7}},
+{name: "Flower: Queen of the Night Cactus", attributes: {Height: "400 cm (vine)", Fragrance: "100", Lifespan: "1 night", Toxicity: 3, Rarity: 10}},
+{name: "Flower: Rose (Damask)", attributes: {Height: "150 cm", Fragrance: "95", Lifespan: "10 days", Toxicity: 2, Rarity: 3}},
+{name: "Flower: Snapdragon", attributes: {Height: "60 cm", Fragrance: "50", Lifespan: "14 days", Toxicity: 2, Rarity: 4}},
+{name: "Flower: Snowdrop", attributes: {Height: "15 cm", Fragrance: "45", Lifespan: "5 days", Toxicity: 4, Rarity: 5}},
+{name: "Flower: Starflower", attributes: {Height: "30 cm", Fragrance: "60", Lifespan: "10 days", Toxicity: 1, Rarity: 5}},
+{name: "Flower: Sunflower", attributes: {Height: "300 cm", Fragrance: "30", Lifespan: "20 days", Toxicity: 0, Rarity: 3}},
+{name: "Flower: Tiger Lily", attributes: {Height: "150 cm", Fragrance: "60", Lifespan: "14 days", Toxicity: 9, Rarity: 5}},
+{name: "Flower: Tuberose", attributes: {Height: "90 cm", Fragrance: "100", Lifespan: "14 days", Toxicity: 4, Rarity: 5}},
+{name: "Flower: Venus Flytrap Flower", attributes: {Height: "15 cm", Fragrance: "20", Lifespan: "5 days", Toxicity: 7, Rarity: 8}},
+{name: "Flower: Water Lily (Victoria Amazonica)", attributes: {Height: "0 cm (floating)", Fragrance: "70", Lifespan: "3 days", Toxicity: 1, Rarity: 7}},
+{name: "Flower: Wisteria", attributes: {Height: "1,000 cm (vine)", Fragrance: "95", Lifespan: "14 days", Toxicity: 5, Rarity: 6}},
+{name: "Flower: Zinnia", attributes: {Height: "90 cm", Fragrance: "30", Lifespan: "14 days", Toxicity: 0, Rarity: 3}},
+  ];
+  
+  
+const mount = [
+{name: "Mountain: Aconcagua", attributes: {Height: "6,961 m", Prominence: "6,962 m", Isolation: "16,534 km", Age: "10 million years", Rarity: 7}},
+{name: "Mountain: Apo", attributes: {Height: "2,954 m", Prominence: "2,954 m", Isolation: "1,300 km", Age: "1.6 million years", Rarity: 7}},
+{name: "Mountain: Ararat", attributes: {Height: "5,137 m", Prominence: "3,611 m", Isolation: "1,400 km", Age: "2.5 million years", Rarity: 9}},
+{name: "Mountain: Athos", attributes: {Height: "2,033 m", Prominence: "2,033 m", Isolation: "300 km", Age: "60 million years", Rarity: 8}},
+{name: "Mountain: Baker", attributes: {Height: "3,286 m", Prominence: "2,470 m", Isolation: "85 km", Age: "1 million years", Rarity: 6}},
+{name: "Mountain: Ben Nevis", attributes: {Height: "1,345 m", Prominence: "1,345 m", Isolation: "459 km", Age: "400 million years", Rarity: 4}},
+{name: "Mountain: Cameroon", attributes: {Height: "4,040 m", Prominence: "3,011 m", Isolation: "1,700 km", Age: "1 million years", Rarity: 8}},
+{name: "Mountain: Cerro de Pasco (Peru)", attributes: {Height: "4,338 m", Prominence: "1,200 m", Isolation: "90 km", Age: "10 million years", Rarity: 9}},
+{name: "Mountain: Cerro Torre", attributes: {Height: "3,128 m", Prominence: "1,280 m", Isolation: "1,000 km", Age: "12 million years", Rarity: 10}},
+{name: "Mountain: Cook (Aoraki)", attributes: {Height: "3,724 m", Prominence: "3,724 m", Isolation: "1,300 km", Age: "10 million years", Rarity: 7}},
+{name: "Mountain: Damavand", attributes: {Height: "5,609 m", Prominence: "4,667 m", Isolation: "1,500 km", Age: "1.78 million years", Rarity: 9}},
+{name: "Mountain: Denali (McKinley)", attributes: {Height: "6,190 m", Prominence: "6,144 m", Isolation: "7,450 km", Age: "60 million years", Rarity: 8}},
+{name: "Mountain: Elbrus", attributes: {Height: "5,642 m", Prominence: "4,741 m", Isolation: "2,331 km", Age: "10 million years", Rarity: 7}},
+{name: "Mountain: Erebus", attributes: {Height: "3,794 m", Prominence: "3,794 m", Isolation: "2,000 km", Age: "1.3 million years", Rarity: 10}},
+{name: "Mountain: Everest", attributes: {Height: "8,848 m", Prominence: "8,848 m", Isolation: "3,825 km", Age: "60 million years", Rarity: 10}},
+{name: "Mountain: Fuji", attributes: {Height: "3,776 m", Prominence: "3,776 m", Isolation: "2,727 km", Age: "0.1 million years", Rarity: 7}},
+{name: "Mountain: Galdhøpiggen", attributes: {Height: "2,469 m", Prominence: "2,469 m", Isolation: "1,000 km", Age: "400 million years", Rarity: 4}},
+{name: "Mountain: Hood", attributes: {Height: "3,429 m", Prominence: "2,349 m", Isolation: "77 km", Age: "500,000 years", Rarity: 6}},
+{name: "Mountain: K2", attributes: {Height: "8,611 m", Prominence: "4,017 m", Isolation: "1,316 km", Age: "50 million years", Rarity: 9}},
+{name: "Mountain: Kailash", attributes: {Height: "6,638 m", Prominence: "1,320 m", Isolation: "100 km", Age: "50 million years", Rarity: 10}},
+{name: "Mountain: Kilimanjaro", attributes: {Height: "5,895 m", Prominence: "5,885 m", Isolation: "5,510 km", Age: "1 million years", Rarity: 9}},
+{name: "Mountain: Kinabalu", attributes: {Height: "4,095 m", Prominence: "4,095 m", Isolation: "2,377 km", Age: "10 million years", Rarity: 8}},
+{name: "Mountain: Kosciuszko", attributes: {Height: "2,228 m", Prominence: "2,228 m", Isolation: "1,897 km", Age: "300 million years", Rarity: 4}},
+{name: "Mountain: Matterhorn", attributes: {Height: "4,478 m", Prominence: "1,042 m", Isolation: "13.8 km", Age: "30 million years", Rarity: 8}},
+{name: "Mountain: Mauna Kea", attributes: {Height: "4,207 m", Prominence: "4,207 m", Isolation: "3,000 km", Age: "1 million years", Rarity: 10}},
+{name: "Mountain: Meru", attributes: {Height: "4,562 m", Prominence: "3,162 m", Isolation: "70 km", Age: "1.5 million years", Rarity: 8}},
+{name: "Mountain: Mont Blanc", attributes: {Height: "4,808 m", Prominence: "4,695 m", Isolation: "2,812 km", Age: "15 million years", Rarity: 5}},
+{name: "Mountain: Mount Etna", attributes: {Height: "3,329 m", Prominence: "3,329 m", Isolation: "1,000 km", Age: "500,000 years", Rarity: 7}},
+{name: "Mountain: Mount St. Helens", attributes: {Height: "2,550 m", Prominence: "1,500 m", Isolation: "120 km", Age: "40,000 years", Rarity: 6}},
+{name: "Mountain: Ngauruhoe (New Zealand)", attributes: {Height: "2,291 m", Prominence: "1,500 m", Isolation: "120 km", Age: "2,500 years", Rarity: 7}},
+{name: "Mountain: Olympus (Greece)", attributes: {Height: "2,918 m", Prominence: "2,355 m", Isolation: "234 km", Age: "60 million years", Rarity: 8}},
+{name: "Mountain: Parnassus", attributes: {Height: "2,457 m", Prominence: "1,200 m", Isolation: "90 km", Age: "60 million years", Rarity: 6}},
+{name: "Mountain: Pico (Azores)", attributes: {Height: "2,351 m", Prominence: "2,351 m", Isolation: "1,500 km", Age: "230,000 years", Rarity: 9}},
+{name: "Mountain: Pico da Neblina", attributes: {Height: "2,995 m", Prominence: "2,993 m", Isolation: "2,000 km", Age: "1,800 million years", Rarity: 9}},
+{name: "Mountain: Pico do Marumbi", attributes: {Height: "1,539 m", Prominence: "1,539 m", Isolation: "180 km", Age: "600 million years", Rarity: 8}},
+{name: "Mountain: Rainbow (Vinicunca, Peru)", attributes: {Height: "5,200 m", Prominence: "1,000 m", Isolation: "200 km", Age: "24 million years", Rarity: 10}},
+{name: "Mountain: Rinjani", attributes: {Height: "3,726 m", Prominence: "3,726 m", Isolation: "400 km", Age: "500,000 years", Rarity: 8}},
+{name: "Mountain: Roraima", attributes: {Height: "2,810 m", Prominence: "1,300 m", Isolation: "2,250 km", Age: "2,000 million years", Rarity: 10}},
+{name: "Mountain: Shasta", attributes: {Height: "4,322 m", Prominence: "2,949 m", Isolation: "537 km", Age: "593,000 years", Rarity: 7}},
+{name: "Mountain: Sinai", attributes: {Height: "2,285 m", Prominence: "520 m", Isolation: "38 km", Age: "500 million years", Rarity: 9}},
+{name: "Mountain: Table Mountain", attributes: {Height: "1,085 m", Prominence: "1,055 m", Isolation: "240 km", Age: "260 million years", Rarity: 6}},
+{name: "Mountain: Tabletop Mountain (Guyana)", attributes: {Height: "1,135 m", Prominence: "1,135 m", Isolation: "400 km", Age: "2,000 million years", Rarity: 9}},
+{name: "Mountain: Teide", attributes: {Height: "3,718 m", Prominence: "3,718 m", Isolation: "1,000 km", Age: "12 million years", Rarity: 7}},
+{name: "Mountain: The Sleeping Giant (Hawaii)", attributes: {Height: "1,200 m", Prominence: "1,200 m", Isolation: "2,000 km", Age: "5 million years", Rarity: 7}},
+{name: "Mountain: Thor", attributes: {Height: "1,675 m", Prominence: "1,250 m", Isolation: "300 km", Age: "2,000 million years", Rarity: 10}},
+{name: "Mountain: Toubkal", attributes: {Height: "4,167 m", Prominence: "3,755 m", Isolation: "2,000 km", Age: "40 million years", Rarity: 6}},
+{name: "Mountain: Triglav", attributes: {Height: "2,864 m", Prominence: "1,395 m", Isolation: "130 km", Age: "200 million years", Rarity: 5}},
+{name: "Mountain: Vinson", attributes: {Height: "4,892 m", Prominence: "4,892 m", Isolation: "16,000 km", Age: "50 million years", Rarity: 9}},
+{name: "Mountain: Wilhelm", attributes: {Height: "4,509 m", Prominence: "2,969 m", Isolation: "1,000 km", Age: "30 million years", Rarity: 8}},
+  ];
+  
+const natp = [
+{name: "National Park: Aoraki/Mount Cook (New Zealand)", attributes: {Area: "721 km²", "Year Established": 1953, "Biodiversity Index": 70, "Annual Visitors": "0.9 million", Rarity: 6}},
+{name: "National Park: Banff (Canada)", attributes: {Area: "6,641 km²", "Year Established": 1885, "Biodiversity Index": 75, "Annual Visitors": "4.5 million", Rarity: 4}},
+{name: "National Park: Banff (Canada)", attributes: {Area: "6,641 km²", "Year Established": 1885, "Biodiversity Index": 75, "Annual Visitors": "4.5 million", Rarity: 4}},
+{name: "National Park: Białowieża (Poland/Belarus)", attributes: {Area: "1,500 km²", "Year Established": 1932, "Biodiversity Index": 80, "Annual Visitors": "0.15 million", Rarity: 9}},
+{name: "National Park: Bwindi Impenetrable (Uganda)", attributes: {Area: "321 km²", "Year Established": 1991, "Biodiversity Index": 95, "Annual Visitors": "0.05 million", Rarity: 10}},
+{name: "National Park: Cairngorms (Scotland)", attributes: {Area: "4,528 km²", "Year Established": 2003, "Biodiversity Index": 70, "Annual Visitors": "1.5 million", Rarity: 6}},
+{name: "National Park: Canaima (Venezuela)", attributes: {Area: "30,000 km²", "Year Established": 1962, "Biodiversity Index": 90, "Annual Visitors": "0.1 million", Rarity: 10}},
+{name: "National Park: Chitwan (Nepal)", attributes: {Area: "932 km²", "Year Established": 1973, "Biodiversity Index": 90, "Annual Visitors": "0.25 million", Rarity: 8}},
+{name: "National Park: Deosai (Pakistan)", attributes: {Area: "3,000 km²", "Year Established": 1993, "Biodiversity Index": 80, "Annual Visitors": "0.05 million", Rarity: 9}},
+{name: "National Park: Doñana (Spain)", attributes: {Area: "543 km²", "Year Established": 1969, "Biodiversity Index": 80, "Annual Visitors": "0.3 million", Rarity: 7}},
+{name: "National Park: Etosha (Namibia)", attributes: {Area: "22,935 km²", "Year Established": 1907, "Biodiversity Index": 80, "Annual Visitors": "0.3 million", Rarity: 8}},
+{name: "National Park: Everglades (USA)", attributes: {Area: "6,105 km²", "Year Established": 1947, "Biodiversity Index": 90, "Annual Visitors": "1 million", Rarity: 7}},
+{name: "National Park: Fiordland (New Zealand)", attributes: {Area: "12,607 km²", "Year Established": 1952, "Biodiversity Index": 85, "Annual Visitors": "0.8 million", Rarity: 8}},
+{name: "National Park: Galápagos (Ecuador)", attributes: {Area: "7,995 km²", "Year Established": 1959, "Biodiversity Index": 100, "Annual Visitors": "0.2 million", Rarity: 10}},
+{name: "National Park: Göreme (Turkey)", attributes: {Area: "100 km²", "Year Established": 1986, "Biodiversity Index": 60, "Annual Visitors": "2.5 million", Rarity: 8}},
+{name: "National Park: Great Smoky Mountains (USA)", attributes: {Area: "2,114 km²", "Year Established": 1934, "Biodiversity Index": 95, "Annual Visitors": "14 million", Rarity: 4}},
+{name: "National Park: Iguazú (Argentina)", attributes: {Area: "672 km²", "Year Established": 1934, "Biodiversity Index": 85, "Annual Visitors": "1.5 million", Rarity: 6}},
+{name: "National Park: Jasper (Canada)", attributes: {Area: "10,878 km²", "Year Established": 1907, "Biodiversity Index": 70, "Annual Visitors": "2.4 million", Rarity: 5}},
+{name: "National Park: Jasper Ridge Biological Preserve (USA)", attributes: {Area: "4 km²", "Year Established": 1973, "Biodiversity Index": 50, "Annual Visitors": "0.01 million", Rarity: 10}},
+{name: "National Park: Jiuzhaigou Valley (China)", attributes: {Area: "720 km²", "Year Established": 1982, "Biodiversity Index": 85, "Annual Visitors": "1.5 million", Rarity: 8}},
+{name: "National Park: Kakadu (Australia)", attributes: {Area: "19,804 km²", "Year Established": 1979, "Biodiversity Index": 92, "Annual Visitors": "0.2 million", Rarity: 9}},
+{name: "National Park: Komodo (Indonesia)", attributes: {Area: "1,733 km²", "Year Established": 1980, "Biodiversity Index": 80, "Annual Visitors": "0.2 million", Rarity: 9}},
+{name: "National Park: Kozara (Bosnia and Herzegovina)", attributes: {Area: "39 km²", "Year Established": 1967, "Biodiversity Index": 75, "Annual Visitors": "Data not available", Rarity: 8}},
+{name: "National Park: Kruger (South Africa)", attributes: {Area: "19,485 km²", "Year Established": 1926, "Biodiversity Index": 95, "Annual Visitors": "1.8 million", Rarity: 6}},
+{name: "National Park: Lake District (England)", attributes: {Area: "2,362 km²", "Year Established": 1951, "Biodiversity Index": 65, "Annual Visitors": "15 million", Rarity: 4}},
+{name: "National Park: Lençóis Maranhenses (Brazil)", attributes: {Area: "1,550 km²", "Year Established": 1981, "Biodiversity Index": 75, "Annual Visitors": "0.15 million", Rarity: 9}},
+{name: "National Park: Madidi (Bolivia)", attributes: {Area: "18,958 km²", "Year Established": 1995, "Biodiversity Index": 100, "Annual Visitors": "0.03 million", Rarity: 10}},
+{name: "National Park: Manu (Peru)", attributes: {Area: "17,163 km²", "Year Established": 1973, "Biodiversity Index": 100, "Annual Visitors": "0.05 million", Rarity: 10}},
+{name: "National Park: Nahanni Reserve (Canada)", attributes: {Area: "30,050 km²", "Year Established": 1976, "Biodiversity Index": 80, "Annual Visitors": "0.001 million", Rarity: 10}},
+{name: "National Park: Phong Nha-Kẻ Bàng (Vietnam)", attributes: {Area: "1,233 km²", "Year Established": 2001, "Biodiversity Index": 90, "Annual Visitors": "0.4 million", Rarity: 8}},
+{name: "National Park: Plitvice Lakes (Croatia)", attributes: {Area: "296 km²", "Year Established": 1949, "Biodiversity Index": 65, "Annual Visitors": "1.7 million", Rarity: 6}},
+{name: "National Park: Rapa Nui (Chile)", attributes: {Area: "71 km²", "Year Established": 1935, "Biodiversity Index": 50, "Annual Visitors": "0.1 million", Rarity: 10}},
+{name: "National Park: Retezat (Romania)", attributes: {Area: "381 km²", "Year Established": 1935, "Biodiversity Index": 85, "Annual Visitors": "0.05 million", Rarity: 9}},
+{name: "National Park: Royal (Australia)", attributes: {Area: "151 km²", "Year Established": 1879, "Biodiversity Index": 60, "Annual Visitors": "3.6 million", Rarity: 4}},
+{name: "National Park: Sagarmatha (Nepal)", attributes: {Area: "1,148 km²", "Year Established": 1976, "Biodiversity Index": 75, "Annual Visitors": "0.05 million", Rarity: 10}},
+{name: "National Park: Samaria Gorge (Greece)", attributes: {Area: "48 km²", "Year Established": 1962, "Biodiversity Index": 75, "Annual Visitors": "0.15 million", Rarity: 8}},
+{name: "National Park: Sarek (Sweden)", attributes: {Area: "1,970 km²", "Year Established": 1909, "Biodiversity Index": 70, "Annual Visitors": "0.03 million", Rarity: 9}},
+{name: "National Park: Serengeti (Tanzania)", attributes: {Area: "14,763 km²", "Year Established": 1951, "Biodiversity Index": 90, "Annual Visitors": "1.5 million", Rarity: 7}},
+{name: "National Park: Simien Mountains (Ethiopia)", attributes: {Area: "412 km²", "Year Established": 1969, "Biodiversity Index": 85, "Annual Visitors": "0.03 million", Rarity: 9}},
+{name: "National Park: Snowdonia (Wales)", attributes: {Area: "2,142 km²", "Year Established": 1951, "Biodiversity Index": 75, "Annual Visitors": "4 million", Rarity: 5}},
+{name: "National Park: Swiss (Switzerland)", attributes: {Area: "172 km²", "Year Established": 1914, "Biodiversity Index": 65, "Annual Visitors": "0.15 million", Rarity: 7}},
+{name: "National Park: Tikal (Guatemala)", attributes: {Area: "576 km²", "Year Established": 1955, "Biodiversity Index": 85, "Annual Visitors": "0.2 million", Rarity: 8}},
+{name: "National Park: Torres del Paine (Chile)", attributes: {Area: "2,400 km²", "Year Established": 1959, "Biodiversity Index": 70, "Annual Visitors": "0.3 million", Rarity: 8}},
+{name: "National Park: Vatnajökull (Iceland)", attributes: {Area: "14,141 km²", "Year Established": 2008, "Biodiversity Index": 55, "Annual Visitors": "0.5 million", Rarity: 9}},
+{name: "National Park: Wrangell–St. Elias (USA)", attributes: {Area: "53,320 km²", "Year Established": 1980, "Biodiversity Index": 80, "Annual Visitors": "0.07 million", Rarity: 10}},
+{name: "National Park: Yellowstone (USA)", attributes: {Area: "8,983 km²", "Year Established": 1872, "Biodiversity Index": 85, "Annual Visitors": "4 million", Rarity: 5}},
+{name: "National Park: Yosemite (USA)", attributes: {Area: "3,027 km²", "Year Established": 1890, "Biodiversity Index": 80, "Annual Visitors": "4.5 million", Rarity: 5}},
+{name: "National Park: Zion (USA)", attributes: {Area: "595 km²", "Year Established": 1919, "Biodiversity Index": 85, "Annual Visitors": "4.5 million", Rarity: 5}},
+  ];
+  
+  
+const trail = [
+{name: "Trail: Alta Via 1", attributes: {Country: "Italy (Dolomites)", Length: "120 km", Difficulty: "Moderate–Hard", "Highest Elevation": "~2,750 m", "Breathtaking Factor": 9, Popularity: 7, "Wildlife Encounters": 6, "Mystique Level": 8}},
+{name: "Trail: Amalfi Coast Path of the Gods (Sentiero degli Dei)", attributes: {Country: "Italy", Length: "~7.8 km", Difficulty: "Easy–Moderate", "Highest Elevation": "650 m", "Breathtaking Factor": 9, Popularity: 9, "Wildlife Encounters": 3, "Mystique Level": 6}},
+{name: "Trail: Angels Landing", attributes: {Country: "USA (Utah)", Length: "8.7 km", Difficulty: "Hard", "Highest Elevation": "1,765 m", "Breathtaking Factor": 9, Popularity: 9, "Wildlife Encounters": 4, "Mystique Level": 8}},
+{name: "Trail: Annapurna Circuit", attributes: {Country: "Nepal", Length: "230 km", Difficulty: "Hard", "Highest Elevation": "5,416 m", "Breathtaking Factor": 10, Popularity: 8, "Wildlife Encounters": 6, "Mystique Level": 10}},
+{name: "Trail: Appalachian", attributes: {Country: "USA", Length: "3,500 km", Difficulty: "Moderate–Hard", "Highest Elevation": "2,025 m", "Breathtaking Factor": 7, Popularity: 8, "Wildlife Encounters": 9, "Mystique Level": 7}},
+{name: "Trail: Appalachian", attributes: {Country: "USA", Length: "3,538 km", Difficulty: "Hard", "Highest Elevation": "~2,025 m", "Breathtaking Factor": 8, Popularity: 9, "Wildlife Encounters": 8, "Mystique Level": 9}},
+{name: "Trail: Baekdu-daegan", attributes: {Country: "South Korea", Length: "~735 km", Difficulty: "Hard", "Highest Elevation": "1,915 m (Mount Jirisan)", "Breathtaking Factor": 8, Popularity: 6, "Wildlife Encounters": 7, "Mystique Level": 8}},
+{name: "Trail: Baía dos Fogos Trail", attributes: {Country: "Australia (Tasmania)", Length: "~50 km", Difficulty: "Moderate", "Highest Elevation": "~200 m", "Breathtaking Factor": 8, Popularity: 6, "Wildlife Encounters": 7, "Mystique Level": 7}},
+{name: "Trail: Bandeira Peak", attributes: {Country: "Brazil", Length: "~9 km (by Tronqueira route)", Difficulty: "Moderate–Hard", "Highest Elevation": "2,891 m", "Breathtaking Factor": 9, Popularity: 7, "Wildlife Encounters": 6, "Mystique Level": 8}},
+{name: "Trail: Bibbulmun Track", attributes: {Country: "Australia", Length: "1,000 km", Difficulty: "Moderate", "Highest Elevation": "585 m", "Breathtaking Factor": 7, Popularity: 6, "Wildlife Encounters": 9, "Mystique Level": 6}},
+{name: "Trail: Bruce", attributes: {Country: "Canada", Length: "890 km", Difficulty: "Moderate", "Highest Elevation": "~540 m", "Breathtaking Factor": 7, Popularity: 5, "Wildlife Encounters": 8, "Mystique Level": 6}},
+{name: "Trail: Royal Road", attributes: {Country: "Brazil", Length: "~7 km (core segment)", Difficulty: "Moderate", "Highest Elevation": "~1,200 m", "Breathtaking Factor": 8, Popularity: 7, "Wildlife Encounters": 6, "Mystique Level": 10}},
+{name: "Trail: Caminito del Rey", attributes: {Country: "Spain", Length: "~8 km", Difficulty: "Moderate", "Highest Elevation": "~100 m above river", "Breathtaking Factor": 9, Popularity: 9, "Wildlife Encounters": 3, "Mystique Level": 7}},
+{name: "Trail: Camino de Santiago (French Way)", attributes: {Country: "Spain", Length: "780 km", Difficulty: "Moderate", "Highest Elevation": "1,505 m", "Breathtaking Factor": 7, Popularity: 10, "Wildlife Encounters": 4, "Mystique Level": 9}},
+{name: "Trail: Cape to Cape Track", attributes: {Country: "Australia (Western Australia)", Length: "135 km", Difficulty: "Moderate", "Highest Elevation": "~300 m", "Breathtaking Factor": 8, Popularity: 6, "Wildlife Encounters": 8, "Mystique Level": 7}},
+{name: "Trail: Continental Divide", attributes: {Country: "USA", Length: "~5,000 km", Difficulty: "Extreme", "Highest Elevation": "~4,000 m", "Breathtaking Factor": 9, Popularity: 5, "Wildlife Encounters": 9, "Mystique Level": 9}},
+{name: "Trail: Cordillera Blanca Trek (Santa Cruz Trek)", attributes: {Country: "Peru", Length: "~50 km", Difficulty: "Moderate", "Highest Elevation": "4,750 m", "Breathtaking Factor": 9, Popularity: 6, "Wildlife Encounters": 6, "Mystique Level": 8}},
+{name: "Trail: Cordillera Huaytapallana Trek", attributes: {Country: "Peru", Length: "~40 km", Difficulty: "Hard", "Highest Elevation": "5,300 m", "Breathtaking Factor": 9, Popularity: 4, "Wildlife Encounters": 7, "Mystique Level": 9}},
+{name: "Trail: Croagh Patrick Pilgrimage Route", attributes: {Country: "Ireland", Length: "~7 km", Difficulty: "Moderate–Hard", "Highest Elevation": "764 m", "Breathtaking Factor": 7, Popularity: 8, "Wildlife Encounters": 3, "Mystique Level": 10}},
+{name: "Trail: Crossing Serra do Cipó x Alto Palácio", attributes: {Country: "Brazil", Length: "~25 km", Difficulty: "Moderate", "Highest Elevation": "~1,600 m", "Breathtaking Factor": 8, Popularity: 5, "Wildlife Encounters": 7, "Mystique Level": 8}},
+{name: "Trail: Diamond Path", attributes: {Country: "Brazil", Length: "~395 km", Difficulty: "Moderate", "Highest Elevation": "~1,400 m", "Breathtaking Factor": 9, Popularity: 6, "Wildlife Encounters": 5, "Mystique Level": 9}},
+{name: "Trail: Drakensberg Grand Traverse", attributes: {Country: "South Africa / Lesotho", Length: "230 km", Difficulty: "Extreme", "Highest Elevation": "3,482 m", "Breathtaking Factor": 9, Popularity: 4, "Wildlife Encounters": 8, "Mystique Level": 9}},
+{name: "Trail: Druk Path Trek", attributes: {Country: "Bhutan", Length: "~54 km", Difficulty: "Moderate", "Highest Elevation": "4,200 m", "Breathtaking Factor": 8, Popularity: 5, "Wildlife Encounters": 6, "Mystique Level": 10}},
+{name: "Trail: Everest Base Camp Trek", attributes: {Country: "Nepal", Length: "~130 km", Difficulty: "Hard", "Highest Elevation": "5,364 m", "Breathtaking Factor": 10, Popularity: 8, "Wildlife Encounters": 6, "Mystique Level": 10}},
+{name: "Trail: Fernando de Noronha – Atalaia x Ponta da Sapata Trail", attributes: {Country: "Brazil", Length: "~12 km (ida e volta)", Difficulty: "Moderate", "Highest Elevation": "~200 m", "Breathtaking Factor": 10, Popularity: 7, "Wildlife Encounters": 9, "Mystique Level": 10}},
+{name: "Trail: Ferradura – Aparados da Serra", attributes: {Country: "Brazil", Length: "~6 km", Difficulty: "Easy–Moderate", "Highest Elevation": "~1,000 m", "Breathtaking Factor": 9, Popularity: 6, "Wildlife Encounters": 5, "Mystique Level": 8}},
+{name: "Trail: Fimmvörðuháls", attributes: {Country: "Iceland", Length: "25 km", Difficulty: "Moderate–Hard", "Highest Elevation": "~1,100 m", "Breathtaking Factor": 10, Popularity: 6, "Wildlife Encounters": 3, "Mystique Level": 8}},
+{name: "Trail: Fish River Canyon", attributes: {Country: "Namibia", Length: "85 km", Difficulty: "Hard", "Highest Elevation": "~550 m descent", "Breathtaking Factor": 8, Popularity: 5, "Wildlife Encounters": 7, "Mystique Level": 8}},
+{name: "Trail: Gavea Rock", attributes: {Country: "Brazil", Length: "~5.5 km", Difficulty: "Hard (scramble/climb required)", "Highest Elevation": "842 m", "Breathtaking Factor": 10, Popularity: 9, "Wildlife Encounters": 4, "Mystique Level": 8}},
+{name: "Trail: Golden Path (Paraty-Cunha)", attributes: {Country: "Brazil", Length: "~7 km (núcleo principal)", Difficulty: "Moderate", "Highest Elevation": "~1,100 m", "Breathtaking Factor": 8, Popularity: 7, "Wildlife Encounters": 6, "Mystique Level": 10}},
+{name: "Trail: Grand Canyon Rim-to-Rim", attributes: {Country: "USA (Arizona)", Length: "~39 km", Difficulty: "Hard", "Highest Elevation": "2,440 m", "Breathtaking Factor": 10, Popularity: 9, "Wildlife Encounters": 6, "Mystique Level": 8}},
+{name: "Trail: Great Himalaya (Nepal Section)", attributes: {Country: "Nepal", Length: "~1,700 km (Nepal section)", Difficulty: "Extreme", "Highest Elevation": ">6,000 m", "Breathtaking Factor": 10, Popularity: 3, "Wildlife Encounters": 8, "Mystique Level": 10}},
+{name: "Trail: Great Ocean Walk", attributes: {Country: "Australia", Length: "104 km", Difficulty: "Moderate", "Highest Elevation": "~300 m", "Breathtaking Factor": 9, Popularity: 6, "Wildlife Encounters": 7, "Mystique Level": 7}},
+{name: "Trail: Great Wall of China Trek", attributes: {Country: "China", Length: "Varies (up to 21,196 km total)", Difficulty: "Moderate–Hard", "Highest Elevation": "~1,500 m", "Breathtaking Factor": 9, Popularity: 10, "Wildlife Encounters": 4, "Mystique Level": 10}},
+{name: "Trail: Hardangervidda Plateau Trek", attributes: {Country: "Norway", Length: "Varies (~80–100 km common)", Difficulty: "Moderate", "Highest Elevation": "~1,700 m", "Breathtaking Factor": 8, Popularity: 5, "Wildlife Encounters": 8, "Mystique Level": 7}},
+{name: "Trail: Haute Route (Chamonix to Zermatt)", attributes: {Country: "France / Switzerland", Length: "200 km", Difficulty: "Hard", "Highest Elevation": "2,987 m", "Breathtaking Factor": 10, Popularity: 6, "Wildlife Encounters": 6, "Mystique Level": 8}},
+{name: "Trail: Huayhuash Circuit", attributes: {Country: "Peru", Length: "~130 km", Difficulty: "Hard–Extreme", "Highest Elevation": "5,100 m", "Breathtaking Factor": 10, Popularity: 4, "Wildlife Encounters": 6, "Mystique Level": 10}},
+{name: "Trail: Ilha Grande – T10 (Dois Rios x Abraão)", attributes: {Country: "Brazil", Length: "~8 km", Difficulty: "Moderate", "Highest Elevation": "~350 m", "Breathtaking Factor": 9, Popularity: 8, "Wildlife Encounters": 6, "Mystique Level": 9}},
+{name: "Trail: Inca", attributes: {Country: "Peru", Length: "43 km", Difficulty: "Hard", "Highest Elevation": "4,200 m", "Breathtaking Factor": 10, Popularity: 9, "Wildlife Encounters": 5, "Mystique Level": 10}},
+{name: "Trail: Itupava Path", attributes: {Country: "Brazil", Length: "~16 km", Difficulty: "Moderate–Hard", "Highest Elevation": "~1,100 m", "Breathtaking Factor": 8, Popularity: 6, "Wildlife Encounters": 7, "Mystique Level": 9}},
+{name: "Trail: Jalapão Trek", attributes: {Country: "Brazil", Length: "~15 km (Serra trail)", Difficulty: "Moderate", "Highest Elevation": "~800 m", "Breathtaking Factor": 9, Popularity: 7, "Wildlife Encounters": 8, "Mystique Level": 8}},
+{name: "Trail: Jeju Olle", attributes: {Country: "South Korea (Jeju Island)", Length: "425 km (in 27 routes)", Difficulty: "Easy–Moderate", "Highest Elevation": "1,950 m (Hallasan detour)", "Breathtaking Factor": 8, Popularity: 7, "Wildlife Encounters": 5, "Mystique Level": 7}},
+{name: "Trail: John Muir", attributes: {Country: "USA (California)", Length: "340 km", Difficulty: "Hard", "Highest Elevation": "4,421 m", "Breathtaking Factor": 10, Popularity: 8, "Wildlife Encounters": 9, "Mystique Level": 8}},
+{name: "Trail: Jordan", attributes: {Country: "Jordan", Length: "650 km", Difficulty: "Moderate–Hard", "Highest Elevation": "~1,300 m", "Breathtaking Factor": 8, Popularity: 5, "Wildlife Encounters": 6, "Mystique Level": 9}},
+{name: "Trail: Kalalau", attributes: {Country: "USA (Hawaii - Kauai)", Length: "35 km", Difficulty: "Hard", "Highest Elevation": "1,200 m", "Breathtaking Factor": 10, Popularity: 7, "Wildlife Encounters": 7, "Mystique Level": 8}},
+{name: "Trail: Kumano Kodo (Nakahechi Route)", attributes: {Country: "Japan", Length: "~70 km", Difficulty: "Moderate", "Highest Elevation": "800 m", "Breathtaking Factor": 8, Popularity: 6, "Wildlife Encounters": 4, "Mystique Level": 10}},
+{name: "Trail: Kungsleden (The King's)", attributes: {Country: "Sweden", Length: "440 km", Difficulty: "Moderate", "Highest Elevation": "1,150 m", "Breathtaking Factor": 8, Popularity: 6, "Wildlife Encounters": 7, "Mystique Level": 7}},
+{name: "Trail: Laguna 69 Hike", attributes: {Country: "Peru", Length: "~14 km", Difficulty: "Hard (due to altitude)", "Highest Elevation": "4,600 m", "Breathtaking Factor": 10, Popularity: 8, "Wildlife Encounters": 4, "Mystique Level": 9}},
+{name: "Trail: Lapinha x Tabuleiro Crossing", attributes: {Country: "Brazil", Length: "~30 km", Difficulty: "Moderate–Hard", "Highest Elevation": "~1,300 m", "Breathtaking Factor": 8, Popularity: 6, "Wildlife Encounters": 6, "Mystique Level": 8}},
+{name: "Trail: Laugavegur", attributes: {Country: "Iceland", Length: "55 km", Difficulty: "Moderate", "Highest Elevation": "1,100 m", "Breathtaking Factor": 9, Popularity: 6, "Wildlife Encounters": 4, "Mystique Level": 8}},
+{name: "Trail: Lycian Way", attributes: {Country: "Türkiye", Length: "540 km", Difficulty: "Moderate", "Highest Elevation": "~1,800 m", "Breathtaking Factor": 9, Popularity: 7, "Wildlife Encounters": 6, "Mystique Level": 8}},
+{name: "Trail: MacLehose", attributes: {Country: "Hong Kong", Length: "100 km", Difficulty: "Moderate", "Highest Elevation": "957 m", "Breathtaking Factor": 7, Popularity: 7, "Wildlife Encounters": 5, "Mystique Level": 6}},
+{name: "Trail: Milford Track", attributes: {Country: "New Zealand", Length: "53 km", Difficulty: "Moderate", "Highest Elevation": "1,154 m", "Breathtaking Factor": 10, Popularity: 8, "Wildlife Encounters": 7, "Mystique Level": 9}},
+{name: "Trail: Missions Path", attributes: {Country: "Brazil", Length: "~335 km", Difficulty: "Moderate", "Highest Elevation": "~500 m", "Breathtaking Factor": 7, Popularity: 5, "Wildlife Encounters": 6, "Mystique Level": 8}},
+{name: "Trail: Monte Roraima Trek", attributes: {Country: "(Brazil, Venezuela & Guyana)", Length: "~90 km (round trip)", Difficulty: "Hard", "Highest Elevation": "2,810 m", "Breathtaking Factor": 10, Popularity: 7, "Wildlife Encounters": 7, "Mystique Level": 10}},
+{name: "Trail: Mount Fitz Roy Trek", attributes: {Country: "Argentina", Length: "~30 km", Difficulty: "Hard", "Highest Elevation": "~3,405 m", "Breathtaking Factor": 9, Popularity: 7, "Wildlife Encounters": 7, "Mystique Level": 8}},
+{name: "Trail: Mount Kilimanjaro Routes", attributes: {Country: "Tanzania", Length: "~60–70 km", Difficulty: "Hard", "Highest Elevation": "5,895 m", "Breathtaking Factor": 10, Popularity: 9, "Wildlife Encounters": 6, "Mystique Level": 10}},
+{name: "Trail: Mount Roraima Trek", attributes: {Country: "Venezuela / Brazil / Guyana", Length: "~85 km", Difficulty: "Hard", "Highest Elevation": "2,810 m", "Breathtaking Factor": 9, Popularity: 5, "Wildlife Encounters": 7, "Mystique Level": 10}},
+{name: "Trail: Overland Track", attributes: {Country: "Australia (Tasmania)", Length: "65 km", Difficulty: "Moderate", "Highest Elevation": "1,617 m", "Breathtaking Factor": 8, Popularity: 6, "Wildlife Encounters": 9, "Mystique Level": 6}},
+{name: "Trail: Pacific Crest", attributes: {Country: "USA (Mexico to Canada)", Length: "4,270 km", Difficulty: "Extreme", "Highest Elevation": "4,009 m", "Breathtaking Factor": 10, Popularity: 7, "Wildlife Encounters": 10, "Mystique Level": 9}},
+{name: "Trail: Peabiru", attributes: {Countries: "Brazil, Paraguay, Bolivia, Peru", Length: "~3,000 km", Difficulty: "Variable (many segments lost or symbolic)", "Highest Elevation": "~3,000+ m (Andean portions)", "Breathtaking Factor": 8, Popularity: 4, "Wildlife Encounters": 7, "Mystique Level": 10}},
+{name: "Trail: Paine Circuit", attributes: {Country: "Chile (Torres del Paine)", Length: "~130 km", Difficulty: "Hard", "Highest Elevation": "~1,200 m", "Breathtaking Factor": 10, Popularity: 6, "Wildlife Encounters": 9, "Mystique Level": 10}},
+{name: "Trail: Path of Faith", attributes: {Country: "Brazil", Length: "~540 km (varies by route)", Difficulty: "Hard", "Highest Elevation": "~1,800 m", "Breathtaking Factor": 7, Popularity: 8, "Wildlife Encounters": 4, "Mystique Level": 9}},
+{name: "Trail: Paths of Cora Coralina", attributes: {Country: "Brazil", Length: "~300 km", Difficulty: "Moderate", "Highest Elevation": "~1,200 m", "Breathtaking Factor": 8, Popularity: 6, "Wildlife Encounters": 6, "Mystique Level": 9}},
+{name: "Trail: Pati Valley Trek (Vale do Pati)", attributes: {Country: "Brazil", Length: "~70 km (varies by route)", Difficulty: "Hard", "Highest Elevation": "~1,400 m", "Breathtaking Factor": 10, Popularity: 7, "Wildlife Encounters": 8, "Mystique Level": 10}},
+{name: "Trail: Petra Trail", attributes: {Country: "Jordan", Length: "Varies", Difficulty: "Moderate", "Highest Elevation": "~1,000 m", "Breathtaking Factor": 9, Popularity: 8, "Wildlife Encounters": 5, "Mystique Level": 10}},
+{name: "Trail: Petrópolis-Teresópolis Crossing (Serra dos Órgãos)", attributes: {Country: "Brazil", Length: "~30 km", Difficulty: "Hard", "Highest Elevation": "2,263 m (Pedra do Sino)", "Breathtaking Factor": 9, Popularity: 6, "Wildlife Encounters": 8, "Mystique Level": 8}},
+{name: "Trail: Royal Road – Old Way", attributes: {Country: "Brazil", Length: "~710 km", Difficulty: "Moderate–Hard", "Highest Elevation": "~1,300 m", "Breathtaking Factor": 8, Popularity: 7, "Wildlife Encounters": 5, "Mystique Level": 10}},
+{name: "Trail: Rubicon", attributes: {Country: "USA (California)", Length: "35.4 km", Difficulty: "Extreme (Off-road)", "Highest Elevation": "~2,130 m", "Breathtaking Factor": 7, Popularity: 6, "Wildlife Encounters": 5, "Mystique Level": 8}},
+{name: "Trail: Salkantay Trek", attributes: {Country: "Peru", Length: "72 km", Difficulty: "Hard", "Highest Elevation": "4,650 m", "Breathtaking Factor": 9, Popularity: 8, "Wildlife Encounters": 5, "Mystique Level": 9}},
+{name: "Trail: Sentiero Roma", attributes: {Country: "Italy (Alps, Lombardy)", Length: "~50 km", Difficulty: "Hard", "Highest Elevation": "2,800 m", "Breathtaking Factor": 8, Popularity: 5, "Wildlife Encounters": 6, "Mystique Level": 7}},
+{name: "Trail: Serra Fina Crossing", attributes: {Country: "Brazil", Length: "~30 km", Difficulty: "Extreme", "Highest Elevation": "2,798 m (Pedra da Mina)", "Breathtaking Factor": 9, Popularity: 6, "Wildlife Encounters": 7, "Mystique Level": 9}},
+{name: "Trail: Sierra High Route", attributes: {Country: "USA (California)", Length: "~310 km", Difficulty: "Extreme", "Highest Elevation": "~4,000 m", "Breathtaking Factor": 9, Popularity: 3, "Wildlife Encounters": 8, "Mystique Level": 9}},
+{name: "Trail: Simien Mountains Trek", attributes: {Country: "Ethiopia", Length: "Varies", Difficulty: "Hard", "Highest Elevation": "4,550 m (Ras Dashen)", "Breathtaking Factor": 9, Popularity: 5, "Wildlife Encounters": 9, "Mystique Level": 9}},
+{name: "Trail: Skellig Michael Path", attributes: {Country: "Ireland", Length: "~600 steps", Difficulty: "Hard (steep)", "Highest Elevation": "~218 m", "Breathtaking Factor": 9, Popularity: 8, "Wildlife Encounters": 5, "Mystique Level": 10}},
+{name: "Trail: South West Coast Path", attributes: {Country: "United Kingdom", Length: "1,014 km", Difficulty: "Moderate", "Highest Elevation": "~300 m", "Breathtaking Factor": 8, Popularity: 7, "Wildlife Encounters": 6, "Mystique Level": 7}},
+{name: "Trail: Spice Trails of Kerala", attributes: {Country: "India", Length: "Varies", Difficulty: "Moderate", "Highest Elevation": "~2,695 m (Anamudi Peak)", "Breathtaking Factor": 8, Popularity: 6, "Wildlife Encounters": 7, "Mystique Level": 9}},
+{name: "Trail: Te Araroa", attributes: {Country: "New Zealand", Length: "3,000 km", Difficulty: "Hard", "Highest Elevation": "~1,925 m", "Breathtaking Factor": 9, Popularity: 5, "Wildlife Encounters": 8, "Mystique Level": 9}},
+{name: "Trail: The 88 Temples Pilgrimage", attributes: {Country: "Japan (Shikoku)", Length: "~1,200 km", Difficulty: "Hard", "Highest Elevation": "~900 m", "Breathtaking Factor": 7, Popularity: 6, "Wildlife Encounters": 5, "Mystique Level": 10}},
+{name: "Trail: The Carros de Foc", attributes: {Country: "Spain (Pyrenees)", Length: "~55 km", Difficulty: "Hard", "Highest Elevation": "~2,800 m", "Breathtaking Factor": 9, Popularity: 5, "Wildlife Encounters": 7, "Mystique Level": 8}},
+{name: "Trail: The Dientes Circuit", attributes: {Country: "Chile (Tierra del Fuego)", Length: "~53 km", Difficulty: "Hard", "Highest Elevation": "~900 m", "Breathtaking Factor": 9, Popularity: 3, "Wildlife Encounters": 8, "Mystique Level": 9}},
+{name: "Trail: The High Coast (Höga Kustenleden)", attributes: {Country: "Sweden", Length: "130 km", Difficulty: "Moderate", "Highest Elevation": "~300 m", "Breathtaking Factor": 8, Popularity: 5, "Wildlife Encounters": 7, "Mystique Level": 7}},
+{name: "Trail: The King's Little Path", attributes: {Country: "Spain", Length: "~7.7 km", Difficulty: "Moderate", "Highest Elevation": "~100 m above river", "Breathtaking Factor": 9, Popularity: 9, "Wildlife Encounters": 3, "Mystique Level": 8}},
+{name: "Trail: The Long Range Traverse", attributes: {Country: "Canada (Newfoundland)", Length: "~35 km (unmarked)", Difficulty: "Extreme", "Highest Elevation": "~700 m", "Breathtaking Factor": 9, Popularity: 2, "Wildlife Encounters": 9, "Mystique Level": 10}},
+{name: "Trail: The Lycian Way (Likya Yolu)", attributes: {Country: "Turkey", Length: "540 km", Difficulty: "Moderate", "Highest Elevation": "~1,800 m", "Breathtaking Factor": 9, Popularity: 6, "Wildlife Encounters": 6, "Mystique Level": 9}},
+{name: "Trail: The Narrows (Zion National Park)", attributes: {Country: "USA (Utah)", Length: "~25 km", Difficulty: "Moderate", "Highest Elevation": "~1,800 m", "Breathtaking Factor": 9, Popularity: 9, "Wildlife Encounters": 4, "Mystique Level": 8}},
+{name: "Trail: The Sentiero Azzurro (Cinque Terre)", attributes: {Country: "Italy", Length: "12 km", Difficulty: "Easy–Moderate", "Highest Elevation": "400 m", "Breathtaking Factor": 9, Popularity: 9, "Wildlife Encounters": 3, "Mystique Level": 6}},
+{name: "Trail: The Snowman Trek", attributes: {Country: "Bhutan", Length: "347 km", Difficulty: "Extreme", "Highest Elevation": "5,320 m", "Breathtaking Factor": 10, Popularity: 2, "Wildlife Encounters": 7, "Mystique Level": 10}},
+{name: "Trail: The Torres Trail", attributes: {Country: "Cape Verde", Length: "Varies (island trails)", Difficulty: "Moderate", "Highest Elevation": "~1,200 m", "Breathtaking Factor": 8, Popularity: 4, "Wildlife Encounters": 6, "Mystique Level": 8}},
+{name: "Trail: The W Trek (Torres del Paine)", attributes: {Country: "Chile (Patagonia)", Length: "80 km", Difficulty: "Moderate–Hard", "Highest Elevation": "1,200 m", "Breathtaking Factor": 10, Popularity: 8, "Wildlife Encounters": 8, "Mystique Level": 9}},
+{name: "Trail: Tongariro Alpine Crossing", attributes: {Country: "New Zealand", Length: "19.4 km", Difficulty: "Hard", "Highest Elevation": "1,886 m", "Breathtaking Factor": 10, Popularity: 9, "Wildlife Encounters": 5, "Mystique Level": 9}},
+{name: "Trail: Toubkal Circuit", attributes: {Country: "Morocco", Length: "~70 km", Difficulty: "Hard", "Highest Elevation": "4,167 m", "Breathtaking Factor": 8, Popularity: 6, "Wildlife Encounters": 5, "Mystique Level": 9}},
+{name: "Trail: Tour du Mont Blanc", attributes: {Country: "France/Italy/Switzerland", Length: "170 km", Difficulty: "Hard", "Highest Elevation": "2,665 m", "Breathtaking Factor": 10, Popularity: 8, "Wildlife Encounters": 6, "Mystique Level": 8}},
+{name: "Trail: Trolltunga Hike", attributes: {Country: "Norway", Length: "27 km (round trip)", Difficulty: "Hard", "Highest Elevation": "1,180 m", "Breathtaking Factor": 10, Popularity: 8, "Wildlife Encounters": 5, "Mystique Level": 7}},
+{name: "Trail: Veadeiros Plateau – Janela Lookout", attributes: {Country: "Brazil", Length: "~8 km", Difficulty: "Moderate", "Highest Elevation": "~1,200 m", "Breathtaking Factor": 10, Popularity: 9, "Wildlife Encounters": 6, "Mystique Level": 9}},
+{name: "Trail: Via Alpina", attributes: {Countries: "Austria, Slovenia, Germany, Liechtenstein, Switzerland, Italy, France, Monaco", Length: "~5,000 km", Difficulty: "Hard", "Highest Elevation": "~3,000 m", "Breathtaking Factor": 10, Popularity: 6, "Wildlife Encounters": 6, "Mystique Level": 9}},
+{name: "Trail: Wadi Rum Desert", attributes: {Country: "Jordan", Length: "Varies (~20–80 km)", Difficulty: "Moderate", "Highest Elevation": "~1,750 m", "Breathtaking Factor": 9, Popularity: 6, "Wildlife Encounters": 6, "Mystique Level": 10}},
+{name: "Trail: West Highland Way", attributes: {Country: "Scotland", Length: "154 km", Difficulty: "Moderate", "Highest Elevation": "550 m", "Breathtaking Factor": 7, Popularity: 8, "Wildlife Encounters": 6, "Mystique Level": 7}},
+  ];
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('phtCheckbox').checked) selectedCards.push(...pht);
+    if (document.getElementById('equipCheckbox').checked) selectedCards.push(...equip);
+    if (document.getElementById('genreCheckbox').checked) selectedCards.push(...genre);
+    if (document.getElementById('locCheckbox').checked) selectedCards.push(...loc);
+    if (document.getElementById('birdCheckbox').checked) selectedCards.push(...bird);
+    if (document.getElementById('flowerCheckbox').checked) selectedCards.push(...flower);
+    if (document.getElementById('mountCheckbox').checked) selectedCards.push(...mount);
+    if (document.getElementById('natpCheckbox').checked) selectedCards.push(...natp);
+    if (document.getElementById('trailCheckbox').checked) selectedCards.push(...trail);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+		body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

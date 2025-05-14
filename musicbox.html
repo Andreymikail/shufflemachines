@@ -1,0 +1,118 @@
+<!-- CONTROLE DE VELOCIDADE E LOOP -->
+<div style="text-align: center;">
+  <h2 style="color: white;">Mini Music Box Grid</h2>
+
+  <p style="color: white;">Click on the cells to punch the melody. Then press "Play Melody".</p>
+
+  <label for="speedInput" style="color:white;">Speed (ms per beat):</label>
+  <input type="number" id="speedInput" value="400" min="100" max="2000"><br><br>
+
+  <label for="loopCheckbox" style="color:white;">Loop:</label>
+  <input type="checkbox" id="loopCheckbox"><br><br>
+
+  <button id="playButton" class="round-button">Play Melody</button>
+
+  <div id="musicGrid" style="display: grid; grid-template-columns: repeat(16, 30px); gap: 2px; justify-content: center;"></div>
+</div>
+
+<script>
+const notes = [
+  { name: 'B', url: 'https://static1.squarespace.com/static/66be651a2ed73a62cf27f270/t/6727b71f9674ba22c2a86b48/1730656032726/B.mp3' },
+  { name: 'A', url: 'https://static1.squarespace.com/static/66be651a2ed73a62cf27f270/t/6727b74c292977545101a90d/1730656077558/A.mp3' },
+  { name: 'G', url: 'https://static1.squarespace.com/static/66be651a2ed73a62cf27f270/t/6727b68bf0b5eb351ae0929a/1730655884877/G.mp3' },
+  { name: 'F', url: 'https://static1.squarespace.com/static/66be651a2ed73a62cf27f270/t/6727b6a7ecb75337490ea2bb/1730655913316/F.mp3' },
+  { name: 'E', url: 'https://static1.squarespace.com/static/66be651a2ed73a62cf27f270/t/6727b65f2615c45287eebafe/1730655841471/E.mp3' },
+  { name: 'D', url: 'https://static1.squarespace.com/static/66be651a2ed73a62cf27f270/t/6727b6e8c8e989794e6537de/1730655977598/D.mp3' },
+  { name: 'C', url: 'https://static1.squarespace.com/static/66be651a2ed73a62cf27f270/t/6727b7045ab40d26b1de1d1e/1730656005675/C.mp3' }
+];
+
+const grid = document.getElementById("musicGrid");
+let cells = [];
+for (let row = 0; row < 7; row++) {
+  for (let col = 0; col < 16; col++) {
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    cell.dataset.note = notes[row].name;
+    cell.dataset.row = row;
+    cell.dataset.col = col;
+    cell.addEventListener("click", () => {
+      cell.classList.toggle("active");
+    });
+    grid.appendChild(cell);
+
+    if (!cells[col]) cells[col] = [];
+    cells[col][row] = cell;
+  }
+}
+
+let loopActive = false;
+let loopTimeout = null;
+
+async function playMelodyOnce(speed) {
+  for (let col = 0; col < 16; col++) {
+    for (let row = 0; row < 7; row++) {
+      const cell = cells[col][row];
+      if (cell.classList.contains("active")) {
+        playNote(notes[row].name);
+      }
+    }
+    await new Promise(resolve => setTimeout(resolve, speed));
+  }
+}
+
+async function playMelodyLoop() {
+  const speed = parseInt(document.getElementById("speedInput").value);
+  loopActive = true;
+
+  while (loopActive) {
+    await playMelodyOnce(speed);
+  }
+}
+
+document.getElementById("playButton").addEventListener("click", () => {
+  loopActive = document.getElementById("loopCheckbox").checked;
+  if (loopActive) {
+    playMelodyLoop();
+  } else {
+    playMelodyOnce(parseInt(document.getElementById("speedInput").value));
+  }
+});
+
+function playNote(noteName) {
+  const note = notes.find(n => n.name === noteName);
+  if (note) {
+    const audio = new Audio(note.url);
+    audio.play();
+  }
+}
+</script>
+
+<style>
+body {
+  background-color: black;
+}
+.round-button {
+  width: 120px;
+  height: 50px;
+  border-radius: 25px;
+  border: none;
+  background-color: #E4C58A;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 10px 0;
+}
+.round-button:hover {
+  background-color: #6E1919;
+}
+.cell {
+  width: 28px;
+  height: 28px;
+  background-color: #333;
+  border: 1px solid #666;
+  cursor: pointer;
+}
+.cell.active {
+  background-color: #E4C58A;
+}
+</style>

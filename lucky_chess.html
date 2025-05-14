@@ -1,0 +1,66 @@
+<!-- HTML Structure -->
+<div>
+  <h2>Lucky Chess</h2>
+  <button id="spinButton" class="round-button">Shuffle</button>
+  <p id="abilityResult"></p>
+</div>
+
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const abilities = [
+      "Double Move – Move a second piece after the first.",
+      "Piece Swap – Swap one of your pieces with an opponent's piece.",
+      "Instant Promotion – Promote one of your pawns to any piece, regardless of position.",
+      "Immunity – The moved piece becomes immune to captures until your next turn.",
+      "Extra Piece – Place an additional pawn on any empty square on your side.",
+      "Lightning Capture – Capture an additional piece anywhere on the board after a successful capture.",
+      "Piece Teleport – Teleport one of your pieces to any empty square.",
+      "King's Shield – Protect your king from being checked for the next two turns.",
+      "Reverse Move – Force the opponent to undo their last move.",
+      "Board Flip – Flip the board, swapping all piece positions.",
+      "Power-Up – Double the movement range of the piece you just moved.",
+      "Piece Freeze – Freeze one of the opponent's pieces for their next turn.",
+      "Rook’s Gambit – Sacrifice one of your rooks to instantly capture any opponent’s piece.",
+      "Pawn Storm – Move all your pawns forward one square.",
+      "Queen’s Leap – Move your queen to any square on the board.",
+      "Mirror Move – Copy the opponent's last move with one of your pieces.",
+      "Knight's Charge – Move one of your knights twice in a single turn.",
+      "Checkmate Attempt – Attempt an immediate checkmate; if unsuccessful, the turn ends.",
+      "Forced Move – Choose an opponent's piece they must move on their next turn.",
+      "Time Warp – Rewind the game by two turns."
+    ];
+
+    document.getElementById('spinButton').addEventListener('click', function() {
+      const randomAbility = abilities[Math.floor(Math.random() * abilities.length)];
+      document.getElementById('abilityResult').textContent = randomAbility;
+    });
+  });
+</script>
+
+<!-- CSS for the Round Button -->
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.5; /* Align text vertically */
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  #abilityResult {
+    font-size: 16px;
+    margin: 20px 0;
+  }
+</style>

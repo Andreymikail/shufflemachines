@@ -1,0 +1,577 @@
+<!-- HTML Structure -->
+<button id="generateAllButton" class="round-button">All</button>
+<br><br>
+
+<div id="journeyStages"></div>
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sciFiOptions = {
+      "The Fool": [
+        "A stowaway on a starship.",
+				"An android awakening to consciousness.",
+				"A traveler entering a wormhole.",
+				"A clone escaping from a lab.",
+				"A lost explorer on a distant planet.",
+				"A rogue AI gaining independence.",
+				"A hitchhiker on an intergalactic journey.",
+				"A novice pilot of a space freighter.",
+				"A human waking up in an alien body.",
+				"A drifter in a cyberpunk metropolis.",
+				"A refugee from a collapsing universe.",
+				"A time traveler with amnesia.",
+				"A survivor of a starship crash.",
+				"A cosmic being taking a human form.",
+				"A young rebel against an oppressive regime.",
+				"A space nomad with a mysterious past.",
+				"A genetic experiment gone wrong.",
+				"A scavenger finding a powerful artifact.",
+				"A dreamer seeking the edge of the universe.",
+				"A child born in zero gravity."
+      ],
+      "The Magician": [
+        "A scientist mastering quantum technology.",
+				"A hacker with godlike powers.",
+				"A being who can manipulate time.",
+				"A creator of synthetic life.",
+				"A technomancer in a digital realm.",
+				"A wielder of alien technology.",
+				"A pilot with telekinetic abilities.",
+				"A sorcerer who merges magic and science.",
+				"A bioengineer who shapes living organisms.",
+				"A genius who can alter reality.",
+				"A starship captain who commands with sheer will.",
+				"A terraformer creating new worlds.",
+				"A master of nanotechnology.",
+				"A virtual reality architect.",
+				"A mind controller with cyber implants.",
+				"A technologist who harnesses dark matter.",
+				"A savant who deciphers alien languages.",
+				"A constructor of artificial universes.",
+				"A visionary who sees all possible futures.",
+				"A cosmic alchemist transforming elements."
+      ],
+      "The High Priestess": [
+        "A keeper of forbidden knowledge.",
+				"A telepathic oracle on a distant moon.",
+				"A guardian of ancient alien ruins.",
+				"A mystic in a virtual temple.",
+				"A seer who interprets cosmic signals.",
+				"A being connected to a universal consciousness.",
+				"A prophet of an impending galactic event.",
+				"A caretaker of a sentient library.",
+				"A priestess of a dying star.",
+				"A medium communicating with alien spirits.",
+				"A monk in a monastery orbiting a black hole.",
+				"A data shaman navigating digital landscapes.",
+				"A scientist who deciphers the language of the cosmos.",
+				"A sorceress who manipulates hidden dimensions.",
+				"A keeper of a time-traveling portal.",
+				"A navigator of the astral plane.",
+				"A librarian of forgotten worlds.",
+				"A weaver of fate in the quantum realm.",
+				"A guardian of the cosmic balance.",
+				"A silent observer of interstellar events."
+      ],
+      "The Empress": [
+        "A ruler of an intergalactic empire.",
+				"A bioengineer cultivating a new species.",
+				"A queen on a terraformed planet.",
+				"A matriarch of a space colony.",
+				"A leader of an eco-friendly space station.",
+				"A goddess revered by alien tribes.",
+				"A protector of a lush alien biosphere.",
+				"A commander of a fleet nurturing new worlds.",
+				"A diplomat uniting warring planets.",
+				"A mother figure to a genetically engineered race.",
+				"A creator of a self-sustaining ecosystem.",
+				"A high priestess of a fertility cult.",
+				"A designer of utopian societies.",
+				"A provider of resources for a space-faring civilization.",
+				"A visionary who harmonizes nature and technology.",
+				"A sovereign of a garden world.",
+				"A nurturer of an interstellar refuge.",
+				"A warrior queen defending her people.",
+				"A harbinger of a new era of peace.",
+				"A cultivator of life in the void."
+      ],
+      "The Emperor": [
+        "A dictator of a dystopian megacity.",
+				"A warlord controlling a resource-rich planet.",
+				"A CEO of a mega-corporation ruling from orbit.",
+				"A general commanding a vast space armada.",
+				"A cyborg king in a post-apocalyptic wasteland.",
+				"A ruler of a cybernetic empire.",
+				"A president of a united planetary federation.",
+				"A tyrant controlling an AI-driven society.",
+				"A leader of a rebellion against an alien overlord.",
+				"A governor of a mining colony on a distant moon.",
+				"A patriarch of a powerful dynasty.",
+				"A conqueror of uncharted star systems.",
+				"A protector of the human race.",
+				"A supreme judge of interstellar law.",
+				"A strategic mastermind in a galactic war.",
+				"A ruler who enforces peace through power.",
+				"A guardian of a fragile truce between species.",
+				"A father figure to a generation of clones.",
+				"A leader rebuilding civilization after a cosmic disaster.",
+				"A king who unites warring factions under one banner."
+      ],
+      "The Hierophant": [
+        "A spiritual leader of a techno-religion.",
+				"A mentor to a group of rebel scientists.",
+				"A teacher of cosmic truths to a new species.",
+				"A sage who decodes the mysteries of the universe.",
+				"A prophet of a new technological age.",
+				"A high priest of a digital cult.",
+				"A guru guiding souls in a virtual afterlife.",
+				"A master of an ancient alien wisdom.",
+				"A guide for those lost in time travel.",
+				"A patriarch of a religious order in space.",
+				"A keeper of the sacred AI code.",
+				"A scholar who interprets interstellar omens.",
+				"A preacher of unity among sentient beings.",
+				"A custodian of the galactic archive.",
+				"A monk who communes with the stars.",
+				"A founder of a space-bound monastery.",
+				"A visionary leading the faithful to a new world.",
+				"A philosopher who unites science and spirituality.",
+				"A cleric who administers to a post-human society.",
+				"A guide to ascension in a transhumanist society."
+      ],
+      "The Lovers": [
+        "A pair of star-crossed lovers from rival planets.",
+				"A human and AI experiencing forbidden love.",
+				"A romance between two beings from different dimensions.",
+				"A union of two species to create a new hybrid race.",
+				"A couple escaping a dystopian society together.",
+				"A bond between a pilot and their sentient starship.",
+				"A love affair that spans across time.",
+				"A partnership between a human and an alien diplomat.",
+				"A couple defying the laws of their societies for love.",
+				"A fusion of minds between two telepaths.",
+				"A secret romance in a space colony.",
+				"A relationship tested by a cosmic disaster.",
+				"A love triangle involving a clone.",
+				"A connection between a scientist and their creation.",
+				"A bond that unites two warring species.",
+				"A romantic quest to save a lost lover.",
+				"A couple facing the moral dilemmas of genetic engineering.",
+				"A love that challenges the ethics of AI.",
+				"A relationship that must survive the end of the universe.",
+				"A union that alters the fate of the galaxy."
+      ],
+      "The Chariot": [
+        "A pilot racing in a high-speed space race.",
+				"A commander leading a fleet into battle.",
+				"A bounty hunter chasing a fugitive across the galaxy.",
+				"A starship navigating through a dangerous asteroid field.",
+				"A hero on a quest to retrieve a powerful artifact.",
+				"A spaceship driven by a sentient AI.",
+				"A rebel leading an attack on a galactic empire.",
+				"A time traveler trying to outrun their past.",
+				"A captain steering through a space storm.",
+				"A warrior riding a cybernetic beast.",
+				"A gladiator in an interstellar combat arena.",
+				"A smuggler transporting contraband through hostile territory.",
+				"A pilot on a mission to save a dying world.",
+				"A courier delivering a vital message across star systems.",
+				"A crew escaping a black hole.",
+				"A leader rallying their troops for a final stand.",
+				"A racer competing in a deadly interplanetary tournament.",
+				"A scout exploring uncharted regions of space.",
+				"A hero leading a desperate charge against an overwhelming force.",
+				"A nomad wandering the stars in search of a new home."
+      ],
+      "Strength": [
+        "A warrior with enhanced cybernetic limbs.",
+				"A survivor on a hostile alien world.",
+				"A genetically engineered soldier.",
+				"A peacekeeper in a war-torn galaxy.",
+				"A pilot controlling a giant mech.",
+				"A hero resisting a powerful mind control.",
+				"A scientist overcoming a deadly virus.",
+				"A diplomat navigating tense interspecies relations.",
+				"A rebel leader standing against a tyrannical empire.",
+				"A being who can control gravitational forces.",
+				"A medic saving lives in a galactic warzone.",
+				"A telekinetic defending a colony.",
+				"A defender of a utopian society.",
+				"A protector of a sacred alien relic.",
+				"A guardian of a cosmic anomaly.",
+				"A fighter with unyielding willpower.",
+				"A savior who sacrifices themselves for the greater good.",
+				"A renegade who faces impossible odds.",
+				"A figurehead who inspires a revolution.",
+				"A warrior who tames a wild alien creature."
+      ],
+      "The Hermit": [
+        "A lone explorer in the depths of space.",
+				"A scientist working in isolation on a remote planet.",
+				"A monk meditating in a temple on an asteroid.",
+				"A recluse living in a space station far from civilization.",
+				"A seeker of lost knowledge in an ancient alien ruin.",
+				"A wanderer searching for the meaning of life.",
+				"A researcher studying a mysterious cosmic phenomenon.",
+				"A rogue AI seeking solitude from humanity.",
+				"A drifter traveling the galaxy alone.",
+				"A sage offering wisdom to those who find them.",
+				"A time traveler revisiting old memories.",
+				"A guardian of an ancient archive of knowledge.",
+				"A hermit living in a self-sustaining biosphere.",
+				"A philosopher contemplating the nature of the universe.",
+				"A survivor of an ancient civilization.",
+				"A mystic in communion with the stars.",
+				"A guardian of forbidden secrets.",
+				"A nomad who shuns all technology.",
+				"A protector of a hidden sanctuary.",
+				"A being who has chosen solitude over immortality."
+      ],
+      "Wheel of Fortune": [
+        "A time traveler stuck in a loop.",
+				"A gambler on a space station casino.",
+				"A pilot navigating through a space anomaly.",
+				"A colony facing unpredictable cosmic events.",
+				"A hero at the mercy of fate.",
+				"A civilization experiencing rapid technological shifts.",
+				"A starship crew experiencing strange quantum phenomena.",
+				"A society on the brink of revolution.",
+				"A fugitive running from their past.",
+				"A world governed by a rotating council of AI.",
+				"A planet where seasons change unpredictably.",
+				"A character caught in an endless war.",
+				"A scientist discovering the randomness of the universe.",
+				"A being who manipulates the fabric of reality.",
+				"A survivor of a cosmic disaster.",
+				"A hero facing a sudden change in fortune.",
+				"A civilization adapting to chaotic forces.",
+				"A race against time to change the future.",
+				"A world affected by interdimensional shifts.",
+				"A cosmic event that alters the destiny of a star system."
+      ],
+      "Justice": [
+        "A judge in an intergalactic court.",
+				"A hero seeking retribution for a past wrong.",
+				"A diplomat negotiating a peace treaty.",
+				"A vigilante enforcing their own code of law.",
+				"A lawyer defending an alien species in a trial.",
+				"A soldier questioning the morality of war.",
+				"A ruler passing judgment on a rebellious colony.",
+				"A hacker exposing government corruption.",
+				"A rebel fighting against an oppressive regime.",
+				"A mediator between warring factions.",
+				"A cyborg enforcing the laws of a dystopian society.",
+				"A sentinel protecting the balance of power.",
+				"A hero balancing the scales of justice.",
+				"A juror in a trial that will decide the fate of a planet.",
+				"A figure seeking to correct the mistakes of the past.",
+				"A diplomat who must decide the fate of two species.",
+				"A defender of the oppressed in a lawless universe.",
+				"A judge who controls the fate of worlds.",
+				"A warrior who upholds a strict code of honor.",
+				"A truth-seeker uncovering ancient injustices."
+      ],
+      "The Hanged Man": [
+        "A being in suspended animation.",
+				"A hero who sacrifices themselves for the greater good.",
+				"A spy caught in a web of lies.",
+				"A prisoner trapped in a virtual reality.",
+				"A character in a state of limbo between life and death.",
+				"A pilot stranded in a gravity well.",
+				"A soldier questioning the morality of their mission.",
+				"A fugitive on the run from the law.",
+				"A scientist experimenting with alternate dimensions.",
+				"A soul caught between timelines.",
+				"A leader who must make a difficult decision.",
+				"A survivor of a catastrophic event seeking redemption.",
+				"A figure who must let go of the past to move forward.",
+				"A monk who has retreated from the world.",
+				"A warrior who must choose between duty and love.",
+				"A character who must make a great personal sacrifice.",
+				"A being who transcends physical form.",
+				"A hero who must confront their own inner demons.",
+				"A figure suspended in time, waiting for a moment of clarity.",
+				"A sentinel guarding the gateway between worlds."
+      ],
+      "Death": [
+        "A planet facing extinction.",
+				"A character undergoing a profound transformation.",
+				"A being experiencing the death of their physical form.",
+				"A civilization on the brink of collapse.",
+				"A hero confronting the end of an era.",
+				"A star going supernova.",
+				"A society facing a deadly plague.",
+				"A warrior fighting in a last stand.",
+				"A leader presiding over the fall of an empire.",
+				"A time traveler witnessing the death of a timeline.",
+				"A species facing extinction.",
+				"A starship crew on a suicide mission.",
+				"A survivor of a doomed world.",
+				"A soldier who must sacrifice themselves to save others.",
+				"A character confronting their own mortality.",
+				"A being who transcends death and is reborn.",
+				"A society undergoing a radical transformation.",
+				"A world on the edge of annihilation.",
+				"A hero who must let go of the past to embrace the future.",
+				"A guardian of the gateway to the afterlife."
+      ],
+      "Temperance": [
+        "A diplomat seeking to broker peace between warring factions.",
+				"A scientist striving to balance the elements of a new world.",
+				"A hero learning to master their powers.",
+				"A leader uniting disparate groups for a common cause.",
+				"A healer restoring balance to a ravaged land.",
+				"A time traveler trying to prevent a paradox.",
+				"A warrior seeking inner peace.",
+				"A technician balancing the power core of a starship.",
+				"A geneticist striving for harmony between species.",
+				"A philosopher contemplating the balance of the universe.",
+				"A pilot navigating through a chaotic storm.",
+				"A diplomat mediating a fragile truce.",
+				"A survivor rebuilding a world after a cataclysm.",
+				"A monk who maintains balance in a spiritual sanctuary.",
+				"A hero who must find the middle path to succeed.",
+				"A chemist mixing elements to create a life-saving antidote.",
+				"A leader balancing the needs of a diverse population.",
+				"A sentient AI learning to harmonize with humans.",
+				"A being who maintains the balance of cosmic forces.",
+				"A starship captain balancing the safety of the crew with the mission."
+      ],
+      "The Devil": [
+        "A corrupt megacorporation controlling a city.",
+				"A tyrannical AI ruling with an iron fist.",
+				"A temptation to wield a forbidden technology.",
+				"A dystopian society driven by greed and exploitation.",
+				"A scientist obsessed with unethical experiments.",
+				"A hero tempted by power at the cost of their soul.",
+				"A civilization enslaved by its own technology.",
+				"A warlord who revels in chaos and destruction.",
+				"A figure who manipulates others for their gain.",
+				"A planet where vice and corruption are rampant.",
+				"A leader who sacrifices morality for control.",
+				"A hacker who blackmails entire governments.",
+				"A rebellion crushed by its own internal strife.",
+				"A character who must confront their darkest desires.",
+				"A society addicted to a mind-controlling drug.",
+				"A being that feeds on fear and despair.",
+				"A power-hungry ruler who uses fear to maintain control.",
+				"A world where pleasure overrides all moral considerations.",
+				"A character trapped in a web of lies and deceit.",
+				"A universe on the brink of moral collapse."
+      ],
+      "The Tower": [
+        "A space station under attack by an unknown force.",
+				"A civilization crumbling due to internal strife.",
+				"A starship destroyed by a catastrophic event.",
+				"A powerful empire falling into ruin.",
+				"A city overtaken by a natural disaster.",
+				"A rebellion that turns into chaos.",
+				"A scientific experiment that goes horribly wrong.",
+				"A planet devastated by an intergalactic war.",
+				"A hero witnessing the fall of their homeland.",
+				"A tower collapsing due to technological hubris.",
+				"A society brought down by its own corruption.",
+				"A leader who loses everything in a moment of hubris.",
+				"A cosmic event that changes the course of history.",
+				"A colony destroyed by an alien invasion.",
+				"A world torn apart by civil war.",
+				"A cataclysm that reshapes the landscape of a planet.",
+				"A hero facing the destruction of everything they know.",
+				"A figure who must rebuild after a great fall.",
+				"A city that collapses due to a lack of foresight.",
+				"A star system destabilized by a supernova."
+      ],
+      "The Star": [
+        "A guiding star in a distant galaxy.",
+				"A beacon of hope in a war-torn universe.",
+				"A hero who inspires others to greatness.",
+				"A scientist discovering a new source of energy.",
+				"A starship crew guided by an ancient prophecy.",
+				"A civilization rebuilding after a great disaster.",
+				"A healer who restores faith in a broken world.",
+				"A character who discovers a new hope.",
+				"A beacon that calls lost souls home.",
+				"A light in the darkness of deep space.",
+				"A hero who leads the way to a better future.",
+				"A world that becomes a symbol of peace.",
+				"A figure who brings healing to a fractured society.",
+				"A discovery that changes the course of history.",
+				"A vision of a brighter tomorrow.",
+				"A leader who guides their people to a new home.",
+				"A scientist who uncovers the secrets of the universe.",
+				"A star that symbolizes the unity of a galaxy.",
+				"A hero who sacrifices themselves for the greater good.",
+				"A signal from the stars that leads to a new beginning."
+      ],
+      "The Moon": [
+        "A mysterious moon with hidden secrets.",
+				"A world of illusions and deceptions.",
+				"A character haunted by visions of the past.",
+				"A planet where reality is not what it seems.",
+				"A hero confronting their deepest fears.",
+				"A moon that influences the minds of those who land on it.",
+				"A society ruled by superstition and fear.",
+				"A character lost in a labyrinth of their own mind.",
+				"A starship crew encountering strange phenomena.",
+				"A hidden base on the dark side of the moon.",
+				"A world where dreams and reality blend.",
+				"A hero uncovering a conspiracy hidden in the shadows.",
+				"A planet where the laws of physics are warped.",
+				"A being who manipulates others through fear.",
+				"A society that lives in perpetual twilight.",
+				"A character confronting the unknown.",
+				"A landscape that shifts and changes with the moon's phases.",
+				"A hero uncovering the truth behind a mysterious prophecy.",
+				"A world that exists only in dreams.",
+				"A cosmic being that controls the tides of reality."
+      ],
+      "The Sun": [
+        "A star that powers an entire civilization.",
+				"A hero who brings light to a darkened world.",
+				"A solar flare that reveals hidden truths.",
+				"A world basking in eternal sunlight.",
+				"A character who is the key to a new dawn.",
+				"A starship that harnesses the power of the sun.",
+				"A leader who brings warmth and hope to their people.",
+				"A scientist who unlocks the secrets of solar energy.",
+				"A civilization flourishing under the light of a distant sun.",
+				"A beacon that guides travelers across the stars.",
+				"A hero who shines brightly in the face of adversity.",
+				"A world where the sun never sets.",
+				"A character who embodies the spirit of renewal.",
+				"A solar system centered around a binary star.",
+				"A discovery that illuminates the darkest corners of the universe.",
+				"A leader who radiates positivity and strength.",
+				"A civilization that draws power directly from their star.",
+				"A being who can channel the energy of the sun.",
+				"A hero who lights the way for others to follow.",
+				"A solar event that heralds a new era."
+      ],
+      "Judgement": [
+        "A final reckoning for a corrupt empire.",
+				"A hero called to account for their actions.",
+				"A trial that will decide the fate of a species.",
+				"A character who must confront their past deeds.",
+				"A civilization judged by a higher power.",
+				"A figure who brings justice to a lawless world.",
+				"A reckoning that reshapes the political landscape.",
+				"A final battle that determines the future of a galaxy.",
+				"A hero who must make a fateful decision.",
+				"A leader who must answer for their people's sins.",
+				"A trial that exposes the truth behind a conspiracy.",
+				"A civilization that faces the consequences of its actions.",
+				"A hero who is judged by the lives they have saved or lost.",
+				"A society that must decide its own future.",
+				"A final judgement that determines the fate of a star system.",
+				"A leader who must pass judgement on a divided world.",
+				"A trial that tests the moral compass of a hero.",
+				"A figure who brings balance to a chaotic universe.",
+				"A civilization that must pay for its transgressions.",
+				"A hero who must decide the fate of a world."
+      ],
+      "The World": [
+        "A galaxy united under a single banner.",
+				"A civilization reaching the peak of its evolution.",
+				"A hero who completes their journey and changes the universe.",
+				"A world where peace and harmony reign.",
+				"A society that has achieved technological and spiritual balance.",
+				"A planet that becomes a beacon of hope for others.",
+				"A character who realizes their place in the grand scheme of things.",
+				"A star system that achieves unity and cooperation.",
+				"A civilization that spreads its influence across the stars.",
+				"A world where all sentient beings coexist peacefully.",
+				"A hero who fulfills their destiny and brings about a new era.",
+				"A society that has mastered the art of living in harmony with nature.",
+				"A planet that becomes the center of a new interstellar alliance.",
+				"A hero who connects disparate worlds and cultures.",
+				"A civilization that transcends physical existence.",
+				"A world that symbolizes the culmination of a long journey.",
+				"A hero who unites the fragments of a shattered universe.",
+				"A society that achieves perfect equilibrium.",
+				"A world that becomes a hub of knowledge and wisdom.",
+				"A hero who brings about the dawn of a new cosmic order."
+      ]
+    };
+
+    const majorArcana = [
+      "The Fool", "The Magician", "The High Priestess", "The Empress", 
+      "The Emperor", "The Hierophant", "The Lovers", "The Chariot",
+      "Strength", "The Hermit", "Wheel of Fortune", "Justice",
+      "The Hanged Man", "Death", "Temperance", "The Devil",
+      "The Tower", "The Star", "The Moon", "The Sun",
+      "Judgement", "The World"
+    ];
+
+    // Generate the stages with individual buttons
+    const journeyContainer = document.getElementById('journeyStages');
+    majorArcana.forEach(card => {
+      const stageDiv = document.createElement('div');
+      stageDiv.innerHTML = `
+        <h3>${card}</h3>
+        <p id="${card}Story"></p>
+        <button class="round-button generateButton" data-card="${card}">Shuffle</button>
+      `;
+      journeyContainer.appendChild(stageDiv);
+    });
+
+    // Function to generate a random story for a given card
+    function generateStory(card) {
+      const options = sciFiOptions[card];
+      const randomOption = options[Math.floor(Math.random() * options.length)];
+      document.getElementById(`${card}Story`).textContent = randomOption;
+    }
+
+    // Event listener for individual generate buttons
+    document.querySelectorAll('.generateButton').forEach(button => {
+      button.addEventListener('click', function() {
+        const card = this.getAttribute('data-card');
+        generateStory(card);
+      });
+    });
+
+    // Event listener for generating all stories at once
+    document.getElementById('generateAllButton').addEventListener('click', function() {
+      majorArcana.forEach(card => {
+        generateStory(card);
+      });
+    });
+  });
+</script>
+
+<!-- CSS for the Round Button -->
+<style>
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 60px; /* Align text vertically */
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  #journeyStages h3 {
+    margin-top: 20px;
+    color: #333;
+  }
+
+  #journeyStages p {
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  #generateAllButton {
+    margin-top: 20px;
+    display: block;
+  }
+</style>

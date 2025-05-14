@@ -1,0 +1,386 @@
+<!-- Reset Button Section -->
+<div style="text-align: center; margin-top: 20px;">
+  <button id="resetButton" class="round-button">Reset</button>
+</div>
+<br>
+<!-- HTML Structure -->
+<div style="display: flex; flex-direction: column; align-items: center;">
+  <!-- Load Grid Section -->
+  <div style="text-align: center;">
+    <h3>Shuffle Words</h3>
+    <p style="color: white;">Find the words using the letters in any direction, but without crossing the path. <br> Words between 5 and 8 letters.</p>
+    <select id="gridSelect">
+      <option value="0">Amnesia Express</option>
+      <option value="1">Grid Well Played</option>
+      <option value="2">Board Game Addict</option>
+      <option value="3">Spinner</option>
+      <option value="4">Space</option>
+      <option value="5">Blues</option>
+      <option value="6">Pirates</option>
+      <option value="7">Reset</option>
+      <option value="8">Portuguese</option>
+      <option value="9">Spanish</option>
+      <option value="10">Dutch</option>
+      <option value="11">Italian</option>
+      <option value="12">German</option>
+      <option value="13">French</option>
+    </select>
+    <button id="loadGridButton" class="toggle-button">Load Grid</button>
+  </div>
+
+  <!-- Crossword Container -->
+  <div id="crosswordContainer" style="margin: 20px 0;"></div>
+
+</div>
+
+<!-- Word Input Section -->
+<div id="wordInputSection" class="page" style="text-align: center;">
+  <h3>Enter a Word</h3>
+  <input type="text" id="wordInput" maxlength="10" placeholder="Enter a word">
+  <button id="checkWordButton" class="toggle-button">Check Word</button>
+  <p id="inputResult"></p>
+</div>
+  <!-- Word List Section -->
+  <div id="wordListSection" class="page">
+    <h3>Word List</h3>
+    <ul id="wordList"></ul>
+  </div>
+
+
+<!-- JavaScript Code -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let grids = [];
+    let currentGridIndex = 0;
+
+    // Example setup
+    const exampleGrids = [
+      { 
+        characters: "MSENARAEXESPSIRAEA", 
+        words: ["amnesia", "arena", "arise", "aspire", "easer", "eases", 
+        "easies", "erase", "expire", "express", "praise", "praiser", "press", 
+        "presser", "prise", "raise", "raiser", "repress", "riper", "risen", 
+        "riser", "seams", "sense", "series", "serpens", "snare", "spear", 
+        "spears", "spire"] 
+      },
+      { 
+        characters: "LASLHDPEEWLYLAIAIE", 
+        words: ["alley","alpha","delay","eyelash","lashed","leeway","pedal",
+        "played","shale","shall","sheep","shell"] 
+      },
+      { 
+        characters: "TCSBIDODEGARMESRDI", 
+        words: ["adder", "addict", "aside", "bidder", "board", "boarded", "bodied", 
+        "darer", "diode", "dread", "eager", "eased", "easer", "edger", "erase", 
+        "eraser", "games", "radio", "reader", "readied", "regard", "reread", 
+        "sadder", "sided", "sider"] 
+      },
+      { 
+        characters: "ROSCRPUEISNNTORNME", 
+        words: ["censor", "copier", "copies", "corps", "crest", "cries", "cruse", 
+        "crust", "cursor", "custom", "inner", "insure", "opens", "opine", "orient", 
+        "pines", "priest", "print", "prune", "restore", "senor", "snipe", "sniper", 
+        "snore", "spent", "spine", "spinner", "spire", "spore", "sprint", "stone", 
+        "stoner", "store", "tonne"] 
+      },
+      { 
+        characters: "RTPRACPETSPRTREIFO", 
+        words: ["arrest", "caper", "carer", "carpet", "cater", "esprit", "ferret", 
+        "firer", "first", "forrest", "paper", "profit", "racer", "rater", "recap", 
+        "repeat", "space", "spacer", "spate", "spear", "spectra", "sprat", "stirrer", 
+        "strep", "strife", "taper", "taperer", "tapper", "tappet", "trace", "tracer", 
+        "tract", "trapper", "treat"] 
+      },
+      { 
+        characters: "MBALYSUETRSEERSATY", 
+        words: ["arrest", "artsy", "basely", "bless", "bluer", "blues", "bluest", 
+        "bluet", "blurry", "bluster", "byers", "leery", "lurer", "luster", "lusty", 
+        "mystery", "reset", "rester", "rests", "restyle", "retest", "russet", 
+        "rusty", "stare", "steel", "steer", "steerer", "street", "style", 
+        "styles", "stylus", "surer", "tester", "tests", "testy"] 
+      },
+      { 
+        characters: "PSEIATREESRAEGGORI", 
+        words: ["aerate", "agree", "agreer", "arise", "aspire", "aspirer", "eager", 
+        "easies", "easter", "eater", "egret", "erase", "grease", "great", "greet", 
+        "greets", "irate", "pairs", "parse", "parser", "pirate", "pirates", "raise", 
+        "reggae", "regret", "reset", "seater", "sires", "spare", "sparer", "sparse", 
+        "spire", "stair", "stare", "steer", "steerer", "stereo", "tapir", "tease"] 
+      },
+      { 
+        characters: "ESARSACEDARTLTESED", 
+        words: ["aerate", "alter", "altered", "assert", "asset", "cards", "cared", 
+        "carer", "cater", "catted", "cease", "cerate", "crease", "creases", "create", 
+        "created", "creed", "cress", "dealt", "decal", "decree", "deters", "dress", 
+        "dresser", "easer", "eases", "eater", "laced", "laces", "larder", "later", 
+        "letter", "letters", "racer", "rated", "rescale", "reset", "scale", 
+        "scaled", "scales", "scare", "scarlet", "scatted", "scatter", "sealed", 
+        "seals", "seated", "seater", "secret", "secrete", "settee", "setter", 
+        "settle", "slate", "sleet", "stare", "start", "starter", "steed", 
+        "steer", "steerer", "stress", "tease", "teaser", "teeter", "terse", "trace",
+         "traced", "tracer", "tread", "treated"] 
+      },
+      { 
+        characters: "ATREROEITOENIOIRCO", 
+        words: ["aereo","arroio","arteiro","aterro","atrio","atrito","cinto",
+        "coentro","conto","contra","entre","ereto","etnico","icone","inicio",
+        "inteiro","ionico","ironico","otario","reator","reinicio","reino",
+        "reitor","retro","rocio","roteiro","tenor","torio","torta","trato",
+        "trator","treino","treta"]
+      },
+      { 
+        characters: "DUDTEAARNRAUADRNNE", 
+        words: ["aduana","aduenar","anade","anadear","andana","andar","anden",
+        "anudar","aradura","arana","aranar","arder","arenar","atenuar","aterrar",
+        "aunar","danar","denudar","drenar","dudar","durar","enartar","endurar",
+        "enrunar","errar","nadar","narrar","nauta","radar","ranura","rarear",
+        "ratear","reanudar","rearar","renda","retar","tarar","tardar","tarea",
+        "tenada","ternura","tuera"]
+      },
+      { 
+        characters: "KOPUNESTINEWSURTUT", 
+        words: ["enten","enter","etsen","etser","koeter","koets","kopen","kunst",
+        "kuste","kusten","neust","opnieuw","penter","poeten","poets","poetsen",
+        "poetser","ponsen","ponst","ponste","ponsten","rente","reten","snert",
+        "snoep","snoet","steno","steun","steur","stunt","stunter","sturen",
+        "stuur","stuurt","trens","trenst","trust","tuner","turen","tuurt",
+        "uterus"]
+      },
+      { 
+        characters: "TATLREEALAERLTRATE", 
+        words: ["aerare","aerea","alare","alette","altare","altea","alter",
+        "altere","altra","arare","areale","areare","attera","attrae",
+        "eletta","eretta","errare","etera","latrare","latta","leale",
+        "lealta","letale","rateare","reale","realta","retata","talare",
+        "talea","tarare","tarlare","tarle","teletta","terra","traete",
+        "trarre"]
+      },
+      { 
+        characters: "TRKANAETUUSNKUESTT", 
+        words: ["antat","antrat","antun","autark","kantate","kanute",
+        "karat","kraus","krausen","kraut","kunst","kunste","kuste",
+        "neustart","raten","senat","stank","stark","start","stunk",
+        "stute","tante","tatar","taunus","testen","trank","tuten",
+        "unart","unrat","untat","unten",
+        "trarre"]
+      },
+      { 
+        characters: "MEMRTETEAERMRAETAT", 
+        words: ["aeree","aerer","amarre","amarree","amarrer","amere",
+        "arete","armee","armer","arret","arrete","arretee","arreter",
+        "emettre","errata","errer","etame","etamer","etete","etetee",
+        "maratre","maree","marre","marrer","mater","matte","metre",
+        "metrer","mettre","ramer","ramette","rarete","rater","rearme",
+        "rearmer","remere","remettre","retame","tarare","tarer","taret",
+        "tarte","tartre","tatare","tater","terme","terre","terrer","tertre",
+        "tetee","teter","trame","tramer","trema",
+        "trarre"]
+      }
+    ];
+
+    // Initialize with example grids
+    grids = exampleGrids;
+
+    // Function to display the current grid
+    function displayGrid(gridIndex) {
+      const gridData = grids[gridIndex];
+      const container = document.getElementById('crosswordContainer');
+      container.innerHTML = ''; // Clear previous content
+
+      const grid = fillGrid(gridData.characters);
+      grid.forEach(row => {
+        const rowElement = document.createElement('div');
+        rowElement.className = 'crossword-row';
+        
+        row.forEach(cell => {
+          const cellElement = document.createElement('div');
+          cellElement.className = 'crossword-cell';
+          cellElement.textContent = cell;
+          rowElement.appendChild(cellElement);
+        });
+
+        container.appendChild(rowElement);
+      });
+
+      displayWordList(gridData.words);
+    }
+
+    // Function to fill the grid from left to right, top to bottom
+    function fillGrid(characters) {
+      const grid = Array(6).fill(null).map(() => Array(3).fill(''));
+      let charIndex = 0;
+
+      // Fill the grid from left to right
+      for (let row = 0; row < 6; row++) {
+        for (let col = 0; col < 3; col++) { // Changed from col = 2 to col = 0
+          grid[row][col] = characters[charIndex] || ' ';
+          charIndex++;
+        }
+      }
+
+      return grid;
+    }
+
+    // Function to display the word list with independent show buttons
+    function displayWordList(words) {
+      const wordList = document.getElementById('wordList');
+      wordList.innerHTML = ''; // Clear previous content
+
+      words.forEach(word => {
+        const listItem = document.createElement('li');
+        listItem.dataset.word = word;
+
+        const toggleButton = document.createElement('button');
+        toggleButton.textContent = 'Show';
+        toggleButton.className = 'toggle-button-small';
+        toggleButton.addEventListener('click', function() {
+          toggleWordVisibility(listItem, toggleButton);
+        });
+
+        listItem.appendChild(toggleButton);
+
+        const wordSpan = document.createElement('span');
+        wordSpan.textContent = word.toUpperCase();
+        wordSpan.className = 'hidden-word'; // Initially hidden
+
+        listItem.appendChild(wordSpan);
+
+        wordList.appendChild(listItem);
+      });
+    }
+
+    // Function to toggle word visibility in the list
+    function toggleWordVisibility(listItem, button) {
+      const wordSpan = listItem.querySelector('.hidden-word');
+      wordSpan.style.display = 'inline';
+      button.style.display = 'none'; // Hide the button once the word is shown
+    }
+
+    // Function to check if the entered word exists
+    function checkWord() {
+      const inputWord = document.getElementById('wordInput').value.toLowerCase().trim();
+      const wordList = document.querySelectorAll('.hidden-word');
+      let found = false;
+
+      wordList.forEach(wordSpan => {
+        if (inputWord === wordSpan.parentElement.dataset.word) {
+          wordSpan.style.display = 'inline';
+          const button = wordSpan.previousElementSibling;
+          button.style.display = 'none'; // Hide the button once the word is shown
+          found = true;
+        }
+      });
+
+      document.getElementById('inputResult').textContent = found
+        ? `The word "${inputWord}" has been found!`
+        : `The word "${inputWord}" does not exist in the list.`;
+
+      document.getElementById('wordInput').value = ''; // Clear input
+    }
+
+    // Event listener for load grid button
+    document.getElementById('loadGridButton').addEventListener('click', function() {
+      const selectedGridIndex = parseInt(document.getElementById('gridSelect').value, 10);
+      currentGridIndex = selectedGridIndex;
+      displayGrid(currentGridIndex);
+    });
+
+    // Event listener for reset button
+    document.getElementById('resetButton').addEventListener('click', function() {
+      // Reset the current grid (re-display it without changing)
+      displayGrid(currentGridIndex);
+    });
+
+    // Event listener for check word button
+    document.getElementById('checkWordButton').addEventListener('click', function() {
+      checkWord();
+    });
+
+    // Initialize the first grid at the start
+    displayGrid(currentGridIndex);
+  });
+</script>
+
+<!-- CSS for Crossword Puzzle -->
+<style>
+  .crossword-row {
+    display: flex;
+    justify-content: center;
+  }
+
+  .crossword-cell {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    text-align: center;
+    line-height: 30px;
+    background-color: #f4f4f4;
+    border: 1px solid #ccc;
+    color: #333;
+  }
+
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px; /* Align text vertically */
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .toggle-button-small {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #E4C58A;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+
+  .toggle-button-small:hover {
+    background-color: #6E1919;
+  }
+
+  #wordListSection {
+    margin: 20px 0;
+    text-align: center;
+  }
+
+  #wordList {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  #wordList li {
+    margin: 10px 0;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .hidden-word {
+    display: none;
+  }
+
+  #inputResult {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+    #inputResult{
+    font-weight: bold;
+    color: white;
+  }
+</style>

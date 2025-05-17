@@ -12,15 +12,6 @@
   </div>
 <br>
   <!-- Combo for setting time to play each note -->
-  <div>
-    <label for="timeInput" style="color: white;">Time:</label>
-    <select id="timeInput">
-      <option value="1">1 second</option>
-      <option value="2">2 seconds</option>
-      <option value="3">3 seconds</option>
-    </select>
-  </div>
-
   <!-- Sequence display -->
   <h3 id="sequenceDisplay" style="font-size: 24px;"></h3>
 
@@ -47,8 +38,16 @@
 </div>
 
 <script>
-  const notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-  let sequence = [];
+  const notes = [
+  { name: 'C', url: 'https://static1.squarespace.com/static/66be651a2ed73a62cf27f270/t/6727b7045ab40d26b1de1d1e/1730656005675/C.mp3' },
+  { name: 'D', url: 'https://static1.squarespace.com/static/66be651a2ed73a62cf27f270/t/6727b6e8c8e989794e6537de/1730655977598/D.mp3' },
+  { name: 'E', url: 'https://static1.squarespace.com/static/66be651a2ed73a62cf27f270/t/6727b65f2615c45287eebafe/1730655841471/E.mp3' },
+  { name: 'F', url: 'https://static1.squarespace.com/static/66be651a2ed73a62cf27f270/t/6727b6a7ecb75337490ea2bb/1730655913316/F.mp3' },
+  { name: 'G', url: 'https://static1.squarespace.com/static/66be651a2ed73a62cf27f270/t/6727b68bf0b5eb351ae0929a/1730655884877/G.mp3' },
+  { name: 'A', url: 'https://static1.squarespace.com/static/66be651a2ed73a62cf27f270/t/6727b74c292977545101a90d/1730656077558/A.mp3' },
+  { name: 'B', url: 'https://static1.squarespace.com/static/66be651a2ed73a62cf27f270/t/6727b71f9674ba22c2a86b48/1730656032726/B.mp3' }
+];
+let sequence = [];
   let currentRound = 1;
   let displayTime = 1;
   let gameActive = false;
@@ -56,8 +55,13 @@
 
   // Function to play a note sound
   function playNoteSound(note) {
-    const audio = new Audio(`https://pianosounds.s3.amazonaws.com/${note}.mp3`);
+  const noteObject = notes.find(n => n.name === note);
+  if (noteObject) {
+    const audio = new Audio(noteObject.url);
+    audio.currentTime = 0.1;
     audio.play();
+    setTimeout(() => audio.pause(), 800);
+  }
   }
 
 // Função para gerar uma sequência de notas musicais aleatórias sem repetições consecutivas
@@ -66,7 +70,7 @@ function generateRandomNoteSequence(length) {
   for (let i = 0; i < length; i++) {
     let newNote;
     do {
-      newNote = notes[Math.floor(Math.random() * notes.length)];
+      newNote = notes[Math.floor(Math.random() * notes.length)].name;
     } while (i > 0 && newNote === result[i - 1]); // Verifica se a nota é igual à anterior
     result.push(newNote);
   }
@@ -138,7 +142,7 @@ function generateRandomNoteSequence(length) {
     gameActive = true;
     document.getElementById('gameMessage').textContent = '';
     document.getElementById('restartButton').disabled = false;
-    startNextRound();
+    setTimeout(() => startNextRound(), 500);
   }
 
   // Function to end the game
@@ -156,7 +160,9 @@ function generateRandomNoteSequence(length) {
   document.querySelectorAll('.note-button').forEach(button => {
     button.addEventListener('click', function () {
       if (gameActive) {
-        handleNoteSelection(this.getAttribute('data-note'));
+        const note = this.getAttribute('data-note');
+        playNoteSound(note);
+        handleNoteSelection(note);
       }
     });
   });
@@ -164,15 +170,14 @@ function generateRandomNoteSequence(length) {
   // Event listeners for submit and restart buttons
   document.getElementById('submitButton').addEventListener('click', handleSubmit);
   document.getElementById('restartButton').addEventListener('click', restartGame);
-  document.getElementById('timeInput').addEventListener('change', function () {
-    displayTime = parseInt(this.value);
-  });
-
   // Initialize the game
   startGame();
 </script>
 
 <style>
+	body {
+  background-color: black;
+}
   .round-button {
     width: 80px;
     height: 80px;

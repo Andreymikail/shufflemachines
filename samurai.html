@@ -65,7 +65,6 @@
 "Even a moment of hesitation may result in a lifetime of regret.<br>— Samurai Proverb<br>Samurai teachings often emphasize decisiveness. Hesitation, especially in critical moments, can lead to irreversible consequences. This proverb urges quick and confident action when the situation calls for it.",
 "In the end, we are all just passing through this world like wind passing through the trees.<br>— Samurai Proverb<br>This thought reflects the samurai’s acceptance of life’s impermanence. Understanding the transient nature of existence helps warriors live fully in the present without attachment or fear of loss.",
 "To practice Zen or the martial arts, you must live intensely, wholeheartedly, without reserve—as if you might die in the next instant.<br>— Taisen Deshimaru (Zen Master, adopted by Samurai)<br>This teaching encourages total commitment to every action. Whether meditating, training, or fighting, the samurai believed in giving their whole being to the moment, without holding anything back.",
-"When one has made a decision to kill, even if it will be very difficult to achieve, he will not be able to turn back or let his mind waver.<br>— Tsunetomo Yamamoto, Hagakure<br>This reflects the samurai’s absolute resolve in decision-making. Once a course of action is chosen, there is no place for doubt. This level of commitment was crucial in life-or-death situations, where hesitation could lead to disaster.",
 "Do not regret what you have done. Regret is only a distraction that clouds the mind and weakens the will.<br>— Samurai Philosophy<br>The samurai believed that once a decision was made and action taken, dwelling on regret was unproductive. The past cannot be changed, and focusing on it only detracts from the clarity needed for future actions.",
 "An honorable death is better than a dishonorable life.<br>— Samurai Code<br>The samurai valued honor above life itself. They would rather die with dignity, having upheld their principles, than live in disgrace or failure to fulfill their duties. This reflects their deep sense of personal integrity.",
 "The Way of the Samurai is found in the acceptance of everyday life.<br>— Tsunetomo Yamamoto, Hagakure<br>This quote underscores the idea that the samurai's path is not only about battle or grand actions but also in the quiet, mundane aspects of life. Honor, discipline, and mindfulness should be practiced at all times, in every action.",
@@ -119,7 +118,7 @@
     for (let i = 0; i < rules.length; i += elementsPerPage) {
       const pageDiv = document.createElement('div');
       pageDiv.className = 'page';
-      pageDiv.innerHTML = `<h3>Page ${(i / elementsPerPage) + 1}</h3><p>${rules.slice(i, i + elementsPerPage).join('<br>')}</p>`;
+      pageDiv.innerHTML = `<h3># ${(i / elementsPerPage) + 1}</h3><p>${rules.slice(i, i + elementsPerPage).join('<br>')}</p>`;
       rulesContainer.appendChild(pageDiv);
     }
   }
@@ -129,6 +128,9 @@
 </script>
 
 <style>
+body {
+  background-color: black;
+}
   .round-button {
     width: 80px;
     height: 80px;

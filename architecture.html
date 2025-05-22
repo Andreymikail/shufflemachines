@@ -1,66 +1,66 @@
 <div style="text-align: center;">
-    <h2 style="color: white;">Architecture and Garden</h2>
-    <!-- ALL Button -->
-    <button id="startButton" class="round-button">Start</button>
-    
-  <!-- Theme Selection -->
-    <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
-      <label><input type="checkbox" id="arcCheckbox"> Architect</label><br>
-      <label><input type="checkbox" id="projCheckbox"> Architectural Project</label><br>
-      <label><input type="checkbox" id="landCheckbox"> Landscaper</label><br>
-      <label><input type="checkbox" id="gardCheckbox"> Garden</label><br>
-    </div>
+  <h2 style="color: white;">Architecture and Garden</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
   
-    <!-- Cards per page selection -->
-    <div>
-      <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
-      <input type="number" id="cardsPerPageInput" value="5"><br><br>
-    </div>
-    
-    
-  
-  <div style="margin-top: 20px;">
-    <div style="display: flex; flex-direction: column; align-items: center;">
-      <div style="margin-bottom: 20px;">
-        <h3>Action</h3>
-        <p id="actionResult" style="color: white;">-</p>
-        <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
-      </div>
-      
-    </div>
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="arcCheckbox"> Architect</label><br>
+    <label><input type="checkbox" id="projCheckbox"> Architectural Project</label><br>
+    <label><input type="checkbox" id="landCheckbox"> Landscaper</label><br>
+    <label><input type="checkbox" id="gardCheckbox"> Garden</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
   </div>
   
   
-    <!-- Cards Display -->
-    <div id="cardsContainer" style="margin-top: 20px;"></div>
-  </div>
-  
-  <script>
-    const actions = [
-      "Structural Collapse: The opponent discards the top card of their deck.",
-      "Renovation Bonus: Double the “Cultural Significance” score of your current card.",
-      "Funding Cut: The opponent loses the next turn.",
-      "Earthquake Drill: Compare only the “Structural Complexity” category with a +10 bonus.",
-      "Blueprint Heist: Swap the current card with the opponent’s.",
-      "Pritzker Surprise: Add +15 to the “Design Innovation” category.",
-      "Urban Expansion: You may play two cards in a row.",
-      "Permit Denied: Prevent the opponent from using any actions on the next turn.",
-      "Secret Tunnel Found: Add +10 to “Structural Complexity”.",
-      "Iconic Status Upgrade: +10 to all categories, but only for one turn.",
-      "Spring Bloom: +10 to “Botanical Diversity” and “Visitor Popularity”. Garden Plague: Reduce opponent’s Botanical Diversity by 15.",
-      "Sacred Soil: Replay after winning a duel.",
-      "Secret Herb Discovery: Add +15 to Historical Significance.",
-      "Tropical Storm: Both players discard a card.",
-      "Fountain of Immortality: Revive a previously discarded card.",
-      "Pruning Season: Reveal 3 cards from the deck, choose one to play.",
-      "Festival of Flowers: +20 to Visitor Popularity.",
-      "Drought: Opponent loses next turn if Botanical Diversity is less than 80.",
-      "Garden Design Masterclass: +10 to Design Complexity and prevents card trading for 1 round.",
-    ];
-  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
     
-  const arc = [
-  {name: "Architect: Andrea Palladio", attributes: {Era: "16th Century", "Innovation Score": 83, "Influence Level": 97, "Signature Style": "Renaissance Classicism", "Iconic Projects": "40+", Eccentricity: 45}},
+  </div>
+</div>
+
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+	"Structural Collapse: The opponent discards the top card of their deck.",
+	"Renovation Bonus: Double the “Cultural Significance” score of your current card.",
+	"Funding Cut: The opponent loses the next turn.",
+	"Earthquake Drill: Compare only the “Structural Complexity” category with a +10 bonus.",
+	"Blueprint Heist: Swap the current card with the opponent’s.",
+	"Pritzker Surprise: Add +15 to the “Design Innovation” category.",
+	"Urban Expansion: You may play two cards in a row.",
+	"Permit Denied: Prevent the opponent from using any actions on the next turn.",
+	"Secret Tunnel Found: Add +10 to “Structural Complexity”.",
+	"Iconic Status Upgrade: +10 to all categories, but only for one turn.",
+	"Spring Bloom: +10 to “Botanical Diversity” and “Visitor Popularity”. Garden Plague: Reduce opponent’s Botanical Diversity by 15.",
+	"Sacred Soil: Replay after winning a duel.",
+	"Secret Herb Discovery: Add +15 to Historical Significance.",
+	"Tropical Storm: Both players discard a card.",
+	"Fountain of Immortality: Revive a previously discarded card.",
+	"Pruning Season: Reveal 3 cards from the deck, choose one to play.",
+	"Festival of Flowers: +20 to Visitor Popularity.",
+	"Drought: Opponent loses next turn if Botanical Diversity is less than 80.",
+	"Garden Design Masterclass: +10 to Design Complexity and prevents card trading for 1 round.",
+  ];
+
+  
+const arc = [
+{name: "Architect: Andrea Palladio", attributes: {Era: "16th Century", "Innovation Score": 83, "Influence Level": 97, "Signature Style": "Renaissance Classicism", "Iconic Projects": "40+", Eccentricity: 45}},
   {name: "Architect: Anne Lacaton", attributes: {Era: "21st Century", "Innovation Score": 91, "Influence Level": 77, "Signature Style": "Affordable Sustainability", "Iconic Projects": "15", Eccentricity: 55}},
   {name: "Architect: Antoni Gaudí", attributes: {Era: "19th–20th Century", "Innovation Score": 90, "Influence Level": 88, "Signature Style": "Catalan Modernism", "Iconic Projects": "15", Eccentricity: 95}},
   {name: "Architect: B.V. Doshi", attributes: {Era: "20th Century", "Innovation Score": 89, "Influence Level": 85, "Signature Style": "Modern Indian Architecture", "Iconic Projects": "20+", Eccentricity: 73}},
@@ -75,6 +75,7 @@
   {name: "Architect: Eero Saarinen", attributes: {Era: "20th Century", "Innovation Score": 87, "Influence Level": 80, "Signature Style": "Neo-Futurism", "Iconic Projects": "17", Eccentricity: 60}},
   {name: "Architect: Elizabeth Diller", attributes: {Era: "21st Century", "Innovation Score": 92, "Influence Level": 82, "Signature Style": "Experimental Urbanism", "Iconic Projects": "14", Eccentricity: 75}},
   {name: "Architect: Farshid Moussavi", attributes: {Era: "21st Century", "Innovation Score": 90, "Influence Level": 73, "Signature Style": "Structural Expressionism", "Iconic Projects": "12", Eccentricity: 72}},
+  {name: "Architect: Francesc Berenguer", attributes: {Era: "19th–20th Century", "Innovation Score": 84, "Influence Level": 72, "Signature Style": "Catalan Modernism", "Iconic Projects": "8", Eccentricity: 77}},
   {name: "Architect: Francis Greenway", attributes: {Era: "19th Century", "Innovation Score": 81, "Influence Level": 68, "Signature Style": "Colonial Georgian", "Iconic Projects": "10", Eccentricity: 73}},
   {name: "Architect: Franco Grignani", attributes: {Era: "20th Century", "Innovation Score": 91, "Influence Level": 80, "Signature Style": "Optical Abstraction", "Iconic Projects": "14", Eccentricity: 76}},
   {name: "Architect: Frank Lloyd Wright", attributes: {Era: "20th Century", "Innovation Score": 95, "Influence Level": 90, "Signature Style": "Organic Architecture", "Iconic Projects": "20+", Eccentricity: 80}},
@@ -121,300 +122,300 @@
   {name: "Architect: Wang Shu", attributes: {Era: "21st Century", "Innovation Score": 89, "Influence Level": 80, "Signature Style": "New Chinese Vernacular", "Iconic Projects": "13", Eccentricity: 66}},
   {name: "Architect: Yona Friedman", attributes: {Era: "20th–21st Century", "Innovation Score": 93, "Influence Level": 75, "Signature Style": "Mobile Architecture", "Iconic Projects": "5", Eccentricity: 92}},
   {name: "Architect: Zaha Hadid", attributes: {Era: "21st Century", "Innovation Score": 97, "Influence Level": 85, "Signature Style": "Parametricism", "Iconic Projects": "30+", Eccentricity: 70}},
-       ];
-       
-  const proj = [
-  {name: "Project: Aachen Cathedral (Germany)", attributes: {"Year Completed": "805", Height: "31 m", "Visitor Popularity": 82, "Architectural Innovation": 85, "Cultural Significance": 93, "Structural Complexity": 80}},
-  {name: "Project: Agbar Tower (Barcelona)", attributes: {"Year Completed": "2005", Height: "144 m", "Visitor Popularity": 77, "Architectural Innovation": 89, "Cultural Significance": 81, "Structural Complexity": 86}},
-  {name: "Project: Aït Benhaddou (Morocco)", attributes: {"Year Completed": "17th century", Height: "varies", "Visitor Popularity": 80, "Architectural Innovation": 78, "Cultural Significance": 93, "Structural Complexity": 74}},
-  {name: "Project: Alhambra", attributes: {"Year Completed": "1358", Height: "varies", "Visitor Popularity": 86, "Architectural Innovation": 85, "Cultural Significance": 92, "Structural Complexity": 80}},
-  {name: "Project: Angkor Wat", attributes: {"Year Completed": "12th Century", Height: "65 m", "Visitor Popularity": 89, "Architectural Innovation": 85, "Cultural Significance": 99, "Structural Complexity": 87}},
-  {name: "Project: Arab World Institute (Paris)", attributes: {"Year Completed": "1987", Height: "30 m", "Visitor Popularity": 75, "Architectural Innovation": 91, "Cultural Significance": 85, "Structural Complexity": 88}},
-  {name: "Project: Beijing Daxing International Airport", attributes: {"Year Completed": "2019", Height: "50 m", "Visitor Popularity": 79, "Architectural Innovation": 96, "Cultural Significance": 84, "Structural Complexity": 97}},
-  {name: "Project: Beijing National Stadium (Bird's Nest)", attributes: {"Year Completed": "2008", Height: "69.2 m", "Visitor Popularity": 83, "Architectural Innovation": 95, "Cultural Significance": 84, "Structural Complexity": 96}},
-  {name: "Project: Belém Tower (Portugal)", attributes: {"Year Completed": "1519", Height: "30 m", "Visitor Popularity": 84, "Architectural Innovation": 82, "Cultural Significance": 91, "Structural Complexity": 78}},
-  {name: "Project: Berlin TV Tower", attributes: {"Year Completed": "1969", Height: "368 m", "Visitor Popularity": 81, "Architectural Innovation": 87, "Cultural Significance": 83, "Structural Complexity": 86}},
-  {name: "Project: Biblioteca Vasconcelos (Mexico City)", attributes: {"Year Completed": "2006", Height: "38 m", "Visitor Popularity": 73, "Architectural Innovation": 91, "Cultural Significance": 79, "Structural Complexity": 89}},
-  {name: "Project: Borobudur Temple", attributes: {"Year Completed": "9th century", Height: "35 m", "Visitor Popularity": 88, "Architectural Innovation": 85, "Cultural Significance": 97, "Structural Complexity": 90}},
-  {name: "Project: Brasília Cathedral", attributes: {"Year Completed": "1970", Height: "75 m", "Visitor Popularity": 81, "Architectural Innovation": 92, "Cultural Significance": 89, "Structural Complexity": 91}},
-  {name: "Project: Casa Batlló (Spain)", attributes: {"Year Completed": "1906", Height: "32 m", "Visitor Popularity": 85, "Architectural Innovation": 94, "Cultural Significance": 89, "Structural Complexity": 86}},
-  {name: "Project: Centre Pompidou (France)", attributes: {"Year Completed": "1977", Height: "42 m", "Visitor Popularity": 83, "Architectural Innovation": 95, "Cultural Significance": 91, "Structural Complexity": 89}},
-  {name: "Project: CERN Large Hadron Collider", attributes: {"Year Completed": "2008", Height: "Underground (27 km circumference)", "Visitor Popularity": 70, "Architectural Innovation": 100, "Cultural Significance": 85, "Structural Complexity": 100}},
-  {name: "Project: Chambord Castle (France)", attributes: {"Year Completed": "1547", Height: "56 m", "Visitor Popularity": 84, "Architectural Innovation": 83, "Cultural Significance": 89, "Structural Complexity": 81}},
-  {name: "Project: Chrysler Building", attributes: {"Year Completed": "1930", Height: "319 m", "Visitor Popularity": 82, "Architectural Innovation": 90, "Cultural Significance": 91, "Structural Complexity": 86}},
-  {name: "Project: Church Hallgrímskirkja (Iceland)", attributes: {"Year Completed": "1986", Height: "74.5 m", "Visitor Popularity": 80, "Architectural Innovation": 85, "Cultural Significance": 87, "Structural Complexity": 84}},
-  {name: "Project: CN Tower (Toronto)", attributes: {"Year Completed": "1976", Height: "553 m", "Visitor Popularity": 87, "Architectural Innovation": 90, "Cultural Significance": 90, "Structural Complexity": 95}},
-  {name: "Project: CN Tower", attributes: {"Year Completed": "1976", Height: "553 m", "Visitor Popularity": 79, "Architectural Innovation": 88, "Cultural Significance": 81, "Structural Complexity": 87}},
-  {name: "Project: Cologne Cathedral (Germany)", attributes: {"Year Completed": "1880", Height: "157 m", "Visitor Popularity": 89, "Architectural Innovation": 88, "Cultural Significance": 96, "Structural Complexity": 90}},
-  {name: "Project: Dome of Florence (Santa Maria del Fiore)", attributes: {"Year Completed": "1436", Height: "114 m", "Visitor Popularity": 87, "Architectural Innovation": 95, "Cultural Significance": 94, "Structural Complexity": 90}},
-  {name: "Project: Dome of the Rock", attributes: {"Year Completed": "691 CE", Height: "35 m", "Visitor Popularity": 83, "Architectural Innovation": 87, "Cultural Significance": 96, "Structural Complexity": 78}},
-  {name: "Project: Fallingwater", attributes: {"Year Completed": "1939", Height: "12 m", "Visitor Popularity": 78, "Architectural Innovation": 96, "Cultural Significance": 88, "Structural Complexity": 85}},
-  {name: "Project: Forbidden City", attributes: {"Year Completed": "1420", Height: "varies (~35 m)", "Visitor Popularity": 95, "Architectural Innovation": 83, "Cultural Significance": 98, "Structural Complexity": 82}},
-  {name: "Project: Golden Gate Bridge", attributes: {"Year Completed": "1937", Height: "227 m", "Visitor Popularity": 95, "Architectural Innovation": 90, "Cultural Significance": 98, "Structural Complexity": 94}},
-  {name: "Project: Guangzhou Opera House (China)", attributes: {"Year Completed": "2010", Height: "45 m", "Visitor Popularity": 79, "Architectural Innovation": 94, "Cultural Significance": 84, "Structural Complexity": 90}},
-  {name: "Project: Guggenheim Museum Bilbao", attributes: {"Year Completed": "1997", Height: "50 m", "Visitor Popularity": 82, "Architectural Innovation": 97, "Cultural Significance": 85, "Structural Complexity": 92}},
-  {name: "Project: Habitat 67 Building (Montreal)", attributes: {"Year Completed": "1967", Height: "52 m", "Visitor Popularity": 76, "Architectural Innovation": 91, "Cultural Significance": 85, "Structural Complexity": 88}},
-  {name: "Project: Hagia Sophia", attributes: {"Year Completed": "537 CE", Height: "55 m", "Visitor Popularity": 85, "Architectural Innovation": 92, "Cultural Significance": 98, "Structural Complexity": 86}},
-  {name: "Project: Hermitage Museum (Russia)", attributes: {"Year Completed": "1764", Height: "23 m", "Visitor Popularity": 89, "Architectural Innovation": 82, "Cultural Significance": 95, "Structural Complexity": 81}},
-  {name: "Project: Heydar Aliyev Center (Baku)", attributes: {"Year Completed": "2012", Height: "74 m", "Visitor Popularity": 84, "Architectural Innovation": 98, "Cultural Significance": 80, "Structural Complexity": 95}},
-  {name: "Project: Himeji Castle (Japan)", attributes: {"Year Completed": "1609", Height: "46 m", "Visitor Popularity": 88, "Architectural Innovation": 83, "Cultural Significance": 94, "Structural Complexity": 84}},
-  {name: "Project: Hoover Dam", attributes: {"Year Completed": "1936", Height: "221 m", "Visitor Popularity": 80, "Architectural Innovation": 91, "Cultural Significance": 87, "Structural Complexity": 93}},
-  {name: "Project: Infinity Tower (Dubai)", attributes: {"Year Completed": "2013", Height: "306 m", "Visitor Popularity": 76, "Architectural Innovation": 93, "Cultural Significance": 80, "Structural Complexity": 95}},
-  {name: "Project: Kansai International Airport (Japan)", attributes: {"Year Completed": "1994", Height: "45 m", "Visitor Popularity": 79, "Architectural Innovation": 94, "Cultural Significance": 85, "Structural Complexity": 93}},
-  {name: "Project: Leaning Tower of Pisa", attributes: {"Year Completed": "1372", Height: "56 m", "Visitor Popularity": 90, "Architectural Innovation": 70, "Cultural Significance": 95, "Structural Complexity": 75}},
-  {name: "Project: Library of Alexandria (Egypt - modern)", attributes: {"Year Completed": "2002", Height: "33 m", "Visitor Popularity": 78, "Architectural Innovation": 91, "Cultural Significance": 92, "Structural Complexity": 87}},
-  {name: "Project: Lotus Temple (Delhi)", attributes: {"Year Completed": "1986", Height: "34 m", "Visitor Popularity": 80, "Architectural Innovation": 91, "Cultural Significance": 82, "Structural Complexity": 88}},
-  {name: "Project: Louvre Museum", attributes: {"Year Completed": "1793 (as a museum)", Height: "21 m", "Visitor Popularity": 95, "Architectural Innovation": 88, "Cultural Significance": 99, "Structural Complexity": 85}},
-  {name: "Project: Machu Picchu", attributes: {"Year Completed": "c. 1450", Height: "2,430 m (elevation)", "Visitor Popularity": 92, "Architectural Innovation": 88, "Cultural Significance": 100, "Structural Complexity": 86}},
-  {name: "Project: Marina Bay Sands SkyPark (Singapore)", attributes: {"Year Completed": "2010", Height: "200 m", "Visitor Popularity": 85, "Architectural Innovation": 90, "Cultural Significance": 88, "Structural Complexity": 94}},
-  {name: "Project: Marina Bay Sands", attributes: {"Year Completed": "2010", Height: "207 m", "Visitor Popularity": 84, "Architectural Innovation": 88, "Cultural Significance": 83, "Structural Complexity": 94}},
-  {name: "Project: MAXXI Museum (Rome)", attributes: {"Year Completed": "2009", Height: "25 m", "Visitor Popularity": 74, "Architectural Innovation": 92, "Cultural Significance": 78, "Structural Complexity": 91}},
-  {name: "Project: Milan Cathedral (Duomo di Milano)", attributes: {"Year Completed": "1965 (started in 1386!)", Height: "108 m", "Visitor Popularity": 89, "Architectural Innovation": 86, "Cultural Significance": 95, "Structural Complexity": 90}},
-  {name: "Project: Millennium Dome (The O2 Arena)", attributes: {"Year Completed": "1999", Height: "52 m", "Visitor Popularity": 74, "Architectural Innovation": 86, "Cultural Significance": 78, "Structural Complexity": 84}},
-  {name: "Project: Mont Saint-Michel", attributes: {"Year Completed": "1523 (monastic complex)", Height: "92 m", "Visitor Popularity": 85, "Architectural Innovation": 83, "Cultural Significance": 94, "Structural Complexity": 84}},
-  {name: "Project: Montreal Olympic Tower (Canada)", attributes: {"Year Completed": "1987", Height: "165 m", "Visitor Popularity": 75, "Architectural Innovation": 89, "Cultural Significance": 80, "Structural Complexity": 90}},
-  {name: "Project: Museum of Islamic Art (Doha)", attributes: {"Year Completed": "2008", Height: "45 m", "Visitor Popularity": 78, "Architectural Innovation": 92, "Cultural Significance": 85, "Structural Complexity": 83}},
-  {name: "Project: Museum of the Future (Dubai)", attributes: {"Year Completed": "2022", Height: "77 m", "Visitor Popularity": 79, "Architectural Innovation": 99, "Cultural Significance": 85, "Structural Complexity": 97}},
-  {name: "Project: Museum of Tomorrow (Brazil)", attributes: {"Year Completed": "2015", Height: "18 m", "Visitor Popularity": 83, "Architectural Innovation": 95, "Cultural Significance": 87, "Structural Complexity": 91}},
-  {name: "Project: National Museum of Anthropology (Mexico)", attributes: {"Year Completed": "1964", Height: "23 m", "Visitor Popularity": 88, "Architectural Innovation": 89, "Cultural Significance": 92, "Structural Complexity": 85}},
-  {name: "Project: Neuschwanstein Castle (Germany)", attributes: {"Year Completed": "1886", Height: "65 m", "Visitor Popularity": 91, "Architectural Innovation": 84, "Cultural Significance": 90, "Structural Complexity": 82}},
-  {name: "Project: Neuschwanstein Castle", attributes: {"Year Completed": "1886", Height: "65 m", "Visitor Popularity": 91, "Architectural Innovation": 80, "Cultural Significance": 89, "Structural Complexity": 82}},
-  {name: "Project: Niterói Museum of Contemporary Art", attributes: {"Year Completed": "1996", Height: "16 m", "Visitor Popularity": 82, "Architectural Innovation": 95, "Cultural Significance": 85, "Structural Complexity": 90}},
-  {name: "Project: Notre-Dame de Paris", attributes: {"Year Completed": "1345", Height: "69 m", "Visitor Popularity": 90, "Architectural Innovation": 87, "Cultural Significance": 99, "Structural Complexity": 85}},
-  {name: "Project: One World Trade Center", attributes: {"Year Completed": "2014", Height: "541 m", "Visitor Popularity": 84, "Architectural Innovation": 91, "Cultural Significance": 92, "Structural Complexity": 95}},
-  {name: "Project: Osaka Castle", attributes: {"Year Completed": "1597 (rebuilt 1931)", Height: "58 m", "Visitor Popularity": 80, "Architectural Innovation": 81, "Cultural Significance": 88, "Structural Complexity": 74}},
-  {name: "Project: Oslo Opera House (Norway)", attributes: {"Year Completed": "2008", Height: "38 m", "Visitor Popularity": 80, "Architectural Innovation": 92, "Cultural Significance": 85, "Structural Complexity": 87}},
-  {name: "Project: Palace of Versailles", attributes: {"Year Completed": "1682", Height: "varies (~24 m)", "Visitor Popularity": 93, "Architectural Innovation": 80, "Cultural Significance": 98, "Structural Complexity": 79}},
-  {name: "Project: Palace of Westminster", attributes: {"Year Completed": "1870", Height: "96 m (Big Ben)", "Visitor Popularity": 92, "Architectural Innovation": 85, "Cultural Significance": 97, "Structural Complexity": 86}},
-  {name: "Project: Palácio da Pena (Portugal)", attributes: {"Year Completed": "1854", Height: "85 m", "Visitor Popularity": 83, "Architectural Innovation": 82, "Cultural Significance": 91, "Structural Complexity": 79}},
-  {name: "Project: Palácio Nacional da Pena (Portugal)", attributes: {"Year Completed": "1854", Height: "85 m", "Visitor Popularity": 86, "Architectural Innovation": 83, "Cultural Significance": 90, "Structural Complexity": 82}},
-  {name: "Project: Pantheon, Paris (France)", attributes: {"Year Completed": "1790", Height: "83 m", "Visitor Popularity": 82, "Architectural Innovation": 84, "Cultural Significance": 91, "Structural Complexity": 80}},
-  {name: "Project: Parthenon", attributes: {"Year Completed": "438 BCE", Height: "14 m", "Visitor Popularity": 88, "Architectural Innovation": 79, "Cultural Significance": 97, "Structural Complexity": 70}},
-  {name: "Project: Petronas Towers", attributes: {"Year Completed": "1998", Height: "452 m", "Visitor Popularity": 88, "Architectural Innovation": 90, "Cultural Significance": 84, "Structural Complexity": 93}},
-  {name: "Project: Potala Palace", attributes: {"Year Completed": "1649", Height: "117 m", "Visitor Popularity": 85, "Architectural Innovation": 80, "Cultural Significance": 98, "Structural Complexity": 88}},
-  {name: "Project: Rock-Hewn Churches of Lalibela", attributes: {"Year Completed": "12th Century", Height: "~10 m (cut from rock)", "Visitor Popularity": 82, "Architectural Innovation": 87, "Cultural Significance": 95, "Structural Complexity": 85}},
-  {name: "Project: Ronchamp Chapel (Notre Dame du Haut)", attributes: {"Year Completed": "1955", Height: "25 m", "Visitor Popularity": 77, "Architectural Innovation": 94, "Cultural Significance": 86, "Structural Complexity": 89}},
-  {name: "Project: Royal Ontario Museum Crystal", attributes: {"Year Completed": "2007", Height: "36 m", "Visitor Popularity": 75, "Architectural Innovation": 90, "Cultural Significance": 77, "Structural Complexity": 86}},
-  {name: "Project: Ryugyong Hotel (Pyongyang)", attributes: {"Year Completed": "Unfinished/partially operational (1987–)", Height: "330 m", "Visitor Popularity": 60, "Architectural Innovation": 75, "Cultural Significance": 72, "Structural Complexity": 90}},
-  {name: "Project: Sagrada Família", attributes: {"Year Completed": "Under Construction (1882–)", Height: "172 m (planned)", "Visitor Popularity": 94, "Architectural Innovation": 93, "Cultural Significance": 95, "Structural Complexity": 98}},
-  {name: "Project: São Paulo Museum of Art (MASP)", attributes: {"Year Completed": "1968", Height: "74 m", "Visitor Popularity": 80, "Architectural Innovation": 93, "Cultural Significance": 88, "Structural Complexity": 89}},
-  {name: "Project: Shanghai Tower", attributes: {"Year Completed": "2015", Height: "632 m", "Visitor Popularity": 84, "Architectural Innovation": 97, "Cultural Significance": 88, "Structural Complexity": 98}},
-  {name: "Project: Solomon R. Guggenheim Museum (New York)", attributes: {"Year Completed": "1959", Height: "29 m", "Visitor Popularity": 86, "Architectural Innovation": 93, "Cultural Significance": 89, "Structural Complexity": 88}},
-  {name: "Project: Space Needle (Seattle)", attributes: {"Year Completed": "1962", Height: "184 m", "Visitor Popularity": 80, "Architectural Innovation": 85, "Cultural Significance": 86, "Structural Complexity": 87}},
-  {name: "Project: St. Basil's Cathedral (Russia)", attributes: {"Year Completed": "1561", Height: "47 m", "Visitor Popularity": 89, "Architectural Innovation": 88, "Cultural Significance": 96, "Structural Complexity": 83}},
-  {name: "Project: St. Paul's Cathedral (London)", attributes: {"Year Completed": "1710", Height: "111 m", "Visitor Popularity": 86, "Architectural Innovation": 84, "Cultural Significance": 92, "Structural Complexity": 88}},
-  {name: "Project: Sydney Harbour Bridge", attributes: {"Year Completed": "1932", Height: "134 m", "Visitor Popularity": 86, "Architectural Innovation": 84, "Cultural Significance": 88, "Structural Complexity": 89}},
-  {name: "Project: Sydney Opera House", attributes: {"Year Completed": "1973", Height: "65 m", "Visitor Popularity": 89, "Architectural Innovation": 94, "Cultural Significance": 93, "Structural Complexity": 90}},
-  {name: "Project: Taj Mahal", attributes: {"Year Completed": "1643", Height: "73 m", "Visitor Popularity": 96, "Architectural Innovation": 84, "Cultural Significance": 99, "Structural Complexity": 75}},
-  {name: "Project: Temple of Kukulcán (Chichén Itzá)", attributes: {"Year Completed": "c. 1100 CE", Height: "30 m", "Visitor Popularity": 90, "Architectural Innovation": 83, "Cultural Significance": 97, "Structural Complexity": 76}},
-  {name: "Project: The Atomium", attributes: {"Year Completed": "1958", Height: "102 m", "Visitor Popularity": 78, "Architectural Innovation": 89, "Cultural Significance": 77, "Structural Complexity": 90}},
-  {name: "Project: The Burj Khalifa", attributes: {"Year Completed": "2010", Height: "828 m", "Visitor Popularity": 88, "Architectural Innovation": 98, "Cultural Significance": 90, "Structural Complexity": 95}},
-  {name: "Project: The Colosseum", attributes: {"Year Completed": "80 CE", Height: "48 m", "Visitor Popularity": 92, "Architectural Innovation": 75, "Cultural Significance": 97, "Structural Complexity": 80}},
-  {name: "Project: The Eiffel Tower", attributes: {"Year Completed": "1889", Height: "324 m", "Visitor Popularity": 95, "Architectural Innovation": 85, "Cultural Significance": 100, "Structural Complexity": 70}},
-  {name: "Project: The Gherkin (30 St Mary Axe)", attributes: {"Year Completed": "2004", Height: "180 m", "Visitor Popularity": 76, "Architectural Innovation": 90, "Cultural Significance": 80, "Structural Complexity": 88}},
-  {name: "Project: The Great Wall of China", attributes: {"Year Completed": "Multiple Periods (7th century BCE–1600s)", Height: "varies (~7–8 m avg)", "Visitor Popularity": 98, "Architectural Innovation": 78, "Cultural Significance": 100, "Structural Complexity": 70}},
-  {name: "Project: The Louvre Pyramid", attributes: {"Year Completed": "1989", Height: "21.6 m", "Visitor Popularity": 91, "Architectural Innovation": 93, "Cultural Significance": 90, "Structural Complexity": 81}},
-  {name: "Project: The Pantheon (Rome)", attributes: {"Year Completed": "126 CE", Height: "43 m", "Visitor Popularity": 87, "Architectural Innovation": 90, "Cultural Significance": 94, "Structural Complexity": 88}},
-  {name: "Project: The Shard (London)", attributes: {"Year Completed": "2012", Height: "310 m", "Visitor Popularity": 75, "Architectural Innovation": 89, "Cultural Significance": 76, "Structural Complexity": 85}},
-  {name: "Project: Tianjin Binhai Library (China)", attributes: {"Year Completed": "2017", Height: "30 m", "Visitor Popularity": 84, "Architectural Innovation": 96, "Cultural Significance": 88, "Structural Complexity": 90}},
-  {name: "Project: Tokyo 2020 Olympic Stadium", attributes: {"Year Completed": "2019", Height: "47 m", "Visitor Popularity": 83, "Architectural Innovation": 90, "Cultural Significance": 86, "Structural Complexity": 88}},
-  {name: "Project: Tokyo Tower", attributes: {"Year Completed": "1958", Height: "333 m", "Visitor Popularity": 85, "Architectural Innovation": 88, "Cultural Significance": 90, "Structural Complexity": 87}},
-  {name: "Project: Turning Torso Tower (Sweden)", attributes: {"Year Completed": "2005", Height: "190 m", "Visitor Popularity": 76, "Architectural Innovation": 92, "Cultural Significance": 82, "Structural Complexity": 94}},
-  {name: "Project: TWA Flight Center (JFK Airport)", attributes: {"Year Completed": "1962", Height: "22 m", "Visitor Popularity": 68, "Architectural Innovation": 89, "Cultural Significance": 84, "Structural Complexity": 83}},
-  {name: "Project: Willis Tower (Sears Tower)", attributes: {"Year Completed": "1973", Height: "442 m", "Visitor Popularity": 82, "Architectural Innovation": 89, "Cultural Significance": 86, "Structural Complexity": 91}},
-       ];
-       
-  const land = [
-  {name: "Landscaper: Adriaan Geuze (West 8)", attributes: {Era: "Contemporary", "Ecological Impact": 86, "Design Innovation": 89, "Cultural Legacy": 80, "Project Scale": "★★★★☆", "Botanical Sensibility": 83}},
-  {name: "Landscaper: Andrea Cochran", attributes: {Era: "Contemporary", "Ecological Impact": 83, "Design Innovation": 86, "Cultural Legacy": 78, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 92}},
-  {name: "Landscaper: Capability Brown (Lancelot Brown)", attributes: {Era: "18th Century", "Ecological Impact": 80, "Design Innovation": 83, "Cultural Legacy": 90, "Project Scale": "★★★★☆", "Botanical Sensibility": 88}},
-  {name: "Landscaper: Claude Mollet", attributes: {Era: "17th Century", "Ecological Impact": 60, "Design Innovation": 75, "Cultural Legacy": 88, "Project Scale": "★★★★☆", "Botanical Sensibility": 83}},
-  {name: "Landscaper: Cornelia Oberlander", attributes: {Era: "20th Century", "Ecological Impact": 88, "Design Innovation": 87, "Cultural Legacy": 90, "Project Scale": "★★★☆☆", "Botanical Sensibility": 93}},
-  {name: "Landscaper: Diana Balmori", attributes: {Era: "Contemporary", "Ecological Impact": 87, "Design Innovation": 91, "Cultural Legacy": 83, "Project Scale": "★★★☆☆", "Botanical Sensibility": 86}},
-  {name: "Landscaper: Enric Batlle", attributes: {Era: "Contemporary", "Ecological Impact": 90, "Design Innovation": 85, "Cultural Legacy": 80, "Project Scale": "★★★★☆", "Botanical Sensibility": 89}},
-  {name: "Landscaper: Frederick Law Olmsted", attributes: {Era: "19th Century", "Ecological Impact": 87, "Design Innovation": 92, "Cultural Legacy": 98, "Project Scale": "★★★★☆", "Botanical Sensibility": 85}},
-  {name: "Landscaper: Gertrude Jekyll", attributes: {Era: "19th–20th Century", "Ecological Impact": 78, "Design Innovation": 85, "Cultural Legacy": 89, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 96}},
-  {name: "Landscaper: Gilles Clément", attributes: {Era: "Contemporary", "Ecological Impact": 95, "Design Innovation": 89, "Cultural Legacy": 85, "Project Scale": "★★★☆☆", "Botanical Sensibility": 95}},
-  {name: "Landscaper: Hideo Sasaki", attributes: {Era: "20th Century", "Ecological Impact": 82, "Design Innovation": 91, "Cultural Legacy": 85, "Project Scale": "★★★★☆", "Botanical Sensibility": 86}},
-  {name: "Landscaper: Ian McHarg", attributes: {Era: "20th Century", "Ecological Impact": 92, "Design Innovation": 86, "Cultural Legacy": 93, "Project Scale": "★★★★☆", "Botanical Sensibility": 85}},
-  {name: "Landscaper: Isabelle Greene", attributes: {Era: "Contemporary", "Ecological Impact": 79, "Design Innovation": 85, "Cultural Legacy": 76, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 89}},
-  {name: "Landscaper: James Corner", attributes: {Era: "Contemporary", "Ecological Impact": 88, "Design Innovation": 92, "Cultural Legacy": 89, "Project Scale": "★★★★☆", "Botanical Sensibility": 84}},
-  {name: "Landscaper: Jens Jensen", attributes: {Era: "20th Century", "Ecological Impact": 84, "Design Innovation": 83, "Cultural Legacy": 82, "Project Scale": "★★★☆☆", "Botanical Sensibility": 87}},
-  {name: "Landscaper: John Dixon Hunt", attributes: {Era: "Contemporary", "Ecological Impact": 75, "Design Innovation": 80, "Cultural Legacy": 90, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 82}},
-  {name: "Landscaper: Julie Bargmann", attributes: {Era: "Contemporary", "Ecological Impact": 93, "Design Innovation": 91, "Cultural Legacy": 81, "Project Scale": "★★★☆☆", "Botanical Sensibility": 87}},
-  {name: "Landscaper: Kate Orff", attributes: {Era: "Contemporary", "Ecological Impact": 95, "Design Innovation": 92, "Cultural Legacy": 85, "Project Scale": "★★★★☆", "Botanical Sensibility": 89}},
-  {name: "Landscaper: Kathryn Gustafson", attributes: {Era: "Contemporary", "Ecological Impact": 85, "Design Innovation": 89, "Cultural Legacy": 82, "Project Scale": "★★★☆☆", "Botanical Sensibility": 91}},
-  {name: "Landscaper: Ken Smith", attributes: {Era: "Contemporary", "Ecological Impact": 81, "Design Innovation": 88, "Cultural Legacy": 79, "Project Scale": "★★★☆☆", "Botanical Sensibility": 84}},
-  {name: "Landscaper: Kongjian Yu", attributes: {Era: "21st Century", "Ecological Impact": 98, "Design Innovation": 93, "Cultural Legacy": 87, "Project Scale": "★★★★★", "Botanical Sensibility": 90}},
-  {name: "Landscaper: Lawrence Halprin", attributes: {Era: "20th Century", "Ecological Impact": 84, "Design Innovation": 90, "Cultural Legacy": 89, "Project Scale": "★★★☆☆", "Botanical Sensibility": 85}},
-  {name: "Landscaper: Martha Schwartz", attributes: {Era: "Contemporary", "Ecological Impact": 76, "Design Innovation": 92, "Cultural Legacy": 79, "Project Scale": "★★★☆☆", "Botanical Sensibility": 83}},
-  {name: "Landscaper: Michel Corajoud", attributes: {Era: "20th Century", "Ecological Impact": 82, "Design Innovation": 87, "Cultural Legacy": 80, "Project Scale": "★★★☆☆", "Botanical Sensibility": 90}},
-  {name: "Landscaper: Pamela Burton", attributes: {Era: "Contemporary", "Ecological Impact": 80, "Design Innovation": 85, "Cultural Legacy": 78, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 90}},
-  {name: "Landscaper: Piet Oudolf", attributes: {Era: "Contemporary", "Ecological Impact": 90, "Design Innovation": 88, "Cultural Legacy": 84, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 98}},
-  {name: "Landscaper: Roberto Burle Marx", attributes: {Era: "20th Century", "Ecological Impact": 91, "Design Innovation": 95, "Cultural Legacy": 94, "Project Scale": "★★★☆☆", "Botanical Sensibility": 97}},
-  {name: "Landscaper: Rosa Grena Kliass", attributes: {Era: "20th Century", "Ecological Impact": 85, "Design Innovation": 89, "Cultural Legacy": 83, "Project Scale": "★★★☆☆", "Botanical Sensibility": 91}},
-  {name: "Landscaper: Thomas Church", attributes: {Era: "20th Century", "Ecological Impact": 79, "Design Innovation": 88, "Cultural Legacy": 86, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 84}},
-  {name: "Landscaper: Victoria Lautman", attributes: {Era: "Contemporary", "Ecological Impact": 78, "Design Innovation": 84, "Cultural Legacy": 81, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 88}},
-  {name: "Landscaper: Walter Hood", attributes: {Era: "Contemporary", "Ecological Impact": 88, "Design Innovation": 90, "Cultural Legacy": 87, "Project Scale": "★★★☆☆", "Botanical Sensibility": 86}},
-    ];
-    
-  const gard = [
-  {name: "Garden: Alhambra Generalife Gardens (Spain)", attributes: {Location: "Granada, Spain", "Year Established": "13th Century", "Botanical Diversity": 77, "Design Complexity": 90, "Historical Significance": 98, "Visitor Popularity": 87}},
-  {name: "Garden: Alnwick Garden (UK)", attributes: {Location: "Northumberland, England", "Year Established": "2001 (modern redesign)", "Botanical Diversity": 88, "Design Complexity": 90, "Historical Significance": 70, "Visitor Popularity": 82}},
-  {name: "Garden: Boboli Gardens (Italy)", attributes: {Location: "Florence, Italy", "Year Established": "1549", "Botanical Diversity": 72, "Design Complexity": 91, "Historical Significance": 95, "Visitor Popularity": 86}},
-  {name: "Garden: Brooklyn Botanic Garden (USA)", attributes: {Location: "New York, USA", "Year Established": "1910", "Botanical Diversity": 94, "Design Complexity": 84, "Historical Significance": 80, "Visitor Popularity": 88}},
-  {name: "Garden: Butchart Gardens (Canada)", attributes: {Location: "British Columbia, Canada", "Year Established": "1904", "Botanical Diversity": 92, "Design Complexity": 88, "Historical Significance": 84, "Visitor Popularity": 89}},
-  {name: "Garden: Claude Monet’s Garden at Giverny (France)", attributes: {Location: "Giverny, France", "Year Established": "1883", "Botanical Diversity": 80, "Design Complexity": 88, "Historical Significance": 95, "Visitor Popularity": 87}},
-  {name: "Garden: Desert Botanical Garden (USA)", attributes: {Location: "Phoenix, Arizona", "Year Established": "1939", "Botanical Diversity": 91, "Design Complexity": 83, "Historical Significance": 75, "Visitor Popularity": 80}},
-  {name: "Garden: Desert Garden at Huntington (USA)", attributes: {Location: "California, USA", "Year Established": "1907", "Botanical Diversity": 90, "Design Complexity": 83, "Historical Significance": 82, "Visitor Popularity": 84}},
-  {name: "Garden: Gardens of Versailles (France)", attributes: {Location: "Versailles, France", "Year Established": "1661", "Botanical Diversity": 80, "Design Complexity": 100, "Historical Significance": 100, "Visitor Popularity": 95}},
-  {name: "Garden: Generalife Gardens (Spain)", attributes: {Location: "Granada, Spain", "Year Established": "13th Century", "Botanical Diversity": 74, "Design Complexity": 89, "Historical Significance": 96, "Visitor Popularity": 84}},
-  {name: "Garden: Hakone Gardens (USA)", attributes: {Location: "Saratoga, California", "Year Established": "1915", "Botanical Diversity": 80, "Design Complexity": 85, "Historical Significance": 78, "Visitor Popularity": 79}},
-  {name: "Garden: Huntington Botanical Gardens (USA)", attributes: {Location: "California, USA", "Year Established": "1919", "Botanical Diversity": 93, "Design Complexity": 84, "Historical Significance": 82, "Visitor Popularity": 85}},
-  {name: "Garden: Isola Bella Gardens (Italy)", attributes: {Location: "Lake Maggiore, Italy", "Year Established": "1632", "Botanical Diversity": 78, "Design Complexity": 94, "Historical Significance": 90, "Visitor Popularity": 86}},
-  {name: "Garden: Jardim Botânico da Madeira (Portugal)", attributes: {Location: "Funchal, Madeira", "Year Established": "1960", "Botanical Diversity": 91, "Design Complexity": 84, "Historical Significance": 83, "Visitor Popularity": 82}},
-  {name: "Garden: Jardim Botânico de Curitiba (Brazil)", attributes: {Location: "Curitiba, Brazil", "Year Established": "1991", "Botanical Diversity": 87, "Design Complexity": 83, "Historical Significance": 78, "Visitor Popularity": 85}},
-  {name: "Garden: Jardim Botânico do Rio de Janeiro (Brazil)", attributes: {Location: "Rio de Janeiro, Brazil", "Year Established": "1808", "Botanical Diversity": 97, "Design Complexity": 85, "Historical Significance": 90, "Visitor Popularity": 89}},
-  {name: "Garden: Jardim da Fundação Gulbenkian (Portugal)", attributes: {Location: "Lisbon, Portugal", "Year Established": "1969", "Botanical Diversity": 79, "Design Complexity": 88, "Historical Significance": 80, "Visitor Popularity": 83}},
-  {name: "Garden: Jardim das Plantas (Jardin des Plantes, Paris)", attributes: {Location: "Paris, France", "Year Established": "1626", "Botanical Diversity": 96, "Design Complexity": 87, "Historical Significance": 97, "Visitor Popularity": 88}},
-  {name: "Garden: Jardim do Palácio de Het Loo (Netherlands)", attributes: {Location: "Apeldoorn, Netherlands", "Year Established": "17th Century", "Botanical Diversity": 70, "Design Complexity": 86, "Historical Significance": 91, "Visitor Popularity": 80}},
-  {name: "Garden: Jardim do Palácio de Pedro, o Grande (Peterhof Gardens)", attributes: {Location: "Saint Petersburg, Russia", "Year Established": "1723", "Botanical Diversity": 75, "Design Complexity": 95, "Historical Significance": 98, "Visitor Popularity": 89}},
-  {name: "Garden: Jardim do Templo de Byodo-in (Japan)", attributes: {Location: "Uji, Kyoto, Japan", "Year Established": "11th Century", "Botanical Diversity": 72, "Design Complexity": 86, "Historical Significance": 94, "Visitor Popularity": 80}},
-  {name: "Garden: Jardim Secreto de Heligan (The Lost Gardens of Heligan)", attributes: {Location: "Cornwall, England", "Year Established": "18th Century (rediscovered 1990s)", "Botanical Diversity": 93, "Design Complexity": 90, "Historical Significance": 88, "Visitor Popularity": 85}},
-  {name: "Garden: Jardin Majorelle (Morocco)", attributes: {Location: "Marrakech, Morocco", "Year Established": "1920s", "Botanical Diversity": 85, "Design Complexity": 87, "Historical Significance": 86, "Visitor Popularity": 90}},
-  {name: "Garden: Keukenhof Gardens (Netherlands)", attributes: {Location: "Lisse, Netherlands", "Year Established": "1949", "Botanical Diversity": 98, "Design Complexity": 90, "Historical Significance": 70, "Visitor Popularity": 94}},
-  {name: "Garden: Kirstenbosch National Botanical Garden (South Africa)", attributes: {Location: "Cape Town, South Africa", "Year Established": "1913", "Botanical Diversity": 98, "Design Complexity": 88, "Historical Significance": 85, "Visitor Popularity": 86}},
-  {name: "Garden: Mirabell Gardens (Austria)", attributes: {Location: "Salzburg, Austria", "Year Established": "1606", "Botanical Diversity": 69, "Design Complexity": 87, "Historical Significance": 92, "Visitor Popularity": 84}},
-  {name: "Garden: Missouri Botanical Garden (USA)", attributes: {Location: "St. Louis, USA", "Year Established": "1859", "Botanical Diversity": 98, "Design Complexity": 87, "Historical Significance": 89, "Visitor Popularity": 86}},
-  {name: "Garden: Nong Nooch Tropical Botanical Garden (Thailand)", attributes: {Location: "Chonburi, Thailand", "Year Established": "1954", "Botanical Diversity": 95, "Design Complexity": 92, "Historical Significance": 76, "Visitor Popularity": 91}},
-  {name: "Garden: Nong Nooch Tropical Garden (Thailand)", attributes: {Location: "Pattaya, Thailand", "Year Established": "1954", "Botanical Diversity": 95, "Design Complexity": 92, "Historical Significance": 75, "Visitor Popularity": 91}},
-  {name: "Garden: Royal Botanic Gardens, Kew (UK)", attributes: {Location: "London, England", "Year Established": "1759", "Botanical Diversity": 100, "Design Complexity": 91, "Historical Significance": 100, "Visitor Popularity": 96}},
-  {name: "Garden: Ryoan-ji Zen Garden (Japan)", attributes: {Location: "Kyoto, Japan", "Year Established": "15th Century", "Botanical Diversity": 40, "Design Complexity": 85, "Historical Significance": 96, "Visitor Popularity": 88}},
-  {name: "Garden: Shinjuku Gyoen National Garden (Japan)", attributes: {Location: "Tokyo, Japan", "Year Established": "1906", "Botanical Diversity": 90, "Design Complexity": 86, "Historical Significance": 85, "Visitor Popularity": 89}},
-  {name: "Garden: Singapore Gardens by the Bay (Singapore)", attributes: {Location: "Singapore", "Year Established": "2012", "Botanical Diversity": 96, "Design Complexity": 99, "Historical Significance": 70, "Visitor Popularity": 93}},
-  {name: "Garden: Suzhou Classical Gardens (China)", attributes: {Location: "Suzhou, China", "Year Established": "11th Century", "Botanical Diversity": 78, "Design Complexity": 92, "Historical Significance": 98, "Visitor Popularity": 90}},
-  {name: "Garden: Tenryu-ji Garden (Japan)", attributes: {Location: "Kyoto, Japan", "Year Established": "1339", "Botanical Diversity": 74, "Design Complexity": 88, "Historical Significance": 97, "Visitor Popularity": 83}},
-  {name: "Garden: Villa d'Este Gardens (Italy)", attributes: {Location: "Tivoli, Italy", "Year Established": "1550", "Botanical Diversity": 76, "Design Complexity": 94, "Historical Significance": 98, "Visitor Popularity": 88}},
-  {name: "Garden: Villa Lante Gardens (Italy)", attributes: {Location: "Bagnaia, Italy", "Year Established": "16th Century", "Botanical Diversity": 68, "Design Complexity": 88, "Historical Significance": 92, "Visitor Popularity": 82}},  ];
-    
-    // Shuffle array
-    function shuffleArray(array) {
-      return array.sort(() => Math.random() - 0.5);
-    }
+ 	];
+ 	
+const proj = [
+{name: "Project: Aachen Cathedral (Germany)", attributes: {"Year Completed": "805", Height: "31 m", "Visitor Popularity": 82, "Architectural Innovation": 85, "Cultural Significance": 93, "Structural Complexity": 80}},
+{name: "Project: Agbar Tower (Barcelona)", attributes: {"Year Completed": "2005", Height: "144 m", "Visitor Popularity": 77, "Architectural Innovation": 89, "Cultural Significance": 81, "Structural Complexity": 86}},
+{name: "Project: Aït Benhaddou (Morocco)", attributes: {"Year Completed": "17th century", Height: "varies", "Visitor Popularity": 80, "Architectural Innovation": 78, "Cultural Significance": 93, "Structural Complexity": 74}},
+{name: "Project: Alhambra", attributes: {"Year Completed": "1358", Height: "varies", "Visitor Popularity": 86, "Architectural Innovation": 85, "Cultural Significance": 92, "Structural Complexity": 80}},
+{name: "Project: Angkor Wat", attributes: {"Year Completed": "12th Century", Height: "65 m", "Visitor Popularity": 89, "Architectural Innovation": 85, "Cultural Significance": 99, "Structural Complexity": 87}},
+{name: "Project: Arab World Institute (Paris)", attributes: {"Year Completed": "1987", Height: "30 m", "Visitor Popularity": 75, "Architectural Innovation": 91, "Cultural Significance": 85, "Structural Complexity": 88}},
+{name: "Project: Beijing Daxing International Airport", attributes: {"Year Completed": "2019", Height: "50 m", "Visitor Popularity": 79, "Architectural Innovation": 96, "Cultural Significance": 84, "Structural Complexity": 97}},
+{name: "Project: Beijing National Stadium (Bird's Nest)", attributes: {"Year Completed": "2008", Height: "69.2 m", "Visitor Popularity": 83, "Architectural Innovation": 95, "Cultural Significance": 84, "Structural Complexity": 96}},
+{name: "Project: Belém Tower (Portugal)", attributes: {"Year Completed": "1519", Height: "30 m", "Visitor Popularity": 84, "Architectural Innovation": 82, "Cultural Significance": 91, "Structural Complexity": 78}},
+{name: "Project: Berlin TV Tower", attributes: {"Year Completed": "1969", Height: "368 m", "Visitor Popularity": 81, "Architectural Innovation": 87, "Cultural Significance": 83, "Structural Complexity": 86}},
+{name: "Project: Biblioteca Vasconcelos (Mexico City)", attributes: {"Year Completed": "2006", Height: "38 m", "Visitor Popularity": 73, "Architectural Innovation": 91, "Cultural Significance": 79, "Structural Complexity": 89}},
+{name: "Project: Borobudur Temple", attributes: {"Year Completed": "9th century", Height: "35 m", "Visitor Popularity": 88, "Architectural Innovation": 85, "Cultural Significance": 97, "Structural Complexity": 90}},
+{name: "Project: Brasília Cathedral", attributes: {"Year Completed": "1970", Height: "75 m", "Visitor Popularity": 81, "Architectural Innovation": 92, "Cultural Significance": 89, "Structural Complexity": 91}},
+{name: "Project: Casa Batlló (Spain)", attributes: {"Year Completed": "1906", Height: "32 m", "Visitor Popularity": 85, "Architectural Innovation": 94, "Cultural Significance": 89, "Structural Complexity": 86}},
+{name: "Project: Centre Pompidou (France)", attributes: {"Year Completed": "1977", Height: "42 m", "Visitor Popularity": 83, "Architectural Innovation": 95, "Cultural Significance": 91, "Structural Complexity": 89}},
+{name: "Project: CERN Large Hadron Collider", attributes: {"Year Completed": "2008", Height: "Underground (27 km circumference)", "Visitor Popularity": 70, "Architectural Innovation": 100, "Cultural Significance": 85, "Structural Complexity": 100}},
+{name: "Project: Chambord Castle (France)", attributes: {"Year Completed": "1547", Height: "56 m", "Visitor Popularity": 84, "Architectural Innovation": 83, "Cultural Significance": 89, "Structural Complexity": 81}},
+{name: "Project: Chrysler Building", attributes: {"Year Completed": "1930", Height: "319 m", "Visitor Popularity": 82, "Architectural Innovation": 90, "Cultural Significance": 91, "Structural Complexity": 86}},
+{name: "Project: Church Hallgrímskirkja (Iceland)", attributes: {"Year Completed": "1986", Height: "74.5 m", "Visitor Popularity": 80, "Architectural Innovation": 85, "Cultural Significance": 87, "Structural Complexity": 84}},
+{name: "Project: CN Tower (Toronto)", attributes: {"Year Completed": "1976", Height: "553 m", "Visitor Popularity": 87, "Architectural Innovation": 90, "Cultural Significance": 90, "Structural Complexity": 95}},
+{name: "Project: CN Tower", attributes: {"Year Completed": "1976", Height: "553 m", "Visitor Popularity": 79, "Architectural Innovation": 88, "Cultural Significance": 81, "Structural Complexity": 87}},
+{name: "Project: Cologne Cathedral (Germany)", attributes: {"Year Completed": "1880", Height: "157 m", "Visitor Popularity": 89, "Architectural Innovation": 88, "Cultural Significance": 96, "Structural Complexity": 90}},
+{name: "Project: Dome of Florence (Santa Maria del Fiore)", attributes: {"Year Completed": "1436", Height: "114 m", "Visitor Popularity": 87, "Architectural Innovation": 95, "Cultural Significance": 94, "Structural Complexity": 90}},
+{name: "Project: Dome of the Rock", attributes: {"Year Completed": "691 CE", Height: "35 m", "Visitor Popularity": 83, "Architectural Innovation": 87, "Cultural Significance": 96, "Structural Complexity": 78}},
+{name: "Project: Fallingwater", attributes: {"Year Completed": "1939", Height: "12 m", "Visitor Popularity": 78, "Architectural Innovation": 96, "Cultural Significance": 88, "Structural Complexity": 85}},
+{name: "Project: Forbidden City", attributes: {"Year Completed": "1420", Height: "varies (~35 m)", "Visitor Popularity": 95, "Architectural Innovation": 83, "Cultural Significance": 98, "Structural Complexity": 82}},
+{name: "Project: Golden Gate Bridge", attributes: {"Year Completed": "1937", Height: "227 m", "Visitor Popularity": 95, "Architectural Innovation": 90, "Cultural Significance": 98, "Structural Complexity": 94}},
+{name: "Project: Guangzhou Opera House (China)", attributes: {"Year Completed": "2010", Height: "45 m", "Visitor Popularity": 79, "Architectural Innovation": 94, "Cultural Significance": 84, "Structural Complexity": 90}},
+{name: "Project: Guggenheim Museum Bilbao", attributes: {"Year Completed": "1997", Height: "50 m", "Visitor Popularity": 82, "Architectural Innovation": 97, "Cultural Significance": 85, "Structural Complexity": 92}},
+{name: "Project: Habitat 67 Building (Montreal)", attributes: {"Year Completed": "1967", Height: "52 m", "Visitor Popularity": 76, "Architectural Innovation": 91, "Cultural Significance": 85, "Structural Complexity": 88}},
+{name: "Project: Hagia Sophia", attributes: {"Year Completed": "537 CE", Height: "55 m", "Visitor Popularity": 85, "Architectural Innovation": 92, "Cultural Significance": 98, "Structural Complexity": 86}},
+{name: "Project: Hermitage Museum (Russia)", attributes: {"Year Completed": "1764", Height: "23 m", "Visitor Popularity": 89, "Architectural Innovation": 82, "Cultural Significance": 95, "Structural Complexity": 81}},
+{name: "Project: Heydar Aliyev Center (Baku)", attributes: {"Year Completed": "2012", Height: "74 m", "Visitor Popularity": 84, "Architectural Innovation": 98, "Cultural Significance": 80, "Structural Complexity": 95}},
+{name: "Project: Himeji Castle (Japan)", attributes: {"Year Completed": "1609", Height: "46 m", "Visitor Popularity": 88, "Architectural Innovation": 83, "Cultural Significance": 94, "Structural Complexity": 84}},
+{name: "Project: Hoover Dam", attributes: {"Year Completed": "1936", Height: "221 m", "Visitor Popularity": 80, "Architectural Innovation": 91, "Cultural Significance": 87, "Structural Complexity": 93}},
+{name: "Project: Infinity Tower (Dubai)", attributes: {"Year Completed": "2013", Height: "306 m", "Visitor Popularity": 76, "Architectural Innovation": 93, "Cultural Significance": 80, "Structural Complexity": 95}},
+{name: "Project: Kansai International Airport (Japan)", attributes: {"Year Completed": "1994", Height: "45 m", "Visitor Popularity": 79, "Architectural Innovation": 94, "Cultural Significance": 85, "Structural Complexity": 93}},
+{name: "Project: Leaning Tower of Pisa", attributes: {"Year Completed": "1372", Height: "56 m", "Visitor Popularity": 90, "Architectural Innovation": 70, "Cultural Significance": 95, "Structural Complexity": 75}},
+{name: "Project: Library of Alexandria (Egypt - modern)", attributes: {"Year Completed": "2002", Height: "33 m", "Visitor Popularity": 78, "Architectural Innovation": 91, "Cultural Significance": 92, "Structural Complexity": 87}},
+{name: "Project: Lotus Temple (Delhi)", attributes: {"Year Completed": "1986", Height: "34 m", "Visitor Popularity": 80, "Architectural Innovation": 91, "Cultural Significance": 82, "Structural Complexity": 88}},
+{name: "Project: Louvre Museum", attributes: {"Year Completed": "1793 (as a museum)", Height: "21 m", "Visitor Popularity": 95, "Architectural Innovation": 88, "Cultural Significance": 99, "Structural Complexity": 85}},
+{name: "Project: Machu Picchu", attributes: {"Year Completed": "c. 1450", Height: "2,430 m (elevation)", "Visitor Popularity": 92, "Architectural Innovation": 88, "Cultural Significance": 100, "Structural Complexity": 86}},
+{name: "Project: Marina Bay Sands SkyPark (Singapore)", attributes: {"Year Completed": "2010", Height: "200 m", "Visitor Popularity": 85, "Architectural Innovation": 90, "Cultural Significance": 88, "Structural Complexity": 94}},
+{name: "Project: Marina Bay Sands", attributes: {"Year Completed": "2010", Height: "207 m", "Visitor Popularity": 84, "Architectural Innovation": 88, "Cultural Significance": 83, "Structural Complexity": 94}},
+{name: "Project: MAXXI Museum (Rome)", attributes: {"Year Completed": "2009", Height: "25 m", "Visitor Popularity": 74, "Architectural Innovation": 92, "Cultural Significance": 78, "Structural Complexity": 91}},
+{name: "Project: Milan Cathedral (Duomo di Milano)", attributes: {"Year Completed": "1965 (started in 1386!)", Height: "108 m", "Visitor Popularity": 89, "Architectural Innovation": 86, "Cultural Significance": 95, "Structural Complexity": 90}},
+{name: "Project: Millennium Dome (The O2 Arena)", attributes: {"Year Completed": "1999", Height: "52 m", "Visitor Popularity": 74, "Architectural Innovation": 86, "Cultural Significance": 78, "Structural Complexity": 84}},
+{name: "Project: Mont Saint-Michel", attributes: {"Year Completed": "1523 (monastic complex)", Height: "92 m", "Visitor Popularity": 85, "Architectural Innovation": 83, "Cultural Significance": 94, "Structural Complexity": 84}},
+{name: "Project: Montreal Olympic Tower (Canada)", attributes: {"Year Completed": "1987", Height: "165 m", "Visitor Popularity": 75, "Architectural Innovation": 89, "Cultural Significance": 80, "Structural Complexity": 90}},
+{name: "Project: Museum of Islamic Art (Doha)", attributes: {"Year Completed": "2008", Height: "45 m", "Visitor Popularity": 78, "Architectural Innovation": 92, "Cultural Significance": 85, "Structural Complexity": 83}},
+{name: "Project: Museum of the Future (Dubai)", attributes: {"Year Completed": "2022", Height: "77 m", "Visitor Popularity": 79, "Architectural Innovation": 99, "Cultural Significance": 85, "Structural Complexity": 97}},
+{name: "Project: Museum of Tomorrow (Brazil)", attributes: {"Year Completed": "2015", Height: "18 m", "Visitor Popularity": 83, "Architectural Innovation": 95, "Cultural Significance": 87, "Structural Complexity": 91}},
+{name: "Project: National Museum of Anthropology (Mexico)", attributes: {"Year Completed": "1964", Height: "23 m", "Visitor Popularity": 88, "Architectural Innovation": 89, "Cultural Significance": 92, "Structural Complexity": 85}},
+{name: "Project: Neuschwanstein Castle (Germany)", attributes: {"Year Completed": "1886", Height: "65 m", "Visitor Popularity": 91, "Architectural Innovation": 84, "Cultural Significance": 90, "Structural Complexity": 82}},
+{name: "Project: Neuschwanstein Castle", attributes: {"Year Completed": "1886", Height: "65 m", "Visitor Popularity": 91, "Architectural Innovation": 80, "Cultural Significance": 89, "Structural Complexity": 82}},
+{name: "Project: Niterói Museum of Contemporary Art", attributes: {"Year Completed": "1996", Height: "16 m", "Visitor Popularity": 82, "Architectural Innovation": 95, "Cultural Significance": 85, "Structural Complexity": 90}},
+{name: "Project: Notre-Dame de Paris", attributes: {"Year Completed": "1345", Height: "69 m", "Visitor Popularity": 90, "Architectural Innovation": 87, "Cultural Significance": 99, "Structural Complexity": 85}},
+{name: "Project: One World Trade Center", attributes: {"Year Completed": "2014", Height: "541 m", "Visitor Popularity": 84, "Architectural Innovation": 91, "Cultural Significance": 92, "Structural Complexity": 95}},
+{name: "Project: Osaka Castle", attributes: {"Year Completed": "1597 (rebuilt 1931)", Height: "58 m", "Visitor Popularity": 80, "Architectural Innovation": 81, "Cultural Significance": 88, "Structural Complexity": 74}},
+{name: "Project: Oslo Opera House (Norway)", attributes: {"Year Completed": "2008", Height: "38 m", "Visitor Popularity": 80, "Architectural Innovation": 92, "Cultural Significance": 85, "Structural Complexity": 87}},
+{name: "Project: Palace of Versailles", attributes: {"Year Completed": "1682", Height: "varies (~24 m)", "Visitor Popularity": 93, "Architectural Innovation": 80, "Cultural Significance": 98, "Structural Complexity": 79}},
+{name: "Project: Palace of Westminster", attributes: {"Year Completed": "1870", Height: "96 m (Big Ben)", "Visitor Popularity": 92, "Architectural Innovation": 85, "Cultural Significance": 97, "Structural Complexity": 86}},
+{name: "Project: Palácio da Pena (Portugal)", attributes: {"Year Completed": "1854", Height: "85 m", "Visitor Popularity": 83, "Architectural Innovation": 82, "Cultural Significance": 91, "Structural Complexity": 79}},
+{name: "Project: Palácio Nacional da Pena (Portugal)", attributes: {"Year Completed": "1854", Height: "85 m", "Visitor Popularity": 86, "Architectural Innovation": 83, "Cultural Significance": 90, "Structural Complexity": 82}},
+{name: "Project: Pantheon, Paris (France)", attributes: {"Year Completed": "1790", Height: "83 m", "Visitor Popularity": 82, "Architectural Innovation": 84, "Cultural Significance": 91, "Structural Complexity": 80}},
+{name: "Project: Parthenon", attributes: {"Year Completed": "438 BCE", Height: "14 m", "Visitor Popularity": 88, "Architectural Innovation": 79, "Cultural Significance": 97, "Structural Complexity": 70}},
+{name: "Project: Petronas Towers", attributes: {"Year Completed": "1998", Height: "452 m", "Visitor Popularity": 88, "Architectural Innovation": 90, "Cultural Significance": 84, "Structural Complexity": 93}},
+{name: "Project: Potala Palace", attributes: {"Year Completed": "1649", Height: "117 m", "Visitor Popularity": 85, "Architectural Innovation": 80, "Cultural Significance": 98, "Structural Complexity": 88}},
+{name: "Project: Rock-Hewn Churches of Lalibela", attributes: {"Year Completed": "12th Century", Height: "~10 m (cut from rock)", "Visitor Popularity": 82, "Architectural Innovation": 87, "Cultural Significance": 95, "Structural Complexity": 85}},
+{name: "Project: Ronchamp Chapel (Notre Dame du Haut)", attributes: {"Year Completed": "1955", Height: "25 m", "Visitor Popularity": 77, "Architectural Innovation": 94, "Cultural Significance": 86, "Structural Complexity": 89}},
+{name: "Project: Royal Ontario Museum Crystal", attributes: {"Year Completed": "2007", Height: "36 m", "Visitor Popularity": 75, "Architectural Innovation": 90, "Cultural Significance": 77, "Structural Complexity": 86}},
+{name: "Project: Ryugyong Hotel (Pyongyang)", attributes: {"Year Completed": "Unfinished/partially operational (1987–)", Height: "330 m", "Visitor Popularity": 60, "Architectural Innovation": 75, "Cultural Significance": 72, "Structural Complexity": 90}},
+{name: "Project: Sagrada Família", attributes: {"Year Completed": "Under Construction (1882–)", Height: "172 m (planned)", "Visitor Popularity": 94, "Architectural Innovation": 93, "Cultural Significance": 95, "Structural Complexity": 98}},
+{name: "Project: São Paulo Museum of Art (MASP)", attributes: {"Year Completed": "1968", Height: "74 m", "Visitor Popularity": 80, "Architectural Innovation": 93, "Cultural Significance": 88, "Structural Complexity": 89}},
+{name: "Project: Shanghai Tower", attributes: {"Year Completed": "2015", Height: "632 m", "Visitor Popularity": 84, "Architectural Innovation": 97, "Cultural Significance": 88, "Structural Complexity": 98}},
+{name: "Project: Solomon R. Guggenheim Museum (New York)", attributes: {"Year Completed": "1959", Height: "29 m", "Visitor Popularity": 86, "Architectural Innovation": 93, "Cultural Significance": 89, "Structural Complexity": 88}},
+{name: "Project: Space Needle (Seattle)", attributes: {"Year Completed": "1962", Height: "184 m", "Visitor Popularity": 80, "Architectural Innovation": 85, "Cultural Significance": 86, "Structural Complexity": 87}},
+{name: "Project: St. Basil's Cathedral (Russia)", attributes: {"Year Completed": "1561", Height: "47 m", "Visitor Popularity": 89, "Architectural Innovation": 88, "Cultural Significance": 96, "Structural Complexity": 83}},
+{name: "Project: St. Paul's Cathedral (London)", attributes: {"Year Completed": "1710", Height: "111 m", "Visitor Popularity": 86, "Architectural Innovation": 84, "Cultural Significance": 92, "Structural Complexity": 88}},
+{name: "Project: Sydney Harbour Bridge", attributes: {"Year Completed": "1932", Height: "134 m", "Visitor Popularity": 86, "Architectural Innovation": 84, "Cultural Significance": 88, "Structural Complexity": 89}},
+{name: "Project: Sydney Opera House", attributes: {"Year Completed": "1973", Height: "65 m", "Visitor Popularity": 89, "Architectural Innovation": 94, "Cultural Significance": 93, "Structural Complexity": 90}},
+{name: "Project: Taj Mahal", attributes: {"Year Completed": "1643", Height: "73 m", "Visitor Popularity": 96, "Architectural Innovation": 84, "Cultural Significance": 99, "Structural Complexity": 75}},
+{name: "Project: Temple of Kukulcán (Chichén Itzá)", attributes: {"Year Completed": "c. 1100 CE", Height: "30 m", "Visitor Popularity": 90, "Architectural Innovation": 83, "Cultural Significance": 97, "Structural Complexity": 76}},
+{name: "Project: The Atomium", attributes: {"Year Completed": "1958", Height: "102 m", "Visitor Popularity": 78, "Architectural Innovation": 89, "Cultural Significance": 77, "Structural Complexity": 90}},
+{name: "Project: The Burj Khalifa", attributes: {"Year Completed": "2010", Height: "828 m", "Visitor Popularity": 88, "Architectural Innovation": 98, "Cultural Significance": 90, "Structural Complexity": 95}},
+{name: "Project: The Colosseum", attributes: {"Year Completed": "80 CE", Height: "48 m", "Visitor Popularity": 92, "Architectural Innovation": 75, "Cultural Significance": 97, "Structural Complexity": 80}},
+{name: "Project: The Eiffel Tower", attributes: {"Year Completed": "1889", Height: "324 m", "Visitor Popularity": 95, "Architectural Innovation": 85, "Cultural Significance": 100, "Structural Complexity": 70}},
+{name: "Project: The Gherkin (30 St Mary Axe)", attributes: {"Year Completed": "2004", Height: "180 m", "Visitor Popularity": 76, "Architectural Innovation": 90, "Cultural Significance": 80, "Structural Complexity": 88}},
+{name: "Project: The Great Wall of China", attributes: {"Year Completed": "Multiple Periods (7th century BCE–1600s)", Height: "varies (~7–8 m avg)", "Visitor Popularity": 98, "Architectural Innovation": 78, "Cultural Significance": 100, "Structural Complexity": 70}},
+{name: "Project: The Louvre Pyramid", attributes: {"Year Completed": "1989", Height: "21.6 m", "Visitor Popularity": 91, "Architectural Innovation": 93, "Cultural Significance": 90, "Structural Complexity": 81}},
+{name: "Project: The Pantheon (Rome)", attributes: {"Year Completed": "126 CE", Height: "43 m", "Visitor Popularity": 87, "Architectural Innovation": 90, "Cultural Significance": 94, "Structural Complexity": 88}},
+{name: "Project: The Shard (London)", attributes: {"Year Completed": "2012", Height: "310 m", "Visitor Popularity": 75, "Architectural Innovation": 89, "Cultural Significance": 76, "Structural Complexity": 85}},
+{name: "Project: Tianjin Binhai Library (China)", attributes: {"Year Completed": "2017", Height: "30 m", "Visitor Popularity": 84, "Architectural Innovation": 96, "Cultural Significance": 88, "Structural Complexity": 90}},
+{name: "Project: Tokyo 2020 Olympic Stadium", attributes: {"Year Completed": "2019", Height: "47 m", "Visitor Popularity": 83, "Architectural Innovation": 90, "Cultural Significance": 86, "Structural Complexity": 88}},
+{name: "Project: Tokyo Tower", attributes: {"Year Completed": "1958", Height: "333 m", "Visitor Popularity": 85, "Architectural Innovation": 88, "Cultural Significance": 90, "Structural Complexity": 87}},
+{name: "Project: Turning Torso Tower (Sweden)", attributes: {"Year Completed": "2005", Height: "190 m", "Visitor Popularity": 76, "Architectural Innovation": 92, "Cultural Significance": 82, "Structural Complexity": 94}},
+{name: "Project: TWA Flight Center (JFK Airport)", attributes: {"Year Completed": "1962", Height: "22 m", "Visitor Popularity": 68, "Architectural Innovation": 89, "Cultural Significance": 84, "Structural Complexity": 83}},
+{name: "Project: Willis Tower (Sears Tower)", attributes: {"Year Completed": "1973", Height: "442 m", "Visitor Popularity": 82, "Architectural Innovation": 89, "Cultural Significance": 86, "Structural Complexity": 91}},
+ 	];
+ 	
+const land = [
+{name: "Landscaper: Adriaan Geuze (West 8)", attributes: {Era: "Contemporary", "Ecological Impact": 86, "Design Innovation": 89, "Cultural Legacy": 80, "Project Scale": "★★★★☆", "Botanical Sensibility": 83}},
+{name: "Landscaper: Andrea Cochran", attributes: {Era: "Contemporary", "Ecological Impact": 83, "Design Innovation": 86, "Cultural Legacy": 78, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 92}},
+{name: "Landscaper: Capability Brown (Lancelot Brown)", attributes: {Era: "18th Century", "Ecological Impact": 80, "Design Innovation": 83, "Cultural Legacy": 90, "Project Scale": "★★★★☆", "Botanical Sensibility": 88}},
+{name: "Landscaper: Claude Mollet", attributes: {Era: "17th Century", "Ecological Impact": 60, "Design Innovation": 75, "Cultural Legacy": 88, "Project Scale": "★★★★☆", "Botanical Sensibility": 83}},
+{name: "Landscaper: Cornelia Oberlander", attributes: {Era: "20th Century", "Ecological Impact": 88, "Design Innovation": 87, "Cultural Legacy": 90, "Project Scale": "★★★☆☆", "Botanical Sensibility": 93}},
+{name: "Landscaper: Diana Balmori", attributes: {Era: "Contemporary", "Ecological Impact": 87, "Design Innovation": 91, "Cultural Legacy": 83, "Project Scale": "★★★☆☆", "Botanical Sensibility": 86}},
+{name: "Landscaper: Enric Batlle", attributes: {Era: "Contemporary", "Ecological Impact": 90, "Design Innovation": 85, "Cultural Legacy": 80, "Project Scale": "★★★★☆", "Botanical Sensibility": 89}},
+{name: "Landscaper: Frederick Law Olmsted", attributes: {Era: "19th Century", "Ecological Impact": 87, "Design Innovation": 92, "Cultural Legacy": 98, "Project Scale": "★★★★☆", "Botanical Sensibility": 85}},
+{name: "Landscaper: Gertrude Jekyll", attributes: {Era: "19th–20th Century", "Ecological Impact": 78, "Design Innovation": 85, "Cultural Legacy": 89, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 96}},
+{name: "Landscaper: Gilles Clément", attributes: {Era: "Contemporary", "Ecological Impact": 95, "Design Innovation": 89, "Cultural Legacy": 85, "Project Scale": "★★★☆☆", "Botanical Sensibility": 95}},
+{name: "Landscaper: Hideo Sasaki", attributes: {Era: "20th Century", "Ecological Impact": 82, "Design Innovation": 91, "Cultural Legacy": 85, "Project Scale": "★★★★☆", "Botanical Sensibility": 86}},
+{name: "Landscaper: Ian McHarg", attributes: {Era: "20th Century", "Ecological Impact": 92, "Design Innovation": 86, "Cultural Legacy": 93, "Project Scale": "★★★★☆", "Botanical Sensibility": 85}},
+{name: "Landscaper: Isabelle Greene", attributes: {Era: "Contemporary", "Ecological Impact": 79, "Design Innovation": 85, "Cultural Legacy": 76, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 89}},
+{name: "Landscaper: James Corner", attributes: {Era: "Contemporary", "Ecological Impact": 88, "Design Innovation": 92, "Cultural Legacy": 89, "Project Scale": "★★★★☆", "Botanical Sensibility": 84}},
+{name: "Landscaper: Jens Jensen", attributes: {Era: "20th Century", "Ecological Impact": 84, "Design Innovation": 83, "Cultural Legacy": 82, "Project Scale": "★★★☆☆", "Botanical Sensibility": 87}},
+{name: "Landscaper: John Dixon Hunt", attributes: {Era: "Contemporary", "Ecological Impact": 75, "Design Innovation": 80, "Cultural Legacy": 90, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 82}},
+{name: "Landscaper: Julie Bargmann", attributes: {Era: "Contemporary", "Ecological Impact": 93, "Design Innovation": 91, "Cultural Legacy": 81, "Project Scale": "★★★☆☆", "Botanical Sensibility": 87}},
+{name: "Landscaper: Kate Orff", attributes: {Era: "Contemporary", "Ecological Impact": 95, "Design Innovation": 92, "Cultural Legacy": 85, "Project Scale": "★★★★☆", "Botanical Sensibility": 89}},
+{name: "Landscaper: Kathryn Gustafson", attributes: {Era: "Contemporary", "Ecological Impact": 85, "Design Innovation": 89, "Cultural Legacy": 82, "Project Scale": "★★★☆☆", "Botanical Sensibility": 91}},
+{name: "Landscaper: Ken Smith", attributes: {Era: "Contemporary", "Ecological Impact": 81, "Design Innovation": 88, "Cultural Legacy": 79, "Project Scale": "★★★☆☆", "Botanical Sensibility": 84}},
+{name: "Landscaper: Kongjian Yu", attributes: {Era: "21st Century", "Ecological Impact": 98, "Design Innovation": 93, "Cultural Legacy": 87, "Project Scale": "★★★★★", "Botanical Sensibility": 90}},
+{name: "Landscaper: Lawrence Halprin", attributes: {Era: "20th Century", "Ecological Impact": 84, "Design Innovation": 90, "Cultural Legacy": 89, "Project Scale": "★★★☆☆", "Botanical Sensibility": 85}},
+{name: "Landscaper: Martha Schwartz", attributes: {Era: "Contemporary", "Ecological Impact": 76, "Design Innovation": 92, "Cultural Legacy": 79, "Project Scale": "★★★☆☆", "Botanical Sensibility": 83}},
+{name: "Landscaper: Michel Corajoud", attributes: {Era: "20th Century", "Ecological Impact": 82, "Design Innovation": 87, "Cultural Legacy": 80, "Project Scale": "★★★☆☆", "Botanical Sensibility": 90}},
+{name: "Landscaper: Pamela Burton", attributes: {Era: "Contemporary", "Ecological Impact": 80, "Design Innovation": 85, "Cultural Legacy": 78, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 90}},
+{name: "Landscaper: Piet Oudolf", attributes: {Era: "Contemporary", "Ecological Impact": 90, "Design Innovation": 88, "Cultural Legacy": 84, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 98}},
+{name: "Landscaper: Roberto Burle Marx", attributes: {Era: "20th Century", "Ecological Impact": 91, "Design Innovation": 95, "Cultural Legacy": 94, "Project Scale": "★★★☆☆", "Botanical Sensibility": 97}},
+{name: "Landscaper: Rosa Grena Kliass", attributes: {Era: "20th Century", "Ecological Impact": 85, "Design Innovation": 89, "Cultural Legacy": 83, "Project Scale": "★★★☆☆", "Botanical Sensibility": 91}},
+{name: "Landscaper: Thomas Church", attributes: {Era: "20th Century", "Ecological Impact": 79, "Design Innovation": 88, "Cultural Legacy": 86, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 84}},
+{name: "Landscaper: Victoria Lautman", attributes: {Era: "Contemporary", "Ecological Impact": 78, "Design Innovation": 84, "Cultural Legacy": 81, "Project Scale": "★★☆☆☆", "Botanical Sensibility": 88}},
+{name: "Landscaper: Walter Hood", attributes: {Era: "Contemporary", "Ecological Impact": 88, "Design Innovation": 90, "Cultural Legacy": 87, "Project Scale": "★★★☆☆", "Botanical Sensibility": 86}},
+  ];
   
-    // Function to gather selected decks and shuffle
-    function shuffleCards() {
-      const selectedCards = [];
-      
-      // Gather selected decks
-      if (document.getElementById('arcCheckbox').checked) selectedCards.push(...arc);
-      if (document.getElementById('projCheckbox').checked) selectedCards.push(...proj);
-      if (document.getElementById('landCheckbox').checked) selectedCards.push(...land);
-      if (document.getElementById('gardCheckbox').checked) selectedCards.push(...gard);
+const gard = [
+{name: "Garden: Alhambra Generalife Gardens (Spain)", attributes: {Location: "Granada, Spain", "Year Established": "13th Century", "Botanical Diversity": 77, "Design Complexity": 90, "Historical Significance": 98, "Visitor Popularity": 87}},
+{name: "Garden: Alnwick Garden (UK)", attributes: {Location: "Northumberland, England", "Year Established": "2001 (modern redesign)", "Botanical Diversity": 88, "Design Complexity": 90, "Historical Significance": 70, "Visitor Popularity": 82}},
+{name: "Garden: Boboli Gardens (Italy)", attributes: {Location: "Florence, Italy", "Year Established": "1549", "Botanical Diversity": 72, "Design Complexity": 91, "Historical Significance": 95, "Visitor Popularity": 86}},
+{name: "Garden: Brooklyn Botanic Garden (USA)", attributes: {Location: "New York, USA", "Year Established": "1910", "Botanical Diversity": 94, "Design Complexity": 84, "Historical Significance": 80, "Visitor Popularity": 88}},
+{name: "Garden: Butchart Gardens (Canada)", attributes: {Location: "British Columbia, Canada", "Year Established": "1904", "Botanical Diversity": 92, "Design Complexity": 88, "Historical Significance": 84, "Visitor Popularity": 89}},
+{name: "Garden: Claude Monet’s Garden at Giverny (France)", attributes: {Location: "Giverny, France", "Year Established": "1883", "Botanical Diversity": 80, "Design Complexity": 88, "Historical Significance": 95, "Visitor Popularity": 87}},
+{name: "Garden: Desert Botanical Garden (USA)", attributes: {Location: "Phoenix, Arizona", "Year Established": "1939", "Botanical Diversity": 91, "Design Complexity": 83, "Historical Significance": 75, "Visitor Popularity": 80}},
+{name: "Garden: Desert Garden at Huntington (USA)", attributes: {Location: "California, USA", "Year Established": "1907", "Botanical Diversity": 90, "Design Complexity": 83, "Historical Significance": 82, "Visitor Popularity": 84}},
+{name: "Garden: Gardens of Versailles (France)", attributes: {Location: "Versailles, France", "Year Established": "1661", "Botanical Diversity": 80, "Design Complexity": 100, "Historical Significance": 100, "Visitor Popularity": 95}},
+{name: "Garden: Generalife Gardens (Spain)", attributes: {Location: "Granada, Spain", "Year Established": "13th Century", "Botanical Diversity": 74, "Design Complexity": 89, "Historical Significance": 96, "Visitor Popularity": 84}},
+{name: "Garden: Hakone Gardens (USA)", attributes: {Location: "Saratoga, California", "Year Established": "1915", "Botanical Diversity": 80, "Design Complexity": 85, "Historical Significance": 78, "Visitor Popularity": 79}},
+{name: "Garden: Huntington Botanical Gardens (USA)", attributes: {Location: "California, USA", "Year Established": "1919", "Botanical Diversity": 93, "Design Complexity": 84, "Historical Significance": 82, "Visitor Popularity": 85}},
+{name: "Garden: Isola Bella Gardens (Italy)", attributes: {Location: "Lake Maggiore, Italy", "Year Established": "1632", "Botanical Diversity": 78, "Design Complexity": 94, "Historical Significance": 90, "Visitor Popularity": 86}},
+{name: "Garden: Jardim Botânico da Madeira (Portugal)", attributes: {Location: "Funchal, Madeira", "Year Established": "1960", "Botanical Diversity": 91, "Design Complexity": 84, "Historical Significance": 83, "Visitor Popularity": 82}},
+{name: "Garden: Jardim Botânico de Curitiba (Brazil)", attributes: {Location: "Curitiba, Brazil", "Year Established": "1991", "Botanical Diversity": 87, "Design Complexity": 83, "Historical Significance": 78, "Visitor Popularity": 85}},
+{name: "Garden: Jardim Botânico do Rio de Janeiro (Brazil)", attributes: {Location: "Rio de Janeiro, Brazil", "Year Established": "1808", "Botanical Diversity": 97, "Design Complexity": 85, "Historical Significance": 90, "Visitor Popularity": 89}},
+{name: "Garden: Jardim da Fundação Gulbenkian (Portugal)", attributes: {Location: "Lisbon, Portugal", "Year Established": "1969", "Botanical Diversity": 79, "Design Complexity": 88, "Historical Significance": 80, "Visitor Popularity": 83}},
+{name: "Garden: Jardim das Plantas (Jardin des Plantes, Paris)", attributes: {Location: "Paris, France", "Year Established": "1626", "Botanical Diversity": 96, "Design Complexity": 87, "Historical Significance": 97, "Visitor Popularity": 88}},
+{name: "Garden: Jardim do Palácio de Het Loo (Netherlands)", attributes: {Location: "Apeldoorn, Netherlands", "Year Established": "17th Century", "Botanical Diversity": 70, "Design Complexity": 86, "Historical Significance": 91, "Visitor Popularity": 80}},
+{name: "Garden: Jardim do Palácio de Pedro, o Grande (Peterhof Gardens)", attributes: {Location: "Saint Petersburg, Russia", "Year Established": "1723", "Botanical Diversity": 75, "Design Complexity": 95, "Historical Significance": 98, "Visitor Popularity": 89}},
+{name: "Garden: Jardim do Templo de Byodo-in (Japan)", attributes: {Location: "Uji, Kyoto, Japan", "Year Established": "11th Century", "Botanical Diversity": 72, "Design Complexity": 86, "Historical Significance": 94, "Visitor Popularity": 80}},
+{name: "Garden: Jardim Secreto de Heligan (The Lost Gardens of Heligan)", attributes: {Location: "Cornwall, England", "Year Established": "18th Century (rediscovered 1990s)", "Botanical Diversity": 93, "Design Complexity": 90, "Historical Significance": 88, "Visitor Popularity": 85}},
+{name: "Garden: Jardin Majorelle (Morocco)", attributes: {Location: "Marrakech, Morocco", "Year Established": "1920s", "Botanical Diversity": 85, "Design Complexity": 87, "Historical Significance": 86, "Visitor Popularity": 90}},
+{name: "Garden: Keukenhof Gardens (Netherlands)", attributes: {Location: "Lisse, Netherlands", "Year Established": "1949", "Botanical Diversity": 98, "Design Complexity": 90, "Historical Significance": 70, "Visitor Popularity": 94}},
+{name: "Garden: Kirstenbosch National Botanical Garden (South Africa)", attributes: {Location: "Cape Town, South Africa", "Year Established": "1913", "Botanical Diversity": 98, "Design Complexity": 88, "Historical Significance": 85, "Visitor Popularity": 86}},
+{name: "Garden: Mirabell Gardens (Austria)", attributes: {Location: "Salzburg, Austria", "Year Established": "1606", "Botanical Diversity": 69, "Design Complexity": 87, "Historical Significance": 92, "Visitor Popularity": 84}},
+{name: "Garden: Missouri Botanical Garden (USA)", attributes: {Location: "St. Louis, USA", "Year Established": "1859", "Botanical Diversity": 98, "Design Complexity": 87, "Historical Significance": 89, "Visitor Popularity": 86}},
+{name: "Garden: Nong Nooch Tropical Botanical Garden (Thailand)", attributes: {Location: "Chonburi, Thailand", "Year Established": "1954", "Botanical Diversity": 95, "Design Complexity": 92, "Historical Significance": 76, "Visitor Popularity": 91}},
+{name: "Garden: Nong Nooch Tropical Garden (Thailand)", attributes: {Location: "Pattaya, Thailand", "Year Established": "1954", "Botanical Diversity": 95, "Design Complexity": 92, "Historical Significance": 75, "Visitor Popularity": 91}},
+{name: "Garden: Royal Botanic Gardens, Kew (UK)", attributes: {Location: "London, England", "Year Established": "1759", "Botanical Diversity": 100, "Design Complexity": 91, "Historical Significance": 100, "Visitor Popularity": 96}},
+{name: "Garden: Ryoan-ji Zen Garden (Japan)", attributes: {Location: "Kyoto, Japan", "Year Established": "15th Century", "Botanical Diversity": 40, "Design Complexity": 85, "Historical Significance": 96, "Visitor Popularity": 88}},
+{name: "Garden: Shinjuku Gyoen National Garden (Japan)", attributes: {Location: "Tokyo, Japan", "Year Established": "1906", "Botanical Diversity": 90, "Design Complexity": 86, "Historical Significance": 85, "Visitor Popularity": 89}},
+{name: "Garden: Singapore Gardens by the Bay (Singapore)", attributes: {Location: "Singapore", "Year Established": "2012", "Botanical Diversity": 96, "Design Complexity": 99, "Historical Significance": 70, "Visitor Popularity": 93}},
+{name: "Garden: Suzhou Classical Gardens (China)", attributes: {Location: "Suzhou, China", "Year Established": "11th Century", "Botanical Diversity": 78, "Design Complexity": 92, "Historical Significance": 98, "Visitor Popularity": 90}},
+{name: "Garden: Tenryu-ji Garden (Japan)", attributes: {Location: "Kyoto, Japan", "Year Established": "1339", "Botanical Diversity": 74, "Design Complexity": 88, "Historical Significance": 97, "Visitor Popularity": 83}},
+{name: "Garden: Villa d'Este Gardens (Italy)", attributes: {Location: "Tivoli, Italy", "Year Established": "1550", "Botanical Diversity": 76, "Design Complexity": 94, "Historical Significance": 98, "Visitor Popularity": 88}},
+{name: "Garden: Villa Lante Gardens (Italy)", attributes: {Location: "Bagnaia, Italy", "Year Established": "16th Century", "Botanical Diversity": 68, "Design Complexity": 88, "Historical Significance": 92, "Visitor Popularity": 82}},  
+];
   
-      if (selectedCards.length === 0) {
-        alert("Please select at least one theme!");
-        return;
-      }
-  
-      // Shuffle selected cards
-      const shuffledCards = shuffleArray(selectedCards);
-  
-      // Display shuffled cards with pagination
-      const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
-      displayPaginatedCards(shuffledCards, cardsPerPage);
-    }
-  
-    // Function to display paginated cards
-    function displayPaginatedCards(cards, cardsPerPage) {
-      const cardsContainer = document.getElementById('cardsContainer');
-      cardsContainer.innerHTML = ''; // Clear previous content
-  
-      for (let i = 0; i < cards.length; i += cardsPerPage) {
-        const pageDiv = document.createElement('div');
-        pageDiv.className = 'page';
-  
-        const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
-          <h3>${card.name}</h3>
-          <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
-        `).join('<br>');
-  
-        pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
-        cardsContainer.appendChild(pageDiv);
-      }
-    }
-  
-    // Function to shuffle Action and Rules
-    function shuffleDeck(deck, resultId) {
-      const randomRule = deck[Math.floor(Math.random() * deck.length)];
-    
-    // Substitui as quebras de linha por <br> para o HTML
-    const formattedRule = randomRule.replace(/\n/g, '<br>');
-  
-    // Exibe a regra com as quebras de linha no HTML
-    document.getElementById(resultId).innerHTML = formattedRule;
-    }
-  
-    // Event listeners for the Shuffle buttons
-    document.getElementById('shuffleActionButton').addEventListener('click', function() {
-      shuffleDeck(actions, 'actionResult');
-    });
-  
-  
-  
-    // Event listener for the ALL button
-    document.getElementById('startButton').addEventListener('click', function() {
-      shuffleCards(); // Only shuffles cards, not Action and Rules
-    });
-  </script>
-  
-  <style>
-          body {
-    background-color: black;
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
   }
-    .round-button {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: none;
-      background-color: #E4C58A;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      text-align: center;
-      line-height: 50px;
-      transition: background-color 0.3s;
-      margin: 20px 0;
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('arcCheckbox').checked) selectedCards.push(...arc);
+    if (document.getElementById('projCheckbox').checked) selectedCards.push(...proj);
+    if (document.getElementById('landCheckbox').checked) selectedCards.push(...land);
+    if (document.getElementById('gardCheckbox').checked) selectedCards.push(...gard);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
     }
-  
-    .round-button:hover {
-      background-color: #6E1919;
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
     }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
   
-    .shuffle-button {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: none;
-      background-color: #E4C58A;
-      color: white;
-      font-size: 14px;
-      cursor: pointer;
-      text-align: center;
-      line-height: 40px;
-      transition: background-color 0.3s;
-      margin: 10px 0;
-    }
-  
-    .shuffle-button:hover {
-      background-color: #6E1919;
-    }
-  
-    .page {
-      margin-top: 20px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      background-color: #f9f9f9;
-    }
-  </style>
-  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+		body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

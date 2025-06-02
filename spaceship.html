@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Space Exploration</title>
+</head>
+<body>
+  <div style="text-align: center;">
+    <h2 style="color: white;">Spaceship</h2>
+  
+    <p style="color: white;">Collect minerals and get hints from UFOs to get the wormhole code!</p>
+  
+    <!-- Restart button -->
+    <div style="margin-top: 20px;">
+      <button id="restartButton" class="round-button">Restart</button>
+    </div>
+    <!-- Grid Selector -->
+    <div>
+      <label for="gridSelector" style="color: white;">Choose a grid:</label>
+      <select id="gridSelector">
+        <option value="grid1">Grid 1</option>
+        <option value="grid2">Grid 2</option>
+        <option value="grid3">Grid 3</option>
+      </select>
+      <button id="loadGridButton" class="round-button">Load</button>
+    </div>
+    <!-- Grid -->
+    <div id="gameGrid">
+      <!-- Grid will be generated here -->
+    </div>
+  
+    <!-- Game messages -->
+    <p id="gameMessage" style="color: white; font-weight: bold;">Use the arrow keys or the buttons below!</p>
+    <p style="color: white;">Minerals Collected: <span id="collectedItems">0</span> / <span id="totalItems">0</span></p>
+    <p style="color: white;">Moves: <span id="moveCount">0</span></p>
+    <p style="color: white;">Elapsed Time: <span id="timeElapsed">0</span> seconds</p>
+
+    <!-- Movement controls -->
+    <div id="controls" style="margin-top: 20px;">
+      <button class="round-button2" id="leftButton">←</button>
+      <button class="round-button2" id="upButton">↑</button>
+      <button class="round-button2" id="downButton">↓</button>
+      <button class="round-button2" id="rightButton">→</button>
+    </div>
+  </div>
+
+  <!-- Wormhole password modal -->
+  <div id="passwordModal" class="modal">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <p>To use the wormhole, enter the code:</p>
+      <input type="password" id="wormholePasswordInput" />
+      <button id="submitPassword">Submit</button>
+    </div>
+  </div>
+
+  <script>
+  
+  // Definition of terrain types
+const terrainTypes = {
+  'A': { color: 'black', text: '🚀' },
+  'B': { color: 'black', text: '' },
+  'C': { color: 'black', text: '🌀' },
+  'D': { color: 'black', text: '🌙' },
+  'E': { color: 'black', text: '🪐' },
+  'F': { color: 'black', text: '💎' },
+  'G': { color: 'black', text: '🛰️' },
+  'H': { color: 'black', text: '🪨' },
+  'I': { color: 'black', text: '🌎' },
+  'J': { color: 'black', text: '🌕' },
+  'K': { color: 'black', text: '🌝' },
+  'L': { color: 'black', text: '🌞' },
+  'M': { color: 'black', text: '⭐' },
+  'N': { color: 'black', text: '✨' },
+  'O': { color: 'black', text: '☀️' },
+  'P': { color: 'black', text: '💫' },
+  'Q': { color: 'black', text: '🌚' },
+  'R': { color: 'black', text: '🛸' },
+  'S': { color: 'black', text: '👾' }
+};
+
+// Predefined grids (30x30)
+const grids = {
+  'grid1': {
+    gridData: [
+      ['A', 'P', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'D', 'F', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B'],
+  ['B', 'B', 'G', 'C', 'S', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'F', 'B', 'D', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'B', 'N', 'B', 'B', 'B', 'B', 'E', 'Q', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'E', 'B', 'B', 'P', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'E', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'N', 'B', 'B', 'P', 'B', 'B', 'D', 'B', 'B', 'B', 'D', 'B', 'B', 'B'],
+  ['B', 'N', 'B', 'B', 'B', 'I', 'B', 'O', 'B', 'B', 'B', 'B', 'F', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'E', 'B', 'R', 'B'],
+  ['B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'N', 'B', 'B', 'B', 'O', 'B', 'B', 'D', 'B', 'D', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'P', 'B', 'N', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'B', 'B', 'D', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'B'],
+  ['B', 'B', 'B', 'D', 'B', 'E', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'B', 'E', 'Q', 'B', 'B', 'P', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'B', 'B', 'B', 'H', 'B', 'D', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'F', 'B', 'D', 'B', 'B', 'B', 'B', 'R', 'B', 'B', 'H', 'B', 'B', 'I', 'F', 'B', 'N', 'B', 'B', 'B', 'B', 'F', 'F', 'F', 'F', 'F'],
+  ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'F', 'F', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'F', 'F', 'F', 'F'],
+  ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'H', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
+  ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'H', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'F'],
+  ['B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'H', 'B', 'P', 'B', 'B', 'B', 'R', 'B', 'N', 'B', 'B', 'B', 'B', 'P', 'B', 'B'],
+  ['P', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'D', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'E', 'P', 'Q', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'D', 'B', 'B', 'D', 'B', 'E', 'D', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'N', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'Q', 'E', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'E', 'D', 'B', 'B', 'B', 'F', 'P', 'B', 'B', 'B', 'B', 'H', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'O', 'N', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'D', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'H', 'B', 'B', 'N', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'I', 'B', 'B', 'B', 'P'],
+  ['B', 'B', 'B', 'B', 'B', 'I', 'B', 'O', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'P', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F'],
+  ['B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'Q', 'B', 'N', 'B', 'B', 'H', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'B'],
+  ['P', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'E', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'D', 'E', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'N', 'B', 'B', 'D', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'F', 'B', 'B', 'B', 'N', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'H', 'G', 'C', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B'],
+  ['R', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'S', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'F', 'B']
+    ],
+    hints: {
+      '12,11': 'The wormhole code is 42'
+      // Adicione mais dicas conforme necessário
+    },
+    wormholePairs: [
+      [{ row: 2, col: 3, password: 42 }, { row: 28, col: 16, password: 5678 }],
+      // Adicione mais pares conforme necessário
+    ],
+  },
+  'grid2': {
+    gridData: [
+      ['F', 'P', 'F', 'F', 'B', 'B', 'B', 'B', 'B', 'H', 'G', 'C', 'S', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'F', 'F', 'B', 'F', 'H'],
+  ['B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'F', 'H', 'H', 'B', 'H', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'D', 'F', 'B', 'B', 'B', 'B', 'B', 'F', 'H', 'H'],
+  ['B', 'F', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'H', 'N', 'B', 'H', 'B', 'B', 'H', 'F', 'B', 'D', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'B', 'H', 'H', 'F'],
+  ['B', 'B', 'B', 'B', 'B', 'N', 'B', 'B', 'B', 'B', 'E', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'E', 'B', 'B', 'P', 'B', 'B', 'H', 'H', 'B', 'F'],
+  ['B', 'B', 'B', 'E', 'B', 'B', 'B', 'B', 'B', 'B', 'O', 'F', 'B', 'H', 'B', 'B', 'N', 'B', 'B', 'P', 'B', 'B', 'D', 'B', 'B', 'H', 'H', 'B', 'B', 'F'],
+  ['B', 'N', 'B', 'B', 'B', 'I', 'B', 'O', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'H', 'E', 'B', 'R', 'B'],
+  ['B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'B', 'B', 'O', 'H', 'H', 'D', 'B', 'D', 'B', 'B'],
+  ['B', 'B', 'B', 'H', 'H', 'H', 'H', 'B', 'P', 'B', 'N', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'F', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'H', 'H', 'B', 'H', 'H', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'H', 'B', 'B', 'D', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'B'],
+  ['H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'E', 'Q', 'H', 'H', 'P', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'B', 'H', 'B', 'B', 'B', 'D', 'B', 'H', 'H', 'B', 'F', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'F', 'B', 'D', 'B', 'B', 'B', 'B', 'R', 'H', 'B', 'B', 'F', 'B', 'H', 'H', 'N', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'H', 'H', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'H', 'H', 'H', 'H', 'B'],
+  ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'H', 'H', 'B', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'H', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'F'],
+  ['B', 'B', 'B', 'H', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'F', 'H', 'H', 'B', 'P', 'B', 'B', 'B', 'R', 'B', 'N', 'B', 'B', 'B', 'B', 'P', 'B', 'B'],
+  ['P', 'B', 'F', 'H', 'B', 'B', 'B', 'B', 'D', 'B', 'B', 'B', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'E', 'P', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'D', 'B', 'B', 'D', 'B', 'E', 'D', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'H', 'N', 'F', 'B', 'B', 'B', 'B', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'Q', 'E', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'B', 'B', 'F', 'F', 'B', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F'],
+  ['B', 'B', 'B', 'E', 'D', 'B', 'F', 'F', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'O', 'N', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['F', 'B', 'D', 'B', 'B', 'B', 'B', 'H', 'H', 'B', 'B', 'B', 'N', 'B', 'B', 'B', 'B', 'N', 'H', 'B', 'B', 'B', 'F', 'B', 'B', 'I', 'B', 'B', 'B', 'P'],
+  ['F', 'B', 'F', 'F', 'B', 'I', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'P', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['F', 'B', 'B', 'B', 'B', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F'],
+  ['F', 'B', 'B', 'B', 'H', 'H', 'B', 'B', 'B', 'Q', 'B', 'N', 'B', 'B', 'B', 'F', 'B', 'B', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'B'],
+  ['P', 'B', 'F', 'H', 'H', 'B', 'B', 'B', 'E', 'B', 'B', 'B', 'B', 'H', 'H', 'H', 'H', 'H', 'H', 'B', 'B', 'B', 'B', 'D', 'E', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'H', 'H', 'N', 'B', 'B', 'D', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'N', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['A', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'G', 'C', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B'],
+  ['H', 'H', 'F', 'F', 'F', 'F', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'B', 'S', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'F', 'B']
+    ],
+    hints: {
+      '12,11': 'The wormhole code is 710'
+      // Adicione mais dicas conforme necessário
+    },
+    wormholePairs: [
+      [{ row: 0, col: 11, password: 710 }, { row: 28, col: 16, password: 5678 }],
+      // Adicione mais pares conforme necessário
+    ],
+  },
+  'grid3': {
+    gridData: [
+      ['F', 'A', 'B', 'B', 'B', 'B', 'B', 'P', 'H', 'H', 'F', 'F', 'F', 'F', 'F', 'Q', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'N', 'F', 'F', 'Q'],
+  ['B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'H', 'H', 'B', 'B', 'B', 'P', 'B', 'B', 'B', 'B', 'B', 'P', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'F', 'B'],
+  ['B', 'O', 'B', 'D', 'B', 'B', 'B', 'H', 'H', 'B', 'B', 'F', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'N', 'B'],
+  ['B', 'E', 'B', 'B', 'B', 'F', 'F', 'H', 'H', 'B', 'B', 'F', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'D', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['D', 'B', 'Q', 'F', 'B', 'B', 'B', 'H', 'J', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'D', 'B', 'I', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'P', 'B', 'B', 'B', 'B', 'H', 'H', 'B', 'B', 'N', 'B', 'B', 'B', 'N', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'M', 'O', 'B', 'B', 'B', 'B', 'F', 'B'],
+  ['B', 'B', 'B', 'B', 'B', 'H', 'H', 'S', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'O', 'Q', 'B', 'B', 'I', 'D', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'F', 'B', 'H', 'C', 'F', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'E', 'B', 'O', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['F', 'B', 'F', 'B', 'J', 'H', 'G', 'F', 'B', 'F', 'B', 'B', 'B', 'F', 'F', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'D', 'B', 'B', 'Q', 'B', 'B', 'B', 'F'],
+  ['B', 'B', 'F', 'B', 'H', 'H', 'H', 'F', 'H', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'N', 'F', 'B', 'H', 'B', 'G', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'P', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'N', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'F', 'R', 'H', 'H', 'C', 'S', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B'],
+  ['B', 'B', 'B', 'H', 'H', 'H', 'F', 'B', 'H', 'H', 'B', 'B', 'F', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'F', 'B', 'B', 'B', 'B'],
+  ['F', 'B', 'H', 'H', 'B', 'B', 'B', 'B', 'H', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'H', 'F', 'B', 'B', 'B', 'B', 'B', 'H', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'H', 'H', 'F', 'B', 'P', 'B', 'B', 'B', 'H', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'P', 'B', 'B', 'B'],
+  ['C', 'G', 'H', 'F', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'B', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['S', 'H', 'N', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'H', 'H', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'R'],
+  ['H', 'F', 'F', 'F', 'F', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'H', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B'],
+  ['F', 'B', 'B', 'B', 'B', 'D', 'I', 'B', 'D', 'B', 'B', 'B', 'N', 'B', 'B', 'H', 'H', 'H', 'B', 'J', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'Q'],
+  ['Q', 'F', 'B', 'B', 'B', 'B', 'O', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'H', 'H', 'H', 'H', 'B', 'B', 'B', 'P', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'O', 'I', 'B', 'M', 'B', 'F', 'B', 'B', 'B', 'F', 'B', 'B', 'R', 'B', 'H', 'H', 'H', 'F', 'B', 'F', 'B', 'B', 'B', 'B', 'N', 'B', 'B'],
+  ['B', 'N', 'B', 'B', 'Q', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'P', 'B', 'B', 'B', 'B', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'N', 'H', 'B', 'F', 'B', 'B', 'F', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'H', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['F', 'B', 'B', 'B', 'B', 'F', 'B', 'P', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'H', 'H', 'B', 'B', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'P', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'N', 'B', 'B', 'B', 'B', 'P', 'B', 'B', 'B', 'F', 'H', 'H', 'F', 'H', 'B', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'B', 'N', 'B', 'B', 'B', 'F', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'H', 'H', 'H', 'F', 'B', 'B', 'B'],
+  ['B', 'B', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'F', 'B', 'B', 'B', 'B', 'F', 'B', 'B', 'F', 'B', 'N', 'B', 'B', 'S', 'C', 'H', 'H', 'H', 'B', 'F'],
+  ['B', 'F', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'F', 'F', 'B', 'G', 'H', 'H', 'H', 'F']
+    ],
+    hints: {
+      '11,3': 'The wormhole code is 720',
+      '21,15': 'The wormhole code is 410'
+      // Adicione mais dicas conforme necessário
+    },
+    wormholePairs: [
+      [{ row: 16, col: 0, password: 720 }, { row: 11, col: 6, password: 5678 }],
+      [{ row: 28, col: 24, password: 410 }, { row: 7, col: 6, password: 5678 }],
+      // Adicione mais pares conforme necessário
+    ],
+  }
+};
+
+const gridSize = 30; // Fixed grid size of 30x30
+const visibleGridSize = 7;  // Visible grid size is always 7x7
+let currentGrid = []; // The current grid will be assigned when loading a grid
+let playerPosition = { row: 0, col: 0 }; // Spaceship's position
+
+let moveCount = 0;
+let collectedItems = 0; // Number of minerals collected
+let totalItems = 0;     // Total number of minerals to collect
+let timerInterval;
+let timeElapsed = 0;
+let gameOver = false;
+const visibilityRadius = 3; // Visibility radius (used to reveal cells around the player)
+
+
+
+// Function to create an empty grid of size gridSize x gridSize
+function createEmptyGrid(size) {
+  const grid = [];
+  for (let i = 0; i < size; i++) {
+    const row = new Array(size).fill('B');
+    grid.push(row);
+  }
+  return grid;
+}
+
+// Function to make a deep copy of the grid
+function deepCopyGrid(grid) {
+  return grid.map(row => row.slice());
+}
+
+// Function to find the player's position in the grid
+function findPlayerPosition(grid) {
+  for (let row = 0; row < grid.length; row++) {
+    for (let col = 0; col < grid[row].length; col++) {
+      if (grid[row][col] === 'A') {
+        return { row: row, col: col };
+      }
+    }
+  }
+  // If not found, default to (0,0)
+  return { row: 0, col: 0 };
+}
+
+// Function to calculate the total number of minerals in the grid
+function calculateTotalItems(grid) {
+  let count = 0;
+  grid.forEach(row => {
+    row.forEach(cell => {
+      if (cell === 'F') {
+        count++;
+      }
+    });
+  });
+  return count;
+}
+
+// Function to start the timer
+function startTimer() {
+  clearInterval(timerInterval);
+  timeElapsed = 0;
+  document.getElementById('timeElapsed').textContent = timeElapsed;
+  timerInterval = setInterval(() => {
+    timeElapsed++;
+    document.getElementById('timeElapsed').textContent = timeElapsed;
+  }, 1000);
+}
+
+// Function to stop the timer
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// Function to display messages to the player
+function displayMessage(message) {
+  const gameMessage = document.getElementById('gameMessage');
+  gameMessage.textContent = message;
+  setTimeout(() => {
+    if (gameMessage.textContent === message) {
+      gameMessage.textContent = '';
+    }
+  }, 3000);
+}
+
+// Function to render the 7x7 grid around the player
+function renderGrid() {
+  const gridContainer = document.getElementById('gameGrid');
+  gridContainer.innerHTML = ''; // Clear the previous grid
+
+  // Set the CSS grid-template-columns property to display 7 columns
+  gridContainer.style.gridTemplateColumns = `repeat(${visibleGridSize}, 40px)`;
+
+  // Determine the starting row and column for rendering
+  let startRow = playerPosition.row - Math.floor(visibleGridSize / 2);
+  let startCol = playerPosition.col - Math.floor(visibleGridSize / 2);
+
+  for (let row = 0; row < visibleGridSize; row++) {
+    for (let col = 0; col < visibleGridSize; col++) {
+      const actualRow = startRow + row;
+      const actualCol = startCol + col;
+
+      const cellDiv = document.createElement('div');
+      cellDiv.className = 'grid-cell';
+      cellDiv.style.backgroundColor = 'black'; // Start with everything dark
+
+      // Check if the actual position is within the grid boundaries
+      if (actualRow >= 0 && actualRow < gridSize && actualCol >= 0 && actualCol < gridSize) {
+        const cell = currentGrid[actualRow][actualCol];
+
+        // Reveal cells based on visibility radius
+        if (Math.abs(playerPosition.row - actualRow) <= visibilityRadius && Math.abs(playerPosition.col - actualCol) <= visibilityRadius) {
+          cellDiv.style.backgroundColor = terrainTypes[cell]?.color || 'black';
+          cellDiv.textContent = terrainTypes[cell]?.text || '';
+        }
+      }
+
+      gridContainer.appendChild(cellDiv);
+    }
+  }
+}
+
+// Function to check for hints when near planets, moons, or satellites
+function checkForHints() {
+  const selectedGrid = document.getElementById('gridSelector').value;  // Pegue o grid atual
+  const gridHints = grids[selectedGrid].hints;  // Dicas específicas para o grid selecionado
+
+  for (let row = playerPosition.row - 1; row <= playerPosition.row + 1; row++) {
+    for (let col = playerPosition.col - 1; col <= playerPosition.col + 1; col++) {
+      if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
+        const key = `${row},${col}`;  // Crie a chave para as coordenadas
+        if (gridHints[key]) {  // Verifique se há uma dica nessa posição
+          displayMessage(gridHints[key]);  // Exiba a dica
+        }
+      }
+    }
+  }
+}
+
+
+let correctPassword = '';
+let currentRow = 0;
+let currentCol = 0;
+
+document.getElementById('submitPassword').addEventListener('click', handlePasswordSubmit);
+document.getElementById('closeModal').addEventListener('click', closePasswordModal);
+
+function closePasswordModal() {
+  const modal = document.getElementById('passwordModal');
+  modal.style.display = 'none';
+  document.getElementById('wormholePasswordInput').value = ''; // Limpar o campo de senha
+}
+
+function openPasswordModal(row, col) {
+  const modal = document.getElementById('passwordModal');
+  modal.style.display = 'block';
+
+  // Pegar os wormholes do grid atual
+  const selectedGrid = document.getElementById('gridSelector').value;
+  const currentGridWormholes = grids[selectedGrid].wormholePairs;
+
+  // Encontrar o wormhole específico baseado na posição atual
+  const wormhole = currentGridWormholes.find(pair =>
+    (pair[0].row === row && pair[0].col === col) || (pair[1].row === row && pair[1].col === col)
+  );
+
+  // Se não encontrar o wormhole, sair da função
+  if (!wormhole) return;
+
+  // Verificar qual dos dois pares é a posição atual
+  if (wormhole[0].row === row && wormhole[0].col === col) {
+  correctPassword = String(wormhole[0].password);
+} else {
+  correctPassword = String(wormhole[1].password);
+}
+
+
+  // Armazenar a posição atual em variáveis globais
+  currentRow = row;
+  currentCol = col;
+}
+
+function handlePasswordSubmit() {
+  const inputPassword = document.getElementById('wormholePasswordInput').value;
+  
+
+  // Verificar se a senha inserida é a correta
+  if (inputPassword.trim().toLowerCase() === correctPassword.trim().toLowerCase()) {
+    // Senha correta, teletransportar o jogador
+    displayMessage('Correct code! You used wormhole.');
+
+    closePasswordModal();
+    teleportPlayer(currentRow, currentCol);  // Teleportar o jogador
+  } else {
+    // Senha incorreta
+    displayMessage('Incorrect code! Unable to use wormhole.');
+
+    closePasswordModal();
+  }
+}
+
+// Função para teletransportar o jogador para o outro wormhole
+function teleportPlayer(row, col) {
+  const selectedGrid = document.getElementById('gridSelector').value;
+  const currentGridWormholes = grids[selectedGrid].wormholePairs;
+  let destination = null;
+
+  // Encontrar o par correspondente do wormhole
+  for (const pair of currentGridWormholes) {
+    if (pair[0].row === row && pair[0].col === col) {
+      destination = pair[1]; // Definir o destino como o outro lado do wormhole
+      break;
+    } else if (pair[1].row === row && pair[1].col === col) {
+      destination = pair[0]; // Definir o destino como o outro lado do wormhole
+      break;
+    }
+  }
+
+  // Se encontrar o destino, teletransportar o jogador
+  if (destination) {
+    currentGrid[playerPosition.row][playerPosition.col] = 'B'; // Limpar a posição atual
+    playerPosition = { row: destination.row, col: destination.col }; // Atualizar para a nova posição
+    currentGrid[destination.row][destination.col] = 'A'; // Colocar o jogador na nova posição
+    renderGrid(); // Re-renderizar o grid
+  }
+}
+
+
+// Function to move the spaceship
+function movePlayer(direction) {
+  if (gameOver) return;
+
+  let newRow = playerPosition.row;
+  let newCol = playerPosition.col;
+
+  // Spaceship movement
+  if (direction === 'right') newCol++;
+  if (direction === 'left') newCol--;
+  if (direction === 'up') newRow--;
+  if (direction === 'down') newRow++;
+
+  // Keep the spaceship within the bounds of the grid
+  if (newRow < 0 || newRow >= gridSize || newCol < 0 || newCol >= gridSize) {
+    displayMessage('You cannot move in that direction!');
+    return;
+  }
+
+  const cell = currentGrid[newRow][newCol];
+
+  // Check if the new movement is blocked by a barrier
+  if (cell === 'D' || 
+      cell === 'E' || 
+      cell === 'G' || 
+      cell === 'H' || 
+      cell === 'I' || 
+      cell === 'J' || 
+      cell === 'K' || 
+      cell === 'L' || 
+      cell === 'M' || 
+      cell === 'N' || 
+      cell === 'O' || 
+      cell === 'P' || 
+      cell === 'Q' || 
+      cell === 'S' || 
+      cell === 'R') {
+    displayMessage('You cannot pass through here!');
+    return;
+  }
+
+  // Check if it is a wormhole
+  if (cell === 'C') {
+    // Request password
+    openPasswordModal(newRow, newCol);
+    return;
+  }
+
+  // Update the spaceship's position
+  currentGrid[playerPosition.row][playerPosition.col] = 'B'; // Clear the previous position
+  playerPosition = { row: newRow, col: newCol };
+  currentGrid[newRow][newCol] = 'A';
+
+  // Collect minerals, if any, in the cell
+  if (cell === 'F') {
+    collectedItems++;
+    document.getElementById('collectedItems').textContent = collectedItems;
+    displayMessage('You collected a mineral!');
+    // Remove the mineral from the grid
+    currentGrid[newRow][newCol] = 'A';
+  }
+
+  // Check for victory
+  if (collectedItems === totalItems) {
+    gameOver = true;
+    displayMessage('You collected all the minerals! Congratulations!');
+    stopTimer();
+    return;
+  }
+
+  moveCount++;
+  document.getElementById('moveCount').textContent = moveCount;
+
+  // Check for hints
+  checkForHints();
+
+  // Re-render the grid
+  renderGrid();
+}
+
+// Function to reset the game state
+function resetGameState() {
+  moveCount = 0;
+  collectedItems = 0;
+  timeElapsed = 0;
+  gameOver = false;
+  clearInterval(timerInterval);
+
+
+  const selectedGrid = document.getElementById('gridSelector').value;
+  
+
+  // Restaurar o currentGrid ao estado inicial
+  currentGrid = deepCopyGrid(grids[selectedGrid].gridData);
+
+  // Encontrar a posição inicial do jogador
+  playerPosition = findPlayerPosition(currentGrid);
+
+  document.getElementById('collectedItems').textContent = collectedItems;
+  document.getElementById('moveCount').textContent = moveCount;
+  document.getElementById('gameMessage').textContent = '';
+
+
+
+
+  // Calculate total minerals
+  totalItems = calculateTotalItems(currentGrid);
+  document.getElementById('totalItems').textContent = totalItems;
+
+  startTimer();
+  renderGrid();
+}
+
+// Função para carregar o grid selecionado
+function loadSelectedGrid() {
+  const selectedGrid = document.getElementById('gridSelector').value;
+  currentGrid = grids[selectedGrid].gridData;
+  playerPosition = findPlayerPosition(currentGrid);
+  resetGameState();
+}
+
+// Movement of the spaceship using keyboard arrow keys
+document.addEventListener('keydown', (event) => {
+  if (['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown'].includes(event.key)) {
+    event.preventDefault();
+    const direction = event.key.replace('Arrow', '').toLowerCase();
+    movePlayer(direction);
+  }
+});
+
+// Movement of the spaceship using control buttons
+document.getElementById('upButton').addEventListener('click', () => movePlayer('up'));
+document.getElementById('downButton').addEventListener('click', () => movePlayer('down'));
+document.getElementById('leftButton').addEventListener('click', () => movePlayer('left'));
+document.getElementById('rightButton').addEventListener('click', () => movePlayer('right'));
+
+// Function to restart the game
+document.getElementById('restartButton').addEventListener('click', resetGameState);
+
+// Function to load the grid when the button is clicked
+document.getElementById('loadGridButton').addEventListener('click', loadSelectedGrid);
+
+// Start the game by loading the first grid
+loadSelectedGrid();
+
+  </script>
+</body>
+</html>
+<style>
+body {
+  background-color: black;
+}
+
+.round-button {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+  background-color: #E4C58A;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+  line-height: 80px;
+  transition: background-color 0.3s;
+  margin: 10px;
+}
+
+.round-button:hover {
+  background-color: #6E1919;
+}
+
+.grid-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em;
+  border: 0px solid #000;
+  width: 40px;
+  height: 40px;
+}
+
+#gameGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 40px); /* Always display 7 columns */
+  gap: 0px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+#gameMessage {
+  font-weight: bold;
+  color: white;
+}
+
+.control-button {
+  width: 60px;
+  height: 60px;
+  font-size: 2em;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.control-button:hover {
+  background-color: #1C86EE;
+}
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* Center vertically */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+  max-width: 300px;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+.round-button2 {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px;
+  }
+
+.round-button2:hover {
+    background-color: #6E1919;
+  }
+</style>

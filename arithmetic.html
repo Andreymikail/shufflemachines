@@ -1,0 +1,133 @@
+<div style="text-align: center; color: white;">
+  <h2 style="color: white;">Arithmetic</h2>
+
+  <label>Duration (seconds):</label>
+  <input type="number" id="gameDuration" value="30" min="5" max="300"><br><br>
+
+  <label>Digits:</label>
+  <select id="digitCount">
+    <option value="1">1 digit</option>
+    <option value="2">2 digits</option>
+    <option value="3">3 digits</option>
+    <option value="4">4 digits</option>
+  </select><br><br>
+
+  <label>Operations:</label><br>
+  <input type="checkbox" id="add" checked> + 
+  <input type="checkbox" id="sub" checked> - 
+  <input type="checkbox" id="mul" checked> × <br><br>
+
+  <button onclick="startGame()" class="round-button">Start</button><br><br>
+
+  <h3 id="question" style="font-size: 32px;color: white;"></h3>
+
+  <input type="number" id="answerInput" placeholder="Your answer" onkeydown="checkEnter(event)" disabled>
+  <p id="feedback"></p>
+
+  <h4 style="color: white;">Time Left: <span id="timeLeft">0</span> seconds</h4>
+  <h4 style="color: white;">Correct Answers: <span id="score">0</span></h4>
+</div>
+
+<script>
+  let timeLeft = 0;
+  let timer;
+  let correctAnswer = 0;
+  let score = 0;
+
+  function startGame() {
+    const duration = parseInt(document.getElementById('gameDuration').value);
+    timeLeft = duration;
+    score = 0;
+    document.getElementById('score').textContent = score;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('answerInput').disabled = false;
+    document.getElementById('answerInput').value = '';
+    document.getElementById('answerInput').focus();
+    document.getElementById('timeLeft').textContent = timeLeft;
+    
+    nextQuestion();
+    clearInterval(timer);
+    timer = setInterval(() => {
+      timeLeft--;
+      document.getElementById('timeLeft').textContent = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        document.getElementById('feedback').textContent = 'Time\'s up!';
+        document.getElementById('answerInput').disabled = true;
+        document.getElementById('question').textContent = '';
+      }
+    }, 1000);
+  }
+
+  function getOperations() {
+    let ops = [];
+    if (document.getElementById('add').checked) ops.push('+');
+    if (document.getElementById('sub').checked) ops.push('-');
+    if (document.getElementById('mul').checked) ops.push('*');
+    return ops;
+  }
+
+  function nextQuestion() {
+    const digits = parseInt(document.getElementById('digitCount').value);
+    const max = Math.pow(10, digits) - 1;
+    const a = Math.floor(Math.random() * (max + 1));
+    const b = Math.floor(Math.random() * (max + 1));
+    const ops = getOperations();
+    if (ops.length === 0) {
+      document.getElementById('feedback').textContent = 'Select at least one operation.';
+      return;
+    }
+    const op = ops[Math.floor(Math.random() * ops.length)];
+    document.getElementById('question').textContent = `${a} ${op === '*' ? '×' : op} ${b}`;
+    correctAnswer = eval(`${a} ${op} ${b}`);
+    document.getElementById('answerInput').value = '';
+    document.getElementById('answerInput').focus();
+  }
+
+  function checkEnter(event) {
+    if (event.key === "Enter") {
+      const userAnswer = parseInt(document.getElementById('answerInput').value);
+      if (userAnswer === correctAnswer) {
+        score++;
+        document.getElementById('feedback').textContent = '✅ Correct!';
+      } else {
+        document.getElementById('feedback').textContent = `❌ Wrong! Correct: ${correctAnswer}`;
+      }
+      document.getElementById('score').textContent = score;
+      if (timeLeft > 0) nextQuestion();
+    }
+  }
+</script>
+
+<style>
+  body {
+    background-color: #2c2c2c;
+    font-family: Arial, sans-serif;
+  }
+
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+    color: white;
+  }
+
+  input[type="number"] {
+    padding: 8px;
+    font-size: 16px;
+    width: 120px;
+  }
+</style>

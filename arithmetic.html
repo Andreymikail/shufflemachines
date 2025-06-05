@@ -15,7 +15,8 @@
   <label>Operations:</label><br>
   <input type="checkbox" id="add" checked> + 
   <input type="checkbox" id="sub" checked> - 
-  <input type="checkbox" id="mul" checked> × <br><br>
+  <input type="checkbox" id="mul" checked> ×
+  <input type="checkbox" id="div" checked> ÷ <br><br>
 
   <button onclick="startGame()" class="round-button">Start</button><br><br>
 
@@ -52,7 +53,7 @@
       document.getElementById('timeLeft').textContent = timeLeft;
       if (timeLeft <= 0) {
         clearInterval(timer);
-        document.getElementById('feedback').textContent = 'Time\'s up!';
+        document.getElementById('feedback').textContent = '⏱️ Time\'s up!';
         document.getElementById('answerInput').disabled = true;
         document.getElementById('question').textContent = '';
       }
@@ -64,25 +65,50 @@
     if (document.getElementById('add').checked) ops.push('+');
     if (document.getElementById('sub').checked) ops.push('-');
     if (document.getElementById('mul').checked) ops.push('*');
+    if (document.getElementById('div').checked) ops.push('/');
     return ops;
   }
 
   function nextQuestion() {
-    const digits = parseInt(document.getElementById('digitCount').value);
-    const max = Math.pow(10, digits) - 1;
-    const a = Math.floor(Math.random() * (max + 1));
-    const b = Math.floor(Math.random() * (max + 1));
-    const ops = getOperations();
-    if (ops.length === 0) {
-      document.getElementById('feedback').textContent = 'Select at least one operation.';
-      return;
-    }
-    const op = ops[Math.floor(Math.random() * ops.length)];
-    document.getElementById('question').textContent = `${a} ${op === '*' ? '×' : op} ${b}`;
-    correctAnswer = eval(`${a} ${op} ${b}`);
-    document.getElementById('answerInput').value = '';
-    document.getElementById('answerInput').focus();
+  const digits = parseInt(document.getElementById('digitCount').value);
+  const maxDividend = Math.pow(10, digits) - 1;
+  const ops = getOperations();
+
+  if (ops.length === 0) {
+    document.getElementById('feedback').textContent = '⚠️ Select at least one operation.';
+    return;
   }
+
+  let a, b, op, q;
+  do {
+    op = ops[Math.floor(Math.random() * ops.length)];
+
+    if (op === '/') {
+  const useTwoDigitsForDivisor = digits > 2;
+  const minDenominator = useTwoDigitsForDivisor ? 10 : 2;
+  const maxDenominator = useTwoDigitsForDivisor ? 99 : 9;
+
+  do {
+    b = Math.floor(Math.random() * (maxDenominator - minDenominator + 1)) + minDenominator;
+  } while (b === 0); // segurança
+
+  q = Math.floor(Math.random() * (Math.floor(maxDividend / b))) + 1; // q >= 1
+  a = b * q;
+  correctAnswer = q;
+    } else {
+      a = Math.floor(Math.random() * (maxDividend + 1));
+      b = Math.floor(Math.random() * (maxDividend + 1));
+      if (op === '-' && b > a) [a, b] = [b, a]; // evita negativos se quiser
+      correctAnswer = eval(`${a} ${op} ${b}`);
+    }
+  } while (correctAnswer === 1); // evita resultado 1
+
+  const symbol = op === '*' ? '×' : (op === '/' ? '÷' : op);
+  document.getElementById('question').textContent = `${a} ${symbol} ${b}`;
+  document.getElementById('answerInput').value = '';
+  document.getElementById('answerInput').focus();
+}
+
 
   function checkEnter(event) {
     if (event.key === "Enter") {
@@ -91,7 +117,7 @@
         score++;
         document.getElementById('feedback').textContent = '✅ Correct!';
       } else {
-        document.getElementById('feedback').textContent = `❌ Wrong! Correct: ${correctAnswer}`;
+        document.getElementById('feedback').textContent = `❌ Wrong! Answer: ${correctAnswer}`;
       }
       document.getElementById('score').textContent = score;
       if (timeLeft > 0) nextQuestion();

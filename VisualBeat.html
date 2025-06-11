@@ -16,8 +16,8 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background-color: #e8c82d;
-    transition: transform 0.1s ease-in-out;
+    background-color: #9746f4;
+    transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out;
   ">
   <br>
   </div>
@@ -26,8 +26,8 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background-color: #e8c82d;
-    transition: transform 0.1s ease-in-out;
+    background-color: #9746f4;
+    transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out;
   "></div>
   </div>
     <div id="beatCircle3" style="
@@ -35,10 +35,18 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background-color: #e8c82d;
-    transition: transform 0.1s ease-in-out;
+    background-color: #9746f4;
+    transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out;
   "></div>
-  
+  </div>
+    <div id="beatCircle4" style="
+    margin: 30px auto;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #9746f4;
+    transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out;
+  "></div>
 </div>
 
 <audio id="clickSound" src="" preload="auto"></audio>
@@ -48,37 +56,49 @@
   const beatCircle = document.getElementById('beatCircle');
   const beatCircle2 = document.getElementById('beatCircle2');
   const beatCircle3 = document.getElementById('beatCircle3');
-  const clickSound = document.getElementById('clickSound');
+  const beatCircle4 = document.getElementById('beatCircle4');
 
-  function playClick() {
-    clickSound.currentTime = 0;
-    clickSound.play();
-  }
 
-  function pulseVisual() {
-    beatCircle.style.transform = 'scale(1.2)';
-    setTimeout(() => {
-      beatCircle.style.transform = 'scale(1)';
-    }, 240);
-    
-    beatCircle2.style.transform = 'scale(0.8)';
-    setTimeout(() => {
-      beatCircle2.style.transform = 'scale(1)';
-    }, 240);
-    
-    beatCircle3.style.transform = 'scale(1.2)';
-    setTimeout(() => {
-      beatCircle3.style.transform = 'scale(1)';
-    }, 240);
-    
-  }
+function pulseVisual() {
+  // BeatCircle 1
+  beatCircle.style.transform = 'scale(1.2)';
+  beatCircle.style.opacity = '0.1';
+  setTimeout(() => {
+    beatCircle.style.transform = 'scale(1)';
+    beatCircle.style.opacity = '1';
+  }, 140);
+  
+  // BeatCircle 2
+  beatCircle2.style.transform = 'scale(0.8)';
+  beatCircle2.style.opacity = '0.1';
+  setTimeout(() => {
+    beatCircle2.style.transform = 'scale(1)';
+    beatCircle2.style.opacity = '1';
+  }, 240);
+  
+  // BeatCircle 3
+  beatCircle3.style.transform = 'scale(1.2)';
+  beatCircle3.style.opacity = '0.1';
+  setTimeout(() => {
+    beatCircle3.style.transform = 'scale(1)';
+    beatCircle3.style.opacity = '1';
+  }, 340);
+  
+  // BeatCircle 4
+  beatCircle4.style.transform = 'scale(0.8)';
+  beatCircle4.style.opacity = '0.1';
+  setTimeout(() => {
+    beatCircle4.style.transform = 'scale(1)';
+    beatCircle4.style.opacity = '1';
+  }, 440);
+}
+
 
   function startMetronome() {
     const bpm = parseInt(document.getElementById('bpmInput').value);
     const interval = 60000 / bpm;
 
     intervalId = setInterval(() => {
-      playClick();
       pulseVisual();
     }, interval);
   }

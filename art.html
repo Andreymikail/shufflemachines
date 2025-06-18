@@ -46,6 +46,7 @@
 const paint = [
 {name: "Paint: Adriana Varejão 🇧🇷", attributes: {Innovation: 95, Technique: 92, Fame: 85, Impact: 95, "Color Mastery": 90}},
 {name: "Paint: Albert Bierstadt (1830-1902) 🇩🇪🇺🇸", attributes: {Innovation: 80, Technique: 95, Fame: 80, Impact: 85, "Color Mastery": 90}},
+{name: "Paint: Albert Gleizes 🇫🇷", attributes: {Innovation: 95, Technique: 92, Fame: 88, Impact: 94, "Color Mastery": 90}},
 {name: "Paint: Alice Neel 🇺🇸", attributes: {Innovation: 92, Technique: 88, Fame: 85, Impact: 90, "Color Mastery": 87}},
 {name: "Paint: Alisha Taweel 🇺🇸", attributes: {Innovation: 85, Technique: 82, Fame: 70, Impact: 78, "Color Mastery": 88}},
 {name: "Paint: Allyson Grey 🇺🇸", attributes: {Innovation: 90, Technique: 88, Fame: 76, Impact: 85, "Color Mastery": 95}},
@@ -105,6 +106,7 @@ const paint = [
 {name: "Paint: Elena Lomakin 🇷🇺🇺🇸", attributes: {Innovation: 82, Technique: 80, Fame: 65, Impact: 72, "Color Mastery": 88}},
 {name: "Paint: Élisabeth Vigée Le Brun (1755-1842) 🇫🇷", attributes: {Innovation: 85, Technique: 95, Fame: 85, Impact: 85, "Color Mastery": 90}},
 {name: "Paint: Emily Kame Kngwarreye (1910-1996) 🇦🇺", attributes: {Innovation: 100, Technique: 85, Fame: 80, Impact: 95, "Color Mastery": 100}},
+{name: "Paint: Emily Valentine 🇺🇸", attributes: {Innovation: 85, Technique: 88, Fame: 75, Impact: 80, "Color Mastery": 92}},
 {name: "Paint: Eridan Xharahi 🇦🇱", attributes: {Innovation: 87, Technique: 89, Fame: 75, Impact: 85, "Color Mastery": 93}},
 {name: "Paint: Erin Hanson 🇺🇸", attributes: {Innovation: 90, Technique: 88, Fame: 75, Impact: 80, "Color Mastery": 95}},
 {name: "Paint: Ernie Barnes (1938-2009) 🇺🇸", attributes: {Innovation: 85, Technique: 90, Fame: 80, Impact: 85, "Color Mastery": 95}},
@@ -288,7 +290,7 @@ const paint = [
 {name: "Paint: Zinaida Serebriakova (1884-1967) 🇷🇺🇫🇷", attributes: {Innovation: 85, Technique: 95, Fame: 80, Impact: 85, "Color Mastery": 90}},
   ];
 
-  const sculp = [
+  const sculp = [ 
 {name: "Sculpture: Alberto Giacometti (1901–1966) 🇨🇭", attributes: {Innovation: 95, Technique: 90, Fame: 95, Impact: 100, "Material Mastery": 90}},
 {name: "Sculpture: Alexander Calder (1898–1976) 🇺🇸", attributes: {Innovation: 100, Technique: 85, Fame: 95, Impact: 100, "Material Mastery": 90}},
 {name: "Sculpture: Alex Bernstein (1972–) 🇺🇸", attributes: {Innovation: 92, Technique: 95, Fame: 80, Impact: 85, "Material Mastery": 95}},
@@ -343,6 +345,7 @@ const paint = [
 {name: "Sculpture: Jinil Park 🇰🇷", attributes: {Innovation: 98, Technique: 88, Fame: 80, Impact: 85, "Material Mastery": 90}},
 {name: "Sculpture: John Cannell 🇺🇸", attributes: {Innovation: 90, Technique: 92, Fame: 80, Impact: 85, "Material Mastery": 95}},
 {name: "Sculpture: José María Cruz Novillo 🇪🇸", attributes: {Innovation: 95, Technique: 90, Fame: 85, Impact: 92, "Material Mastery": 88}},
+{name: "Sculpture: Josep Llorens Artigas 🇪🇸", attributes: {Innovation: 88, Technique: 95, Fame: 87, Impact: 90, "Material Mastery": 97}},
 {name: "Sculpture: Jun Kaneko 🇯🇵🇺🇸", attributes: {Innovation: 92, Technique: 94, Fame: 85, Impact: 90, "Material Mastery": 98}},
 {name: "Sculpture: Karen Akhikyan 🇦🇲", attributes: {Innovation: 90, Technique: 88, Fame: 75, Impact: 80, "Material Mastery": 92}},
 {name: "Sculpture: Ken Kelleher 🇺🇸", attributes: {Innovation: 100, Technique: 90, Fame: 85, Impact: 92, "Material Mastery": 95}},
@@ -358,6 +361,7 @@ const paint = [
 {name: "Sculpture: Marino Marini (1901–1980) 🇮🇹", attributes: {Innovation: 85, Technique: 90, Fame: 80, Impact: 85, "Material Mastery": 95}},
 {name: "Sculpture: Medardo Rosso (1858–1928) 🇮🇹", attributes: {Innovation: 95, Technique: 90, Fame: 80, Impact: 90, "Material Mastery": 90}},
 {name: "Sculpture: Michelangelo (1475–1564) 🇮🇹", attributes: {Innovation: 100, Technique: 100, Fame: 100, Impact: 100, "Material Mastery": 100}},
+{name: "Sculpture: Miyashita Zenji 🇯🇵", attributes: {Innovation: 92, Technique: 94, Fame: 82, Impact: 87, "Material Mastery": 98}},
 {name: "Sculpture: Monami Ohno 🇯🇵", attributes: {Innovation: 92, Technique: 88, Fame: 80, Impact: 85, "Material Mastery": 95}},
 {name: "Sculpture: Moreno Schweikle 🇩🇪", attributes: {Innovation: 88, Technique: 90, Fame: 80, Impact: 86, "Material Mastery": 91}},
 {name: "Sculpture: Niki de Saint Phalle (1930–2002) 🇫🇷", attributes: {Innovation: 98, Technique: 85, Fame: 95, Impact: 100, "Material Mastery": 90}},
@@ -720,6 +724,7 @@ const illus = [
 {name: "Visual Art: Leandro Assis 🇧🇷", attributes: {Innovation: 94, Technique: 90, Fame: 86, Impact: 93, Storytelling: 96}},
 {name: "Visual Art: Leandro Sunk Hoeltz 🇧🇷", attributes: {Innovation: 88, Technique: 87, Fame: 76, Impact: 82, Storytelling: 90}},
 {name: "Visual Art: Libico Romano Maraja 🇮🇹", attributes: {Innovation: 92, Technique: 95, Fame: 84, Impact: 90, Storytelling: 93}},
+{name: "Visual Art: Lindsay Aull Spears 🇺🇸", attributes: {Innovation: 91, Technique: 89, Fame: 78, Impact: 84, Storytelling: 90}},
 {name: "Visual Art: Lingvistov 🇷🇺", attributes: {Innovation: 92, Technique: 87, Fame: 84, Impact: 90, Storytelling: 94}},
 {name: "Visual Art: Liniers (Ricardo Siri) (1973-) 🇦🇷", attributes: {Innovation: 90, Technique: 85, Fame: 95, Impact: 95, Storytelling: 100}},
 {name: "Visual Art: Little Thunder 🇭🇰", attributes: {Innovation: 95, Technique: 93, Fame: 86, Impact: 92, Storytelling: 96}},
@@ -903,6 +908,7 @@ const illus = [
 {name: "Visual Art: Tor Teixeira 🇧🇷", attributes: {Innovation: 90, Technique: 88, Fame: 77, Impact: 84, Storytelling: 91}},
 {name: "Visual Art: Tove Jansson (1914–2001) 🇫🇮", attributes: {Innovation: 90, Technique: 85, Fame: 100, Impact: 100, Storytelling: 100}},
 {name: "Visual Art: Trey Parker 🇺🇸", attributes: {Innovation: 97, Technique: 89, Fame: 98, Impact: 98, Storytelling: 99}},
+{name: "Visual Art: Turli Tu 🇹🇼", attributes: {Innovation: 92, Technique: 90, Fame: 79, Impact: 85, Storytelling: 89}},
 {name: "Visual Art: Vasilisa Romanenko 🇺🇸🇷🇺", attributes: {Innovation: 92, Technique: 90, Fame: 80, Impact: 86, Storytelling: 91}},
 {name: "Visual Art: Vaughan Tomlinson 🇿🇦", attributes: {Innovation: 93, Technique: 90, Fame: 80, Impact: 87, Storytelling: 95}},
 {name: "Visual Art: Velitas (@sou_velitas) 🇧🇷", attributes: {Innovation: 90, Technique: 86, Fame: 80, Impact: 87, Storytelling: 92}},
@@ -932,6 +938,7 @@ const illus = [
 {name: "Visual Art: William Moulton Marston 🇺🇸", attributes: {Innovation: 97, Technique: 85, Fame: 95, Impact: 98, Storytelling: 96}},
 {name: "Visual Art: Winsor McCay (1869–1934) 🇺🇸", attributes: {Innovation: 100, Technique: 95, Fame: 85, Impact: 100, Storytelling: 95}},
 {name: "Visual Art: Wotto Artist 🌍", attributes: {Innovation: 91, Technique: 88, Fame: 80, Impact: 86, Storytelling: 90}},
+{name: "Visual Art: Wylie Beckert 🇺🇸", attributes: {Innovation: 95, Technique: 96, Fame: 86, Impact: 91, Storytelling: 94}},
 {name: "Visual Art: Xiaoyan Sun 🇨🇳", attributes: {Innovation: 90, Technique: 89, Fame: 77, Impact: 83, Storytelling: 91}},
 {name: "Visual Art: Yasuto Sasada 🇯🇵", attributes: {Innovation: 95, Technique: 93, Fame: 81, Impact: 88, Storytelling: 90}},
 {name: "Visual Art: Yoji Yamamoto 🇯🇵", attributes: {Innovation: 96, Technique: 93, Fame: 95, Impact: 92, Storytelling: 91}},

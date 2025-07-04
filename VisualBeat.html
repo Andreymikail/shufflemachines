@@ -19,6 +19,12 @@
     </select>
   </div>
 
+  <!-- Color Selector -->
+  <div style="margin-top: 10px;">
+    <label for="colorPicker" style="color: white;">Color:</label>
+    <input type="color" id="colorPicker" value="#9746f4">
+  </div>
+
   <!-- Beat Visual Grid -->
   <div style="
     display: grid;
@@ -27,7 +33,6 @@
     justify-content: center;
     margin-top: 20px;
   ">
-    <!-- Dynamically generated circles -->
     <script>
       for (let i = 1; i <= 16; i++) {
         document.write(`
@@ -50,15 +55,17 @@
   function pulseVisual() {
     const bpm = parseInt(document.getElementById('bpmInput').value);
     const mode = document.getElementById('modeSelect').value;
+    const color = document.getElementById('colorPicker').value;
     const beatDuration = 60000 / bpm;
 
     const circles = [];
     for (let i = 1; i <= 16; i++) {
-      circles.push(document.getElementById(`beatCircle${i}`));
+      const circle = document.getElementById(`beatCircle${i}`);
+      circle.style.backgroundColor = color; // aplica cor
+      circles.push(circle);
     }
 
     if (mode === "1") {
-      // 4-tempo divisions (divide batida em 5 partes para evitar sobreposição)
       const delays = [
         1 * beatDuration / 5,
         2 * beatDuration / 5,
@@ -78,9 +85,8 @@
       });
 
     } else if (mode === "2") {
-      // Progressive 16 sequence
       circles.forEach((circle, index) => {
-        const delay = (index + 1) * beatDuration / (circles.length + 1);
+        const delay = (index + 1) * beatDuration / 17;
         circle.style.transform = (index % 2 === 0) ? 'scale(0.8)' : 'scale(0.8)';
         circle.style.opacity = '0.1';
 

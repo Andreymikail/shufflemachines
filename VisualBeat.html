@@ -10,89 +10,87 @@
     <input type="number" id="bpmInput" min="30" max="300" value="80">
   </div>
 
-  <!-- Beat Visual -->
-  <div id="beatCircle" style="
-    margin: 30px auto;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background-color: #9746f4;
-    transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out;
-  ">
-  <br>
+  <!-- Mode Selector -->
+  <div style="margin-top: 10px;">
+    <label for="modeSelect" style="color: white;">Mode:</label>
+    <select id="modeSelect">
+      <option value="1">Divisions</option>
+      <option value="2">Sequence</option>
+    </select>
   </div>
-    <div id="beatCircle2" style="
-    margin: 30px auto;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background-color: #9746f4;
-    transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out;
-  "></div>
-  </div>
-    <div id="beatCircle3" style="
-    margin: 30px auto;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background-color: #9746f4;
-    transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out;
-  "></div>
-  </div>
-    <div id="beatCircle4" style="
-    margin: 30px auto;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background-color: #9746f4;
-    transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out;
-  "></div>
-</div>
 
-<audio id="clickSound" src="" preload="auto"></audio>
+  <!-- Beat Visual Grid -->
+  <div style="
+    display: grid;
+    grid-template-columns: repeat(4, 50px);
+    grid-gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+  ">
+    <!-- Dynamically generated circles -->
+    <script>
+      for (let i = 1; i <= 16; i++) {
+        document.write(`
+          <div id="beatCircle${i}" style="
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #9746f4;
+            transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out;
+          "></div>
+        `);
+      }
+    </script>
+  </div>
+</div>
 
 <script>
   let intervalId = null;
-  const beatCircle = document.getElementById('beatCircle');
-  const beatCircle2 = document.getElementById('beatCircle2');
-  const beatCircle3 = document.getElementById('beatCircle3');
-  const beatCircle4 = document.getElementById('beatCircle4');
 
+  function pulseVisual() {
+    const bpm = parseInt(document.getElementById('bpmInput').value);
+    const mode = document.getElementById('modeSelect').value;
+    const beatDuration = 60000 / bpm;
 
-function pulseVisual() {
-  // BeatCircle 1
-  beatCircle.style.transform = 'scale(1.2)';
-  beatCircle.style.opacity = '0.1';
-  setTimeout(() => {
-    beatCircle.style.transform = 'scale(1)';
-    beatCircle.style.opacity = '1';
-  }, 140);
-  
-  // BeatCircle 2
-  beatCircle2.style.transform = 'scale(0.8)';
-  beatCircle2.style.opacity = '0.1';
-  setTimeout(() => {
-    beatCircle2.style.transform = 'scale(1)';
-    beatCircle2.style.opacity = '1';
-  }, 240);
-  
-  // BeatCircle 3
-  beatCircle3.style.transform = 'scale(1.2)';
-  beatCircle3.style.opacity = '0.1';
-  setTimeout(() => {
-    beatCircle3.style.transform = 'scale(1)';
-    beatCircle3.style.opacity = '1';
-  }, 340);
-  
-  // BeatCircle 4
-  beatCircle4.style.transform = 'scale(0.8)';
-  beatCircle4.style.opacity = '0.1';
-  setTimeout(() => {
-    beatCircle4.style.transform = 'scale(1)';
-    beatCircle4.style.opacity = '1';
-  }, 440);
-}
+    const circles = [];
+    for (let i = 1; i <= 16; i++) {
+      circles.push(document.getElementById(`beatCircle${i}`));
+    }
 
+    if (mode === "1") {
+      // 4-tempo divisions (divide batida em 5 partes para evitar sobreposição)
+      const delays = [
+        1 * beatDuration / 5,
+        2 * beatDuration / 5,
+        3 * beatDuration / 5,
+        4 * beatDuration / 5
+      ];
+
+      circles.forEach((circle, index) => {
+        const delay = delays[index % 4];
+        circle.style.transform = (index % 2 === 0) ? 'scale(0.8)' : 'scale(0.8)';
+        circle.style.opacity = '0.1';
+
+        setTimeout(() => {
+          circle.style.transform = 'scale(1)';
+          circle.style.opacity = '1';
+        }, delay);
+      });
+
+    } else if (mode === "2") {
+      // Progressive 16 sequence
+      circles.forEach((circle, index) => {
+        const delay = (index + 1) * beatDuration / (circles.length + 1);
+        circle.style.transform = (index % 2 === 0) ? 'scale(0.8)' : 'scale(0.8)';
+        circle.style.opacity = '0.1';
+
+        setTimeout(() => {
+          circle.style.transform = 'scale(1)';
+          circle.style.opacity = '1';
+        }, delay);
+      });
+    }
+  }
 
   function startMetronome() {
     const bpm = parseInt(document.getElementById('bpmInput').value);
@@ -125,20 +123,6 @@ function pulseVisual() {
     font-family: sans-serif;
   }
 
-  .round-button2 {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    border: none;
-    background-color: #E4C58A;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-    text-align: center;
-    line-height: 100px;
-    transition: background-color 0.1s;
-  }
-
   .round-button {
     width: 50px;
     height: 50px;
@@ -146,18 +130,14 @@ function pulseVisual() {
     border: none;
     background-color: #E4C58A;
     color: white;
-    font-size: 18px;
+    font-size: 24px;
     cursor: pointer;
     text-align: center;
-    line-height: 100px;
+    line-height: 50px;
     transition: background-color 0.3s;
   }
 
   .round-button:hover {
-    background-color: #6E1919;
-  }
-  
-  .round-button2:hover {
     background-color: #6E1919;
   }
 </style>

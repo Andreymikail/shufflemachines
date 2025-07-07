@@ -47,6 +47,11 @@
       }
     </script>
   </div>
+  
+  <div style="margin-top: 10px;">
+  <button id="fullscreenButton" class="round-button2"></button>
+</div>
+
 </div>
 
 <script>
@@ -121,6 +126,26 @@
       document.getElementById('startStopButton').textContent = '';
     }
   });
+  
+  const gridContainer = document.querySelector("div[style*='grid-template-columns']");
+
+  document.getElementById("fullscreenButton").addEventListener("click", () => {
+    if (!document.fullscreenElement) {
+      gridContainer.requestFullscreen().catch(err => {
+        alert(`Error attempting fullscreen: ${err.message} (${err.name})`);
+      });
+      document.getElementById("fullscreenButton").textContent = "";
+    } else {
+      document.exitFullscreen();
+      document.getElementById("fullscreenButton").textContent = "";
+    }
+  });
+
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement) {
+      document.getElementById("fullscreenButton").textContent = "";
+    }
+  });
 </script>
 
 <style>
@@ -146,4 +171,22 @@
   .round-button:hover {
     background-color: #6E1919;
   }
+  .round-button2 {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background-color: #E4C58A;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  line-height: 50px;
+  transition: background-color 0.3s;
+}
+
+.round-button2:hover {
+  background-color: #6E1919;
+}
+
 </style>

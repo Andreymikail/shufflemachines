@@ -9,6 +9,8 @@
     <label><input type="checkbox" id="projCheckbox"> Architectural Project</label><br>
     <label><input type="checkbox" id="landCheckbox"> Landscaper</label><br>
     <label><input type="checkbox" id="gardCheckbox"> Garden</label><br>
+    <label><input type="checkbox" id="houCheckbox"> House</label><br>
+    <label><input type="checkbox" id="bridCheckbox"> Bridge</label><br>
   </div>
 
   <!-- Cards per page selection -->
@@ -338,6 +340,75 @@ const gard = [
 {name: "Garden: Villa d'Este Gardens (Italy)", attributes: {Location: "Tivoli, Italy", "Year Established": "1550", "Botanical Diversity": 76, "Design Complexity": 94, "Historical Significance": 98, "Visitor Popularity": 88}},
 {name: "Garden: Villa Lante Gardens (Italy)", attributes: {Location: "Bagnaia, Italy", "Year Established": "16th Century", "Botanical Diversity": 68, "Design Complexity": 88, "Historical Significance": 92, "Visitor Popularity": 82}},
 ];
+
+const hou = [
+{name: "House: A-Frame House", attributes: {"Construction Cost": 45, "Energy Efficiency": 75, "Thermal Comfort": 70, "Sustainability": 65, "Lifestyle Compatibility": 70, "Interior Space": 50, "Maintenance": 35}},
+{name: "House: Alpine Cabin", attributes: {"Construction Cost": 50, "Energy Efficiency": 70, "Thermal Comfort": 90, "Sustainability": 65, "Lifestyle Compatibility": 70, "Interior Space": 60, "Maintenance": 50}},
+{name: "House: Baroque Mansion", attributes: {"Construction Cost": 95, "Energy Efficiency": 30, "Thermal Comfort": 80, "Sustainability": 25, "Lifestyle Compatibility": 70, "Interior Space": 95, "Maintenance": 90}},
+{name: "House: Bauhaus Style", attributes: {"Construction Cost": 65, "Energy Efficiency": 70, "Thermal Comfort": 75, "Sustainability": 65, "Lifestyle Compatibility": 85, "Interior Space": 70, "Maintenance": 55}},
+{name: "House: Brutalist Block", attributes: {"Construction Cost": 55, "Energy Efficiency": 60, "Thermal Comfort": 50, "Sustainability": 50, "Lifestyle Compatibility": 35, "Interior Space": 85, "Maintenance": 70}},
+{name: "House: Castle", attributes: {"Construction Cost": 100, "Energy Efficiency": 30, "Thermal Comfort": 70, "Sustainability": 20, "Lifestyle Compatibility": 50, "Interior Space": 100, "Maintenance": 100}},
+{name: "House: Cave House", attributes: {"Construction Cost": 20, "Energy Efficiency": 90, "Thermal Comfort": 95, "Sustainability": 95, "Lifestyle Compatibility": 30, "Interior Space": 45, "Maintenance": 30}},
+{name: "House: Colonial House", attributes: {"Construction Cost": 60, "Energy Efficiency": 50, "Thermal Comfort": 70, "Sustainability": 40, "Lifestyle Compatibility": 55, "Interior Space": 75, "Maintenance": 65}},
+{name: "House: Cottage", attributes: {"Construction Cost": 40, "Energy Efficiency": 60, "Thermal Comfort": 80, "Sustainability": 70, "Lifestyle Compatibility": 80, "Interior Space": 50, "Maintenance": 35}},
+{name: "House: Desert Adobe", attributes: {"Construction Cost": 40, "Energy Efficiency": 85, "Thermal Comfort": 90, "Sustainability": 80, "Lifestyle Compatibility": 60, "Interior Space": 55, "Maintenance": 40}},
+{name: "House: Earthship", attributes: {"Construction Cost": 40, "Energy Efficiency": 95, "Thermal Comfort": 85, "Sustainability": 100, "Lifestyle Compatibility": 60, "Interior Space": 55, "Maintenance": 35}},
+{name: "House: Farmhouse", attributes: {"Construction Cost": 55, "Energy Efficiency": 60, "Thermal Comfort": 75, "Sustainability": 60, "Lifestyle Compatibility": 75, "Interior Space": 85, "Maintenance": 60}},
+{name: "House: Feng Shui Zen Home", attributes: {"Construction Cost": 55, "Energy Efficiency": 85, "Thermal Comfort": 80, "Sustainability": 90, "Lifestyle Compatibility": 95, "Interior Space": 65, "Maintenance": 40}},
+{name: "House: Geodesic Dome", attributes: {"Construction Cost": 50, "Energy Efficiency": 95, "Thermal Comfort": 95, "Sustainability": 85, "Lifestyle Compatibility": 70, "Interior Space": 60, "Maintenance": 45}},
+{name: "House: Houseboat", attributes: {"Construction Cost": 50, "Energy Efficiency": 70, "Thermal Comfort": 60, "Sustainability": 75, "Lifestyle Compatibility": 65, "Interior Space": 40, "Maintenance": 60}},
+{name: "House: Igloo", attributes: {"Construction Cost": 20, "Energy Efficiency": 70, "Thermal Comfort": 80, "Sustainability": 75, "Lifestyle Compatibility": 20, "Interior Space": 20, "Maintenance": 25}},
+{name: "House: Japanese Minka", attributes: {"Construction Cost": 50, "Energy Efficiency": 70, "Thermal Comfort": 75, "Sustainability": 80, "Lifestyle Compatibility": 60, "Interior Space": 65, "Maintenance": 45}},
+{name: "House: Loft Apartment", attributes: {"Construction Cost": 65, "Energy Efficiency": 50, "Thermal Comfort": 55, "Sustainability": 60, "Lifestyle Compatibility": 85, "Interior Space": 65, "Maintenance": 50}},
+{name: "House: Mansion", attributes: {"Construction Cost": 95, "Energy Efficiency": 40, "Thermal Comfort": 85, "Sustainability": 30, "Lifestyle Compatibility": 100, "Interior Space": 100, "Maintenance": 95}},
+{name: "House: Mediterranean Villa", attributes: {"Construction Cost": 75, "Energy Efficiency": 65, "Thermal Comfort": 85, "Sustainability": 60, "Lifestyle Compatibility": 85, "Interior Space": 95, "Maintenance": 75}},
+{name: "House: Minimalist House", attributes: {"Construction Cost": 45, "Energy Efficiency": 85, "Thermal Comfort": 80, "Sustainability": 90, "Lifestyle Compatibility": 95, "Interior Space": 50, "Maintenance": 30}},
+{name: "House: Mobile Home", attributes: {"Construction Cost": 30, "Energy Efficiency": 60, "Thermal Comfort": 50, "Sustainability": 70, "Lifestyle Compatibility": 60, "Interior Space": 40, "Maintenance": 30}},
+{name: "House: Modernist Glass House", attributes: {"Construction Cost": 90, "Energy Efficiency": 40, "Thermal Comfort": 40, "Sustainability": 50, "Lifestyle Compatibility": 90, "Interior Space": 85, "Maintenance": 80}},
+{name: "House: Neo-Futurist Pod", attributes: {"Construction Cost": 70, "Energy Efficiency": 80, "Thermal Comfort": 75, "Sustainability": 85, "Lifestyle Compatibility": 95, "Interior Space": 60, "Maintenance": 50}},
+{name: "House: Ranch House", attributes: {"Construction Cost": 60, "Energy Efficiency": 60, "Thermal Comfort": 65, "Sustainability": 55, "Lifestyle Compatibility": 75, "Interior Space": 80, "Maintenance": 55}},
+{name: "House: Shipping Container Home", attributes: {"Construction Cost": 35, "Energy Efficiency": 75, "Thermal Comfort": 60, "Sustainability": 95, "Lifestyle Compatibility": 80, "Interior Space": 45, "Maintenance": 40}},
+{name: "House: Skyscraper Apartment", attributes: {"Construction Cost": 85, "Energy Efficiency": 55, "Thermal Comfort": 60, "Sustainability": 60, "Lifestyle Compatibility": 90, "Interior Space": 70, "Maintenance": 80}},
+{name: "House: Tiny House", attributes: {"Construction Cost": 25, "Energy Efficiency": 90, "Thermal Comfort": 70, "Sustainability": 85, "Lifestyle Compatibility": 65, "Interior Space": 30, "Maintenance": 20}},
+{name: "House: Treehouse", attributes: {"Construction Cost": 30, "Energy Efficiency": 65, "Thermal Comfort": 55, "Sustainability": 90, "Lifestyle Compatibility": 50, "Interior Space": 25, "Maintenance": 30}},
+{name: "House: Tudor House", attributes: {"Construction Cost": 70, "Energy Efficiency": 55, "Thermal Comfort": 70, "Sustainability": 50, "Lifestyle Compatibility": 60, "Interior Space": 75, "Maintenance": 65}},
+{name: "House: Victorian House", attributes: {"Construction Cost": 80, "Energy Efficiency": 35, "Thermal Comfort": 60, "Sustainability": 30, "Lifestyle Compatibility": 40, "Interior Space": 90, "Maintenance": 90}},
+{name: "House: Yurt", attributes: {"Construction Cost": 25, "Energy Efficiency": 75, "Thermal Comfort": 65, "Sustainability": 80, "Lifestyle Compatibility": 40, "Interior Space": 35, "Maintenance": 25}},
+];
+
+const brid = [
+{name: "Akashi Kaikyō Bridge", attributes: {"Construction Cost": 100, "Load Capacity": 95, "Span Length": 100, "Architectural Beauty": 90, "Durability": 95, "Maintenance Complexity": 95, "Environmental Impact": 50}},
+{name: "Bixby Creek Bridge", attributes: {"Construction Cost": 60, "Load Capacity": 65, "Span Length": 75, "Architectural Beauty": 85, "Durability": 80, "Maintenance Complexity": 70, "Environmental Impact": 65}},
+{name: "Bridge of Sighs", attributes: {"Construction Cost": 40, "Load Capacity": 30, "Span Length": 20, "Architectural Beauty": 90, "Durability": 70, "Maintenance Complexity": 45, "Environmental Impact": 70}},
+{name: "Brooklyn Bridge", attributes: {"Construction Cost": 85, "Load Capacity": 85, "Span Length": 80, "Architectural Beauty": 95, "Durability": 95, "Maintenance Complexity": 80, "Environmental Impact": 45}},
+{name: "Chain Bridge (Budapest)", attributes: {"Construction Cost": 70, "Load Capacity": 75, "Span Length": 70, "Architectural Beauty": 90, "Durability": 85, "Maintenance Complexity": 70, "Environmental Impact": 60}},
+{name: "Chapel Bridge", attributes: {"Construction Cost": 50, "Load Capacity": 40, "Span Length": 30, "Architectural Beauty": 85, "Durability": 60, "Maintenance Complexity": 50, "Environmental Impact": 75}},
+{name: "Charles Bridge", attributes: {"Construction Cost": 60, "Load Capacity": 70, "Span Length": 65, "Architectural Beauty": 95, "Durability": 90, "Maintenance Complexity": 60, "Environmental Impact": 65}},
+{name: "Danyang–Kunshan Grand Bridge", attributes: {"Construction Cost": 100, "Load Capacity": 95, "Span Length": 100, "Architectural Beauty": 70, "Durability": 95, "Maintenance Complexity": 95, "Environmental Impact": 40}},
+{name: "Forth Bridge", attributes: {"Construction Cost": 80, "Load Capacity": 95, "Span Length": 80, "Architectural Beauty": 85, "Durability": 95, "Maintenance Complexity": 85, "Environmental Impact": 45}},
+{name: "George Washington Bridge", attributes: {"Construction Cost": 90, "Load Capacity": 95, "Span Length": 90, "Architectural Beauty": 80, "Durability": 90, "Maintenance Complexity": 85, "Environmental Impact": 50}},
+{name: "Golden Gate Bridge", attributes: {"Construction Cost": 95, "Load Capacity": 90, "Span Length": 95, "Architectural Beauty": 100, "Durability": 90, "Maintenance Complexity": 85, "Environmental Impact": 40}},
+{name: "Great Belt Bridge", attributes: {"Construction Cost": 90, "Load Capacity": 90, "Span Length": 95, "Architectural Beauty": 85, "Durability": 90, "Maintenance Complexity": 90, "Environmental Impact": 50}},
+{name: "Hangzhou Bay Bridge", attributes: {"Construction Cost": 85, "Load Capacity": 90, "Span Length": 85, "Architectural Beauty": 75, "Durability": 90, "Maintenance Complexity": 90, "Environmental Impact": 55}},
+{name: "Helix Bridge", attributes: {"Construction Cost": 75, "Load Capacity": 50, "Span Length": 45, "Architectural Beauty": 90, "Durability": 70, "Maintenance Complexity": 60, "Environmental Impact": 70}},
+{name: "Leonardo da Vinci’s Bridge", attributes: {"Construction Cost": 60, "Load Capacity": 50, "Span Length": 50, "Architectural Beauty": 85, "Durability": 70, "Maintenance Complexity": 55, "Environmental Impact": 65}},
+{name: "Magdeburg Water Bridge", attributes: {"Construction Cost": 70, "Load Capacity": 80, "Span Length": 60, "Architectural Beauty": 75, "Durability": 85, "Maintenance Complexity": 75, "Environmental Impact": 60}},
+{name: "Millau Viaduct", attributes: {"Construction Cost": 100, "Load Capacity": 85, "Span Length": 90, "Architectural Beauty": 95, "Durability": 90, "Maintenance Complexity": 90, "Environmental Impact": 55}},
+{name: "Pont Avignon", attributes: {"Construction Cost": 45, "Load Capacity": 40, "Span Length": 30, "Architectural Beauty": 80, "Durability": 75, "Maintenance Complexity": 50, "Environmental Impact": 70}},
+{name: "Pont du Gard", attributes: {"Construction Cost": 65, "Load Capacity": 55, "Span Length": 60, "Architectural Beauty": 90, "Durability": 100, "Maintenance Complexity": 30, "Environmental Impact": 80}},
+{name: "Pont Neuf", attributes: {"Construction Cost": 55, "Load Capacity": 60, "Span Length": 50, "Architectural Beauty": 90, "Durability": 80, "Maintenance Complexity": 55, "Environmental Impact": 65}},
+{name: "Pontcysyllte Aqueduct", attributes: {"Construction Cost": 50, "Load Capacity": 60, "Span Length": 55, "Architectural Beauty": 85, "Durability": 90, "Maintenance Complexity": 60, "Environmental Impact": 70}},
+{name: "Ponte Vecchio", attributes: {"Construction Cost": 65, "Load Capacity": 55, "Span Length": 40, "Architectural Beauty": 95, "Durability": 85, "Maintenance Complexity": 55, "Environmental Impact": 60}},
+{name: "Rialto Bridge", attributes: {"Construction Cost": 70, "Load Capacity": 60, "Span Length": 50, "Architectural Beauty": 95, "Durability": 85, "Maintenance Complexity": 65, "Environmental Impact": 60}},
+{name: "Rising Sun Bridge", attributes: {"Construction Cost": 40, "Load Capacity": 50, "Span Length": 45, "Architectural Beauty": 80, "Durability": 70, "Maintenance Complexity": 55, "Environmental Impact": 70}},
+{name: "Severn Bridge", attributes: {"Construction Cost": 80, "Load Capacity": 85, "Span Length": 85, "Architectural Beauty": 80, "Durability": 85, "Maintenance Complexity": 80, "Environmental Impact": 55}},
+{name: "Sydney Anzac Bridge", attributes: {"Construction Cost": 85, "Load Capacity": 90, "Span Length": 80, "Architectural Beauty": 80, "Durability": 85, "Maintenance Complexity": 80, "Environmental Impact": 55}},
+{name: "Sydney Harbour Bridge", attributes: {"Construction Cost": 90, "Load Capacity": 95, "Span Length": 85, "Architectural Beauty": 85, "Durability": 90, "Maintenance Complexity": 80, "Environmental Impact": 45}},
+{name: "Tacoma Narrows Bridge", attributes: {"Construction Cost": 75, "Load Capacity": 80, "Span Length": 90, "Architectural Beauty": 75, "Durability": 65, "Maintenance Complexity": 85, "Environmental Impact": 45}},
+{name: "Tower Bridge", attributes: {"Construction Cost": 80, "Load Capacity": 75, "Span Length": 70, "Architectural Beauty": 90, "Durability": 85, "Maintenance Complexity": 70, "Environmental Impact": 50}},
+{name: "Tsing Ma Bridge", attributes: {"Construction Cost": 95, "Load Capacity": 95, "Span Length": 95, "Architectural Beauty": 85, "Durability": 90, "Maintenance Complexity": 90, "Environmental Impact": 50}},
+{name: "Zakim Bunker Hill Bridge", attributes: {"Construction Cost": 80, "Load Capacity": 85, "Span Length": 80, "Architectural Beauty": 85, "Durability": 85, "Maintenance Complexity": 85, "Environmental Impact": 50}},
+];
   
   // Shuffle array
   function shuffleArray(array) {
@@ -353,6 +424,8 @@ const gard = [
     if (document.getElementById('projCheckbox').checked) selectedCards.push(...proj);
     if (document.getElementById('landCheckbox').checked) selectedCards.push(...land);
     if (document.getElementById('gardCheckbox').checked) selectedCards.push(...gard);
+    if (document.getElementById('houCheckbox').checked) selectedCards.push(...hou);
+    if (document.getElementById('bridCheckbox').checked) selectedCards.push(...brid);
 
     if (selectedCards.length === 0) {
       alert("Please select at least one theme!");

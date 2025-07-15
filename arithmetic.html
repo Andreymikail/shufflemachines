@@ -108,21 +108,20 @@
   document.getElementById('answerInput').value = '';
   document.getElementById('answerInput').focus();
 }
-
-
-  function checkEnter(event) {
-    if (event.key === "Enter") {
-      const userAnswer = parseInt(document.getElementById('answerInput').value);
-      if (userAnswer === correctAnswer) {
-        score++;
-        document.getElementById('feedback').textContent = '✅ Correct!';
-      } else {
-        document.getElementById('feedback').textContent = `❌ Wrong! Answer: ${correctAnswer}`;
-      }
+ function checkEnter(event) {
+  if (event.key === "Enter") {
+    const userAnswer = parseInt(document.getElementById('answerInput').value);
+    if (userAnswer === correctAnswer) {
+      score++;
+      document.getElementById('feedback').textContent = '✅ Correct!';
       document.getElementById('score').textContent = score;
       if (timeLeft > 0) nextQuestion();
+    } else {
+      document.getElementById('feedback').textContent = `❌ Wrong! Try again.`;
+      // mantém a mesma questão e não avança
     }
   }
+}  
 </script>
 
 <style>

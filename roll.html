@@ -17,6 +17,12 @@
     </select>
   </div><br>
 
+  <!-- Sort Direction -->
+  <div>
+    <label for="sortDirection" style="color: white;">Sort Direction:</label><br>
+    <button id="sortDirectionButton" class="round-button">Asc</button>
+  </div><br>
+
   <!-- Time per Image -->
   <div>
     <label for="timePerImage" style="color: white;">Time per Image (seconds):</label><br>
@@ -29,16 +35,12 @@
     <label><input type="checkbox" id="transitionCheckbox"> Smooth Transition</label>
   </div><br>
 
-<!-- Botões -->
-<button id="rollButton" class="round-button">Roll</button>
-<button id="pauseButton" class="round-button">Pause</button>
-<button id="fullscreenButton" class="round-button">Fullscreen</button>
+  <!-- Buttons -->
+  <button id="rollButton" class="round-button">Roll</button>
+  <button id="pauseButton" class="round-button">Pause</button>
+  <button id="fullscreenButton" class="round-button">Fullscreen</button>
 
-<!-- Container -->
-<div id="imageContainer" style="margin-top: 20px;"></div>
-
-
-  <!-- Image Display -->
+  <!-- Container -->
   <div id="imageContainer" style="margin-top: 20px;"></div>
 </div>
 
@@ -50,6 +52,7 @@
   let loop = false;
   let smooth = false;
   let timePerImage = 3000;
+  let isDescending = false;
 
   document.getElementById('directoryInput').addEventListener('change', function(event) {
     const files = event.target.files;
@@ -63,6 +66,10 @@
       imageFiles.sort((a, b) => a.lastModified - b.lastModified);
     } else if (order === 'random') {
       imageFiles.sort(() => Math.random() - 0.5);
+    }
+
+    if (isDescending && order !== 'random') {
+      imageFiles.reverse();
     }
   }
 
@@ -126,7 +133,6 @@
     document.getElementById('pauseButton').textContent = paused ? 'Resume' : 'Pause';
   });
 
-  // FULLSCREEN
   document.getElementById('fullscreenButton').addEventListener('click', () => {
     const container = document.getElementById('imageContainer');
     if (container.requestFullscreen) container.requestFullscreen();
@@ -135,7 +141,11 @@
     else if (container.msRequestFullscreen) container.msRequestFullscreen();
   });
 
-  // Teclas de navegação
+  document.getElementById('sortDirectionButton').addEventListener('click', () => {
+    isDescending = !isDescending;
+    document.getElementById('sortDirectionButton').textContent = isDescending ? 'Desc' : 'Asc';
+  });
+
   document.addEventListener('keydown', (e) => {
     if (!imageFiles.length) return;
 
@@ -154,7 +164,6 @@
     }
   });
 </script>
-
 
 <style>
   body {
@@ -185,6 +194,4 @@
     max-height: 90vh;
     object-fit: contain;
   }
-
-
 </style>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pendulum</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-color: black;
+    }
+
+    h1 {
+      color: #fff;
+      margin-bottom: 30px;
+      font-size: 2.5em;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    #gameContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    #pendulumContainer {
+      position: relative;
+      width: 500px;
+      height: 400px;
+    }
+
+    #pendulumArm {
+      position: absolute;
+      top: 200px;
+      left: 50%;
+      width: 4px;
+      height: 200px;
+      background: linear-gradient(to bottom, #E4C58A, #E4C58A);
+      transform-origin: top center;
+      transform: translateX(-50%) rotate(0deg);
+      border-radius: 2px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+      transition: all 0.1s ease-out;
+    }
+
+    #pendulumBall {
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      width: 30px;
+      height: 30px;
+      background: radial-gradient(circle at 30% 30%, #E4C58A, #E4C58A);
+      border-radius: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    #controls {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      padding: 30px;
+      border-radius: 15px;
+    }
+
+    #touchControls {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .touch-button {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background-color: #E4C58A;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      text-align: center;
+      line-height: 40px;
+      transition: background-color 0.3s;
+      margin: 10px;
+      flex-shrink: 0; /* Impede que os botões encolham */
+    }
+
+    .touch-button:hover {
+      transform: scale(1.1);
+    }
+
+    .touch-button:active {
+      transform: scale(0.95);
+    }
+
+    #status {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      font-size: 1.2em;
+      min-width: 120px; /* Largura mínima para manter o espaçamento */
+      text-align: center;
+    }
+
+    #angle-display {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: white;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+
+    .reset-button {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: none;
+      background-color: #E4C58A;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      text-align: center;
+      line-height: 40px;
+      transition: background-color 0.3s;
+      margin: 10px;
+    }
+
+    .reset-button:hover {
+      transform: scale(1.05);
+    }
+
+    #instructions {
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      max-width: 500px;
+    }
+
+    #instructions ul {
+      text-align: left;
+      color:white;
+      display: inline-block;
+    }
+
+    .full-rotation {
+      animation: celebrate 1s ease-in-out;
+    }
+
+    @keyframes celebrate {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.5) saturate(1.5); }
+    }
+
+    /* Estilos dos seletores */
+    .parameter-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin: 20px 0;
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .parameter-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .parameter-group label {
+      font-size: 14px;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .parameter-group input {
+      width: 80px;
+      padding: 5px;
+      border: 1px solid #E4C58A;
+      border-radius: 5px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .parameter-group input:focus {
+      outline: none;
+      border-color: #fff;
+      background: rgba(0,0,0,0.9);
+    }
+
+    .parameter-value {
+      font-size: 12px;
+      color: #E4C58A;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pendulum</h1>
+  
+  <div id="controls">
+    <button class="reset-button" id="resetButton">Reset</button>
+    
+    <div class="parameter-controls">
+      <div class="parameter-group">
+        <label for="gravityInput">Gravity</label>
+        <input type="number" id="gravityInput" min="0.01" max="0.2" step="0.01" value="0.04">
+        <span class="parameter-value" id="gravityValue">0.04</span>
+      </div>
+      
+      <div class="parameter-group">
+        <label for="dampingInput">Damping</label>
+        <input type="number" id="dampingInput" min="0.950" max="0.999" step="0.001" value="0.992">
+        <span class="parameter-value" id="dampingValue">0.992</span>
+      </div>
+      
+      <div class="parameter-group">
+        <label for="pushForceInput">Push Force</label>
+        <input type="number" id="pushForceInput" min="0.01" max="0.1" step="0.01" value="0.04">
+        <span class="parameter-value" id="pushForceValue">0.04</span>
+      </div>
+    </div>
+    
+    <div id="touchControls">
+      <button class="touch-button" id="leftButton">←</button>
+      <div id="status">
+        <div id="angle-display"></div>
+      </div>
+      <button class="touch-button" id="rightButton">→</button>
+    </div>
+  </div>
+  
+  <div id="gameContainer">
+    <div id="pendulumContainer">
+      <div id="pendulumArm">
+        <div id="pendulumBall"></div>
+      </div>
+    </div>
+    
+    <div id="instructions">
+      <ul>
+        <li>Push left/right to "boost" the pendulum.</li>
+        <li>With enough momentum, you'll be able to loop</li>
+        <li>Adjust the parameters above to change physics behavior</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    class PendulumSimulator {
+      constructor() {
+        this.angle = 0;
+        this.velocity = 0;
+        this.gravity = 0.04;
+        this.damping = 0.992;
+        this.pushForce = 0.04;
+        
+        this.pendulumArm = document.getElementById('pendulumArm');
+        this.angleDisplay = document.getElementById('angle-display');
+        this.leftButton = document.getElementById('leftButton');
+        this.rightButton = document.getElementById('rightButton');
+        this.resetButton = document.getElementById('resetButton');
+        
+        // Elementos dos parâmetros
+        this.gravityInput = document.getElementById('gravityInput');
+        this.dampingInput = document.getElementById('dampingInput');
+        this.pushForceInput = document.getElementById('pushForceInput');
+        this.gravityValue = document.getElementById('gravityValue');
+        this.dampingValue = document.getElementById('dampingValue');
+        this.pushForceValue = document.getElementById('pushForceValue');
+        
+        this.completedRotations = 0;
+        
+        this.init();
+      }
+      
+      init() {
+        this.setupEventListeners();
+        this.animate();
+      }
+      
+      setupEventListeners() {
+        this.leftButton.addEventListener('click', () => this.pushLeft());
+        this.rightButton.addEventListener('click', () => this.pushRight());
+        this.resetButton.addEventListener('click', () => this.reset());
+        
+        // Event listeners dos parâmetros
+        this.gravityInput.addEventListener('input', (e) => {
+          this.gravity = parseFloat(e.target.value);
+          this.gravityValue.textContent = this.gravity.toFixed(3);
+        });
+        
+        this.dampingInput.addEventListener('input', (e) => {
+          this.damping = parseFloat(e.target.value);
+          this.dampingValue.textContent = this.damping.toFixed(3);
+        });
+        
+        this.pushForceInput.addEventListener('input', (e) => {
+          this.pushForce = parseFloat(e.target.value);
+          this.pushForceValue.textContent = this.pushForce.toFixed(3);
+        });
+        
+        // Controles por teclado
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            this.pushLeft();
+            this.leftButton.style.transform = 'scale(0.95)';
+          } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            this.pushRight();
+            this.rightButton.style.transform = 'scale(0.95)';
+          }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+          if (e.key === 'ArrowLeft') {
+            this.leftButton.style.transform = '';
+          } else if (e.key === 'ArrowRight') {
+            this.rightButton.style.transform = '';
+          }
+        });
+      }
+      
+      pushLeft() {
+        const effectiveForce = this.calculateEffectiveForce(-this.pushForce);
+        this.velocity += effectiveForce;
+        this.addButtonEffect(this.leftButton);
+      }
+      
+      pushRight() {
+        const effectiveForce = this.calculateEffectiveForce(this.pushForce);
+        this.velocity += effectiveForce;
+        this.addButtonEffect(this.rightButton);
+      }
+      
+      calculateEffectiveForce(baseForce) {
+        const velocityFactor = 1 + Math.abs(this.velocity) * 0.03;
+        
+        if ((baseForce > 0 && this.velocity >= 0) || (baseForce < 0 && this.velocity <= 0)) {
+          return baseForce * velocityFactor * 1.1;
+        }
+        
+        return baseForce * 0.85;
+      }
+      
+      addButtonEffect(button) {
+        button.style.background = '#D4B570';
+        setTimeout(() => {
+          button.style.background = '#E4C58A';
+        }, 150);
+      }
+      
+      reset() {
+        this.angle = 0;
+        this.velocity = 0;
+        this.completedRotations = 0;
+        this.pendulumArm.classList.remove('full-rotation');
+      }
+      
+      update() {
+        // Física do pêndulo
+        const gravityForce = -this.gravity * Math.sin(this.angle);
+        this.velocity += gravityForce;
+        
+        // Aplicar amortecimento
+        this.velocity *= this.damping;
+        
+        // Atualizar ângulo
+        this.angle += this.velocity;
+        
+        // Detectar volta completa
+        this.detectFullRotation();
+        
+        this.updateDisplay();
+      }
+      
+      detectFullRotation() {
+        if (Math.abs(this.angle) > 2 * Math.PI * (this.completedRotations + 1)) {
+          this.completedRotations++;
+          this.pendulumArm.classList.add('full-rotation');
+          setTimeout(() => {
+            this.pendulumArm.classList.remove('full-rotation');
+          }, 1000);
+        }
+      }
+      
+      updateDisplay() {
+        // Atualizar rotação visual
+        this.pendulumArm.style.transform = `translateX(-50%) rotate(${this.angle}rad)`;
+        
+        // Mostrar loops completados
+        if (this.completedRotations > 0) {
+          this.angleDisplay.textContent = `${this.completedRotations} loop${this.completedRotations > 1 ? 's' : ''}`;
+        } else {
+          this.angleDisplay.textContent = '';
+        }
+      }
+      
+      animate() {
+        this.update();
+        requestAnimationFrame(() => this.animate());
+      }
+    }
+    
+    // Inicializar o simulador quando a página carregar
+    document.addEventListener('DOMContentLoaded', () => {
+      new PendulumSimulator();
+    });
+  </script>
+</body>
+</html>

@@ -1,32 +1,40 @@
 <div style="text-align: center;">
-  <h2 style="color: white;">American Football</h2>
+  <h2 id="pageTitle" style="color: white;">American Football</h2>
   <!-- ALL Button -->
   <button id="startButton" class="round-button">Start</button>
   
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="playmCheckbox"> Player M</label><br>
+    <label><input type="checkbox" id="playfCheckbox"> Player F</label><br>
+    <label><input type="checkbox" id="coachCheckbox"> Coach</label><br>
+    <label><input type="checkbox" id="courtCheckbox"> Stadium</label><br>
+  </div>
+
   <!-- Cards per page selection -->
-  <div>
-    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
     <input type="number" id="cardsPerPageInput" value="5"><br><br>
   </div>
   
-  <!-- Action Section -->
-  <div style="margin-top: 20px;">
-    <div style="display: flex; flex-direction: column; align-items: center;">
-      <div style="margin-bottom: 20px;">
-        <h3>Action</h3>
-        <p id="actionResult" style="color: white;">-</p>
-        <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
-      </div>
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
     </div>
   </div>
+</div>
 
   <!-- Cards Display -->
   <div id="cardsContainer" style="margin-top: 20px;"></div>
 </div>
 
 <script>
-  const actions = [
-    "Hail Mary Pass: Attempt a long pass for an unexpected touchdown. Roll a dice or compare stats for success.",
+  const actions = ["Hail Mary Pass: Attempt a long pass for an unexpected touchdown. Roll a dice or compare stats for success.",
 "Trick Play: Surprise the defense, nullifying a defensive card.",
 "Screen Pass: Nullify an enemy blitz attempt.",
 "Quarterback Sneak: Advance a short distance automatically.",
@@ -46,21 +54,10 @@
 "Challenge Flag: Nullify an opponent's action (limited use).",
 "Weather Shift: Reduce the effectiveness of operational actions for two turns.",
 "Two-Minute Drill: Play two offensive cards in a row before the opponent's next play.",
-"Fan Support: Increase the effectiveness of your next offensive play."
-  ];
+"Fan Support: Increase the effectiveness of your next offensive play."];
   
-  const cards = [  
-  {name: "Coach: Andy Reid", attributes: {Trophies: 2, Tactics: 9, "Player Development": 9, Leadership: 9, Longevity: 9, "Big Match Performance": 8}},
-{name: "Coach: Bill Belichick", attributes: {Trophies: 8, Tactics: 10, "Player Development": 9, Leadership: 9, Longevity: 10, "Big Match Performance": 10}},
-{name: "Coach: Chuck Noll", attributes: {Trophies: 4, Tactics: 8, "Player Development": 9, Leadership: 9, Longevity: 9, "Big Match Performance": 9}},
-{name: "Coach: Don Shula", attributes: {Trophies: 4, Tactics: 9, "Player Development": 9, Leadership: 9, Longevity: 10, "Big Match Performance": 8}},
-{name: "Coach: Jimmy Johnson", attributes: {Trophies: 2, Tactics: 9, "Player Development": 8, Leadership: 9, Longevity: 7, "Big Match Performance": 9}},
-{name: "Coach: John Madden", attributes: {Trophies: 1, Tactics: 8, "Player Development": 8, Leadership: 10, Longevity: 8, "Big Match Performance": 9}},
-{name: "Coach: Mike Tomlin", attributes: {Trophies: 1, Tactics: 8, "Player Development": 9, Leadership: 9, Longevity: 9, "Big Match Performance": 8}},
-{name: "Coach: Sean Payton", attributes: {Trophies: 1, Tactics: 9, "Player Development": 8, Leadership: 8, Longevity: 9, "Big Match Performance": 8}},
-{name: "Coach: Tom Landry", attributes: {Trophies: 2, Tactics: 9, "Player Development": 8, Leadership: 9, Longevity: 10, "Big Match Performance": 8}},
-{name: "Coach: Vince Lombardi", attributes: {Trophies: 5, Tactics: 9, "Player Development": 8, Leadership: 10, Longevity: 8, "Big Match Performance": 10}},
-{name: "Player: A.J. Brown", attributes: {Position: "Wide Receiver", Receiving: 92, "Clutch Factor": 95, "Career Legacy": 85}},
+const playm = [
+    {name: "Player: A.J. Brown", attributes: {Position: "Wide Receiver", Receiving: 92, "Clutch Factor": 95, "Career Legacy": 85}},
 {name: "Player: Aaron Donald (DT)", attributes: {Position: "Defensive Line", "Pass Rush": 99, "Football IQ": 98, Legacy: 96}},
 {name: "Player: Aeneas Williams", attributes: {Position: "Cornerback", Coverage: 95, Instincts: 96, Legacy: 94}},
 {name: "Player: Alan Page (DT)", attributes: {Position: "Defensive Line", "Pass Rush": 95, "Football IQ": 98, Legacy: 96}},
@@ -135,7 +132,47 @@
 {name: "Player: Troy Polamalu (SS)", attributes: {Position: "Safety", Playmaker: 99, Instincts: 98, Legacy: 96}},
 {name: "Player: Walter Payton", attributes: {Position: "Running Back", Power: 95, Versatility: 100, "Career Legacy": 98}},
 {name: "Player: Willie Roaf (OT)", attributes: {Position: "Offensive Line", Agility: 95, Blocking: 98, Legacy: 92}},
-{name: "Stadium: Allegiant Stadium (Las Vegas Raiders)", attributes: {Capacity: 65000, Technology: 99, Atmosphere: 95, Legacy: "88 (modern and impressive)"}},
+  ];
+
+  const playf = [
+{name: "Player: Adrienne Smith", attributes: {Position: "Wide Receiver", Speed: 90, Receiving: 99, Legacy: 98}},
+{name: "Player: Allison Cahill", attributes: {Position: "Quarterback", Speed: 85, Receiving: 80, Legacy: 99}},
+{name: "Player: Amanda Congialdi", attributes: {Position: "Quarterback", Speed: 86, Receiving: 79, Legacy: 94}},
+{name: "Player: Ashley Robinson", attributes: {Position: "Wide Receiver", Speed: 90, Receiving: 93, Legacy: 94}},
+{name: "Player: Brianna \"Spidey\" Barrett", attributes: {Position: "Wide Receiver", Speed: 92, Receiving: 95, Legacy: 93}},
+{name: "Player: Britt Peterson", attributes: {Position: "Free Safety / Wide Receiver", Speed: 90, Receiving: 92, Legacy: 92}},
+{name: "Player: Callie Brownson", attributes: {Position: "Free Safety / Running Back", Speed: 90, Receiving: 80, Legacy: 94}},
+{name: "Player: Chantel Wiggins", attributes: {Position: "Quarterback", Speed: 85, Receiving: 80, Legacy: 95}},
+{name: "Player: Donna Wilkinson", attributes: {Position: "Running Back / Tight End", Speed: 92, Receiving: 88, Legacy: 93}},
+{name: "Player: Erin Kelley", attributes: {Position: "Quarterback", Speed: 87, Receiving: 78, Legacy: 93}},
+{name: "Player: Jana Meister", attributes: {Position: "Wide Receiver", Speed: 91, Receiving: 94, Legacy: 94}},
+{name: "Player: Jasmine Plummer", attributes: {Position: "Running Back", Speed: 88, Receiving: 80, Legacy: 90}},
+{name: "Player: Karmen Henson", attributes: {Position: "RB / Cornerback / Linebacker", Speed: 88, Receiving: 80, Legacy: 92}},
+{name: "Player: Katie Sowers", attributes: {Position: "Wide Receiver", Speed: 85, Receiving: 87, Legacy: 99}},
+{name: "Player: Londyn Buckner", attributes: {Position: "Tight End", Speed: 80, Receiving: 88, Legacy: 91}},
+{name: "Player: Nori Washington", attributes: {Position: "Tailback", Speed: 91, Receiving: 90, Legacy: 92}},
+{name: "Player: Rocket Parker", attributes: {Position: "Wide Receiver", Speed: 89, Receiving: 92, Legacy: 93}},
+{name: "Player: Sami Grisafe", attributes: {Position: "Quarterback", Speed: 84, Receiving: 82, Legacy: 97}},
+{name: "Player: Sami Krause", attributes: {Position: "Offensive Line", Speed: 70, Receiving: 60, Legacy: 90}},
+{name: "Player: Santia Deck", attributes: {Position: "Running Back", Speed: 99, Receiving: 85, Legacy: 97}},
+{name: "Player: Smitty Jones", attributes: {Position: "Strong Safety", Speed: 88, Receiving: 70, Legacy: 91}},
+  ];
+
+const coach = [
+    {name: "Coach: Andy Reid", attributes: {Trophies: 2, Tactics: 9, "Player Development": 9, Leadership: 9, Longevity: 9, "Big Match Performance": 8}},
+{name: "Coach: Bill Belichick", attributes: {Trophies: 8, Tactics: 10, "Player Development": 9, Leadership: 9, Longevity: 10, "Big Match Performance": 10}},
+{name: "Coach: Chuck Noll", attributes: {Trophies: 4, Tactics: 8, "Player Development": 9, Leadership: 9, Longevity: 9, "Big Match Performance": 9}},
+{name: "Coach: Don Shula", attributes: {Trophies: 4, Tactics: 9, "Player Development": 9, Leadership: 9, Longevity: 10, "Big Match Performance": 8}},
+{name: "Coach: Jimmy Johnson", attributes: {Trophies: 2, Tactics: 9, "Player Development": 8, Leadership: 9, Longevity: 7, "Big Match Performance": 9}},
+{name: "Coach: John Madden", attributes: {Trophies: 1, Tactics: 8, "Player Development": 8, Leadership: 10, Longevity: 8, "Big Match Performance": 9}},
+{name: "Coach: Mike Tomlin", attributes: {Trophies: 1, Tactics: 8, "Player Development": 9, Leadership: 9, Longevity: 9, "Big Match Performance": 8}},
+{name: "Coach: Sean Payton", attributes: {Trophies: 1, Tactics: 9, "Player Development": 8, Leadership: 8, Longevity: 9, "Big Match Performance": 8}},
+{name: "Coach: Tom Landry", attributes: {Trophies: 2, Tactics: 9, "Player Development": 8, Leadership: 9, Longevity: 10, "Big Match Performance": 8}},
+{name: "Coach: Vince Lombardi", attributes: {Trophies: 5, Tactics: 9, "Player Development": 8, Leadership: 10, Longevity: 8, "Big Match Performance": 10}},
+  ];
+
+const court = [
+    {name: "Stadium: Allegiant Stadium (Las Vegas Raiders)", attributes: {Capacity: 65000, Technology: 99, Atmosphere: 95, Legacy: "88 (modern and impressive)"}},
 {name: "Stadium: Arrowhead Stadium (Kansas City Chiefs)", attributes: {Capacity: 76416, Atmosphere: "100 (loudest stadium record)", "Home Field Advantage": 100, Legacy: 95}},
 {name: "Stadium: AT&T Stadium (Dallas Cowboys)", attributes: {Capacity: 80000, Technology: "100 (huge screen)", Atmosphere: 95, Legacy: 90}},
 {name: "Stadium: Caesars Superdome (New Orleans Saints)", attributes: {Capacity: 73208, Noise: "98 (extremely loud)", Legacy: 95, "Weather Impact": "0 (indoor stadium)"}},
@@ -146,7 +183,9 @@
 {name: "Stadium: SoFi Stadium (Los Angeles Rams/Chargers)", attributes: {Capacity: 70240, Technology: "100 (giant 4K screen)", Comfort: 95, Legacy: "85 (new, but already iconic)"}},
 {name: "Stadium: Soldier Field (Chicago Bears)", attributes: {Capacity: 61500, History: 98, Atmosphere: 95, "Weather Impact": "95 (chilly Chicago winds)"}},
 {name: "Stadium: U.S. Bank Stadium (Minnesota Vikings)", attributes: {Capacity: 66860, Design: "100 (futuristic architecture)", "Home Field Advantage": 97, "Weather Impact": "0 (stadium closed)"}},
+
   ];
+
 
   // Shuffle array
   function shuffleArray(array) {
@@ -155,7 +194,18 @@
 
   // Function to gather selected decks and shuffle
   function shuffleCards() {
-    const selectedCards = [...cards]; // Clone the cards array
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playmCheckbox').checked) selectedCards.push(...playm);
+    if (document.getElementById('playfCheckbox').checked) selectedCards.push(...playf);
+    if (document.getElementById('coachCheckbox').checked) selectedCards.push(...coach);
+    if (document.getElementById('courtCheckbox').checked) selectedCards.push(...court);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
 
     // Shuffle selected cards
     const shuffledCards = shuffleArray(selectedCards);
@@ -184,20 +234,20 @@
     }
   }
 
-  // Function to shuffle Action and display result
-  function shuffleAction() {
-    const randomAction = actions[Math.floor(Math.random() * actions.length)];
-    document.getElementById('actionResult').textContent = randomAction;
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
   }
 
-  // Event listeners for the Shuffle Action button
+  // Event listeners for the Shuffle buttons
   document.getElementById('shuffleActionButton').addEventListener('click', function() {
-    shuffleAction();
+    shuffleDeck(actions, 'actionResult');
   });
 
   // Event listener for the ALL button
   document.getElementById('startButton').addEventListener('click', function() {
-    shuffleCards(); // Shuffle and display cards, but don't shuffle actions
+    shuffleCards(); // Only shuffles cards, not Action and Rules
   });
 </script>
 
@@ -215,7 +265,7 @@
     font-size: 16px;
     cursor: pointer;
     text-align: center;
-    line-height: 80px; /* Aligned with height for proper vertical centering */
+    line-height: 50px;
     transition: background-color 0.3s;
     margin: 20px 0;
   }
@@ -234,7 +284,7 @@
     font-size: 14px;
     cursor: pointer;
     text-align: center;
-    line-height: 80px; /* Aligned with height for proper vertical centering */
+    line-height: 40px;
     transition: background-color 0.3s;
     margin: 10px 0;
   }
@@ -242,7 +292,7 @@
   .shuffle-button:hover {
     background-color: #6E1919;
   }
-
+  
   .page {
     margin-top: 20px;
     padding: 10px;

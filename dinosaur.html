@@ -1,13 +1,7 @@
 <div style="text-align: center;">
-  <h2 id="pageTitle" style="color: white;">Dinosaur / Megafauna</h2>
+  <h2 id="pageTitle" style="color: white;">Dinosaur</h2>
   <!-- ALL Button -->
   <button id="startButton" class="round-button">Start</button>
-  
-<!-- Theme Selection -->
-  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
-    <label><input type="checkbox" id="dinoCheckbox"> Dinosaur</label><br>
-    <label><input type="checkbox" id="megaCheckbox"> Megafauna</label><br>
-  </div>
 
   <!-- Cards per page selection -->
   <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
@@ -32,15 +26,15 @@
 </div>
 
 <script>
-  const actions = ["Ambush Attack - Your dinosaur or megafauna can attack first, ignoring the opponent's defense.",
+  const actions = ["Ambush Attack - Your dinosaur can attack first, ignoring the opponent's defense.",
 "Pack Hunting - If you have more than one predator on the field, you can add their Ferocity attributes to the attack.",
-"Crushing Bite - Choose an opposing dinosaur or megafauna and reduce its defense by -2.",
+"Crushing Bite - Choose an opposing dinosaur and reduce its defense by -2.",
 "Tail Smash - Choose an enemy and prevent it from attacking in the next round.",
 "Stampede - If you have 3 or more herbivores, they can combine their speed points for a huge charge.",
 "Thick Hide - The next attack against your dinosaur suffers a -3 damage reduction.",
 "Camouflage - Choose a dinosaur and make it untargetable for one turn.",
 "Herd Protection - If an herbivore is attacked, an ally can absorb the damage in its place.",
-"Ice Age Shield - If your dinosaur or megafauna is resistant to cold (Mammoth, Smilodon, etc.), it gains +2 defense for 2 rounds. turns.",
+"Ice Age Shield - If your dinosaur is resistant to cold it gains +2 defense for 2 rounds. turns.",
 "Territorial Defense - If an opposing predator attacks, it suffers -2 Speed ​​on the next turn.",
 "Mass Extinction - All players discard 1 random card.",
 "Evolution Boost - Choose a dinosaur and increase +2 in any attribute until the end of the game.",
@@ -49,110 +43,57 @@
 "Fossil Discovery - Take a card from the discard deck and add it to your hand.",];
   
 const dino = [
-{name: "Dinosaur: Acrocanthosaurus (The High-Spined Terror)", attributes: {Length: "11.5 m", Weight: "6,200 kg", Speed: "32 km/h", "Bite Force": "13,500 N", Ferocity: "9/10"}},
-{name: "Dinosaur: Albertosaurus (The Lesser Tyrant)", attributes: {Length: "10 m", Weight: "2,500 kg", Speed: "40 km/h", "Bite Force": "13,000 N", Ferocity: "8/10"}},
-{name: "Dinosaur: Allosaurus (The Jurassic Predator)", attributes: {Length: "9.7 m", Weight: "2,000 kg", Speed: "34 km/h", "Bite Force": "12,000 N", Ferocity: "8/10"}},
-{name: "Dinosaur: Ankylosaurus (The Armored Fortress)", attributes: {Length: "8 m", Weight: "6,000 kg", Speed: "10 km/h", "Bite Force": "1,000 N", Ferocity: "5/10"}},
-{name: "Dinosaur: Argentinosaurus (The Walking Mountain)", attributes: {Length: "30 m", Weight: "80,000 kg", Speed: "12 km/h", "Bite Force": "6,000 N", Ferocity: "3/10"}},
-{name: "Dinosaur: Brachiosaurus (The Towering Giant)", attributes: {Length: "26 m", Weight: "56,000 kg", Speed: "16 km/h", "Bite Force": "5,000 N", Ferocity: "4/10"}},
-{name: "Dinosaur: Carcharodontosaurus (The Shark-Toothed Giant)", attributes: {Length: "13.3 m", Weight: "7,800 kg", Speed: "30 km/h", "Bite Force": "15,000 N", Ferocity: "9/10"}},
-{name: "Dinosaur: Carnotaurus (The Speed Demon)", attributes: {Length: "8 m", Weight: "1,350 kg", Speed: "48 km/h", "Bite Force": "6,000 N", Ferocity: "8/10"}},
-{name: "Dinosaur: Coelophysis (The Ancient Sprinter)", attributes: {Length: "3 m", Weight: "20 kg", Speed: "64 km/h", "Bite Force": "1,800 N", Ferocity: "6/10"}},
-{name: "Dinosaur: Concavenator (The Humpback Hunter)", attributes: {Length: "6 m", Weight: "600 kg", Speed: "44 km/h", "Bite Force": "6,500 N", Ferocity: "7/10"}},
-{name: "Dinosaur: Cryolophosaurus (The Frozen Hunter)", attributes: {Length: "6.5 m", Weight: "465 kg", Speed: "42 km/h", "Bite Force": "6,500 N", Ferocity: "7/10"}},
-{name: "Dinosaur: Deinonychus (The Agile Killer)", attributes: {Length: "3.4 m", Weight: "73 kg", Speed: "50 km/h", "Bite Force": "4,000 N", Ferocity: "8/10"}},
-{name: "Dinosaur: Deltadromeus (The Speedy Killer)", attributes: {Length: "8 m", Weight: "1,000 kg", Speed: "60 km/h", "Bite Force": "6,500 N", Ferocity: "8/10"}},
-{name: "Dinosaur: Dracorex (The Dragon King)", attributes: {Length: "3 m", Weight: "100 kg", Speed: "45 km/h", "Bite Force": "2,000 N", Ferocity: "6/10"}},
-{name: "Dinosaur: Dreadnoughtus (The Indestructible Titan)", attributes: {Length: "26 m", Weight: "65,000 kg", Speed: "10 km/h", "Bite Force": "7,000 N", Ferocity: "4/10"}},
-{name: "Dinosaur: Edmontosaurus (The Duck-Billed Giant)", attributes: {Length: "13 m", Weight: "4,000 kg", Speed: "40 km/h", "Bite Force": "3,500 N", Ferocity: "4/10"}},
-{name: "Dinosaur: Eoraptor (The Dawn Thief)", attributes: {Length: "1 m", Weight: "10 kg", Speed: "56 km/h", "Bite Force": "900 N", Ferocity: "5/10"}},
-{name: "Dinosaur: Europasaurus (The Mini Titan)", attributes: {Length: "6.2 m", Weight: "800 kg", Speed: "15 km/h", "Bite Force": "2,000 N", Ferocity: "3/10"}},
-{name: "Dinosaur: Giganotosaurus (The South American Titan)", attributes: {Length: "13 m", Weight: "8,200 kg", Speed: "30 km/h", "Bite Force": "18,000 N", Ferocity: "9/10"}},
-{name: "Dinosaur: Gigantoraptor (The Giant Bird)", attributes: {Length: "8.3 m", Weight: "1,400 kg", Speed: "48 km/h", "Bite Force": "2,500 N", Ferocity: "7/10"}},
-{name: "Dinosaur: Herrerasaurus (The Ancient Predator)", attributes: {Length: "4 m", Weight: "250 kg", Speed: "40 km/h", "Bite Force": "5,500 N", Ferocity: "7/10"}},
-{name: "Dinosaur: Hypsilophodon (The Quick Herbivore)", attributes: {Length: "2.3 m", Weight: "50 kg", Speed: "55 km/h", "Bite Force": "1,000 N", Ferocity: "3/10"}},
-{name: "Dinosaur: Iguanodon (The Thumb-Spiked Survivor)", attributes: {Length: "10 m", Weight: "3,500 kg", Speed: "35 km/h", "Bite Force": "3,500 N", Ferocity: "4/10"}},
-{name: "Dinosaur: Majungasaurus (The Cannibal Hunter)", attributes: {Length: "7 m", Weight: "1,000 kg", Speed: "33 km/h", "Bite Force": "5,000 N", Ferocity: "9/10"}},
-{name: "Dinosaur: Mapusaurus (The Pack Hunter)", attributes: {Length: "12.5 m", Weight: "5,000 kg", Speed: "36 km/h", "Bite Force": "13,000 N", Ferocity: "9/10"}},
-{name: "Dinosaur: Microraptor (The Four-Winged Flyer)", attributes: {Length: "0.8 m", Weight: "1 kg", Speed: "60 km/h", "Bite Force": "400 N", Ferocity: "5/10"}},
-{name: "Dinosaur: Minmi (The Living Tank)", attributes: {Length: "3 m", Weight: "300 kg", Speed: "15 km/h", "Bite Force": "800 N", Ferocity: "4/10", Defense: "9/10"}},
-{name: "Dinosaur: Mosasaurus (The Ocean King)", attributes: {Length: "17 m", Weight: "15,000 kg", Speed: "47 km/h", "Bite Force": "25,000 N", Ferocity: "10/10"}},
-{name: "Dinosaur: Nothronychus (The Clawed Herbivore)", attributes: {Length: "6 m", Weight: "1,000 kg", Speed: "20 km/h", "Bite Force": "2,000 N", Ferocity: "5/10"}},
-{name: "Dinosaur: Oviraptor (The Egg Thief)", attributes: {Length: "2 m", Weight: "25 kg", Speed: "50 km/h", "Bite Force": "1,200 N", Ferocity: "4/10", Intelligence: "8/10"}},
-{name: "Dinosaur: Pachycephalosaurus (The Skull Basher)", attributes: {Length: "4.5 m", Weight: "450 kg", Speed: "40 km/h", "Bite Force": "800 N", Ferocity: "6/10"}},
-{name: "Dinosaur: Parasaurolophus (The Trumpeting Herbivore)", attributes: {Length: "10 m", Weight: "3,500 kg", Speed: "40 km/h", "Bite Force": "3,000 N", Ferocity: "3/10"}},
-{name: "Dinosaur: Pentaceratops (The Five-Horned Giant)", attributes: {Length: "8 m", Weight: "5,500 kg", Speed: "30 km/h", "Bite Force": "7,000 N", Ferocity: "6/10"}},
-{name: "Dinosaur: Psittacosaurus (The Parrot-Lizard)", attributes: {Length: "2 m", Weight: "20 kg", Speed: "45 km/h", "Bite Force": "1,500 N", Ferocity: "3/10"}},
-{name: "Dinosaur: Rajasaurus (The Indian King)", attributes: {Length: "9 m", Weight: "3,000 kg", Speed: "32 km/h", "Bite Force": "9,500 N", Ferocity: "8/10"}},
-{name: "Dinosaur: Rugops (The Scarred Face)", attributes: {Length: "6 m", Weight: "750 kg", Speed: "38 km/h", "Bite Force": "4,000 N", Ferocity: "7/10"}},
-{name: "Dinosaur: Shantungosaurus (The Biggest Duckbill)", attributes: {Length: "15 m", Weight: "16,000 kg", Speed: "30 km/h", "Bite Force": "4,000 N", Ferocity: "4/10"}},
-{name: "Dinosaur: Sinornithosaurus (The Feathered Hunter)", attributes: {Length: "1.2 m", Weight: "3 kg", Speed: "50 km/h", "Bite Force": "900 N", Ferocity: "6/10"}},
-{name: "Dinosaur: Spinosaurus (The River Monster)", attributes: {Length: "15 m", Weight: "9,000 kg", Speed: "24 km/h", "Bite Force": "20,000 N", Ferocity: "9/10"}},
-{name: "Dinosaur: Stegosaurus (The Spiked Guardian)", attributes: {Length: "9 m", Weight: "5,500 kg", Speed: "7 km/h", "Bite Force": "1,500 N", Ferocity: "5/10"}},
-{name: "Dinosaur: Styracosaurus (The Horned Shield)", attributes: {Length: "5.5 m", Weight: "2,700 kg", Speed: "30 km/h", "Bite Force": "5,500 N", Ferocity: "6/10"}},
-{name: "Dinosaur: Suchomimus (The River Stalker)", attributes: {Length: "11 m", Weight: "3,500 kg", Speed: "30 km/h", "Bite Force": "11,000 N", Ferocity: "8/10"}},
-{name: "Dinosaur: Therizinosaurus (The Deadly Clawed Reaper)", attributes: {Length: "10 m", Weight: "5,000 kg", Speed: "20 km/h", "Bite Force": "1,200 N", Ferocity: "7/10"}},
-{name: "Dinosaur: Therizinosaurus (The Razor Clawed Giant)", attributes: {Length: "10 m", Weight: "5,000 kg", Speed: "20 km/h", "Bite Force": "1,500 N", Ferocity: "7/10"}},
-{name: "Dinosaur: Torvosaurus (The Savage Lizard)", attributes: {Length: "10 m", Weight: "4,500 kg", Speed: "32 km/h", "Bite Force": "14,000 N", Ferocity: "9/10"}},
-{name: "Dinosaur: Triceratops (The Three-Horned Tank)", attributes: {Length: "9 m", Weight: "12,000 kg", Speed: "32 km/h", "Bite Force": "8,000 N", Ferocity: "6/10"}},
-{name: "Dinosaur: Troodon (The Smartest Dinosaur)", attributes: {Length: "2.5 m", Weight: "50 kg", Speed: "60 km/h", "Bite Force": "1,500 N", Ferocity: "5/10", Intelligence: "10/10"}},
-{name: "Dinosaur: Tyrannosaurus Rex (The King of Predators)", attributes: {Length: "12.3 m", Weight: "8,000 kg", Speed: "27 km/h", "Bite Force": "35,000 N", Ferocity: "10/10"}},
-{name: "Dinosaur: Utahraptor (The Giant Raptor)", attributes: {Length: "5.5 m", Weight: "500 kg", Speed: "46 km/h", "Bite Force": "7,000 N", Ferocity: "9/10"}},
-{name: "Dinosaur: Velociraptor (The Clever Hunter)", attributes: {Length: "2 m", Weight: "15 kg", Speed: "64 km/h", "Bite Force": "2,500 N", Ferocity: "7/10"}},
+{name: "Acrocanthosaurus (The High-Spined Terror)", attributes: {Length: "11.5 m", Weight: "6,200 kg", Speed: "32 km/h", "Bite Force": "13,500 N", Ferocity: "9/10"}},
+{name: "Albertosaurus (The Lesser Tyrant)", attributes: {Length: "10 m", Weight: "2,500 kg", Speed: "40 km/h", "Bite Force": "13,000 N", Ferocity: "8/10"}},
+{name: "Allosaurus (The Jurassic Predator)", attributes: {Length: "9.7 m", Weight: "2,000 kg", Speed: "34 km/h", "Bite Force": "12,000 N", Ferocity: "8/10"}},
+{name: "Ankylosaurus (The Armored Fortress)", attributes: {Length: "8 m", Weight: "6,000 kg", Speed: "10 km/h", "Bite Force": "1,000 N", Ferocity: "5/10"}},
+{name: "Argentinosaurus (The Walking Mountain)", attributes: {Length: "30 m", Weight: "80,000 kg", Speed: "12 km/h", "Bite Force": "6,000 N", Ferocity: "3/10"}},
+{name: "Brachiosaurus (The Towering Giant)", attributes: {Length: "26 m", Weight: "56,000 kg", Speed: "16 km/h", "Bite Force": "5,000 N", Ferocity: "4/10"}},
+{name: "Carcharodontosaurus (The Shark-Toothed Giant)", attributes: {Length: "13.3 m", Weight: "7,800 kg", Speed: "30 km/h", "Bite Force": "15,000 N", Ferocity: "9/10"}},
+{name: "Carnotaurus (The Speed Demon)", attributes: {Length: "8 m", Weight: "1,350 kg", Speed: "48 km/h", "Bite Force": "6,000 N", Ferocity: "8/10"}},
+{name: "Coelophysis (The Ancient Sprinter)", attributes: {Length: "3 m", Weight: "20 kg", Speed: "64 km/h", "Bite Force": "1,800 N", Ferocity: "6/10"}},
+{name: "Concavenator (The Humpback Hunter)", attributes: {Length: "6 m", Weight: "600 kg", Speed: "44 km/h", "Bite Force": "6,500 N", Ferocity: "7/10"}},
+{name: "Cryolophosaurus (The Frozen Hunter)", attributes: {Length: "6.5 m", Weight: "465 kg", Speed: "42 km/h", "Bite Force": "6,500 N", Ferocity: "7/10"}},
+{name: "Deinonychus (The Agile Killer)", attributes: {Length: "3.4 m", Weight: "73 kg", Speed: "50 km/h", "Bite Force": "4,000 N", Ferocity: "8/10"}},
+{name: "Deltadromeus (The Speedy Killer)", attributes: {Length: "8 m", Weight: "1,000 kg", Speed: "60 km/h", "Bite Force": "6,500 N", Ferocity: "8/10"}},
+{name: "Dracorex (The Dragon King)", attributes: {Length: "3 m", Weight: "100 kg", Speed: "45 km/h", "Bite Force": "2,000 N", Ferocity: "6/10"}},
+{name: "Dreadnoughtus (The Indestructible Titan)", attributes: {Length: "26 m", Weight: "65,000 kg", Speed: "10 km/h", "Bite Force": "7,000 N", Ferocity: "4/10"}},
+{name: "Edmontosaurus (The Duck-Billed Giant)", attributes: {Length: "13 m", Weight: "4,000 kg", Speed: "40 km/h", "Bite Force": "3,500 N", Ferocity: "4/10"}},
+{name: "Eoraptor (The Dawn Thief)", attributes: {Length: "1 m", Weight: "10 kg", Speed: "56 km/h", "Bite Force": "900 N", Ferocity: "5/10"}},
+{name: "Europasaurus (The Mini Titan)", attributes: {Length: "6.2 m", Weight: "800 kg", Speed: "15 km/h", "Bite Force": "2,000 N", Ferocity: "3/10"}},
+{name: "Giganotosaurus (The South American Titan)", attributes: {Length: "13 m", Weight: "8,200 kg", Speed: "30 km/h", "Bite Force": "18,000 N", Ferocity: "9/10"}},
+{name: "Gigantoraptor (The Giant Bird)", attributes: {Length: "8.3 m", Weight: "1,400 kg", Speed: "48 km/h", "Bite Force": "2,500 N", Ferocity: "7/10"}},
+{name: "Herrerasaurus (The Ancient Predator)", attributes: {Length: "4 m", Weight: "250 kg", Speed: "40 km/h", "Bite Force": "5,500 N", Ferocity: "7/10"}},
+{name: "Hypsilophodon (The Quick Herbivore)", attributes: {Length: "2.3 m", Weight: "50 kg", Speed: "55 km/h", "Bite Force": "1,000 N", Ferocity: "3/10"}},
+{name: "Iguanodon (The Thumb-Spiked Survivor)", attributes: {Length: "10 m", Weight: "3,500 kg", Speed: "35 km/h", "Bite Force": "3,500 N", Ferocity: "4/10"}},
+{name: "Majungasaurus (The Cannibal Hunter)", attributes: {Length: "7 m", Weight: "1,000 kg", Speed: "33 km/h", "Bite Force": "5,000 N", Ferocity: "9/10"}},
+{name: "Mapusaurus (The Pack Hunter)", attributes: {Length: "12.5 m", Weight: "5,000 kg", Speed: "36 km/h", "Bite Force": "13,000 N", Ferocity: "9/10"}},
+{name: "Microraptor (The Four-Winged Flyer)", attributes: {Length: "0.8 m", Weight: "1 kg", Speed: "60 km/h", "Bite Force": "400 N", Ferocity: "5/10"}},
+{name: "Minmi (The Living Tank)", attributes: {Length: "3 m", Weight: "300 kg", Speed: "15 km/h", "Bite Force": "800 N", Ferocity: "4/10", Defense: "9/10"}},
+{name: "Mosasaurus (The Ocean King)", attributes: {Length: "17 m", Weight: "15,000 kg", Speed: "47 km/h", "Bite Force": "25,000 N", Ferocity: "10/10"}},
+{name: "Nothronychus (The Clawed Herbivore)", attributes: {Length: "6 m", Weight: "1,000 kg", Speed: "20 km/h", "Bite Force": "2,000 N", Ferocity: "5/10"}},
+{name: "Oviraptor (The Egg Thief)", attributes: {Length: "2 m", Weight: "25 kg", Speed: "50 km/h", "Bite Force": "1,200 N", Ferocity: "4/10", Intelligence: "8/10"}},
+{name: "Pachycephalosaurus (The Skull Basher)", attributes: {Length: "4.5 m", Weight: "450 kg", Speed: "40 km/h", "Bite Force": "800 N", Ferocity: "6/10"}},
+{name: "Parasaurolophus (The Trumpeting Herbivore)", attributes: {Length: "10 m", Weight: "3,500 kg", Speed: "40 km/h", "Bite Force": "3,000 N", Ferocity: "3/10"}},
+{name: "Pentaceratops (The Five-Horned Giant)", attributes: {Length: "8 m", Weight: "5,500 kg", Speed: "30 km/h", "Bite Force": "7,000 N", Ferocity: "6/10"}},
+{name: "Psittacosaurus (The Parrot-Lizard)", attributes: {Length: "2 m", Weight: "20 kg", Speed: "45 km/h", "Bite Force": "1,500 N", Ferocity: "3/10"}},
+{name: "Rajasaurus (The Indian King)", attributes: {Length: "9 m", Weight: "3,000 kg", Speed: "32 km/h", "Bite Force": "9,500 N", Ferocity: "8/10"}},
+{name: "Rugops (The Scarred Face)", attributes: {Length: "6 m", Weight: "750 kg", Speed: "38 km/h", "Bite Force": "4,000 N", Ferocity: "7/10"}},
+{name: "Shantungosaurus (The Biggest Duckbill)", attributes: {Length: "15 m", Weight: "16,000 kg", Speed: "30 km/h", "Bite Force": "4,000 N", Ferocity: "4/10"}},
+{name: "Sinornithosaurus (The Feathered Hunter)", attributes: {Length: "1.2 m", Weight: "3 kg", Speed: "50 km/h", "Bite Force": "900 N", Ferocity: "6/10"}},
+{name: "Spinosaurus (The River Monster)", attributes: {Length: "15 m", Weight: "9,000 kg", Speed: "24 km/h", "Bite Force": "20,000 N", Ferocity: "9/10"}},
+{name: "Stegosaurus (The Spiked Guardian)", attributes: {Length: "9 m", Weight: "5,500 kg", Speed: "7 km/h", "Bite Force": "1,500 N", Ferocity: "5/10"}},
+{name: "Styracosaurus (The Horned Shield)", attributes: {Length: "5.5 m", Weight: "2,700 kg", Speed: "30 km/h", "Bite Force": "5,500 N", Ferocity: "6/10"}},
+{name: "Suchomimus (The River Stalker)", attributes: {Length: "11 m", Weight: "3,500 kg", Speed: "30 km/h", "Bite Force": "11,000 N", Ferocity: "8/10"}},
+{name: "Therizinosaurus (The Deadly Clawed Reaper)", attributes: {Length: "10 m", Weight: "5,000 kg", Speed: "20 km/h", "Bite Force": "1,200 N", Ferocity: "7/10"}},
+{name: "Therizinosaurus (The Razor Clawed Giant)", attributes: {Length: "10 m", Weight: "5,000 kg", Speed: "20 km/h", "Bite Force": "1,500 N", Ferocity: "7/10"}},
+{name: "Torvosaurus (The Savage Lizard)", attributes: {Length: "10 m", Weight: "4,500 kg", Speed: "32 km/h", "Bite Force": "14,000 N", Ferocity: "9/10"}},
+{name: "Triceratops (The Three-Horned Tank)", attributes: {Length: "9 m", Weight: "12,000 kg", Speed: "32 km/h", "Bite Force": "8,000 N", Ferocity: "6/10"}},
+{name: "Troodon (The Smartest Dinosaur)", attributes: {Length: "2.5 m", Weight: "50 kg", Speed: "60 km/h", "Bite Force": "1,500 N", Ferocity: "5/10", Intelligence: "10/10"}},
+{name: "Tyrannosaurus Rex (The King of Predators)", attributes: {Length: "12.3 m", Weight: "8,000 kg", Speed: "27 km/h", "Bite Force": "35,000 N", Ferocity: "10/10"}},
+{name: "Utahraptor (The Giant Raptor)", attributes: {Length: "5.5 m", Weight: "500 kg", Speed: "46 km/h", "Bite Force": "7,000 N", Ferocity: "9/10"}},
+{name: "Velociraptor (The Clever Hunter)", attributes: {Length: "2 m", Weight: "15 kg", Speed: "64 km/h", "Bite Force": "2,500 N", Ferocity: "7/10"}},
 ];
-
-  const mega = [
-{name: "Megafauna: Amphicyon (The Hybrid Predator)", attributes: {Length: "2.5 m", Weight: "400 kg", Speed: "45 km/h", "Bite Force": "10,000 N", Ferocity: "8/10"}},
-{name: "Megafauna: Andrewsarchus (The Largest Carnivorous Mammal)", attributes: {Length: "4.5 m", Weight: "1,000 kg", Speed: "56 km/h", "Bite Force": "8,000 N", Ferocity: "9/10"}},
-{name: "Megafauna: Arctodus (The Giant Bear)", attributes: {Height: "3.4 m", Weight: "1,000 kg", Speed: "56 km/h", "Claw Strength": "9/10", Ferocity: "9/10"}},
-{name: "Megafauna: Argentavis (The Giant Bird)", attributes: {Wingspan: "7 m", Weight: "70 kg", Speed: "65 km/h", "Beak Power": "7/10", Ferocity: "6/10"}},
-{name: "Megafauna: Arsinotherium (The Twin-Horned Colossus)", attributes: {Length: "3.5 m", Weight: "4,500 kg", Speed: "35 km/h", "Horn Power": "9/10", Ferocity: "7/10"}},
-{name: "Megafauna: Barbourofelis (The False Saber-Tooth)", attributes: {Length: "1.5 m", Weight: "150 kg", Speed: "55 km/h", "Bite Force": "7,500 N", Ferocity: "9/10"}},
-{name: "Megafauna: Basilosaurus (The Killer Whale Ancestor)", attributes: {Length: "18 m", Weight: "60,000 kg", Speed: "40 km/h", "Bite Force": "15,000 N", Ferocity: "9/10"}},
-{name: "Megafauna: Beelzebufo (The Frog of Doom)", attributes: {Length: "0.4 m", Weight: "4.5 kg", Speed: "15 km/h", "Bite Force": "2,200 N", Ferocity: "6/10"}},
-{name: "Megafauna: Brontotherium (The Thunder Beast)", attributes: {Length: "4.5 m", Weight: "3,000 kg", Speed: "40 km/h", "Horn Power": "8/10", Ferocity: "6/10"}},
-{name: "Megafauna: Cameroceras (The Ancient Squid-Terror)", attributes: {Length: "6 m", Weight: "300 kg", Speed: "40 km/h", "Tentacle Strength": "9/10", Ferocity: "8/10"}},
-{name: "Megafauna: Castoroides (The Oversized Rodent)", attributes: {Length: "2 m", Weight: "100 kg", Speed: "15 km/h", "Bite Force": "4,000 N", Ferocity: "4/10"}},
-{name: "Megafauna: Chalicotherium (The Gorilla-Horse)", attributes: {Height: "2.5 m", Weight: "400 kg", Speed: "30 km/h", "Claw Strength": "8/10", Ferocity: "5/10"}},
-{name: "Megafauna: Deinotherium (The Strange-Tusk Elephant)", attributes: {Length: "6 m", Weight: "12,000 kg", Speed: "35 km/h", "Tusk Strength": "9/10", Ferocity: "6/10"}},
-{name: "Megafauna: Diprotodon (The Giant Wombat)", attributes: {Length: "4 m", Weight: "2,700 kg", Speed: "20 km/h", "Bite Strength": "6/10", Ferocity: "4/10"}},
-{name: "Megafauna: Doedicurus (The Armored Tank)", attributes: {Length: "4 m", Weight: "1,400 kg", Speed: "15 km/h", "Tail Strength": "9/10", Ferocity: "5/10"}},
-{name: "Megafauna: Elasmotherium (The Siberian Unicorn)", attributes: {Length: "4.5 m", Weight: "4,500 kg", Speed: "45 km/h", "Horn Strength": "10/10", Ferocity: "6/10"}},
-{name: "Megafauna: Eremotherium (The Giant Tropical Sloth)", attributes: {Length: "6 m", Weight: "5,000 kg", Speed: "10 km/h", "Claw Strength": "9/10", Ferocity: "5/10"}},
-{name: "Megafauna: Eusmilus (The Dagger-Toothed Hunter)", attributes: {Length: "1.8 m", Weight: "150 kg", Speed: "50 km/h", "Bite Force": "8,000 N", Ferocity: "8/10"}},
-{name: "Megafauna: Gigantopithecus (The Giant Ape)", attributes: {Height: "3 m", Weight: "540 kg", Speed: "30 km/h", "Arm Strength": "10/10", Ferocity: "7/10"}},
-{name: "Megafauna: Homotherium (The Scimitar-Toothed Cat)", attributes: {Length: "1.6 m", Weight: "220 kg", Speed: "65 km/h", "Bite Force": "7,500 N", Ferocity: "9/10"}},
-{name: "Megafauna: Hyaenodon (The Bone Crusher)", attributes: {Length: "1.8 m", Weight: "500 kg", Speed: "50 km/h", "Bite Force": "11,000 N", Ferocity: "9/10"}},
-{name: "Megafauna: Josephoartigasia (The Giant Rodent)", attributes: {Length: "3 m", Weight: "1,000 kg", Speed: "25 km/h", "Bite Force": "5,000 N", Ferocity: "5/10"}},
-{name: "Megafauna: Josephoartigasia (The Rodent King)", attributes: {Length: "3 m", Weight: "1,000 kg", Speed: "25 km/h", "Bite Force": "5,000 N", Ferocity: "5/10"}},
-{name: "Megafauna: Macrauchenia (The Llama-Horse Hybrid)", attributes: {Length: "3 m", Weight: "1,000 kg", Speed: "50 km/h", "Neck Strength": "7/10", Ferocity: "4/10"}},
-{name: "Megafauna: Macraucheniopsis (The South American Giraffe)", attributes: {Length: "3.5 m", Weight: "1,200 kg", Speed: "50 km/h", "Neck Strength": "7/10", Ferocity: "4/10"}},
-{name: "Megafauna: Mammut (The Woodland Giant)", attributes: {Length: "5 m", Weight: "6,000 kg", Speed: "35 km/h", "Tusk Power": "9/10", Ferocity: "7/10"}},
-{name: "Megafauna: Megalania (The Giant Venomous Lizard)", attributes: {Length: "7 m", Weight: "600 kg", Speed: "25 km/h", "Bite Force": "5,500 N", Ferocity: "9/10"}},
-{name: "Megafauna: Megalictis (The Prehistoric Wolverine)", attributes: {Length: "1.5 m", Weight: "50 kg", Speed: "50 km/h", "Bite Force": "4,500 N", Ferocity: "8/10"}},
-{name: "Megafauna: Megalodon (The Ocean Nightmare)", attributes: {Length: "18 m", Weight: "50,000 kg", Speed: "56 km/h", "Bite Force": "180,000 N", Ferocity: "10/10"}},
-{name: "Megafauna: Megatherium (The Giant Ground Sloth)", attributes: {Length: "6 m", Weight: "4,000 kg", Speed: "10 km/h", "Claw Strength": "9/10", Ferocity: "5/10"}},
-{name: "Megafauna: Megistosaurus (The Super Crocodile)", attributes: {Length: "10 m", Weight: "3,000 kg", Speed: "30 km/h", "Bite Force": "20,000 N", Ferocity: "9/10"}},
-{name: "Megafauna: Metridiochoerus (The Saber-Toothed Boar)", attributes: {Length: "2.5 m", Weight: "250 kg", Speed: "48 km/h", "Tusk Power": "8/10", Ferocity: "7/10"}},
-{name: "Megafauna: Paraceratherium (The Tallest Mammal)", attributes: {Length: "8 m", Weight: "20,000 kg", Speed: "30 km/h", "Neck Strength": "9/10", Ferocity: "4/10"}},
-{name: "Megafauna: Pelagornis Sandersi (The Largest Flying Bird)", attributes: {Wingspan: "7.3 m", Weight: "40 kg", Speed: "80 km/h", "Beak Power": "6/10", Ferocity: "5/10"}},
-{name: "Megafauna: Phorusrhacos (The Apex Avian)", attributes: {Height: "2.5 m", Weight: "130 kg", Speed: "65 km/h", "Beak Power": "9/10", Ferocity: "8/10"}},
-{name: "Megafauna: Platybelodon (The Shovel-Tusk Elephant)", attributes: {Length: "4 m", Weight: "2,000 kg", Speed: "30 km/h", "Tusk Power": "7/10", Ferocity: "5/10"}},
-{name: "Megafauna: Pontolis (The Apex Marine Mammal)", attributes: {Length: "3 m", Weight: "400 kg", Speed: "40 km/h", "Bite Force": "7,000 N", Ferocity: "7/10"}},
-{name: "Megafauna: Proailurus (The First True Cat)", attributes: {Length: "1 m", Weight: "10 kg", Speed: "55 km/h", "Climbing Ability": "10/10", Ferocity: "5/10"}},
-{name: "Megafauna: Procoptodon (The Giant Kangaroo)", attributes: {Height: "2.5 m", Weight: "230 kg", Speed: "40 km/h", "Kick Strength": "8/10", Ferocity: "5/10"}},
-{name: "Megafauna: Pyrotherium (The South American Titan)", attributes: {Length: "3 m", Weight: "3,500 kg", Speed: "35 km/h", "Tusk Power": "7/10", Ferocity: "6/10"}},
-{name: "Megafauna: Quetzalcoatlus (The Sky Tyrant)", attributes: {Wingspan: "10-12 m", Weight: "250 kg", Speed: "80 km/h", "Beak Power": "7/10", Ferocity: "6/10"}},
-{name: "Megafauna: Sarkastodon (The Hypermammal Predator)", attributes: {Length: "3 m", Weight: "800 kg", Speed: "45 km/h", "Bite Force": "9,500 N", Ferocity: "9/10"}},
-{name: "Megafauna: Sivatherium (The Heavy Giraffe)", attributes: {Height: "3 m", Weight: "1,250 kg", Speed: "45 km/h", "Horn Strength": "7/10", Ferocity: "5/10"}},
-{name: "Megafauna: Smilodon (The Saber-Toothed Killer)", attributes: {Length: "2 m", Weight: "280 kg", Speed: "48 km/h", "Bite Force": "6,000 N", Ferocity: "9/10"}},
-{name: "Megafauna: Thylacine (The Ghost Predator)", attributes: {Length: "1.2 m", Weight: "30 kg", Speed: "40 km/h", "Bite Force": "1,200 N", Ferocity: "5/10"}},
-{name: "Megafauna: Thylacoleo (The Marsupial Lion)", attributes: {Length: "1.5 m", Weight: "160 kg", Speed: "40 km/h", "Bite Force": "8,000 N", Ferocity: "8/10"}},
-{name: "Megafauna: Thylacosmilus (The Saber-Toothed Marsupial)", attributes: {Length: "1.2 m", Weight: "150 kg", Speed: "50 km/h", "Bite Force": "7,000 N", Ferocity: "8/10"}},
-{name: "Megafauna: Titanoboa (The Monster Snake)", attributes: {Length: "14 m", Weight: "1,250 kg", Speed: "25 km/h", "Constriction Power": "10/10", Ferocity: "10/10"}},
-{name: "Megafauna: Titanotylopus (The Giant Camel)", attributes: {Height: "3.5 m", Weight: "1,200 kg", Speed: "50 km/h", Endurance: "10/10", Ferocity: "4/10"}},
-{name: "Megafauna: Woolly Mammoth (The Ice Age Titan)", attributes: {Length: "5.5 m", Weight: "8,000 kg", Speed: "40 km/h", "Tusk Power": "10/10", Ferocity: "7/10"}},
-  ];
 
 
   // Shuffle array
@@ -165,13 +106,7 @@ const dino = [
     const selectedCards = [];
     
     // Gather selected decks
-    if (document.getElementById('dinoCheckbox').checked) selectedCards.push(...dino);
-    if (document.getElementById('megaCheckbox').checked) selectedCards.push(...mega);
-
-    if (selectedCards.length === 0) {
-      alert("Please select at least one theme!");
-      return;
-    }
+    selectedCards.push(...dino);
 
     // Shuffle selected cards
     const shuffledCards = shuffleArray(selectedCards);

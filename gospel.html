@@ -1,0 +1,351 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Gospel</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="playersCheckbox"> Players</label><br>
+    <label><input type="checkbox" id="instrumentsCheckbox"> Instruments</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    <br><br>
+    <div style="margin-bottom: 20px;">
+      <h3>Rules</h3>
+      <p id="rulesResult" style="color: white;">-</p>
+      <button id="shuffleRulesButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+"Call to Worship: Choose the attribute for this round, regardless of turn order.",
+"Spontaneous Praise: Add +10 to your selected attribute for this round.",
+"Congregational Response: If you are using a collective (choir, band, group), add +15 to the chosen attribute.",
+"Altar Call: If you lost the previous round, you may replay this round using a different attribute.",
+"Prophetic Declaration: Reduce your opponent’s chosen attribute by 10 for this round.",
+"Anointed Moment: Double the effect of your card’s special ability this round.",
+"Breakthrough: If you are losing by 15 points or less, you immediately win the round.",
+"Unity in the Spirit: Both players must use the same attribute this round.",
+"Joyful Noise: Automatically win the Stage Presence or Worship Impact comparison.",
+"Quiet Reverence: Ignore all action cards played by your opponent this round.",
+"Faith Over Fear: Cancel one negative effect applied to you this round.",
+"Overflow: Carry +5 bonus into the next round if you win this one.",
+"Spiritual Covering: Your Legacy attribute cannot be reduced this match.",
+"Fire in the Altar: Both players discard their current cards and draw new ones.",
+"Testimony Time: If you win this round, gain an extra turn immediately.",
+"Grace Period: Turn a loss into a tie.",
+"Praise Break: Your opponent cannot play an action card this round.",
+"Led by the Spirit: Reveal the top card of your deck; you may swap it with your current card.",
+"Armor of Faith: Reduce all negative modifiers against you by half this round.",
+"Sending Forth: End the match immediately after this round; highest total wins."
+  ];
+
+  const rules = [
+    `Abmaj7 – Db/Ab – Ebm7 – Abmaj7
+Ab Major → Ab, Bb, C, Db, Eb, F, G
+Eb Dorian → Eb, F, Gb, Ab, Bb, C, Db`,
+`Bbmaj7 – Gm7 – Cm7 – F7
+Bb Major → Bb, C, D, Eb, F, G, A
+G Dorian → G, A, Bb, C, D, E, F
+C Dorian → C, D, Eb, F, G, A, Bb
+F Mixolydian → F, G, A, Bb, C, D, Eb`,
+`Cmaj7 – Am7 – Dm7 – G13
+C Major → C, D, E, F, G, A, B
+A Dorian → A, B, C, D, E, F#, G
+D Dorian → D, E, F, G, A, B, C
+G Mixolydian → G, A, B, C, D, E, F`,
+`Dbmaj7 – Ebm7 – Ab7 – Dbmaj7
+Db Major → Db, Eb, F, Gb, Ab, Bb, C
+Eb Dorian → Eb, F, Gb, Ab, Bb, C, Db
+Ab Mixolydian → Ab, Bb, C, Db, Eb, F, Gb`,
+`Ebmaj7 – Fm7 – Bb7 – Ebmaj7
+Eb Major → Eb, F, G, Ab, Bb, C, D
+F Dorian → F, G, Ab, Bb, C, D, Eb
+Bb Mixolydian → Bb, C, D, Eb, F, G, Ab`,
+`Gmaj7 – D/F# – Em7 – Cmaj9
+G Major → G, A, B, C, D, E, F#
+E Dorian → E, F#, G, A, B, C#, D
+C Lydian → C, D, E, F#, G, A, B`,
+`Fmaj7 – Gm7 – Am7 – Bbmaj7
+F Major → F, G, A, Bb, C, D, E
+G Dorian → G, A, Bb, C, D, E, F
+A Dorian → A, B, C, D, E, F#, G
+Bb Major → Bb, C, D, Eb, F, G, A`,
+`Abmaj7 – Dbmaj7 – Gbmaj7 – B7
+Ab Major → Ab, Bb, C, Db, Eb, F, G
+Db Major → Db, Eb, F, Gb, Ab, Bb, C
+Gb Major → Gb, Ab, Bb, Cb, Db, Eb, F
+B Mixolydian → B, C#, D#, E, F#, G#, A`,
+`Emaj7 – C#m7 – F#m7 – B7
+E Major → E, F#, G#, A, B, C#, D#
+C# Dorian → C#, D#, E, F#, G#, A#, B
+F# Dorian → F#, G#, A, B, C#, D#, E
+B Mixolydian → B, C#, D#, E, F#, G#, A`,
+`Bbmaj9 – Cm11 – F13 – Bbmaj9
+Bb Major → Bb, C, D, Eb, F, G, A
+C Dorian → C, D, Eb, F, G, A, Bb
+F Mixolydian → F, G, A, Bb, C, D, Eb`,
+`Dmaj7 – Em7 – A7 – Dmaj7
+D Major → D, E, F#, G, A, B, C#
+E Dorian → E, F#, G, A, B, C#, D
+A Mixolydian → A, B, C#, D, E, F#, G`,
+`Gbmaj7 – Abm7 – Db7 – Gbmaj7
+Gb Major → Gb, Ab, Bb, Cb, Db, Eb, F
+Ab Dorian → Ab, Bb, Cb, Db, Eb, F, Gb
+Db Mixolydian → Db, Eb, F, Gb, Ab, Bb, Cb`,
+`Am7 – Dm9 – G13 – Cmaj7
+A Dorian → A, B, C, D, E, F#, G
+D Dorian → D, E, F, G, A, B, C
+G Mixolydian → G, A, B, C, D, E, F
+C Major → C, D, E, F, G, A, B`,
+`F#maj7 – G#m7 – C#7 – F#maj7
+F# Major → F#, G#, A#, B, C#, D#, E#
+G# Dorian → G#, A#, B, C#, D#, E#, F#
+C# Mixolydian → C#, D#, E#, F#, G#, A#, B`,
+`Cmaj9 – G/B – Am7 – Fmaj9
+C Major → C, D, E, F, G, A, B
+A Dorian → A, B, C, D, E, F#, G
+F Lydian → F, G, A, B, C, D, E`,
+`Ebmaj7 – Cm7 – Fm7 – Bb13
+Eb Major → Eb, F, G, Ab, Bb, C, D
+C Dorian → C, D, Eb, F, G, A, Bb
+F Dorian → F, G, Ab, Bb, C, D, Eb
+Bb Mixolydian → Bb, C, D, Eb, F, G, Ab`,
+`Amaj7 – Bm7 – E7 – Amaj7
+A Major → A, B, C#, D, E, F#, G#
+B Dorian → B, C#, D, E, F#, G#, A
+E Mixolydian → E, F#, G#, A, B, C#, D`,
+`Dbmaj7 – Ebm7 – Fm7 – Gbmaj7
+Db Major → Db, Eb, F, Gb, Ab, Bb, C
+Eb Dorian → Eb, F, Gb, Ab, Bb, C, Db
+F Dorian → F, G, Ab, Bb, C, D, Eb
+Gb Major → Gb, Ab, Bb, Cb, Db, Eb, F`,
+`Gmaj7 – Am7 – Bm7 – Cmaj7
+G Major → G, A, B, C, D, E, F#
+A Dorian → A, B, C, D, E, F#, G
+B Dorian → B, C#, D, E, F#, G#, A
+C Lydian → C, D, E, F#, G, A, B`,
+`Bbmaj7 – Dm7 – Ebm7 – Ab7
+Bb Major → Bb, C, D, Eb, F, G, A
+D Dorian → D, E, F, G, A, B, C
+Eb Dorian → Eb, F, Gb, Ab, Bb, C, Db
+Ab Mixolydian → Ab, Bb, C, Db, Eb, F, Gb`
+  ];  
+const players = [
+{"name": "Ada Ehi", "attributes": {"region": "Africa", "archetype": "Contemporary Praise Star", "Vocal Power": 87, "Musical Innovation": 89, "Popularity": 88, "Global Reach": 84, "Legacy": 77, "specialAbility": "Joy Burst — Gains +10 Popularity when Musical Innovation is the chosen stat."}},
+{"name": "Aline Barros", "attributes": {"region": "Brazil", "archetype": "Brazilian Gospel Icon", "Vocal Power": 90, "Musical Innovation": 84, "Popularity": 92, "Global Reach": 78, "Legacy": 90, "specialAbility": "National Icon — Gains +10 Popularity when playing within the same region (Brazil/Latin cards)."}},
+{"name": "Anderson Freire", "attributes": {"region": "Brazil", "archetype": "Lyric Emotion Specialist", "Vocal Power": 84, "Musical Innovation": 82, "Popularity": 87, "Global Reach": 72, "Legacy": 84, "specialAbility": "Lyric Hook — Gains +10 Legacy if Musical Innovation is chosen and you win."}},
+{"name": "Andraé Crouch", "attributes": {"region": "United States", "archetype": "Modern Gospel Father", "Vocal Power": 90, "Musical Innovation": 95, "Popularity": 88, "Global Reach": 84, "Legacy": 99, "specialAbility": "Blueprint Legacy — Gains +10 Musical Innovation when playing against any artist with Legacy under 90."}},
+{"name": "Benjamin Dube", "attributes": {"region": "Africa", "archetype": "African Worship Patriarch", "Vocal Power": 85, "Musical Innovation": 82, "Popularity": 78, "Global Reach": 76, "Legacy": 92, "specialAbility": "Patriarch Blessing — Gains +10 Legacy and +5 Vocal Power against artists with Legacy under 85."}},
+{"name": "Bethel Music", "attributes": {"region": "North America", "archetype": "Atmospheric Worship", "Vocal Power": 85, "Musical Innovation": 94, "Popularity": 93, "Global Reach": 92, "Legacy": 86, "specialAbility": "Atmosphere — Once per match, reduce opponent’s Vocal Power by 10 for the chosen comparison."}},
+{"name": "Cassiane", "attributes": {"region": "Brazil", "archetype": "Pentecostal Power Voice", "Vocal Power": 92, "Musical Innovation": 74, "Popularity": 88, "Global Reach": 70, "Legacy": 94, "specialAbility": "Pentecostal Peak — Once per match, set Vocal Power to 100 for a single comparison."}},
+{"name": "CeCe Winans", "attributes": {"region": "United States", "archetype": "Golden Voice", "Vocal Power": 98, "Musical Innovation": 85, "Popularity": 90, "Global Reach": 88, "Legacy": 95, "specialAbility": "Pure Worship — Gains +10 Vocal Power in any vocal-based comparison."}},
+{"name": "Darlene Zschech", "attributes": {"region": "Australia & New Zealand", "archetype": "Shout to the Lord", "Vocal Power": 85, "Musical Innovation": 84, "Popularity": 86, "Global Reach": 85, "Legacy": 93, "specialAbility": "Signature Hymn — Gains +10 Legacy when playing against any worship collective."}},
+{"name": "Delirious?", "attributes": {"region": "Europe", "archetype": "Worship Rock Pioneers", "Vocal Power": 79, "Musical Innovation": 90, "Popularity": 80, "Global Reach": 78, "Legacy": 87, "specialAbility": "Rock Catalyst — Gains +10 Musical Innovation and +5 Popularity against any collective."}},
+{"name": "Diante do Trono", "attributes": {"region": "Brazil", "archetype": "National Worship Movement", "Vocal Power": 86, "Musical Innovation": 84, "Popularity": 91, "Global Reach": 76, "Legacy": 92, "specialAbility": "Movement Era — Gains +10 Legacy against artists debuted after 2010."}},
+{"name": "Donnie McClurkin", "attributes": {"region": "United States", "archetype": "Soulful Minister", "Vocal Power": 95, "Musical Innovation": 85, "Popularity": 88, "Global Reach": 87, "Legacy": 96, "specialAbility": "Testimony — When losing a round, may replay the same attribute once."}},
+{"name": "Dunsin Oyekan", "attributes": {"region": "Africa", "archetype": "Prophetic Worshiper", "Vocal Power": 88, "Musical Innovation": 90, "Popularity": 86, "Global Reach": 85, "Legacy": 80, "specialAbility": "Prophetic Wave — Once per match, swap your Global Reach and Musical Innovation values."}},
+{"name": "Elevation Worship", "attributes": {"region": "North America", "archetype": "Arena Praise Sound", "Vocal Power": 86, "Musical Innovation": 91, "Popularity": 95, "Global Reach": 94, "Legacy": 85, "specialAbility": "Arena Momentum — Gains +10 Popularity and Global Reach if you win the first round."}},
+{"name": "Fernandinho", "attributes": {"region": "Brazil", "archetype": "Congregational Anthem Leader", "Vocal Power": 86, "Musical Innovation": 85, "Popularity": 90, "Global Reach": 80, "Legacy": 88, "specialAbility": "Congregation Lift — Gains +10 Global Reach when Popularity is the chosen stat."}},
+{"name": "Fred Hammond", "attributes": {"region": "United States", "archetype": "Modern Worship Architect", "Vocal Power": 89, "Musical Innovation": 93, "Popularity": 86, "Global Reach": 80, "Legacy": 94, "specialAbility": "Blueprint Groove — Gains +10 Musical Innovation in any band/ensemble matchup."}},
+{"name": "Gabriela Rocha", "attributes": {"region": "Brazil", "archetype": "Worship Sensitivity", "Vocal Power": 88, "Musical Innovation": 83, "Popularity": 89, "Global Reach": 77, "Legacy": 82, "specialAbility": "Tender Presence — Wins ties when Vocal Power is the chosen stat."}},
+{"name": "Gaither Vocal Band", "attributes": {"region": "United States", "archetype": "Harmony Masters", "Vocal Power": 90, "Musical Innovation": 80, "Popularity": 85, "Global Reach": 78, "Legacy": 93, "specialAbility": "Four-Part Fortress — Wins ties when Legacy is the chosen stat; gains +5 Vocal Power vs solo artists."}},
+{"name": "Hillsong United", "attributes": {"region": "Australia & New Zealand", "archetype": "Youth Revival Sound", "Vocal Power": 88, "Musical Innovation": 93, "Popularity": 95, "Global Reach": 97, "Legacy": 88, "specialAbility": "Youth Surge — Gains +10 Popularity when facing a solo artist."}},
+{"name": "Hillsong Worship", "attributes": {"region": "Australia & New Zealand", "archetype": "Global Choir", "Vocal Power": 90, "Musical Innovation": 92, "Popularity": 98, "Global Reach": 100, "Legacy": 90, "specialAbility": "Worldwide Anthem — Automatically wins any Global Reach comparison."}},
+{"name": "Israel Houghton", "attributes": {"region": "United States", "archetype": "Multicultural Praise Leader", "Vocal Power": 87, "Musical Innovation": 91, "Popularity": 84, "Global Reach": 83, "Legacy": 86, "specialAbility": "Fusion Praise — Gains +10 Global Reach when playing against a group/collective."}},
+{"name": "James Cleveland", "attributes": {"region": "United States", "archetype": "Choir Gospel Architect", "Vocal Power": 92, "Musical Innovation": 88, "Popularity": 80, "Global Reach": 70, "Legacy": 99, "specialAbility": "Choir Authority — Gains +15 Legacy for one comparison (once per match)."}},
+{"name": "Jesus Culture", "attributes": {"region": "North America", "archetype": "Revival Movement Sound", "Vocal Power": 84, "Musical Innovation": 88, "Popularity": 86, "Global Reach": 85, "Legacy": 82, "specialAbility": "Revival Wave — Once per match, reroll (re-compare) Global Reach after revealing values."}},
+{"name": "JJ Hairston", "attributes": {"region": "United States", "archetype": "Choir Revival Leader", "Vocal Power": 85, "Musical Innovation": 87, "Popularity": 80, "Global Reach": 75, "Legacy": 79, "specialAbility": "Choir Surge — Once per match, add +12 to Vocal Power for one comparison."}},
+{"name": "Joe Mettle", "attributes": {"region": "Africa", "archetype": "Ghanaian Worship Icon", "Vocal Power": 86, "Musical Innovation": 85, "Popularity": 82, "Global Reach": 80, "Legacy": 84, "specialAbility": "Covenant Praise — Gains +10 Legacy if you lose the first round of the match."}},
+{"name": "Jonathan McReynolds", "attributes": {"region": "United States", "archetype": "New-Generation Voice", "Vocal Power": 88, "Musical Innovation": 89, "Popularity": 84, "Global Reach": 79, "Legacy": 76, "specialAbility": "Fresh Pen — Gains +10 Musical Innovation if your opponent has Legacy 90+."}},
+{"name": "Kari Jobe", "attributes": {"region": "United States", "archetype": "Gentle Presence", "Vocal Power": 86, "Musical Innovation": 85, "Popularity": 90, "Global Reach": 88, "Legacy": 84, "specialAbility": "Stillness — If you lose a comparison by 5 points or less, treat it as a tie."}},
+{"name": "Kevin Downswell", "attributes": {"region": "Caribbean", "archetype": "Reggae Gospel Ambassador", "Vocal Power": 82, "Musical Innovation": 85, "Popularity": 76, "Global Reach": 70, "Legacy": 73, "specialAbility": "Reggae Bridge — Gains +10 Global Reach if your opponent’s Musical Innovation is 90+."}},
+{"name": "Kirk Franklin", "attributes": {"region": "United States", "archetype": "Urban Gospel Pioneer", "Vocal Power": 85, "Musical Innovation": 98, "Popularity": 95, "Global Reach": 90, "Legacy": 98, "specialAbility": "Urban Revival — Gains +10 Musical Innovation and Popularity when facing traditional gospel artists."}},
+{"name": "Lauren Daigle", "attributes": {"region": "United States", "archetype": "Crossover Phenomenon", "Vocal Power": 88, "Musical Innovation": 87, "Popularity": 96, "Global Reach": 92, "Legacy": 78, "specialAbility": "Crossover Boost — Gains +10 Popularity and Global Reach when facing any artist with Popularity under 90."}},
+{"name": "Mahalia Jackson", "attributes": {"region": "United States", "archetype": "Gospel Origin Icon", "Vocal Power": 99, "Musical Innovation": 80, "Popularity": 92, "Global Reach": 88, "Legacy": 100, "specialAbility": "Origin Standard — Automatically wins any Legacy comparison."}},
+{"name": "Marvin Sapp", "attributes": {"region": "United States", "archetype": "The Overcomer", "Vocal Power": 91, "Musical Innovation": 84, "Popularity": 88, "Global Reach": 82, "Legacy": 90, "specialAbility": "Survivor Anthem — Gains +10 Popularity if you won the previous round."}},
+{"name": "Matt Redman", "attributes": {"region": "Europe", "archetype": "Songwriting Theologian", "Vocal Power": 80, "Musical Innovation": 89, "Popularity": 90, "Global Reach": 92, "Legacy": 91, "specialAbility": "Writer’s Crown — Gains +10 Legacy when Musical Innovation is the chosen stat."}},
+{"name": "Maverick City Music", "attributes": {"region": "North America", "archetype": "Community Revival", "Vocal Power": 88, "Musical Innovation": 92, "Popularity": 94, "Global Reach": 90, "Legacy": 80, "specialAbility": "Collective Fire — Gains +10 Vocal Power when facing a solo artist."}},
+{"name": "Mercy Chinwo", "attributes": {"region": "Africa", "archetype": "Emotional Praise Voice", "Vocal Power": 91, "Musical Innovation": 86, "Popularity": 90, "Global Reach": 87, "Legacy": 78, "specialAbility": "Heartlift — Gains +10 Popularity when playing against a legacy titan (Legacy 90+)."}},
+{"name": "Naomi Raine", "attributes": {"region": "United States", "archetype": "Expressive Worship", "Vocal Power": 89, "Musical Innovation": 87, "Popularity": 83, "Global Reach": 78, "Legacy": 74, "specialAbility": "Lead Voice — Gains +10 Vocal Power when playing against a collective."}},
+{"name": "Nathaniel Bassey", "attributes": {"region": "Africa", "archetype": "Trumpet of Revival", "Vocal Power": 90, "Musical Innovation": 92, "Popularity": 88, "Global Reach": 90, "Legacy": 86, "specialAbility": "Midnight Sound — Gains +10 Musical Innovation if Vocal Power is NOT the chosen stat."}},
+{"name": "Phil Wickham", "attributes": {"region": "United States", "archetype": "Congregational Hitmaker", "Vocal Power": 84, "Musical Innovation": 86, "Popularity": 92, "Global Reach": 90, "Legacy": 82, "specialAbility": "Sing-Along — Gains +10 Popularity when Global Reach is the chosen stat."}},
+{"name": "Planetshakers", "attributes": {"region": "Australia & New Zealand", "archetype": "High-Energy Praise", "Vocal Power": 86, "Musical Innovation": 90, "Popularity": 88, "Global Reach": 89, "Legacy": 82, "specialAbility": "Praise Blast — Once per match, add +15 to Popularity for a single comparison."}},
+{"name": "Rebecca Malope", "attributes": {"region": "Africa", "archetype": "Queen of African Gospel", "Vocal Power": 90, "Musical Innovation": 78, "Popularity": 82, "Global Reach": 74, "Legacy": 94, "specialAbility": "Classic Authority — Automatically wins ties when Legacy is the chosen stat."}},
+{"name": "Sherwin Gardner", "attributes": {"region": "Caribbean", "archetype": "Caribbean Praise Energy", "Vocal Power": 83, "Musical Innovation": 86, "Popularity": 78, "Global Reach": 72, "Legacy": 74, "specialAbility": "Island Pulse — Gains +10 Musical Innovation when facing classic/legacy artists."}},
+{"name": "Sinach", "attributes": {"region": "Africa", "archetype": "Nations Shall Sing", "Vocal Power": 92, "Musical Innovation": 90, "Popularity": 94, "Global Reach": 98, "Legacy": 88, "specialAbility": "Nations Shall Sing — Gains +10 Global Reach and Popularity in international matchups."}},
+{"name": "Tamela Mann", "attributes": {"region": "United States", "archetype": "Church Anthem Powerhouse", "Vocal Power": 94, "Musical Innovation": 82, "Popularity": 90, "Global Reach": 78, "Legacy": 88, "specialAbility": "Sanctuary Shout — Gains +10 Vocal Power when facing contemporary worship artists."}},
+{"name": "Tasha Cobbs Leonard", "attributes": {"region": "United States", "archetype": "Worship Fire", "Vocal Power": 96, "Musical Innovation": 88, "Popularity": 92, "Global Reach": 90, "Legacy": 85, "specialAbility": "Break Every Chain — Once per match, boosts all attributes by +5."}},
+{"name": "The Clark Sisters", "attributes": {"region": "United States", "archetype": "Harmonic Excellence", "Vocal Power": 96, "Musical Innovation": 92, "Popularity": 86, "Global Reach": 80, "Legacy": 98, "specialAbility": "Sister Harmony — Wins ties when Vocal Power or Musical Innovation is the chosen stat."}},
+{"name": "Tim Hughes", "attributes": {"region": "Europe", "archetype": "Modern Hymn Writer", "Vocal Power": 78, "Musical Innovation": 86, "Popularity": 84, "Global Reach": 85, "Legacy": 86, "specialAbility": "Hymn Engine — Gains +10 Musical Innovation if your opponent has Popularity 90+."}},
+{"name": "Todd Dulaney", "attributes": {"region": "United States", "archetype": "Contemporary Soul Praise", "Vocal Power": 88, "Musical Innovation": 84, "Popularity": 82, "Global Reach": 76, "Legacy": 78, "specialAbility": "Soul Lift — Gains +10 Vocal Power if Popularity is the chosen stat."}},
+{"name": "Travis Greene", "attributes": {"region": "United States", "archetype": "Revivalist Worshiper", "Vocal Power": 89, "Musical Innovation": 86, "Popularity": 85, "Global Reach": 80, "Legacy": 78, "specialAbility": "Made A Way — Once per match, reroll (re-compare) Popularity after revealing values."}},
+{"name": "William McDowell", "attributes": {"region": "United States", "archetype": "Deep Worship Specialist", "Vocal Power": 87, "Musical Innovation": 84, "Popularity": 79, "Global Reach": 75, "Legacy": 80, "specialAbility": "Altar Call — Gains +10 Legacy in any matchup where Global Reach is the chosen stat."}},
+{"name": "Yolanda Adams", "attributes": {"region": "United States", "archetype": "Queen of Contemporary Gospel", "Vocal Power": 97, "Musical Innovation": 90, "Popularity": 93, "Global Reach": 92, "Legacy": 97, "specialAbility": "Timeless Praise — Gains +10 Legacy against artists debuted after 2000."}},
+ ];
+const instruments = [
+{"name": "Instrument: Acoustic Guitar", "attributes": {"family": "Strings", "Expressiveness": 92, "Versatility": 90, "Worship Impact": 94, "Stage Presence": 80, "Legacy": 92, "specialAbility": "Campfire Praise — Gains +10 Worship Impact when facing electronic instruments."}},
+{"name": "Instrument: Bass Guitar", "attributes": {"family": "Strings", "Expressiveness": 80, "Versatility": 88, "Worship Impact": 90, "Stage Presence": 78, "Legacy": 85, "specialAbility": "Groove Anchor — If you lose a round, you may replay using Worship Impact."}},
+{"name": "Instrument: Cajón", "attributes": {"family": "Percussion", "Expressiveness": 82, "Versatility": 80, "Worship Impact": 86, "Stage Presence": 70, "Legacy": 78, "specialAbility": "Intimate Groove — Wins ties against Drum Kit."}},
+{"name": "Instrument: Cello", "attributes": {"family": "Strings", "Expressiveness": 94, "Versatility": 80, "Worship Impact": 89, "Stage Presence": 75, "Legacy": 85, "specialAbility": "Deep Resonance — Gains +10 Worship Impact if Expressiveness is chosen."}},
+{"name": "Instrument: Choir (Voices)", "attributes": {"family": "Vocal", "Expressiveness": 100, "Versatility": 92, "Worship Impact": 100, "Stage Presence": 98, "Legacy": 100, "specialAbility": "Unified Praise — Automatically wins any Worship Impact or Expressiveness comparison."}},
+{"name": "Instrument: Congas", "attributes": {"family": "Percussion", "Expressiveness": 84, "Versatility": 82, "Worship Impact": 83, "Stage Presence": 86, "Legacy": 80, "specialAbility": "Global Pulse — Gains +10 Versatility in multicultural matchups."}},
+{"name": "Instrument: Drum Kit", "attributes": {"family": "Percussion", "Expressiveness": 85, "Versatility": 90, "Worship Impact": 92, "Stage Presence": 96, "Legacy": 88, "specialAbility": "Rhythm Driver — Gains +10 Stage Presence when playing after a keyboard."}},
+{"name": "Instrument: Electric Guitar", "attributes": {"family": "Strings", "Expressiveness": 90, "Versatility": 92, "Worship Impact": 88, "Stage Presence": 95, "Legacy": 90, "specialAbility": "Praise Lead — Gains +10 Stage Presence during high-energy rounds."}},
+{"name": "Instrument: Electronic Drums", "attributes": {"family": "Electronic Percussion", "Expressiveness": 80, "Versatility": 95, "Worship Impact": 85, "Stage Presence": 90, "Legacy": 78, "specialAbility": "Click Perfect — Gains +10 Versatility in any comparison."}},
+{"name": "Instrument: Flute", "attributes": {"family": "Woodwind", "Expressiveness": 90, "Versatility": 80, "Worship Impact": 84, "Stage Presence": 75, "Legacy": 82, "specialAbility": "Gentle Spirit — If you lose by 5 points or less, treat it as a tie."}},
+{"name": "Instrument: Hand Claps", "attributes": {"family": "Body Percussion", "Expressiveness": 75, "Versatility": 70, "Worship Impact": 88, "Stage Presence": 95, "Legacy": 85, "specialAbility": "Congregational Power — Gains +10 Worship Impact when facing any solo instrument."}},
+{"name": "Instrument: Organ (Hammond)", "attributes": {"family": "Keyboard", "Expressiveness": 95, "Versatility": 88, "Worship Impact": 97, "Stage Presence": 90, "Legacy": 100, "specialAbility": "Church Roots — Wins ties when Legacy is the chosen stat."}},
+{"name": "Instrument: Pads (Ambient)", "attributes": {"family": "Electronic", "Expressiveness": 89, "Versatility": 94, "Worship Impact": 88, "Stage Presence": 70, "Legacy": 75, "specialAbility": "Atmospheric Flow — Gains +10 Expressiveness when paired with Piano or Synth."}},
+{"name": "Instrument: Piano", "attributes": {"family": "Keyboard", "Expressiveness": 98, "Versatility": 95, "Worship Impact": 96, "Stage Presence": 85, "Legacy": 98, "specialAbility": "Foundation of Worship — Automatically wins any Worship Impact comparison."}},
+{"name": "Instrument: Saxophone", "attributes": {"family": "Woodwind", "Expressiveness": 92, "Versatility": 84, "Worship Impact": 85, "Stage Presence": 88, "Legacy": 86, "specialAbility": "Soul Breath — Gains +10 Expressiveness against keyboards."}},
+{"name": "Instrument: Shofar", "attributes": {"family": "Ancient Wind", "Expressiveness": 85, "Versatility": 60, "Worship Impact": 95, "Stage Presence": 90, "Legacy": 100, "specialAbility": "Biblical Call — Automatically wins Legacy comparisons."}},
+{"name": "Instrument: Synthesizer", "attributes": {"family": "Electronic", "Expressiveness": 88, "Versatility": 100, "Worship Impact": 90, "Stage Presence": 92, "Legacy": 85, "specialAbility": "Atmospheric Layers — Gains +10 Expressiveness in modern worship matchups."}},
+{"name": "Instrument: Tambourine", "attributes": {"family": "Percussion", "Expressiveness": 78, "Versatility": 72, "Worship Impact": 85, "Stage Presence": 88, "Legacy": 90, "specialAbility": "Praise Shake — Gains +15 Stage Presence for one comparison."}},
+{"name": "Instrument: Trumpet", "attributes": {"family": "Brass", "Expressiveness": 88, "Versatility": 78, "Worship Impact": 87, "Stage Presence": 90, "Legacy": 92, "specialAbility": "Call to Worship — Wins ties when Stage Presence is selected."}},
+{"name": "Instrument: Violin", "attributes": {"family": "Strings", "Expressiveness": 96, "Versatility": 85, "Worship Impact": 90, "Stage Presence": 82, "Legacy": 88, "specialAbility": "Heavenly Cry — Automatically wins Expressiveness comparisons."}},  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playersCheckbox').checked) selectedCards.push(...players);
+    if (document.getElementById('instrumentsCheckbox').checked) selectedCards.push(...instruments);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  document.getElementById('shuffleRulesButton').addEventListener('click', function() {
+    shuffleDeck(rules, 'rulesResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+		body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

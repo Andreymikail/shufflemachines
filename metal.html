@@ -1,0 +1,383 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Metal</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="playersCheckbox"> Bands</label><br>
+    <label><input type="checkbox" id="instrumentsCheckbox"> Relics</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    <br><br>
+    <div style="margin-bottom: 20px;">
+      <h3>Rules</h3>
+      <p id="rulesResult" style="color: white;">-</p>
+      <button id="shuffleRulesButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+"Riff Assault: Add +10 to Sound Power this round.",
+"Feedback Storm: Reduce opponent’s Live Performance by −15.",
+"Double Downpick: Double your Riff Power for one comparison.",
+"Break the Neck: Instantly win if your card has higher Aggression or Speed.",
+"Wall of Sound: Your opponent skips their next action card.",
+"Power Chord Lock: Opponent must use their lowest stat this turn.",
+"Broken String: Cancel one opponent action card.",
+"Amp Failure: Set opponent’s Sound Power to 50 for this round.",
+"Stage Sabotage: Swap one opponent stat with another (your choice).",
+"Silence the Crowd: Ignore all popularity-based bonuses.",
+"Mosh Pit Mayhem: Both players re-roll their active stat.",
+"Speed Metal Overdrive: Gain +20 to Speed, lose −10 Control next round.",
+"Crowd Surge: Highest Live Performance wins regardless of category.",
+"Drunk on Tour: Randomly increase or decrease one stat by 15.",
+"Stage Dive: If you win this round, draw an extra action card.",
+"Fresh Strings: Restore any stat to its base value.",
+"Amp Upgrade: Permanently increase one stat by +5.",
+"Road Crew Support: Negate all negative effects this round.",
+"Soundcheck: Look at the top 3 cards of your deck and reorder them.",
+"Encore: Replay the last action card you used.",
+"Master of Chaos: Choose the category this round and next round.",
+"Blood, Sweat & Feedback: Sacrifice −10 Riff Power to gain +25 Live Performance.",
+"Unholy Alliance: Combine stats from two of your cards for one battle.",
+"Final Tour: If this is your last card, all stats gain +15.",
+"Metal Immortal: Prevent defeat once per game."
+  ];
+
+  const rules = [
+    `Classic Metal — Natural Minor
+Em – C – D – Em
+E Natural Minor (Aeolian) → E, F#, G, A, B, C, D`,
+`Phrygian Metal (Dark)
+Em – F – Em
+E Phrygian → E, F, G, A, B, C, D`,
+`Phrygian Dominant (Neoclassical / Eastern)
+E5 – F5 – G#dim – E5
+E Phrygian Dominant → E, F, G#, A, B, C, D`,
+`Harmonic Minor (Neoclassical),
+Am – G#dim – Am – E
+A Harmonic Minor → A, B, C, D, E, F, G#`,
+`Melodic Minor (Progressive Metal)
+Dm – Bb – C – Dm
+D Melodic Minor → D, E, F, G, A, B, C#`,
+`Dorian Groove Metal
+Dm – G – Dm
+D Dorian → D, E, F, G, A, B, C`,
+`Tritone Riff (Thrash Classic)
+E5 – Bb5 – E5
+E Phrygian → E, F, G, A, B, C, D
+E Chromatic → E, F, F#, G, G#, A, A#, B, C, C#, D, D#`,
+`Industrial / Chromatic Movement
+F#5 – F5 – E5
+F# Chromatic → F#, G, G#, A, A#, B, C, C#, D, D#, E, F
+E Minor Pentatonic → E, G, A, B, D`,
+`Diminished Tension
+Bdim – C – Bdim
+B Diminished (Half–Whole) → B, C, D, Eb, F, Gb, Ab, A`,
+`Dark Pentatonic Metal
+Cm – Ab – Bb – Cm
+C Minor Pentatonic → C, Eb, F, G, Bb`,
+`Modal Progressive (Aeolian ↔ Phrygian)
+F#m – E – D – C#
+F# Natural Minor (Aeolian) → F#, G#, A, B, C#, D, E
+F# Phrygian → F#, G, A, B, C#, D, E`,
+`Drop-Tuning Friendly (Minor / Phrygian)
+D5 – C5 – Bb5 – A5
+D Natural Minor → D, E, F, G, A, Bb, C
+D Phrygian → D, Eb, F, G, A, Bb, C`,
+`Eastern Metal (Phrygian / Double Harmonic)
+Em – F – G – Em
+E Phrygian → E, F, G, A, B, C, D]
+E Double Harmonic Minor → E, F, G#, A, B, C, D#`,
+`Doom Metal (Slow / Blues Tinge)
+C – Bb – Ab – C
+C Natural Minor → C, D, Eb, F, G, Ab, Bb
+C Blues Scale → C, Eb, F, Gb, G, Bb`,
+`Fast Thrash (Minor + Passing Tones)
+E5 – G5 – F5 – E5
+E Natural Minor (Aeolian) → E, F#, G, A, B, C, D`,
+`Atmospheric Metal (Aeolian Color)
+Am(add9) – F – G – Am
+A Natural Minor (Aeolian) → A, B, C, D, E, F, G`,
+`Advanced Neoclassical (Harmonic Minor / Dominant Color)
+Em – D#dim – Em – B7
+E Harmonic Minor → E, F#, G, A, B, C, D#
+B Phrygian Dominant → B, C, D#, E, F#, G, A`,
+`Djent / Polyrhythmic (Phrygian + Pentatonic)
+F#5 – E5 – F#5 – D5
+F# Phrygian → F#, G, A, B, C#, D, E
+F# Minor Pentatonic → F#, A, B, C#, E`,
+`Bluesy Metal (Pentatonic + Blues)
+Am – G – D – Am
+A Minor Pentatonic → A, C, D, E, G
+A Blues Scale → A, C, D, Eb, E, G`,
+`Final Boss / Cinematic (Phrygian + Harmonic Minor)
+Cm – Db – Ab – G
+C Phrygian → C, Db, Eb, F, G, Ab, Bb
+C Harmonic Minor → C, D, Eb, F, G, Ab, B`
+  ];  
+const players = [
+{"name": "Accept", "attributes": {"country": "Germany", "genre": "Heavy Metal", "riff_power": 91, "global_popularity": 85, "discography_impact": 88, "live_performance": 90, "innovation": 87}},
+{"name": "Alcest", "attributes": {"country": "France", "genre": "Post-Black Metal", "riff_power": 85, "global_popularity": 84, "discography_impact": 89, "live_performance": 86, "innovation": 96}},
+{"name": "Alien Weaponry", "attributes": {"country": "New Zealand", "genre": "Groove Metal", "riff_power": 88, "global_popularity": 86, "discography_impact": 85, "live_performance": 90, "innovation": 92}},
+{"name": "Amon Amarth", "attributes": {"country": "Sweden", "genre": "Melodic Death Metal", "riff_power": 91, "global_popularity": 88, "discography_impact": 89, "live_performance": 94, "innovation": 88}},
+{"name": "Amorphis", "attributes": {"country": "Finland", "genre": "Progressive Metal", "riff_power": 90, "global_popularity": 88, "discography_impact": 93, "live_performance": 91, "innovation": 94}},
+{"name": "Angra", "attributes": {"country": "Brazil", "genre": "Power Metal", "riff_power": 89, "global_popularity": 87, "discography_impact": 91, "live_performance": 90, "innovation": 94}},
+{"name": "Anthrax", "attributes": {"country": "USA", "genre": "Thrash Metal", "riff_power": 90, "global_popularity": 87, "discography_impact": 89, "live_performance": 90, "innovation": 88}},
+{"name": "Arch Enemy", "attributes": {"country": "Sweden", "genre": "Melodic Death Metal", "riff_power": 91, "global_popularity": 88, "discography_impact": 90, "live_performance": 94, "innovation": 89}},
+{"name": "As I Lay Dying", "attributes": {"country": "USA", "genre": "Metalcore", "riff_power": 91, "global_popularity": 88, "discography_impact": 87, "live_performance": 94, "innovation": 86}},
+{"name": "Avenged Sevenfold", "attributes": {"country": "USA", "genre": "Heavy Metal", "riff_power": 90, "global_popularity": 92, "discography_impact": 89, "live_performance": 93, "innovation": 88}},
+{"name": "Babymetal", "attributes": {"country": "Japan", "genre": "Kawaii Metal", "riff_power": 80, "global_popularity": 96, "discography_impact": 90, "live_performance": 94, "innovation": 100}},
+{"name": "Baroness", "attributes": {"country": "USA", "genre": "Progressive Sludge Metal", "riff_power": 88, "global_popularity": 84, "discography_impact": 90, "live_performance": 88, "innovation": 95}},
+{"name": "Bathory", "attributes": {"country": "Sweden", "genre": "Black / Viking Metal", "riff_power": 95, "global_popularity": 83, "discography_impact": 96, "live_performance": 75, "innovation": 100}},
+{"name": "Behemoth", "attributes": {"country": "Poland", "genre": "Blackened Death Metal", "riff_power": 94, "global_popularity": 88, "discography_impact": 92, "live_performance": 96, "innovation": 93}},
+{"name": "Black Sabbath", "attributes": {"country": "UK", "genre": "Heavy Metal", "riff_power": 100, "global_popularity": 94, "discography_impact": 100, "live_performance": 85, "innovation": 100}},
+{"name": "Blind Guardian", "attributes": {"country": "Germany", "genre": "Power Metal", "riff_power": 87, "global_popularity": 85, "discography_impact": 92, "live_performance": 88, "innovation": 95}},
+{"name": "Bring Me the Horizon", "attributes": {"country": "UK", "genre": "Alternative / Metalcore", "riff_power": 87, "global_popularity": 95, "discography_impact": 90, "live_performance": 94, "innovation": 97}},
+{"name": "Brujeria", "attributes": {"country": "Mexico", "genre": "Death / Grind Metal", "riff_power": 92, "global_popularity": 85, "discography_impact": 88, "live_performance": 91, "innovation": 90}},
+{"name": "Bullet for My Valentine", "attributes": {"country": "UK", "genre": "Metalcore", "riff_power": 89, "global_popularity": 92, "discography_impact": 88, "live_performance": 93, "innovation": 87}},
+{"name": "Burzum", "attributes": {"country": "Norway", "genre": "Black Metal", "riff_power": 90, "global_popularity": 78, "discography_impact": 91, "live_performance": 60, "innovation": 97}},
+{"name": "Cannibal Corpse", "attributes": {"country": "USA", "genre": "Death Metal", "riff_power": 97, "global_popularity": 90, "discography_impact": 92, "live_performance": 95, "innovation": 89}},
+{"name": "Carcass", "attributes": {"country": "UK", "genre": "Death / Grind Metal", "riff_power": 93, "global_popularity": 86, "discography_impact": 92, "live_performance": 90, "innovation": 96}},
+{"name": "Cemican", "attributes": {"country": "Mexico", "genre": "Folk Metal", "riff_power": 87, "global_popularity": 80, "discography_impact": 85, "live_performance": 92, "innovation": 93}},
+{"name": "Children of Bodom", "attributes": {"country": "Finland", "genre": "Melodic Death Metal", "riff_power": 93, "global_popularity": 87, "discography_impact": 90, "live_performance": 94, "innovation": 91}},
+{"name": "Darkthrone", "attributes": {"country": "Norway", "genre": "Black Metal", "riff_power": 92, "global_popularity": 79, "discography_impact": 90, "live_performance": 70, "innovation": 95}},
+{"name": "Death", "attributes": {"country": "USA", "genre": "Death Metal", "riff_power": 98, "global_popularity": 88, "discography_impact": 95, "live_performance": 90, "innovation": 100}},
+{"name": "Deep Purple", "attributes": {"country": "UK", "genre": "Hard Rock / Metal", "riff_power": 92, "global_popularity": 94, "discography_impact": 96, "live_performance": 90, "innovation": 95}},
+{"name": "Deftones", "attributes": {"country": "USA", "genre": "Alternative Metal", "riff_power": 86, "global_popularity": 91, "discography_impact": 90, "live_performance": 89, "innovation": 94}},
+{"name": "Dimmu Borgir", "attributes": {"country": "Norway", "genre": "Symphonic Black Metal", "riff_power": 88, "global_popularity": 90, "discography_impact": 91, "live_performance": 95, "innovation": 94}},
+{"name": "Dir En Grey", "attributes": {"country": "Japan", "genre": "Avant-Garde Metal", "riff_power": 92, "global_popularity": 85, "discography_impact": 91, "live_performance": 90, "innovation": 94}},
+{"name": "Disturbed", "attributes": {"country": "USA", "genre": "Alternative Metal", "riff_power": 88, "global_popularity": 91, "discography_impact": 88, "live_performance": 90, "innovation": 85}},
+{"name": "DragonForce", "attributes": {"country": "UK", "genre": "Power Metal", "riff_power": 95, "global_popularity": 93, "discography_impact": 88, "live_performance": 95, "innovation": 90}},
+{"name": "Eluveitie", "attributes": {"country": "Switzerland", "genre": "Folk Metal", "riff_power": 89, "global_popularity": 88, "discography_impact": 90, "live_performance": 93, "innovation": 94}},
+{"name": "Emperor", "attributes": {"country": "Norway", "genre": "Black Metal", "riff_power": 93, "global_popularity": 82, "discography_impact": 94, "live_performance": 88, "innovation": 98}},
+{"name": "Ensiferum", "attributes": {"country": "Finland", "genre": "Folk Metal", "riff_power": 90, "global_popularity": 87, "discography_impact": 89, "live_performance": 92, "innovation": 91}},
+{"name": "Enslaved", "attributes": {"country": "Norway", "genre": "Progressive Black Metal", "riff_power": 92, "global_popularity": 85, "discography_impact": 93, "live_performance": 91, "innovation": 97}},
+{"name": "Epica", "attributes": {"country": "Netherlands", "genre": "Symphonic Metal", "riff_power": 88, "global_popularity": 92, "discography_impact": 91, "live_performance": 94, "innovation": 95}},
+{"name": "Exodus", "attributes": {"country": "USA", "genre": "Thrash Metal", "riff_power": 96, "global_popularity": 85, "discography_impact": 89, "live_performance": 91, "innovation": 88}},
+{"name": "Fear Factory", "attributes": {"country": "USA", "genre": "Industrial Metal", "riff_power": 91, "global_popularity": 88, "discography_impact": 89, "live_performance": 92, "innovation": 92}},
+{"name": "Godsmack", "attributes": {"country": "USA", "genre": "Alternative Metal", "riff_power": 88, "global_popularity": 92, "discography_impact": 90, "live_performance": 94, "innovation": 85}},
+{"name": "Gojira", "attributes": {"country": "France", "genre": "Progressive Death Metal", "riff_power": 93, "global_popularity": 92, "discography_impact": 94, "live_performance": 96, "innovation": 98}},
+{"name": "Gorgoroth", "attributes": {"country": "Norway", "genre": "Black Metal", "riff_power": 91, "global_popularity": 78, "discography_impact": 88, "live_performance": 85, "innovation": 92}},
+{"name": "HammerFall", "attributes": {"country": "Sweden", "genre": "Power Metal", "riff_power": 90, "global_popularity": 89, "discography_impact": 88, "live_performance": 93, "innovation": 87}},
+{"name": "Heilung", "attributes": {"country": "Denmark", "genre": "Experimental Folk Metal", "riff_power": 82, "global_popularity": 91, "discography_impact": 88, "live_performance": 95, "innovation": 99}},
+{"name": "Helloween", "attributes": {"country": "Germany", "genre": "Power Metal", "riff_power": 89, "global_popularity": 88, "discography_impact": 90, "live_performance": 91, "innovation": 92}},
+{"name": "Hermética", "attributes": {"country": "Argentina", "genre": "Thrash Metal", "riff_power": 88, "global_popularity": 82, "discography_impact": 87, "live_performance": 85, "innovation": 88}},
+{"name": "Immortal", "attributes": {"country": "Norway", "genre": "Black Metal", "riff_power": 92, "global_popularity": 85, "discography_impact": 90, "live_performance": 91, "innovation": 91}},
+{"name": "In Flames", "attributes": {"country": "Sweden", "genre": "Melodic Death Metal", "riff_power": 90, "global_popularity": 89, "discography_impact": 91, "live_performance": 92, "innovation": 93}},
+{"name": "Iron Maiden", "attributes": {"country": "UK", "genre": "Heavy Metal", "riff_power": 92, "global_popularity": 96, "discography_impact": 95, "live_performance": 100, "innovation": 88}},
+{"name": "Judas Priest", "attributes": {"country": "UK", "genre": "Heavy Metal", "riff_power": 94, "global_popularity": 92, "discography_impact": 93, "live_performance": 96, "innovation": 90}},
+{"name": "Killswitch Engage", "attributes": {"country": "USA", "genre": "Metalcore", "riff_power": 90, "global_popularity": 91, "discography_impact": 89, "live_performance": 95, "innovation": 88}},
+{"name": "Korn", "attributes": {"country": "USA", "genre": "Nu Metal", "riff_power": 85, "global_popularity": 92, "discography_impact": 91, "live_performance": 90, "innovation": 93}},
+{"name": "Kreator", "attributes": {"country": "Germany", "genre": "Thrash Metal", "riff_power": 95, "global_popularity": 86, "discography_impact": 92, "live_performance": 94, "innovation": 91}},
+{"name": "Krisiun", "attributes": {"country": "Brazil", "genre": "Death Metal", "riff_power": 95, "global_popularity": 80, "discography_impact": 88, "live_performance": 94, "innovation": 90}},
+{"name": "Lacuna Coil", "attributes": {"country": "Italy", "genre": "Gothic Metal", "riff_power": 86, "global_popularity": 91, "discography_impact": 89, "live_performance": 92, "innovation": 88}},
+{"name": "Lamb of God", "attributes": {"country": "USA", "genre": "Groove Metal", "riff_power": 93, "global_popularity": 88, "discography_impact": 90, "live_performance": 95, "innovation": 89}},
+{"name": "Led Zeppelin", "attributes": {"country": "UK", "genre": "Hard Rock / Proto-Metal", "riff_power": 95, "global_popularity": 100, "discography_impact": 100, "live_performance": 95, "innovation": 98}},
+{"name": "Machine Head", "attributes": {"country": "USA", "genre": "Heavy / Groove Metal", "riff_power": 94, "global_popularity": 87, "discography_impact": 89, "live_performance": 92, "innovation": 88}},
+{"name": "Mastodon", "attributes": {"country": "USA", "genre": "Progressive Metal", "riff_power": 92, "global_popularity": 90, "discography_impact": 94, "live_performance": 91, "innovation": 98}},
+{"name": "Mayhem", "attributes": {"country": "Norway", "genre": "Black Metal", "riff_power": 94, "global_popularity": 80, "discography_impact": 92, "live_performance": 85, "innovation": 96}},
+{"name": "Megadeth", "attributes": {"country": "USA", "genre": "Thrash Metal", "riff_power": 96, "global_popularity": 90, "discography_impact": 94, "live_performance": 92, "innovation": 92}},
+{"name": "Meshuggah", "attributes": {"country": "Sweden", "genre": "Extreme Progressive Metal", "riff_power": 95, "global_popularity": 86, "discography_impact": 93, "live_performance": 92, "innovation": 100}},
+{"name": "Metallica", "attributes": {"country": "USA", "genre": "Thrash Metal", "riff_power": 95, "global_popularity": 100, "discography_impact": 98, "live_performance": 95, "innovation": 90}},
+{"name": "Ministry", "attributes": {"country": "USA", "genre": "Industrial Metal", "riff_power": 89, "global_popularity": 86, "discography_impact": 91, "live_performance": 90, "innovation": 94}},
+{"name": "Morbid Angel", "attributes": {"country": "USA", "genre": "Death Metal", "riff_power": 96, "global_popularity": 87, "discography_impact": 94, "live_performance": 91, "innovation": 97}},
+{"name": "Motörhead", "attributes": {"country": "UK", "genre": "Speed Metal", "riff_power": 91, "global_popularity": 89, "discography_impact": 90, "live_performance": 94, "innovation": 88}},
+{"name": "Napalm Death", "attributes": {"country": "UK", "genre": "Grindcore", "riff_power": 92, "global_popularity": 87, "discography_impact": 90, "live_performance": 94, "innovation": 95}},
+{"name": "Nightwish", "attributes": {"country": "Finland", "genre": "Symphonic Metal", "riff_power": 86, "global_popularity": 92, "discography_impact": 91, "live_performance": 93, "innovation": 96}},
+{"name": "Nile", "attributes": {"country": "USA", "genre": "Technical Death Metal", "riff_power": 95, "global_popularity": 84, "discography_impact": 90, "live_performance": 92, "innovation": 93}},
+{"name": "Obituary", "attributes": {"country": "USA", "genre": "Death Metal", "riff_power": 94, "global_popularity": 85, "discography_impact": 91, "live_performance": 93, "innovation": 88}},
+{"name": "Opeth", "attributes": {"country": "Sweden", "genre": "Progressive Metal", "riff_power": 91, "global_popularity": 90, "discography_impact": 95, "live_performance": 92, "innovation": 99}},
+{"name": "Overkill", "attributes": {"country": "USA", "genre": "Thrash Metal", "riff_power": 93, "global_popularity": 84, "discography_impact": 88, "live_performance": 92, "innovation": 87}},
+{"name": "Pantera", "attributes": {"country": "USA", "genre": "Groove Metal", "riff_power": 97, "global_popularity": 89, "discography_impact": 91, "live_performance": 94, "innovation": 90}},
+{"name": "Parkway Drive", "attributes": {"country": "Australia", "genre": "Metalcore", "riff_power": 92, "global_popularity": 90, "discography_impact": 89, "live_performance": 95, "innovation": 88}},
+{"name": "Powerwolf", "attributes": {"country": "Germany", "genre": "Power Metal", "riff_power": 89, "global_popularity": 91, "discography_impact": 90, "live_performance": 96, "innovation": 88}},
+{"name": "Rammstein", "attributes": {"country": "Germany", "genre": "Industrial Metal", "riff_power": 90, "global_popularity": 94, "discography_impact": 92, "live_performance": 100, "innovation": 93}},
+{"name": "Rata Blanca", "attributes": {"country": "Argentina", "genre": "Heavy / Power Metal", "riff_power": 86, "global_popularity": 90, "discography_impact": 89, "live_performance": 88, "innovation": 87}},
+{"name": "Sabaton", "attributes": {"country": "Sweden", "genre": "Power Metal", "riff_power": 88, "global_popularity": 90, "discography_impact": 88, "live_performance": 95, "innovation": 86}},
+{"name": "Sarcófago", "attributes": {"country": "Brazil", "genre": "Black / Death Metal", "riff_power": 94, "global_popularity": 78, "discography_impact": 90, "live_performance": 80, "innovation": 96}},
+{"name": "Satyricon", "attributes": {"country": "Norway", "genre": "Black Metal", "riff_power": 90, "global_popularity": 86, "discography_impact": 91, "live_performance": 92, "innovation": 90}},
+{"name": "Scorpions", "attributes": {"country": "Germany", "genre": "Hard Rock / Metal", "riff_power": 88, "global_popularity": 95, "discography_impact": 93, "live_performance": 92, "innovation": 85}},
+{"name": "Sepultura", "attributes": {"country": "Brazil", "genre": "Thrash / Groove Metal", "riff_power": 93, "global_popularity": 90, "discography_impact": 94, "live_performance": 92, "innovation": 95}},
+{"name": "Slayer", "attributes": {"country": "USA", "genre": "Thrash Metal", "riff_power": 98, "global_popularity": 88, "discography_impact": 92, "live_performance": 97, "innovation": 91}},
+{"name": "Slipknot", "attributes": {"country": "USA", "genre": "Extreme / Nu Metal", "riff_power": 92, "global_popularity": 94, "discography_impact": 90, "live_performance": 100, "innovation": 92}},
+{"name": "Sonata Arctica", "attributes": {"country": "Finland", "genre": "Power Metal", "riff_power": 88, "global_popularity": 90, "discography_impact": 89, "live_performance": 92, "innovation": 90}},
+{"name": "Spiritbox", "attributes": {"country": "Canada", "genre": "Progressive Metalcore", "riff_power": 88, "global_popularity": 91, "discography_impact": 87, "live_performance": 94, "innovation": 96}},
+{"name": "Static-X", "attributes": {"country": "USA", "genre": "Industrial Metal", "riff_power": 90, "global_popularity": 89, "discography_impact": 88, "live_performance": 93, "innovation": 88}},
+{"name": "Stratovarius", "attributes": {"country": "Finland", "genre": "Power Metal", "riff_power": 91, "global_popularity": 88, "discography_impact": 92, "live_performance": 91, "innovation": 93}},
+{"name": "System of a Down", "attributes": {"country": "USA", "genre": "Alternative Metal", "riff_power": 88, "global_popularity": 93, "discography_impact": 92, "live_performance": 91, "innovation": 96}},
+{"name": "Testament", "attributes": {"country": "USA", "genre": "Thrash Metal", "riff_power": 94, "global_popularity": 87, "discography_impact": 91, "live_performance": 92, "innovation": 90}},
+{"name": "The Hu", "attributes": {"country": "Mongolia", "genre": "Folk Metal", "riff_power": 86, "global_popularity": 93, "discography_impact": 88, "live_performance": 92, "innovation": 98}},
+{"name": "Therion", "attributes": {"country": "Sweden", "genre": "Symphonic Metal", "riff_power": 89, "global_popularity": 86, "discography_impact": 92, "live_performance": 90, "innovation": 98}},
+{"name": "Tiamat", "attributes": {"country": "Sweden", "genre": "Gothic Metal", "riff_power": 88, "global_popularity": 85, "discography_impact": 91, "live_performance": 87, "innovation": 92}},
+{"name": "Tool", "attributes": {"country": "USA", "genre": "Progressive Metal", "riff_power": 90, "global_popularity": 93, "discography_impact": 94, "live_performance": 92, "innovation": 100}},
+{"name": "Trivium", "attributes": {"country": "USA", "genre": "Heavy / Metalcore", "riff_power": 90, "global_popularity": 89, "discography_impact": 88, "live_performance": 91, "innovation": 87}},
+{"name": "Ulver", "attributes": {"country": "Norway", "genre": "Experimental Metal", "riff_power": 80, "global_popularity": 82, "discography_impact": 90, "live_performance": 75, "innovation": 100}},
+{"name": "Watain", "attributes": {"country": "Sweden", "genre": "Black Metal", "riff_power": 91, "global_popularity": 82, "discography_impact": 89, "live_performance": 93, "innovation": 90}},
+{"name": "Wind Rose", "attributes": {"country": "Italy", "genre": "Power / Folk Metal", "riff_power": 86, "global_popularity": 88, "discography_impact": 85, "live_performance": 92, "innovation": 89}},
+{"name": "Within Temptation", "attributes": {"country": "Netherlands", "genre": "Symphonic Metal", "riff_power": 87, "global_popularity": 93, "discography_impact": 90, "live_performance": 95, "innovation": 93}},
+{"name": "X Japan", "attributes": {"country": "Japan", "genre": "Heavy / Power Metal", "riff_power": 90, "global_popularity": 94, "discography_impact": 92, "live_performance": 95, "innovation": 97}},
+ ];
+const instruments = [
+{"name": "Cross Necklace", "attributes": {"associated_artist": "Ozzy Osbourne", "type": "Personal Artifact", "historical_impact": 90, "sound_power": 70, "cultural_legacy": 95, "rarity": 88, "myth_status": 98, "flavor_text": "Faith, madness, and metal mythology intertwined."}},
+{"name": "Dean ML Guitar", "attributes": {"associated_artist": "Dimebag Darrell", "type": "Instrument", "historical_impact": 96, "sound_power": 99, "cultural_legacy": 94, "rarity": 90, "myth_status": 98, "flavor_text": "Groove metal perfected through fire and feedback."}},
+{"name": "Eddie (Original Stage Prop)", "attributes": {"associated_artist": "Iron Maiden", "type": "Stage Relic", "historical_impact": 92, "sound_power": 65, "cultural_legacy": 100, "rarity": 90, "myth_status": 95, "flavor_text": "The most recognizable face in heavy metal."}},
+{"name": "Explorer Guitar", "attributes": {"associated_artist": "James Hetfield", "type": "Instrument", "historical_impact": 94, "sound_power": 97, "cultural_legacy": 95, "rarity": 88, "myth_status": 93, "flavor_text": "Downpicked authority and pure metal discipline."}},
+{"name": "Frankenstein Guitar", "attributes": {"associated_artist": "Eddie Van Halen", "type": "Instrument", "historical_impact": 98, "sound_power": 100, "cultural_legacy": 97, "rarity": 90, "myth_status": 98, "flavor_text": "The birth of modern guitar innovation and tone hacking."}},
+{"name": "Gibson SG", "attributes": {"associated_artist": "Tony Iommi", "type": "Instrument", "historical_impact": 100, "sound_power": 96, "cultural_legacy": 94, "rarity": 88, "myth_status": 99, "flavor_text": "Downtuned riffs that forged heaviness from limitation."}},
+{"name": "JCM800 Amplifier", "attributes": {"associated_artist": "Marshall", "type": "Gear", "historical_impact": 95, "sound_power": 98, "cultural_legacy": 96, "rarity": 85, "myth_status": 92, "flavor_text": "The roar behind countless metal anthems."}},
+{"name": "Master of Puppets (Original Vinyl)", "attributes": {"associated_artist": "Metallica", "type": "Album", "historical_impact": 99, "sound_power": 97, "cultural_legacy": 98, "rarity": 87, "myth_status": 97, "flavor_text": "Thrash metal reaches perfection."}},
+{"name": "Paranoid (Original Release)", "attributes": {"associated_artist": "Black Sabbath", "type": "Album", "historical_impact": 100, "sound_power": 98, "cultural_legacy": 95, "rarity": 85, "myth_status": 100, "flavor_text": "The blueprint of doom and heavy metal itself."}},
+{"name": "Polka-Dot Flying V", "attributes": {"associated_artist": "Randy Rhoads", "type": "Instrument", "historical_impact": 94, "sound_power": 93, "cultural_legacy": 96, "rarity": 91, "myth_status": 99, "flavor_text": "Neoclassical brilliance frozen in time."}},
+{"name": "Reign in Blood (Master Tape)", "attributes": {"associated_artist": "Slayer", "type": "Recording Artifact", "historical_impact": 97, "sound_power": 100, "cultural_legacy": 93, "rarity": 92, "myth_status": 96, "flavor_text": "Speed, violence, and precision distilled into 29 minutes."}},
+{"name": "Rickenbacker Bass", "attributes": {"associated_artist": "Lemmy Kilmister", "type": "Instrument", "historical_impact": 96, "sound_power": 95, "cultural_legacy": 98, "rarity": 90, "myth_status": 97, "flavor_text": "Bass as a weapon, distortion as law."}},
+{"name": "Roots Tribal Percussion Set", "attributes": {"associated_artist": "Sepultura", "type": "Recording Artifact", "historical_impact": 93, "sound_power": 95, "cultural_legacy": 94, "rarity": 89, "myth_status": 92, "flavor_text": "Where metal merged with ancestral rhythm."}},
+{"name": "Rust in Peace (Original Mix)", "attributes": {"associated_artist": "Megadeth", "type": "Album", "historical_impact": 95, "sound_power": 96, "cultural_legacy": 92, "rarity": 86, "myth_status": 94, "flavor_text": "Technical precision meets political fury."}},
+{"name": "The Number of the Beast (Original Artwork)", "attributes": {"associated_artist": "Iron Maiden", "type": "Visual Artifact", "historical_impact": 92, "sound_power": 75, "cultural_legacy": 98, "rarity": 91, "myth_status": 96, "flavor_text": "An image that defined metal aesthetics forever."}},
+ ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playersCheckbox').checked) selectedCards.push(...players);
+    if (document.getElementById('instrumentsCheckbox').checked) selectedCards.push(...instruments);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  document.getElementById('shuffleRulesButton').addEventListener('click', function() {
+    shuffleDeck(rules, 'rulesResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+		body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

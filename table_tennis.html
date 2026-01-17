@@ -1,0 +1,309 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Table Tennis</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="playCheckbox"> Player</label><br>
+    <label><input type="checkbox" id="tournCheckbox"> Tournament</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Attribute Swap: Swap the chosen attribute for another before comparison.",
+"Double Spin: Double the Spin value for this round.",
+"Speed Burst: +10 Speed for this comparison only.",
+"Mental Test: The comparison must be Mental Strength.",
+"Stat Lock: Opponent cannot change the chosen attribute.",
+"Re-Roll: Replay a lost comparison.",
+"Mirror Match: Use the opponent’s highest attribute as your own.",
+"Hidden Choice: Choose the attribute secretly; reveal simultaneously.",
+"Attribute Ban: One attribute cannot be used this round.",
+"Last Chance Rally: If you lose, reduce the attribute difference by 5.",
+"Home Advantage: +5 to all attributes if the player matches the tournament region.",
+"Final Pressure: +10 Pressure to tournament cards this round.",
+"Seed Advantage: Ignore negative effects from the opponent.",
+"Upset Victory: If your card is a lower tier, gain +8 to the chosen attribute.",
+"Wildcard Entry: Play one extra card and choose the best result.",
+"Perfect Match: +5 to all attributes if paired with a Tier Immortal Legends tournament.",
+"Legend Era: Legend players gain +5 Titles.",
+"Crowd Momentum: Add tournament Global Reach to player Mental Strength.",
+"Historic Rivalry: +7 if both players are from the same country.",
+"Golden Generation: If two players from the same country were played, gain a permanent +5.",
+"Draw Two: Draw two cards.",
+"Forced Discard: Opponent discards one random card.",
+"Deck Peek: Look at the top three cards of the deck.",
+"Hand Reset: Both players discard their hands and draw new cards.",
+"Selective Draw: Draw either a Player card or a Tournament card.",
+"Cancel Effect: Cancel the last action played.",
+"Attribute Freeze: The chosen attribute cannot be modified this round.",
+"Tier Block: Tier Immortal Legends cards cannot use abilities this round.",
+"Silence: Opponent cannot play action cards next turn.",
+"Momentum Break: Remove all temporary bonuses in play.",
+"Legendary Moment: Automatically win if you play a Tier Immortal Legends card.",
+"Perfect Game: +5 to all attributes this round.",
+"Time-Out: Skip the opponent’s next turn.",
+"Match Point: If you win this round, you win the match.",
+"Era Shift: Change the global rule for this round (e.g., only Technique counts)."];
+  
+const play = [
+{name: "Ahmed Saleh", attributes: {country: "Egypt", tier: "PRO TOUR & FUTURE STARS", "Speed": 87, "Spin": 88, "Technique": 86, "Consistency": 84, "Titles": 70, "Mental Strength": 85}},
+{name: "Alberto Mino", attributes: {country: "Ecuador", tier: "PRO TOUR & FUTURE STARS", "Speed": 85, "Spin": 86, "Technique": 85, "Consistency": 83, "Titles": 66, "Mental Strength": 83}},
+{name: "Alejandro Calvo", attributes: {country: "Spain", tier: "PRO TOUR & FUTURE STARS", "Speed": 84, "Spin": 85, "Technique": 86, "Consistency": 82, "Titles": 66, "Mental Strength": 82}},
+{name: "Aleksandar Karakasevic", attributes: {country: "Serbia", tier: "PRO TOUR & FUTURE STARS", "Speed": 83, "Spin": 89, "Technique": 91, "Consistency": 87, "Titles": 76, "Mental Strength": 92}},
+{name: "Alexis Lebrun", attributes: {country: "France", tier: "PRO TOUR & FUTURE STARS", "Speed": 93, "Spin": 91, "Technique": 90, "Consistency": 85, "Titles": 74, "Mental Strength": 88}},
+{name: "Alvaro Robles", attributes: {country: "Spain", tier: "PRO TOUR & FUTURE STARS", "Speed": 88, "Spin": 89, "Technique": 88, "Consistency": 86, "Titles": 74, "Mental Strength": 87}},
+{name: "Andrej Gacina", attributes: {country: "Croatia", tier: "PRO TOUR & FUTURE STARS", "Speed": 89, "Spin": 88, "Technique": 89, "Consistency": 86, "Titles": 73, "Mental Strength": 87}},
+{name: "Anton Källberg", attributes: {country: "Sweden", tier: "MODERN ELITE", "Speed": 88, "Spin": 89, "Technique": 90, "Consistency": 87, "Titles": 76, "Mental Strength": 88}},
+{name: "Antonino Amato", attributes: {country: "Italy", tier: "PRO TOUR & FUTURE STARS", "Speed": 84, "Spin": 85, "Technique": 86, "Consistency": 83, "Titles": 66, "Mental Strength": 83}},
+{name: "Aruna Quadri Jr.", attributes: {country: "Nigeria", tier: "PRO TOUR & FUTURE STARS", "Speed": 87, "Spin": 88, "Technique": 85, "Consistency": 83, "Titles": 67, "Mental Strength": 84}},
+{name: "Bastian Steger", attributes: {country: "Germany", tier: "PRO TOUR & FUTURE STARS", "Speed": 84, "Spin": 86, "Technique": 88, "Consistency": 87, "Titles": 74, "Mental Strength": 90}},
+{name: "Benedikt Duda", attributes: {country: "Germany", tier: "MODERN ELITE", "Speed": 89, "Spin": 88, "Technique": 89, "Consistency": 87, "Titles": 75, "Mental Strength": 87}},
+{name: "Bojan Tokic", attributes: {country: "Slovenia", tier: "PRO TOUR & FUTURE STARS", "Speed": 86, "Spin": 87, "Technique": 88, "Consistency": 87, "Titles": 71, "Mental Strength": 86}},
+{name: "Carlos Ishida", attributes: {country: "Brazil", tier: "PRO TOUR & FUTURE STARS", "Speed": 86, "Spin": 87, "Technique": 85, "Consistency": 83, "Titles": 64, "Mental Strength": 83}},
+{name: "Chen Meng", attributes: {country: "China", tier: "MODERN ELITE", "Speed": 91, "Spin": 94, "Technique": 93, "Consistency": 96, "Titles": 95, "Mental Strength": 95}},
+{name: "Chen Qi", attributes: {country: "China", tier: "ALL-TIME GREATS", "Speed": 89, "Spin": 92, "Technique": 91, "Consistency": 88, "Titles": 82, "Mental Strength": 90}},
+{name: "Chen Weixing", attributes: {country: "Austria", tier: "PRO TOUR & FUTURE STARS", "Speed": 79, "Spin": 92, "Technique": 90, "Consistency": 89, "Titles": 74, "Mental Strength": 91}},
+{name: "Daniel Habesohn", attributes: {country: "Austria", tier: "PRO TOUR & FUTURE STARS", "Speed": 85, "Spin": 86, "Technique": 87, "Consistency": 85, "Titles": 70, "Mental Strength": 85}},
+{name: "Darko Jorgic", attributes: {country: "Slovenia", tier: "MODERN ELITE", "Speed": 92, "Spin": 90, "Technique": 88, "Consistency": 86, "Titles": 77, "Mental Strength": 88}},
+{name: "Deng Yaping", attributes: {country: "China", tier: "IMMORTAL LEGENDS", "Speed": 92, "Spin": 95, "Technique": 97, "Consistency": 99, "Titles": 100, "Mental Strength": 99}},
+{name: "Dimitrij Ovtcharov", attributes: {country: "Germany", tier: "MODERN ELITE", "Speed": 90, "Spin": 93, "Technique": 91, "Consistency": 92, "Titles": 84, "Mental Strength": 94}},
+{name: "Emmanuel Lebesson", attributes: {country: "France", tier: "PRO TOUR & FUTURE STARS", "Speed": 87, "Spin": 88, "Technique": 89, "Consistency": 86, "Titles": 75, "Mental Strength": 88}},
+{name: "Eric Jouti", attributes: {country: "Brazil", tier: "PRO TOUR & FUTURE STARS", "Speed": 87, "Spin": 88, "Technique": 86, "Consistency": 83, "Titles": 66, "Mental Strength": 84}},
+{name: "Fan Zhendong", attributes: {country: "China", tier: "ALL-TIME GREATS", "Speed": 95, "Spin": 96, "Technique": 94, "Consistency": 96, "Titles": 92, "Mental Strength": 95}},
+{name: "Felix Lebrun", attributes: {country: "France", tier: "PRO TOUR & FUTURE STARS", "Speed": 95, "Spin": 92, "Technique": 89, "Consistency": 84, "Titles": 72, "Mental Strength": 86}},
+{name: "Finn Luu", attributes: {country: "Germany", tier: "PRO TOUR & FUTURE STARS", "Speed": 85, "Spin": 86, "Technique": 85, "Consistency": 83, "Titles": 65, "Mental Strength": 82}},
+{name: "Gao Jun", attributes: {country: "United States", tier: "ALL-TIME GREATS", "Speed": 84, "Spin": 90, "Technique": 93, "Consistency": 94, "Titles": 85, "Mental Strength": 95}},
+{name: "Guo Yue", attributes: {country: "China", tier: "ALL-TIME GREATS", "Speed": 90, "Spin": 92, "Technique": 91, "Consistency": 89, "Titles": 84, "Mental Strength": 90}},
+{name: "Hugo Calderano", attributes: {country: "Brazil", tier: "MODERN ELITE", "Speed": 94, "Spin": 91, "Technique": 90, "Consistency": 88, "Titles": 82, "Mental Strength": 92}},
+{name: "Hwang Ui-jung", attributes: {country: "South Korea", tier: "PRO TOUR & FUTURE STARS", "Speed": 85, "Spin": 86, "Technique": 85, "Consistency": 83, "Titles": 67, "Mental Strength": 84}},
+{name: "Ichiro Ogimura", attributes: {country: "Japan", tier: "ALL-TIME GREATS", "Speed": 82, "Spin": 90, "Technique": 95, "Consistency": 94, "Titles": 92, "Mental Strength": 96}},
+{name: "Jan-Ove Waldner", attributes: {country: "Sweden", tier: "IMMORTAL LEGENDS", "Speed": 85, "Spin": 90, "Technique": 98, "Consistency": 95, "Titles": 90, "Mental Strength": 99}},
+{name: "Joao Geraldo", attributes: {country: "Portugal", tier: "PRO TOUR & FUTURE STARS", "Speed": 87, "Spin": 88, "Technique": 86, "Consistency": 84, "Titles": 69, "Mental Strength": 85}},
+{name: "Jonathan Groth Jr.", attributes: {country: "Denmark", tier: "PRO TOUR & FUTURE STARS", "Speed": 86, "Spin": 87, "Technique": 86, "Consistency": 84, "Titles": 69, "Mental Strength": 84}},
+{name: "Jonathan Groth", attributes: {country: "Denmark", tier: "PRO TOUR & FUTURE STARS", "Speed": 88, "Spin": 89, "Technique": 90, "Consistency": 88, "Titles": 74, "Mental Strength": 89}},
+{name: "Joo Sae-hyuk", attributes: {country: "South Korea", tier: "ALL-TIME GREATS", "Speed": 78, "Spin": 95, "Technique": 92, "Consistency": 93, "Titles": 82, "Mental Strength": 94}},
+{name: "Jorgen Persson", attributes: {country: "Sweden", tier: "ALL-TIME GREATS", "Speed": 84, "Spin": 88, "Technique": 93, "Consistency": 94, "Titles": 86, "Mental Strength": 95}},
+{name: "Jun Mizutani", attributes: {country: "Japan", tier: "ALL-TIME GREATS", "Speed": 89, "Spin": 91, "Technique": 93, "Consistency": 94, "Titles": 86, "Mental Strength": 95}},
+{name: "Kai Zhang", attributes: {country: "Singapore", tier: "PRO TOUR & FUTURE STARS", "Speed": 85, "Spin": 87, "Technique": 86, "Consistency": 84, "Titles": 69, "Mental Strength": 84}},
+{name: "Kalinikos Kreanga", attributes: {country: "Greece", tier: "ALL-TIME GREATS", "Speed": 88, "Spin": 93, "Technique": 90, "Consistency": 84, "Titles": 78, "Mental Strength": 89}},
+{name: "Kanak Jha", attributes: {country: "United States", tier: "PRO TOUR & FUTURE STARS", "Speed": 91, "Spin": 89, "Technique": 88, "Consistency": 85, "Titles": 70, "Mental Strength": 88}},
+{name: "Kao Cheng-Jui", attributes: {country: "Chinese Taipei", tier: "PRO TOUR & FUTURE STARS", "Speed": 89, "Spin": 90, "Technique": 88, "Consistency": 85, "Titles": 73, "Mental Strength": 86}},
+{name: "Kasumi Ishikawa", attributes: {country: "Japan", tier: "MODERN ELITE", "Speed": 88, "Spin": 90, "Technique": 92, "Consistency": 93, "Titles": 86, "Mental Strength": 94}},
+{name: "Kenta Matsudaira", attributes: {country: "Japan", tier: "PRO TOUR & FUTURE STARS", "Speed": 89, "Spin": 91, "Technique": 90, "Consistency": 86, "Titles": 74, "Mental Strength": 88}},
+{name: "Kim Taek-soo", attributes: {country: "South Korea", tier: "ALL-TIME GREATS", "Speed": 85, "Spin": 89, "Technique": 92, "Consistency": 90, "Titles": 80, "Mental Strength": 91}},
+{name: "Kirill Gerassimenko", attributes: {country: "Kazakhstan", tier: "PRO TOUR & FUTURE STARS", "Speed": 88, "Spin": 89, "Technique": 87, "Consistency": 84, "Titles": 70, "Mental Strength": 85}},
+{name: "Kong Linghui", attributes: {country: "China", tier: "IMMORTAL LEGENDS", "Speed": 87, "Spin": 91, "Technique": 95, "Consistency": 96, "Titles": 92, "Mental Strength": 94}},
+{name: "Kristian Karlsson", attributes: {country: "Sweden", tier: "MODERN ELITE", "Speed": 87, "Spin": 89, "Technique": 90, "Consistency": 88, "Titles": 77, "Mental Strength": 89}},
+{name: "Lee Sang-su", attributes: {country: "South Korea", tier: "MODERN ELITE", "Speed": 91, "Spin": 91, "Technique": 89, "Consistency": 88, "Titles": 79, "Mental Strength": 89}},
+{name: "Leonardo Yokoyama", attributes: {country: "Brazil", tier: "PRO TOUR & FUTURE STARS", "Speed": 88, "Spin": 87, "Technique": 86, "Consistency": 84, "Titles": 65, "Mental Strength": 85}},
+{name: "Liam Pitchford", attributes: {country: "England", tier: "MODERN ELITE", "Speed": 90, "Spin": 91, "Technique": 88, "Consistency": 85, "Titles": 74, "Mental Strength": 86}},
+{name: "Liang Jingkun", attributes: {country: "China", tier: "ALL-TIME GREATS", "Speed": 92, "Spin": 93, "Technique": 90, "Consistency": 89, "Titles": 80, "Mental Strength": 90}},
+{name: "Lin Gaoyuan", attributes: {country: "China", tier: "ALL-TIME GREATS", "Speed": 91, "Spin": 94, "Technique": 93, "Consistency": 88, "Titles": 82, "Mental Strength": 87}},
+{name: "Lin Yun-Ju", attributes: {country: "Chinese Taipei", tier: "MODERN ELITE", "Speed": 93, "Spin": 92, "Technique": 94, "Consistency": 89, "Titles": 83, "Mental Strength": 91}},
+{name: "Lino Gaudenzi", attributes: {country: "Switzerland", tier: "PRO TOUR & FUTURE STARS", "Speed": 84, "Spin": 85, "Technique": 86, "Consistency": 83, "Titles": 66, "Mental Strength": 83}},
+{name: "Liu Guoliang", attributes: {country: "China", tier: "IMMORTAL LEGENDS", "Speed": 80, "Spin": 94, "Technique": 97, "Consistency": 95, "Titles": 90, "Mental Strength": 98}},
+{name: "Liu Shiwen", attributes: {country: "China", tier: "ALL-TIME GREATS", "Speed": 94, "Spin": 96, "Technique": 93, "Consistency": 90, "Titles": 95, "Mental Strength": 94}},
+{name: "Lubomir Pistej", attributes: {country: "Slovakia", tier: "PRO TOUR & FUTURE STARS", "Speed": 85, "Spin": 86, "Technique": 87, "Consistency": 84, "Titles": 68, "Mental Strength": 83}},
+{name: "Ma Lin", attributes: {country: "China", tier: "IMMORTAL LEGENDS", "Speed": 86, "Spin": 95, "Technique": 96, "Consistency": 94, "Titles": 93, "Mental Strength": 95}},
+{name: "Ma Long", attributes: {country: "China", tier: "IMMORTAL LEGENDS", "Speed": 92, "Spin": 98, "Technique": 97, "Consistency": 99, "Titles": 100, "Mental Strength": 98}},
+{name: "Marcos Freitas", attributes: {country: "Portugal", tier: "MODERN ELITE", "Speed": 89, "Spin": 90, "Technique": 91, "Consistency": 88, "Titles": 78, "Mental Strength": 90}},
+{name: "Masataka Morizono", attributes: {country: "Japan", tier: "PRO TOUR & FUTURE STARS", "Speed": 88, "Spin": 89, "Technique": 88, "Consistency": 85, "Titles": 72, "Mental Strength": 86}},
+{name: "Mattias Andersson", attributes: {country: "Sweden", tier: "PRO TOUR & FUTURE STARS", "Speed": 84, "Spin": 85, "Technique": 86, "Consistency": 83, "Titles": 67, "Mental Strength": 83}},
+{name: "Mattias Falck", attributes: {country: "Sweden", tier: "MODERN ELITE", "Speed": 88, "Spin": 89, "Technique": 92, "Consistency": 90, "Titles": 80, "Mental Strength": 93}},
+{name: "Michael Maze", attributes: {country: "Denmark", tier: "ALL-TIME GREATS", "Speed": 90, "Spin": 89, "Technique": 91, "Consistency": 85, "Titles": 75, "Mental Strength": 90}},
+{name: "Mima Ito", attributes: {country: "Japan", tier: "MODERN ELITE", "Speed": 94, "Spin": 93, "Technique": 90, "Consistency": 88, "Titles": 85, "Mental Strength": 90}},
+{name: "Nicolas Lum", attributes: {country: "Australia", tier: "PRO TOUR & FUTURE STARS", "Speed": 83, "Spin": 84, "Technique": 85, "Consistency": 82, "Titles": 64, "Mental Strength": 82}},
+{name: "Niwa Koki", attributes: {country: "Japan", tier: "MODERN ELITE", "Speed": 90, "Spin": 92, "Technique": 94, "Consistency": 87, "Titles": 78, "Mental Strength": 88}},
+{name: "Noshad Alamiyan", attributes: {country: "Iran", tier: "PRO TOUR & FUTURE STARS", "Speed": 88, "Spin": 89, "Technique": 87, "Consistency": 85, "Titles": 71, "Mental Strength": 86}},
+{name: "Omar Assar", attributes: {country: "Egypt", tier: "PRO TOUR & FUTURE STARS", "Speed": 89, "Spin": 90, "Technique": 88, "Consistency": 86, "Titles": 74, "Mental Strength": 87}},
+{name: "Patrick Franziska", attributes: {country: "Germany", tier: "MODERN ELITE", "Speed": 91, "Spin": 90, "Technique": 89, "Consistency": 87, "Titles": 77, "Mental Strength": 88}},
+{name: "Paul Drinkhall", attributes: {country: "England", tier: "PRO TOUR & FUTURE STARS", "Speed": 87, "Spin": 88, "Technique": 87, "Consistency": 86, "Titles": 72, "Mental Strength": 87}},
+{name: "Quadri Aruna", attributes: {country: "Nigeria", tier: "MODERN ELITE", "Speed": 93, "Spin": 90, "Technique": 87, "Consistency": 85, "Titles": 78, "Mental Strength": 91}},
+{name: "Robert Gardos Jr.", attributes: {country: "Austria", tier: "PRO TOUR & FUTURE STARS", "Speed": 85, "Spin": 86, "Technique": 86, "Consistency": 83, "Titles": 67, "Mental Strength": 83}},
+{name: "Robert Gardos", attributes: {country: "Austria", tier: "PRO TOUR & FUTURE STARS", "Speed": 86, "Spin": 88, "Technique": 89, "Consistency": 87, "Titles": 73, "Mental Strength": 88}},
+{name: "Ruwen Filus", attributes: {country: "Germany", tier: "PRO TOUR & FUTURE STARS", "Speed": 81, "Spin": 92, "Technique": 88, "Consistency": 89, "Titles": 73, "Mental Strength": 91}},
+{name: "Ryu Seung-min", attributes: {country: "South Korea", tier: "ALL-TIME GREATS", "Speed": 91, "Spin": 90, "Technique": 89, "Consistency": 88, "Titles": 85, "Mental Strength": 96}},
+{name: "Samuel Walker", attributes: {country: "England", tier: "PRO TOUR & FUTURE STARS", "Speed": 86, "Spin": 87, "Technique": 86, "Consistency": 84, "Titles": 68, "Mental Strength": 84}},
+{name: "Sanil Shetty", attributes: {country: "India", tier: "PRO TOUR & FUTURE STARS", "Speed": 83, "Spin": 85, "Technique": 84, "Consistency": 82, "Titles": 63, "Mental Strength": 81}},
+{name: "Sharath Kamal", attributes: {country: "India", tier: "PRO TOUR & FUTURE STARS", "Speed": 86, "Spin": 88, "Technique": 87, "Consistency": 85, "Titles": 72, "Mental Strength": 88}},
+{name: "Simon Gauzy", attributes: {country: "France", tier: "MODERN ELITE", "Speed": 91, "Spin": 92, "Technique": 89, "Consistency": 85, "Titles": 76, "Mental Strength": 87}},
+{name: "Sun Yingsha", attributes: {country: "China", tier: "MODERN ELITE", "Speed": 95, "Spin": 96, "Technique": 92, "Consistency": 91, "Titles": 90, "Mental Strength": 93}},
+{name: "Tiago Apolonia", attributes: {country: "Portugal", tier: "PRO TOUR & FUTURE STARS", "Speed": 85, "Spin": 87, "Technique": 88, "Consistency": 86, "Titles": 72, "Mental Strength": 87}},
+{name: "Tibor Klampár", attributes: {country: "Hungary", tier: "ALL-TIME GREATS", "Speed": 86, "Spin": 88, "Technique": 91, "Consistency": 89, "Titles": 83, "Mental Strength": 92}},
+{name: "Timo Boll", attributes: {country: "Germany", tier: "ALL-TIME GREATS", "Speed": 88, "Spin": 92, "Technique": 95, "Consistency": 97, "Titles": 85, "Mental Strength": 96}},
+{name: "Tom Jarvis", attributes: {country: "England", tier: "PRO TOUR & FUTURE STARS", "Speed": 84, "Spin": 85, "Technique": 85, "Consistency": 82, "Titles": 65, "Mental Strength": 82}},
+{name: "Tomislav Pucar", attributes: {country: "Croatia", tier: "PRO TOUR & FUTURE STARS", "Speed": 88, "Spin": 89, "Technique": 88, "Consistency": 86, "Titles": 73, "Mental Strength": 87}},
+{name: "Truls Möregårdh", attributes: {country: "Sweden", tier: "MODERN ELITE", "Speed": 92, "Spin": 91, "Technique": 90, "Consistency": 86, "Titles": 79, "Mental Strength": 89}},
+{name: "Vladimir Samsonov", attributes: {country: "Belarus", tier: "ALL-TIME GREATS", "Speed": 83, "Spin": 90, "Technique": 94, "Consistency": 98, "Titles": 87, "Mental Strength": 96}},
+{name: "Wang Chuqin", attributes: {country: "China", tier: "ALL-TIME GREATS", "Speed": 94, "Spin": 95, "Technique": 92, "Consistency": 91, "Titles": 85, "Mental Strength": 92}},
+{name: "Wang Liqin", attributes: {country: "China", tier: "IMMORTAL LEGENDS", "Speed": 89, "Spin": 97, "Technique": 94, "Consistency": 93, "Titles": 95, "Mental Strength": 96}},
+{name: "Wang Yang", attributes: {country: "Slovakia", tier: "PRO TOUR & FUTURE STARS", "Speed": 82, "Spin": 91, "Technique": 89, "Consistency": 88, "Titles": 72, "Mental Strength": 90}},
+{name: "Wong Chun Ting", attributes: {country: "Hong Kong", tier: "PRO TOUR & FUTURE STARS", "Speed": 90, "Spin": 91, "Technique": 89, "Consistency": 87, "Titles": 76, "Mental Strength": 88}},
+{name: "Xu Xin", attributes: {country: "China", tier: "IMMORTAL LEGENDS", "Speed": 94, "Spin": 99, "Technique": 95, "Consistency": 90, "Titles": 88, "Mental Strength": 93}},
+{name: "Yaroslav Zhmudenko", attributes: {country: "Ukraine", tier: "PRO TOUR & FUTURE STARS", "Speed": 86, "Spin": 87, "Technique": 86, "Consistency": 84, "Titles": 69, "Mental Strength": 85}},
+{name: "Yuki Uda", attributes: {country: "Japan", tier: "PRO TOUR & FUTURE STARS", "Speed": 89, "Spin": 90, "Technique": 88, "Consistency": 85, "Titles": 73, "Mental Strength": 86}},
+{name: "Yuto Muramatsu", attributes: {country: "Japan", tier: "PRO TOUR & FUTURE STARS", "Speed": 80, "Spin": 91, "Technique": 89, "Consistency": 88, "Titles": 71, "Mental Strength": 90}},
+{name: "Zhang Jike", attributes: {country: "China", tier: "IMMORTAL LEGENDS", "Speed": 93, "Spin": 94, "Technique": 92, "Consistency": 89, "Titles": 96, "Mental Strength": 97}},
+{name: "Zhang Yining", attributes: {country: "China", tier: "IMMORTAL LEGENDS", "Speed": 90, "Spin": 94, "Technique": 96, "Consistency": 98, "Titles": 99, "Mental Strength": 98}},
+{name: "Zhuang Zedong", attributes: {country: "China", tier: "ALL-TIME GREATS", "Speed": 85, "Spin": 93, "Technique": 92, "Consistency": 91, "Titles": 94, "Mental Strength": 95}},
+  ];
+
+
+const tourn = [
+{name: "African Table Tennis Championships", attributes: {tier: "Professional", "Prestige": 78, "Difficulty": 82, "History": 84, "Ranking Points": 78, "Global Reach": 75, "Pressure": 80 }},
+{name: "Asian Table Tennis Championships", attributes: {tier: "All-Time Greats", "Prestige": 90, "Difficulty": 95, "History": 92, "Ranking Points": 88, "Global Reach": 85, "Pressure": 92 }},
+{name: "China Open (Table Tennis)", attributes: {tier: "All-Time Greats", "Prestige": 90, "Difficulty": 96, "History": 90, "Ranking Points": 92, "Global Reach": 88, "Pressure": 94 }},
+{name: "European Table Tennis Championships", attributes: {tier: "All-Time Greats", "Prestige": 88, "Difficulty": 90, "History": 94, "Ranking Points": 85, "Global Reach": 82, "Pressure": 88 }},
+{name: "German Open (Table Tennis)", attributes: {tier: "All-Time Greats", "Prestige": 87, "Difficulty": 91, "History": 90, "Ranking Points": 89, "Global Reach": 85, "Pressure": 89 }},
+{name: "Invitational Masters", attributes: {tier: "Professional", "Prestige": 85, "Difficulty": 90, "History": 70, "Ranking Points": 82, "Global Reach": 88, "Pressure": 90 }},
+{name: "ITTF Mixed Team World Cup", attributes: {tier: "All-Time Greats", "Prestige": 88, "Difficulty": 90, "History": 70, "Ranking Points": 85, "Global Reach": 90, "Pressure": 88 }},
+{name: "ITTF World Tour Grand Finals", attributes: {tier: "All-Time Greats", "Prestige": 92, "Difficulty": 95, "History": 88, "Ranking Points": 93, "Global Reach": 91, "Pressure": 94 }},
+{name: "Japan Open (Table Tennis)", attributes: {tier: "All-Time Greats", "Prestige": 88, "Difficulty": 92, "History": 88, "Ranking Points": 90, "Global Reach": 86, "Pressure": 90 }},
+{name: "Legend Tribute Tournament", attributes: {tier: "Professional", "Prestige": 88, "Difficulty": 86, "History": 95, "Ranking Points": 80, "Global Reach": 84, "Pressure": 88 }},
+{name: "National Table Tennis Championships", attributes: {tier: "Professional", "Prestige": 75, "Difficulty": 85, "History": 90, "Ranking Points": 70, "Global Reach": 70, "Pressure": 85 }},
+{name: "Olympic Games – Table Tennis", attributes: {tier: "Immortal Legends", "Prestige": 100, "Difficulty": 98, "History": 95, "Ranking Points": 100, "Global Reach": 100, "Pressure": 100 }},
+{name: "Pan American Table Tennis Championships", attributes: {tier: "Professional", "Prestige": 82, "Difficulty": 85, "History": 86, "Ranking Points": 80, "Global Reach": 78, "Pressure": 82 }},
+{name: "Universiade – Table Tennis", attributes: {tier: "Professional", "Prestige": 78, "Difficulty": 80, "History": 85, "Ranking Points": 76, "Global Reach": 88, "Pressure": 78 }},
+{name: "World Cup (Table Tennis)", attributes: {tier: "All-Time Greats", "Prestige": 94, "Difficulty": 95, "History": 92, "Ranking Points": 92, "Global Reach": 90, "Pressure": 94 }},
+{name: "World Table Tennis Championships", attributes: {tier: "Immortal Legends", "Prestige": 98, "Difficulty": 97, "History": 100, "Ranking Points": 95, "Global Reach": 98, "Pressure": 96 }},
+{name: "World Team Table Tennis Championships", attributes: {tier: "Immortal Legends", "Prestige": 96, "Difficulty": 97, "History": 98, "Ranking Points": 94, "Global Reach": 96, "Pressure": 95 }},
+{name: "World Youth Championships (Table Tennis)", attributes: {tier: "Professional", "Prestige": 80, "Difficulty": 82, "History": 75, "Ranking Points": 78, "Global Reach": 85, "Pressure": 80 }},
+{name: "WTT Champions", attributes: {tier: "All-Time Greats", "Prestige": 90, "Difficulty": 94, "History": 78, "Ranking Points": 92, "Global Reach": 90, "Pressure": 92 }},
+{name: "WTT Finals", attributes: {tier: "All-Time Greats", "Prestige": 93, "Difficulty": 96, "History": 80, "Ranking Points": 95, "Global Reach": 92, "Pressure": 95 }},
+  ];
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playCheckbox').checked) selectedCards.push(...play);
+    if (document.getElementById('tournCheckbox').checked) selectedCards.push(...tourn);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

@@ -3,23 +3,102 @@
   <label for="stones">Number of Stones:</label>
   <input type="number" id="stones" value="75" min="1" max="100">
 </div>
-<br>
-<button id="rollBingoButton" class="round-button">Shuffle</button>
 
-<p id="bingoResult"></p>
+<br>
+
+<button id="shuffleButton" class="round-button">Shuffle</button>
+<button id="drawOneButton" class="round-button secondary">Draw</button>
+
+<p id="bingoStatus" style="margin-top: 14px;"></p>
+<p id="bingoLast" style="margin-top: 8px;"></p>
+<p id="bingoResult" style="margin-top: 8px;"></p>
+<p id="bingoSorted" style="margin-top: 8px;"></p>
 
 <!-- JavaScript Code -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('rollBingoButton').addEventListener('click', function() {
-      const stones = parseInt(document.getElementById('stones').value);
-      let drawnNumbers = Array.from({ length: stones }, (_, i) => i + 1);
-      drawnNumbers = drawnNumbers.sort(() => Math.random() - 0.5);
+    const stonesInput = document.getElementById('stones');
 
-      // Display the drawn numbers
-      document.getElementById('bingoResult').textContent = 
-        `Drawn Numbers: ${drawnNumbers.join(', ')}`;
+    const shuffleButton = document.getElementById('shuffleButton');
+    const drawOneButton = document.getElementById('drawOneButton');
+
+    const bingoStatus = document.getElementById('bingoStatus');
+    const bingoLast = document.getElementById('bingoLast');
+    const bingoResult = document.getElementById('bingoResult');
+
+    // State
+    let deck = [];
+    let drawn = [];
+    let initialized = false;
+
+    function buildShuffledDeck() {
+      const stones = parseInt(stonesInput.value, 10);
+      const safeStones = Number.isFinite(stones) ? stones : 75;
+
+      deck = Array.from({ length: safeStones }, (_, i) => i + 1)
+        .sort(() => Math.random() - 0.5);
+
+      drawn = [];
+      initialized = true;
+
+      // UI reset
+      bingoLast.textContent = "";
+      bingoResult.textContent = "";
+      bingoStatus.textContent = `Shuffled. Ready to draw (0/${deck.length}).`;
+      drawOneButton.disabled = (deck.length === 0);
+    }
+
+	
+	  function render() {
+	    const total = deck.length + drawn.length;
+	    bingoStatus.textContent = `Drawn: ${drawn.length}/${total}`;
+	
+	    if (drawn.length > 0) {
+	      const last = drawn[drawn.length - 1];
+	
+	      // Sequencial (ordem de sorteio)
+	      bingoLast.textContent = `Last drawn: ${last}`;
+	      bingoResult.textContent = `Sequence: ${drawn.join(", ")}`;
+	
+	      // NOVO: ordem crescente
+	      const sorted = [...drawn].sort((a, b) => a - b);
+	      bingoSorted.textContent = `Sorted: ${sorted.join(", ")}`;
+	    } else {
+	      bingoLast.textContent = "";
+	      bingoResult.textContent = "";
+	      bingoSorted.textContent = "";
+	    }
+	
+	    if (initialized && deck.length === 0) {
+	      drawOneButton.disabled = true;
+	      bingoStatus.textContent =
+	        `Completed! Drawn: ${drawn.length}/${drawn.length}. Click Shuffle to restart.`;
+	    }
+	  }
+
+
+    shuffleButton.addEventListener('click', function() {
+      // 3) ao clicar em shuffle ele reinicia
+      buildShuffledDeck();
+      render();
     });
+
+    drawOneButton.addEventListener('click', function() {
+      // Se ainda não embaralhou, embaralha automaticamente para evitar estado inválido
+      if (!initialized) buildShuffledDeck();
+
+      // 1) draw 1 by 1: apresenta uma pedra por clique
+      if (deck.length > 0) {
+        const next = deck.shift();
+        drawn.push(next);
+        // 2) resultado sequencial: drawn é exibido em ordem (sequência)
+        render();
+      }
+    });
+
+    // Estado inicial de UI (antes do primeiro shuffle)
+    bingoStatus.textContent = "Click Shuffle to start.";
+    drawOneButton.disabled = true;
   });
 </script>
 
@@ -28,18 +107,31 @@
   .round-button {
     width: 80px;
     height: 80px;
-    border-radius: 50%;
+    border-radius: 40px;
     border: none;
     background-color: #E4C58A;
     color: white;
     font-size: 16px;
     cursor: pointer;
     text-align: center;
-    line-height: 60px; /* Align text vertically */
     transition: background-color 0.3s;
+    margin-right: 8px;
   }
 
   .round-button:hover {
     background-color: #6E1919;
+  }
+
+  .round-button.secondary {
+    background-color: #9E9E9E;
+  }
+
+  .round-button.secondary:hover {
+    background-color: #6E1919;
+  }
+
+  .round-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
   }
 </style>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bingo Card Generator (5x5)</title>
+
+  <style>
+    /* ===== Buttons ===== */
+    .round-button {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: none;
+      background-color: #E4C58A;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      text-align: center;
+      line-height: 60px;
+      transition: background-color 0.3s;
+    }
+    .round-button:hover { background-color: #6E1919; }
+
+    .round-button.secondary {
+      background-color: #999;
+    }
+    .round-button.secondary:hover {
+      background-color: #444;
+    }
+
+    /* ===== Layout ===== */
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      font-family: Arial, sans-serif;
+      padding: 16px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-size: 12px;
+      color: #333;
+    }
+
+    select, input[type="text"] {
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      min-height: 34px;
+    }
+
+    /* ===== Bingo Structure ===== */
+    .bingo {
+      max-width: 520px;
+    }
+
+    .bingo-header,
+    .bingo-card {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .bingo-card {
+      padding: 12px;
+      border: 2px solid #6E1919;
+      border-radius: 12px;
+      background: #fff;
+      margin-top: 8px;
+    }
+
+    /* ===== Cells ===== */
+    .cell {
+      height: 72px;
+      min-height: 72px;
+      max-height: 72px;
+      overflow: hidden;
+      box-sizing: border-box;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 2px solid #E4C58A;
+      border-radius: 10px;
+
+      font-size: 20px;
+      font-weight: 700;
+      user-select: none;
+    }
+
+    .cell.header {
+      height: 56px;
+      background: #6E1919;
+      color: #fff;
+      border-color: #6E1919;
+      font-size: 22px;
+      letter-spacing: 2px;
+    }
+
+    .cell.number {
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s, transform 0.05s;
+    }
+
+    .cell.number:active {
+      transform: scale(0.98);
+    }
+
+    .cell.number.marked {
+      background: #6E1919;
+      color: #fff;
+      border-color: #6E1919;
+      position: relative;
+    }
+
+    .cell.number.marked::after {
+      content: "✓";
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    /* ===== Center Logo ===== */
+    .cell.center {
+      padding: 0;
+      background: #fff7ea;
+    }
+
+    .logo-box {
+      width: 100%;
+      height: 100%;
+      padding: 6px;
+      box-sizing: border-box;
+      display: flex;
+    }
+
+    .logo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      border-radius: 8px;
+    }
+
+    .free-fallback {
+      font-size: 18px;
+      color: #6E1919;
+    }
+
+    .hint {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #444;
+      line-height: 1.4;
+    }
+
+    code {
+      background: #f4f4f4;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="controls">
+      <div>
+        <select id="mode">
+          <option value="classic" selected>Classic (B/I/N/G/O)</option>
+          <option value="any">Any (1–75)</option>
+        </select>
+      </div>
+
+      <button id="generateCardButton" class="round-button">Shuffle</button>
+      <button id="clearMarksButton" class="round-button secondary">Clear</button>
+    </div>
+
+    <div class="bingo">
+      <div id="bingoHeader" class="bingo-header"></div>
+      <div id="bingoCard" class="bingo-card"></div>
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const btnGenerate = document.getElementById("generateCardButton");
+      const btnClear = document.getElementById("clearMarksButton");
+
+      btnGenerate.addEventListener("click", generateCard);
+      btnClear.addEventListener("click", clearMarks);
+
+      generateCard();
+
+      function clearMarks() {
+        document
+          .querySelectorAll(".cell.number.marked")
+          .forEach(c => c.classList.remove("marked"));
+      }
+
+      function generateCard() {
+        const mode = document.getElementById("mode").value;
+        const logoPath = ('https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/de165754-2646-4d88-886e-7393c7320a6a/logo.png').trim();
+        const card = document.getElementById("bingoCard");
+
+        card.innerHTML = "";
+
+        const grid = mode === "classic" ? buildClassicGrid() : buildAnyGrid();
+
+        for (let r = 0; r < 5; r++) {
+          for (let c = 0; c < 5; c++) {
+            const cell = document.createElement("div");
+            cell.classList.add("cell");
+
+            const isCenter = r === 2 && c === 2;
+
+            if (isCenter) {
+              cell.classList.add("center");
+
+              const box = document.createElement("div");
+              box.className = "logo-box";
+
+              const img = document.createElement("img");
+              img.src = logoPath || "logo.png";
+              img.alt = "Bingo logo";
+
+              img.onerror = () => {
+                cell.textContent = "FREE";
+                cell.classList.add("free-fallback", "number");
+                cell.addEventListener("click", () =>
+                  cell.classList.toggle("marked")
+                );
+              };
+
+              box.appendChild(img);
+              cell.appendChild(box);
+            } else {
+              cell.textContent = grid[r][c];
+              cell.classList.add("number");
+              cell.addEventListener("click", () =>
+                cell.classList.toggle("marked")
+              );
+            }
+
+            card.appendChild(cell);
+          }
+        }
+      }
+
+      function buildClassicGrid() {
+        const ranges = [
+          [1, 15],
+          [16, 30],
+          [31, 45],
+          [46, 60],
+          [61, 75]
+        ];
+
+        const grid = Array.from({ length: 5 }, () => Array(5).fill(null));
+
+        for (let c = 0; c < 5; c++) {
+          const nums = sampleUnique(ranges[c][0], ranges[c][1], 5);
+          for (let r = 0; r < 5; r++) grid[r][c] = nums[r];
+        }
+
+        grid[2][2] = null;
+        return grid;
+      }
+
+      function buildAnyGrid() {
+        const nums = sampleUnique(1, 75, 24);
+        const grid = Array.from({ length: 5 }, () => Array(5).fill(null));
+
+        let i = 0;
+        for (let r = 0; r < 5; r++) {
+          for (let c = 0; c < 5; c++) {
+            if (r === 2 && c === 2) continue;
+            grid[r][c] = nums[i++];
+          }
+        }
+        return grid;
+      }
+
+      function sampleUnique(min, max, count) {
+        const arr = [];
+        for (let i = min; i <= max; i++) arr.push(i);
+        shuffle(arr);
+        return arr.slice(0, count);
+      }
+
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+      }
+    });
+  </script>
+</body>
+</html>

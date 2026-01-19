@@ -5,7 +5,8 @@
   
 <!-- Theme Selection -->
   <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
-    <label><input type="checkbox" id="playersCheckbox"> Bands</label><br>
+    <label><input type="checkbox" id="bandsCheckbox"> Bands</label><br>
+    <label><input type="checkbox" id="playersCheckbox"> Players</label><br>
     <label><input type="checkbox" id="instrumentsCheckbox"> Relics</label><br>
   </div>
 
@@ -141,7 +142,7 @@ Cm – Db – Ab – G
 C Phrygian → C, Db, Eb, F, G, Ab, Bb
 C Harmonic Minor → C, D, Eb, F, G, Ab, B`
   ];  
-const players = [
+const bands = [
 {"name": "Accept", "attributes": {"country": "Germany", "genre": "Heavy Metal", "riff_power": 91, "global_popularity": 85, "discography_impact": 88, "live_performance": 90, "innovation": 87}},
 {"name": "Alcest", "attributes": {"country": "France", "genre": "Post-Black Metal", "riff_power": 85, "global_popularity": 84, "discography_impact": 89, "live_performance": 86, "innovation": 96}},
 {"name": "Alien Weaponry", "attributes": {"country": "New Zealand", "genre": "Groove Metal", "riff_power": 88, "global_popularity": 86, "discography_impact": 85, "live_performance": 90, "innovation": 92}},
@@ -243,6 +244,110 @@ const players = [
 {"name": "Within Temptation", "attributes": {"country": "Netherlands", "genre": "Symphonic Metal", "riff_power": 87, "global_popularity": 93, "discography_impact": 90, "live_performance": 95, "innovation": 93}},
 {"name": "X Japan", "attributes": {"country": "Japan", "genre": "Heavy / Power Metal", "riff_power": 90, "global_popularity": 94, "discography_impact": 92, "live_performance": 95, "innovation": 97}},
  ];
+ 
+const players = [
+{"name": "Abbath", "attributes": {"role": "Guitar / Vocals", "technical_skill": 88, "stage_presence": 92, "influence": 92, "global_recognition": 90, "innovation": 90 }},
+{"name": "Adam Dutkiewicz", "attributes": {"role": "Guitar", "technical_skill": 92, "stage_presence": 92, "influence": 91, "global_recognition": 90, "innovation": 90 }},
+{"name": "Adrian Smith", "attributes": {"role": "Guitar", "technical_skill": 93, "stage_presence": 88, "influence": 92, "global_recognition": 90, "innovation": 90 }},
+{"name": "Alexi Laiho", "attributes": {"role": "Guitar / Vocals", "technical_skill": 96, "stage_presence": 90, "influence": 92, "global_recognition": 90, "innovation": 93 }},
+{"name": "Alissa White-Gluz", "attributes": {"role": "Vocals", "technical_skill": 94, "stage_presence": 95, "influence": 92, "global_recognition": 93, "innovation": 91 }},
+{"name": "André Matos", "attributes": {"role": "Vocals", "technical_skill": 95, "stage_presence": 95, "influence": 94, "global_recognition": 93, "innovation": 95 }},
+{"name": "Angus Young", "attributes": {"role": "Guitar", "technical_skill": 90, "stage_presence": 100, "influence": 98, "global_recognition": 100, "innovation": 85 }},
+{"name": "Bill Steer", "attributes": {"role": "Guitar", "technical_skill": 94, "stage_presence": 82, "influence": 94, "global_recognition": 87, "innovation": 96 }},
+{"name": "Bill Ward", "attributes": {"role": "Drums", "technical_skill": 93, "stage_presence": 85, "influence": 95, "global_recognition": 92, "innovation": 94 }},
+{"name": "Brann Dailor", "attributes": {"role": "Drums", "technical_skill": 95, "stage_presence": 88, "influence": 92, "global_recognition": 90, "innovation": 94 }},
+{"name": "Brian Johnson", "attributes": {"role": "Vocals", "technical_skill": 88, "stage_presence": 95, "influence": 95, "global_recognition": 98, "innovation": 85 }},
+{"name": "Bruce Dickinson", "attributes": {"role": "Vocals", "technical_skill": 93, "stage_presence": 100, "influence": 94, "global_recognition": 98, "innovation": 90 }},
+{"name": "Bruce Kulick (Legacy Era)", "attributes": {"role": "Guitar", "technical_skill": 88, "stage_presence": 85, "influence": 88, "global_recognition": 90, "innovation": 87 }},
+{"name": "Bruce Kulick", "attributes": {"role": "Guitar", "technical_skill": 88, "stage_presence": 85, "influence": 88, "global_recognition": 90, "innovation": 87 }},
+{"name": "Charlie Benante", "attributes": {"role": "Drums", "technical_skill": 94, "stage_presence": 88, "influence": 92, "global_recognition": 88, "innovation": 90 }},
+{"name": "Chuck Schuldiner", "attributes": {"role": "Guitar / Vocals", "technical_skill": 98, "stage_presence": 80, "influence": 100, "global_recognition": 90, "innovation": 100 }},
+{"name": "Cliff Burton", "attributes": {"role": "Bass", "technical_skill": 96, "stage_presence": 85, "influence": 95, "global_recognition": 93, "innovation": 97 }},
+{"name": "Corey Taylor", "attributes": {"role": "Vocals", "technical_skill": 90, "stage_presence": 97, "influence": 93, "global_recognition": 96, "innovation": 92 }},
+{"name": "Courtney LaPlante", "attributes": {"role": "Vocals", "technical_skill": 92, "stage_presence": 95, "influence": 93, "global_recognition": 94, "innovation": 96 }},
+{"name": "Cristina Scabbia", "attributes": {"role": "Vocals", "technical_skill": 90, "stage_presence": 95, "influence": 90, "global_recognition": 92, "innovation": 88 }},
+{"name": "Dani Filth", "attributes": {"role": "Vocals", "technical_skill": 92, "stage_presence": 95, "influence": 90, "global_recognition": 89, "innovation": 94 }},
+{"name": "Daron Malakian", "attributes": {"role": "Guitar", "technical_skill": 90, "stage_presence": 92, "influence": 93, "global_recognition": 94, "innovation": 95 }},
+{"name": "Dave Grohl", "attributes": {"role": "Drums / Vocals", "technical_skill": 90, "stage_presence": 95, "influence": 94, "global_recognition": 100, "innovation": 90 }},
+{"name": "Dave Lombardo", "attributes": {"role": "Drums", "technical_skill": 98, "stage_presence": 90, "influence": 97, "global_recognition": 92, "innovation": 95 }},
+{"name": "Dave Mustaine", "attributes": {"role": "Guitar / Vocals", "technical_skill": 96, "stage_presence": 88, "influence": 97, "global_recognition": 94, "innovation": 94 }},
+{"name": "Devin Townsend", "attributes": {"role": "Multi-Instrumentalist", "technical_skill": 97, "stage_presence": 90, "influence": 94, "global_recognition": 92, "innovation": 99 }},
+{"name": "Dimebag Darrell", "attributes": {"role": "Guitar", "technical_skill": 97, "stage_presence": 96, "influence": 95, "global_recognition": 94, "innovation": 93 }},
+{"name": "Eloy Casagrande", "attributes": {"role": "Drums", "technical_skill": 99, "stage_presence": 92, "influence": 94, "global_recognition": 90, "innovation": 97 }},
+{"name": "Euronymous", "attributes": {"role": "Guitar", "technical_skill": 85, "stage_presence": 88, "influence": 95, "global_recognition": 85, "innovation": 94 }},
+{"name": "Fenriz", "attributes": {"role": "Drums", "technical_skill": 90, "stage_presence": 80, "influence": 92, "global_recognition": 85, "innovation": 93 }},
+{"name": "Floor Jansen", "attributes": {"role": "Vocals", "technical_skill": 95, "stage_presence": 98, "influence": 94, "global_recognition": 96, "innovation": 94 }},
+{"name": "Geezer Butler", "attributes": {"role": "Bass", "technical_skill": 95, "stage_presence": 88, "influence": 96, "global_recognition": 94, "innovation": 95 }},
+{"name": "Gene Simmons", "attributes": {"role": "Bass / Vocals", "technical_skill": 80, "stage_presence": 98, "influence": 95, "global_recognition": 100, "innovation": 85 }},
+{"name": "George \"Corpsegrinder\" Fisher", "attributes": {"role": "Vocals", "technical_skill": 90, "stage_presence": 95, "influence": 92, "global_recognition": 92, "innovation": 88 }},
+{"name": "Hansi Dierks", "attributes": {"role": "Producer", "technical_skill": 85, "stage_presence": 70, "influence": 88, "global_recognition": 80, "innovation": 85 }},
+{"name": "Hansi Kürsch", "attributes": {"role": "Vocals", "technical_skill": 90, "stage_presence": 92, "influence": 91, "global_recognition": 88, "innovation": 90 }},
+{"name": "Herman Li", "attributes": {"role": "Guitar", "technical_skill": 98, "stage_presence": 90, "influence": 92, "global_recognition": 93, "innovation": 95 }},
+{"name": "Howard Jones", "attributes": {"role": "Vocals", "technical_skill": 90, "stage_presence": 94, "influence": 90, "global_recognition": 90, "innovation": 88 }},
+{"name": "Igor Cavalera", "attributes": {"role": "Drums", "technical_skill": 95, "stage_presence": 90, "influence": 95, "global_recognition": 92, "innovation": 94 }},
+{"name": "Ihsahn", "attributes": {"role": "Guitar / Vocals", "technical_skill": 95, "stage_presence": 85, "influence": 94, "global_recognition": 88, "innovation": 98 }},
+{"name": "James Hetfield", "attributes": {"role": "Guitar / Vocals", "technical_skill": 92, "stage_presence": 95, "influence": 98, "global_recognition": 100, "innovation": 90 }},
+{"name": "Jeff Hanneman", "attributes": {"role": "Guitar", "technical_skill": 95, "stage_presence": 85, "influence": 96, "global_recognition": 90, "innovation": 92 }},
+{"name": "Jens Kidman", "attributes": {"role": "Vocals", "technical_skill": 88, "stage_presence": 90, "influence": 92, "global_recognition": 88, "innovation": 93 }},
+{"name": "Joakim Brodén", "attributes": {"role": "Vocals", "technical_skill": 85, "stage_presence": 95, "influence": 88, "global_recognition": 90, "innovation": 85 }},
+{"name": "Joe Duplantier", "attributes": {"role": "Guitar / Vocals", "technical_skill": 92, "stage_presence": 94, "influence": 94, "global_recognition": 93, "innovation": 96 }},
+{"name": "Joey Jordison", "attributes": {"role": "Drums", "technical_skill": 97, "stage_presence": 92, "influence": 94, "global_recognition": 95, "innovation": 92 }},
+{"name": "John Petrucci", "attributes": {"role": "Guitar", "technical_skill": 100, "stage_presence": 85, "influence": 96, "global_recognition": 92, "innovation": 98 }},
+{"name": "Jonathan Davis", "attributes": {"role": "Vocals", "technical_skill": 85, "stage_presence": 95, "influence": 92, "global_recognition": 95, "innovation": 94 }},
+{"name": "Kai Hansen", "attributes": {"role": "Guitar / Vocals", "technical_skill": 92, "stage_presence": 88, "influence": 93, "global_recognition": 89, "innovation": 92 }},
+{"name": "Karl Sanders", "attributes": {"role": "Guitar", "technical_skill": 96, "stage_presence": 85, "influence": 93, "global_recognition": 88, "innovation": 95 }},
+{"name": "Kerry King", "attributes": {"role": "Guitar", "technical_skill": 92, "stage_presence": 90, "influence": 94, "global_recognition": 92, "innovation": 88 }},
+{"name": "Kiko Loureiro", "attributes": {"role": "Guitar", "technical_skill": 98, "stage_presence": 90, "influence": 94, "global_recognition": 93, "innovation": 96 }},
+{"name": "King Diamond", "attributes": {"role": "Vocals", "technical_skill": 94, "stage_presence": 95, "influence": 96, "global_recognition": 93, "innovation": 95 }},
+{"name": "Kirk Hammett", "attributes": {"role": "Guitar", "technical_skill": 90, "stage_presence": 90, "influence": 92, "global_recognition": 97, "innovation": 85 }},
+{"name": "Lemmy Kilmister", "attributes": {"role": "Bass / Vocals", "technical_skill": 88, "stage_presence": 95, "influence": 99, "global_recognition": 96, "innovation": 94 }},
+{"name": "Marilyn Manson", "attributes": {"role": "Vocals", "technical_skill": 82, "stage_presence": 95, "influence": 93, "global_recognition": 96, "innovation": 92 }},
+{"name": "Mario Duplantier", "attributes": {"role": "Drums", "technical_skill": 98, "stage_presence": 92, "influence": 95, "global_recognition": 92, "innovation": 97 }},
+{"name": "Matt Heafy", "attributes": {"role": "Guitar / Vocals", "technical_skill": 92, "stage_presence": 93, "influence": 90, "global_recognition": 91, "innovation": 89 }},
+{"name": "Max Cavalera", "attributes": {"role": "Guitar / Vocals", "technical_skill": 90, "stage_presence": 94, "influence": 96, "global_recognition": 92, "innovation": 95 }},
+{"name": "Michael Kiske", "attributes": {"role": "Vocals", "technical_skill": 94, "stage_presence": 92, "influence": 93, "global_recognition": 92, "innovation": 90 }},
+{"name": "Michael Schenker", "attributes": {"role": "Guitar", "technical_skill": 95, "stage_presence": 85, "influence": 94, "global_recognition": 90, "innovation": 93 }},
+{"name": "Mikael Åkerfeldt", "attributes": {"role": "Guitar / Vocals", "technical_skill": 98, "stage_presence": 88, "influence": 95, "global_recognition": 91, "innovation": 98 }},
+{"name": "Mike Portnoy", "attributes": {"role": "Drums", "technical_skill": 99, "stage_presence": 90, "influence": 95, "global_recognition": 92, "innovation": 97 }},
+{"name": "Misha Mansoor", "attributes": {"role": "Guitar", "technical_skill": 97, "stage_presence": 88, "influence": 94, "global_recognition": 90, "innovation": 98 }},
+{"name": "Munky", "attributes": {"role": "Guitar", "technical_skill": 86, "stage_presence": 88, "influence": 90, "global_recognition": 92, "innovation": 89 }},
+{"name": "Neal Morse", "attributes": {"role": "Multi-Instrumentalist", "technical_skill": 94, "stage_presence": 84, "influence": 92, "global_recognition": 88, "innovation": 96 }},
+{"name": "Nergal", "attributes": {"role": "Guitar / Vocals", "technical_skill": 92, "stage_presence": 95, "influence": 93, "global_recognition": 92, "innovation": 94 }},
+{"name": "Oli Sykes", "attributes": {"role": "Vocals", "technical_skill": 85, "stage_presence": 96, "influence": 92, "global_recognition": 95, "innovation": 95 }},
+{"name": "Ozzy Osbourne", "attributes": {"role": "Vocals", "technical_skill": 80, "stage_presence": 100, "influence": 100, "global_recognition": 100, "innovation": 90 }},
+{"name": "Paul Stanley", "attributes": {"role": "Guitar / Vocals", "technical_skill": 85, "stage_presence": 97, "influence": 94, "global_recognition": 99, "innovation": 85 }},
+{"name": "Per Nilsson", "attributes": {"role": "Guitar", "technical_skill": 98, "stage_presence": 85, "influence": 92, "global_recognition": 86, "innovation": 96 }},
+{"name": "Peter Steele", "attributes": {"role": "Vocals / Bass", "technical_skill": 88, "stage_presence": 92, "influence": 92, "global_recognition": 90, "innovation": 90 }},
+{"name": "Phil Anselmo", "attributes": {"role": "Vocals", "technical_skill": 85, "stage_presence": 96, "influence": 94, "global_recognition": 92, "innovation": 90 }},
+{"name": "Randy Rhoads", "attributes": {"role": "Guitar", "technical_skill": 98, "stage_presence": 88, "influence": 96, "global_recognition": 92, "innovation": 97 }},
+{"name": "Rob Halford", "attributes": {"role": "Vocals", "technical_skill": 95, "stage_presence": 98, "influence": 97, "global_recognition": 96, "innovation": 92 }},
+{"name": "Rob Zombie", "attributes": {"role": "Vocals", "technical_skill": 85, "stage_presence": 96, "influence": 92, "global_recognition": 95, "innovation": 90 }},
+{"name": "Robb Flynn", "attributes": {"role": "Guitar / Vocals", "technical_skill": 90, "stage_presence": 94, "influence": 91, "global_recognition": 92, "innovation": 90 }},
+{"name": "Ronnie James Dio", "attributes": {"role": "Vocals", "technical_skill": 95, "stage_presence": 98, "influence": 100, "global_recognition": 98, "innovation": 96 }},
+{"name": "Sam Dunn", "attributes": {"role": "Documentarian", "technical_skill": 70, "stage_presence": 80, "influence": 90, "global_recognition": 85, "innovation": 85 }},
+{"name": "Sam Totman", "attributes": {"role": "Guitar", "technical_skill": 97, "stage_presence": 88, "influence": 90, "global_recognition": 90, "innovation": 93 }},
+{"name": "Scott Ian", "attributes": {"role": "Guitar", "technical_skill": 88, "stage_presence": 92, "influence": 90, "global_recognition": 89, "innovation": 85 }},
+{"name": "Serj Tankian", "attributes": {"role": "Vocals", "technical_skill": 88, "stage_presence": 96, "influence": 94, "global_recognition": 94, "innovation": 96 }},
+{"name": "Sharon den Adel", "attributes": {"role": "Vocals", "technical_skill": 92, "stage_presence": 96, "influence": 91, "global_recognition": 94, "innovation": 90 }},
+{"name": "Simone Simons", "attributes": {"role": "Vocals", "technical_skill": 93, "stage_presence": 96, "influence": 91, "global_recognition": 94, "innovation": 92 }},
+{"name": "Slash", "attributes": {"role": "Guitar", "technical_skill": 90, "stage_presence": 98, "influence": 96, "global_recognition": 100, "innovation": 85 }},
+{"name": "Steve Harris", "attributes": {"role": "Bass", "technical_skill": 96, "stage_presence": 90, "influence": 97, "global_recognition": 95, "innovation": 94 }},
+{"name": "Steven Wilson", "attributes": {"role": "Multi-Instrumentalist", "technical_skill": 95, "stage_presence": 85, "influence": 93, "global_recognition": 90, "innovation": 98 }},
+{"name": "Tarja Turunen", "attributes": {"role": "Vocals", "technical_skill": 94, "stage_presence": 95, "influence": 93, "global_recognition": 95, "innovation": 92 }},
+{"name": "Till Lindemann", "attributes": {"role": "Vocals", "technical_skill": 85, "stage_presence": 100, "influence": 93, "global_recognition": 96, "innovation": 95 }},
+{"name": "Timo Tolkki", "attributes": {"role": "Guitar", "technical_skill": 95, "stage_presence": 85, "influence": 93, "global_recognition": 90, "innovation": 94 }},
+{"name": "Tobias Forge", "attributes": {"role": "Vocals", "technical_skill": 88, "stage_presence": 95, "influence": 92, "global_recognition": 94, "innovation": 96 }},
+{"name": "Tomas Haake", "attributes": {"role": "Drums", "technical_skill": 100, "stage_presence": 85, "influence": 97, "global_recognition": 88, "innovation": 100 }},
+{"name": "Tony Iommi", "attributes": {"role": "Guitar", "technical_skill": 95, "stage_presence": 85, "influence": 100, "global_recognition": 95, "innovation": 100 }},
+{"name": "Trent Reznor", "attributes": {"role": "Multi-Instrumentalist", "technical_skill": 95, "stage_presence": 88, "influence": 95, "global_recognition": 94, "innovation": 98 }},
+{"name": "Trey Azagthoth", "attributes": {"role": "Guitar", "technical_skill": 97, "stage_presence": 85, "influence": 95, "global_recognition": 88, "innovation": 98 }},
+{"name": "Troy Sanders", "attributes": {"role": "Bass", "technical_skill": 90, "stage_presence": 90, "influence": 91, "global_recognition": 90, "innovation": 92 }},
+{"name": "Tuomas Holopainen", "attributes": {"role": "Keyboards / Composer", "technical_skill": 96, "stage_presence": 85, "influence": 95, "global_recognition": 93, "innovation": 98 }},
+{"name": "Varg Vikernes", "attributes": {"role": "Multi-Instrumentalist", "technical_skill": 88, "stage_presence": 70, "influence": 96, "global_recognition": 88, "innovation": 97 }},
+{"name": "Ville Valo", "attributes": {"role": "Vocals", "technical_skill": 85, "stage_presence": 90, "influence": 90, "global_recognition": 92, "innovation": 88 }},
+{"name": "Zakk Wylde", "attributes": {"role": "Guitar", "technical_skill": 94, "stage_presence": 95, "influence": 92, "global_recognition": 93, "innovation": 90 }},
+ ];
+
 const instruments = [
 {"name": "Cross Necklace", "attributes": {"associated_artist": "Ozzy Osbourne", "type": "Personal Artifact", "historical_impact": 90, "sound_power": 70, "cultural_legacy": 95, "rarity": 88, "myth_status": 98, "flavor_text": "Faith, madness, and metal mythology intertwined."}},
 {"name": "Dean ML Guitar", "attributes": {"associated_artist": "Dimebag Darrell", "type": "Instrument", "historical_impact": 96, "sound_power": 99, "cultural_legacy": 94, "rarity": 90, "myth_status": 98, "flavor_text": "Groove metal perfected through fire and feedback."}},
@@ -260,7 +365,7 @@ const instruments = [
 {"name": "Rust in Peace (Original Mix)", "attributes": {"associated_artist": "Megadeth", "type": "Album", "historical_impact": 95, "sound_power": 96, "cultural_legacy": 92, "rarity": 86, "myth_status": 94, "flavor_text": "Technical precision meets political fury."}},
 {"name": "The Number of the Beast (Original Artwork)", "attributes": {"associated_artist": "Iron Maiden", "type": "Visual Artifact", "historical_impact": 92, "sound_power": 75, "cultural_legacy": 98, "rarity": 91, "myth_status": 96, "flavor_text": "An image that defined metal aesthetics forever."}},
  ];
-
+ 
   // Shuffle array
   function shuffleArray(array) {
     return array.sort(() => Math.random() - 0.5);
@@ -271,6 +376,7 @@ const instruments = [
     const selectedCards = [];
     
     // Gather selected decks
+    if (document.getElementById('bandsCheckbox').checked) selectedCards.push(...bands);
     if (document.getElementById('playersCheckbox').checked) selectedCards.push(...players);
     if (document.getElementById('instrumentsCheckbox').checked) selectedCards.push(...instruments);
 

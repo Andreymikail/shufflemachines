@@ -1,0 +1,372 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Ocean</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Apex Predator: Automatically win the round if your card has higher Danger Level.",
+"Ambush Attack: Add +20 Danger to your card for this round.",
+"Camouflage: Opponent must reselect the attribute after seeing the result.",
+"Venomous Strike: If your card has Danger 70 or higher, opponent loses the round automatically.",
+"Defensive Armor: Ignore opponent’s Danger bonus effects this turn.",
+"Deep Sea Pressure: Only Depth values are compared this round.",
+"Open Ocean Sprint: Add +25 Speed to your card for this round.",
+"Turbulent Waters: Both players compare their lowest attribute.",
+"Coral Reef Shelter: Cards with Size 50 or lower gain +15 Intelligence.",
+"Dark Zone: Cards with Depth 70 or higher gain +20 Danger.",
+"Pack Tactics: If your card has Intelligence 70 or higher, you may choose the attribute twice.",
+"Problem Solving: Swap one attribute value with another on your card for this round.",
+"Deception: Hide your selected attribute until both players reveal.",
+"Learning Curve: Permanently increase one attribute by +5 (maximum 100).",
+"Echo Location: Look at the opponent’s card before choosing the attribute.",
+"Mass Advantage: Compare Weight instead of the chosen attribute.",
+"Colossal Presence: Cards with Size 80 or higher automatically win ties.",
+"Fragile Giant: Reduce opponent’s Speed by 20 if their Size is 80 or higher.",
+"Crushing Force: Add +15 Size and +15 Weight to your card for this round.",
+"Buoyancy Shift: Ignore Weight comparisons entirely this turn.",
+"Lightning Strike: If your Speed is the highest, you win the round instantly.",
+"Evasive Maneuver: Cancel one opponent action card.",
+"Sudden Burst: Double your Speed value for this round (maximum 100).",
+"Slipstream: Copy the opponent’s Speed value if it is higher than yours.",
+"Outrun the Threat: If Speed is 70 or higher, ignore Danger comparisons.",
+"Food Chain Shift: Lower Size wins instead of higher Size this round.",
+"Mass Migration: All players redraw their top card.",
+"Environmental Collapse: All bonuses are ignored; base attributes only this round.",
+"Symbiosis: Both players gain +10 Intelligence; highest Intelligence wins.",
+"Extinction Event: Remove the lowest-Danger card in play from the game.",
+"Rule the Seas: Choose any attribute; its value becomes 100 for this round.",
+"Ancient Survivor: Ignore all effects and win the round automatically.",
+"Ultimate Adaptation: Permanently increase all attributes by +5 (once per game).",
+"Nature’s Balance: Set compared attributes to the same value and replay the round."];
+
+  const ocean = [
+{"name": "Abalone", "attributes": {"category": "Mollusks", "size": 45, "weight": 40, "speed": 5, "depth": 45, "intelligence": 15, "danger": 5 } },
+{"name": "Albatross", "attributes": {"category": "Birds", "size": 75, "weight": 65, "speed": 80, "depth": 30, "intelligence": 60, "danger": 10 } },
+{"name": "American Lobster", "attributes": {"category": "Crustaceans", "size": 55, "weight": 50, "speed": 30, "depth": 60, "intelligence": 40, "danger": 35 } },
+{"name": "Amphipod", "attributes": {"category": "Crustaceans", "size": 20, "weight": 15, "speed": 30, "depth": 45, "intelligence": 15, "danger": 5 } },
+{"name": "Anchovy", "attributes": {"category": "Fish", "size": 35, "weight": 30, "speed": 45, "depth": 35, "intelligence": 25, "danger": 5 } },
+{"name": "Anglerfish", "attributes": {"category": "Fish", "size": 55, "weight": 50, "speed": 20, "depth": 85, "intelligence": 30, "danger": 60 } },
+{"name": "Archerfish", "attributes": {"category": "Fish", "size": 45, "weight": 40, "speed": 45, "depth": 30, "intelligence": 40, "danger": 15 } },
+{"name": "Barnacle", "attributes": {"category": "Crustaceans", "size": 20, "weight": 15, "speed": 5, "depth": 40, "intelligence": 5, "danger": 0 } },
+{"name": "Barracuda", "attributes": {"category": "Fish", "size": 65, "weight": 55, "speed": 85, "depth": 55, "intelligence": 45, "danger": 75 } },
+{"name": "Basking Shark", "attributes": {"category": "Sharks", "size": 88, "weight": 90, "speed": 25, "depth": 70, "intelligence": 30, "danger": 10 } },
+{"name": "Beluga Whale", "attributes": {"category": "Whales", "size": 65, "weight": 55, "speed": 50, "depth": 45, "intelligence": 85, "danger": 25 } },
+{"name": "Bigfin Squid", "attributes": {"category": "Cephalopods", "size": 65, "weight": 55, "speed": 35, "depth": 95, "intelligence": 60, "danger": 30 } },
+{"name": "Blacktip Shark", "attributes": {"category": "Sharks", "size": 60, "weight": 50, "speed": 70, "depth": 55, "intelligence": 50, "danger": 60 } },
+{"name": "Blanket Octopus", "attributes": {"category": "Cephalopods", "size": 60, "weight": 50, "speed": 55, "depth": 50, "intelligence": 75, "danger": 55 } },
+{"name": "Blenny", "attributes": {"category": "Fish", "size": 35, "weight": 30, "speed": 30, "depth": 30, "intelligence": 30, "danger": 5 } },
+{"name": "Blobfish", "attributes": {"category": "Fish", "size": 55, "weight": 60, "speed": 5, "depth": 85, "intelligence": 15, "danger": 0 } },
+{"name": "Blue Crab", "attributes": {"category": "Crustaceans", "size": 40, "weight": 35, "speed": 45, "depth": 30, "intelligence": 35, "danger": 20 } },
+{"name": "Blue Shark", "attributes": {"category": "Sharks", "size": 72, "weight": 55, "speed": 80, "depth": 70, "intelligence": 55, "danger": 70 } },
+{"name": "Blue Whale", "attributes": {"category": "Whales", "size": 100, "weight": 100, "speed": 55, "depth": 60, "intelligence": 85, "danger": 20 } },
+{"name": "Blue-Ringed Octopus", "attributes": {"category": "Cephalopods", "size": 40, "weight": 30, "speed": 45, "depth": 45, "intelligence": 70, "danger": 95 } },
+{"name": "Bluefish", "attributes": {"category": "Fish", "size": 55, "weight": 50, "speed": 65, "depth": 45, "intelligence": 40, "danger": 40 } },
+{"name": "Bowhead Whale", "attributes": {"category": "Whales", "size": 85, "weight": 82, "speed": 35, "depth": 70, "intelligence": 75, "danger": 20 } },
+{"name": "Box Jellyfish", "attributes": {"category": "Cnidarians", "size": 55, "weight": 50, "speed": 35, "depth": 55, "intelligence": 10, "danger": 95 } },
+{"name": "Bristle Worm", "attributes": {"category": "Annelids", "size": 40, "weight": 35, "speed": 15, "depth": 60, "intelligence": 10, "danger": 30 } },
+{"name": "Brittle Star", "attributes": {"category": "Echinoderms", "size": 40, "weight": 35, "speed": 10, "depth": 50, "intelligence": 15, "danger": 5 } },
+{"name": "Bryde’s Whale", "attributes": {"category": "Whales", "size": 78, "weight": 72, "speed": 60, "depth": 50, "intelligence": 72, "danger": 25 } },
+{"name": "Bull Shark", "attributes": {"category": "Sharks", "size": 75, "weight": 70, "speed": 68, "depth": 60, "intelligence": 60, "danger": 85 } },
+{"name": "Butterflyfish", "attributes": {"category": "Fish", "size": 40, "weight": 35, "speed": 35, "depth": 35, "intelligence": 30, "danger": 10 } },
+{"name": "Cardinalfish", "attributes": {"category": "Fish", "size": 35, "weight": 30, "speed": 30, "depth": 30, "intelligence": 30, "danger": 5 } },
+{"name": "Chiton", "attributes": {"category": "Mollusks", "size": 35, "weight": 30, "speed": 5, "depth": 45, "intelligence": 10, "danger": 5 } },
+{"name": "Cleaner Shrimp", "attributes": {"category": "Crustaceans", "size": 30, "weight": 25, "speed": 35, "depth": 30, "intelligence": 35, "danger": 10 } },
+{"name": "Cleaner Wrasse", "attributes": {"category": "Fish", "size": 40, "weight": 35, "speed": 40, "depth": 30, "intelligence": 45, "danger": 5 } },
+{"name": "Clownfish", "attributes": {"category": "Fish", "size": 35, "weight": 30, "speed": 25, "depth": 30, "intelligence": 30, "danger": 5 } },
+{"name": "Cod", "attributes": {"category": "Fish", "size": 55, "weight": 50, "speed": 40, "depth": 50, "intelligence": 35, "danger": 20 } },
+{"name": "Colossal Squid", "attributes": {"category": "Cephalopods", "size": 90, "weight": 80, "speed": 50, "depth": 95, "intelligence": 65, "danger": 90 } },
+{"name": "Comb Jelly", "attributes": {"category": "Cnidarians", "size": 40, "weight": 35, "speed": 20, "depth": 50, "intelligence": 10, "danger": 5 } },
+{"name": "Common Octopus", "attributes": {"category": "Cephalopods", "size": 60, "weight": 45, "speed": 50, "depth": 55, "intelligence": 90, "danger": 45 } },
+{"name": "Copepod", "attributes": {"category": "Crustaceans", "size": 15, "weight": 10, "speed": 25, "depth": 40, "intelligence": 10, "danger": 5 } },
+{"name": "Coral", "attributes": {"category": "Cnidarians", "size": 30, "weight": 35, "speed": 0, "depth": 40, "intelligence": 5, "danger": 0 } },
+{"name": "Cormorant", "attributes": {"category": "Birds", "size": 55, "weight": 50, "speed": 55, "depth": 45, "intelligence": 50, "danger": 10 } },
+{"name": "Cuttlefish", "attributes": {"category": "Cephalopods", "size": 55, "weight": 45, "speed": 50, "depth": 55, "intelligence": 80, "danger": 40 } },
+{"name": "Cyanobacteria", "attributes": {"category": "Microorganisms", "size": 20, "weight": 15, "speed": 5, "depth": 40, "intelligence": 5, "danger": 0 } },
+{"name": "Damselfish", "attributes": {"category": "Fish", "size": 35, "weight": 30, "speed": 35, "depth": 30, "intelligence": 30, "danger": 10 } },
+{"name": "Deep-Sea Worm", "attributes": {"category": "Annelids", "size": 40, "weight": 35, "speed": 10, "depth": 85, "intelligence": 10, "danger": 0 } },
+{"name": "Diamond Squid", "attributes": {"category": "Cephalopods", "size": 48, "weight": 38, "speed": 50, "depth": 60, "intelligence": 55, "danger": 25 } },
+{"name": "Diatom", "attributes": {"category": "Microorganisms", "size": 20, "weight": 15, "speed": 5, "depth": 45, "intelligence": 5, "danger": 0 } },
+{"name": "Dinoflagellate", "attributes": {"category": "Microorganisms", "size": 25, "weight": 20, "speed": 10, "depth": 45, "intelligence": 5, "danger": 0 } },
+{"name": "Dogfish Shark", "attributes": {"category": "Sharks", "size": 50, "weight": 40, "speed": 45, "depth": 55, "intelligence": 40, "danger": 35 } },
+{"name": "Dragonfish", "attributes": {"category": "Fish", "size": 55, "weight": 45, "speed": 35, "depth": 85, "intelligence": 35, "danger": 55 } },
+{"name": "Dugong", "attributes": {"category": "Mammals", "size": 70, "weight": 75, "speed": 25, "depth": 45, "intelligence": 55, "danger": 5 } },
+{"name": "Dumbo Octopus", "attributes": {"category": "Cephalopods", "size": 45, "weight": 40, "speed": 35, "depth": 85, "intelligence": 65, "danger": 20 } },
+{"name": "Electric Eel", "attributes": {"category": "Fish", "size": 55, "weight": 50, "speed": 40, "depth": 45, "intelligence": 50, "danger": 80 } },
+{"name": "Electric Ray", "attributes": {"category": "Rays", "size": 60, "weight": 55, "speed": 40, "depth": 50, "intelligence": 45, "danger": 75 } },
+{"name": "Elephant Seal", "attributes": {"category": "Mammals", "size": 80, "weight": 85, "speed": 40, "depth": 70, "intelligence": 65, "danger": 60 } },
+{"name": "False Killer Whale", "attributes": {"category": "Whales", "size": 70, "weight": 65, "speed": 65, "depth": 60, "intelligence": 85, "danger": 80 } },
+{"name": "Fangtooth", "attributes": {"category": "Fish", "size": 50, "weight": 45, "speed": 25, "depth": 80, "intelligence": 30, "danger": 50 } },
+{"name": "Fin Whale", "attributes": {"category": "Whales", "size": 95, "weight": 92, "speed": 60, "depth": 55, "intelligence": 80, "danger": 20 } },
+{"name": "Firefly Squid", "attributes": {"category": "Cephalopods", "size": 45, "weight": 35, "speed": 55, "depth": 60, "intelligence": 55, "danger": 30 } },
+{"name": "Flounder", "attributes": {"category": "Fish", "size": 55, "weight": 50, "speed": 25, "depth": 45, "intelligence": 30, "danger": 15 } },
+{"name": "Flying Fish", "attributes": {"category": "Fish", "size": 45, "weight": 35, "speed": 70, "depth": 35, "intelligence": 30, "danger": 10 } },
+{"name": "Flying Squid", "attributes": {"category": "Cephalopods", "size": 50, "weight": 40, "speed": 55, "depth": 60, "intelligence": 55, "danger": 25 } },
+{"name": "Foraminifera", "attributes": {"category": "Microorganisms", "size": 20, "weight": 15, "speed": 5, "depth": 45, "intelligence": 5, "danger": 0 } },
+{"name": "Garfish", "attributes": {"category": "Fish", "size": 55, "weight": 50, "speed": 60, "depth": 40, "intelligence": 35, "danger": 30 } },
+{"name": "Ghost Crab", "attributes": {"category": "Crustaceans", "size": 35, "weight": 30, "speed": 50, "depth": 25, "intelligence": 30, "danger": 10 } },
+{"name": "Giant Isopod", "attributes": {"category": "Crustaceans", "size": 50, "weight": 55, "speed": 20, "depth": 90, "intelligence": 25, "danger": 10 } },
+{"name": "Giant Manta Ray", "attributes": {"category": "Rays", "size": 90, "weight": 85, "speed": 55, "depth": 75, "intelligence": 80, "danger": 30 } },
+{"name": "Giant Pacific Octopus", "attributes": {"category": "Cephalopods", "size": 75, "weight": 65, "speed": 45, "depth": 65, "intelligence": 92, "danger": 60 } },
+{"name": "Giant Squid", "attributes": {"category": "Cephalopods", "size": 85, "weight": 70, "speed": 55, "depth": 90, "intelligence": 60, "danger": 80 } },
+{"name": "Glass Squid", "attributes": {"category": "Cephalopods", "size": 45, "weight": 35, "speed": 50, "depth": 70, "intelligence": 55, "danger": 30 } },
+{"name": "Gobies", "attributes": {"category": "Fish", "size": 30, "weight": 25, "speed": 25, "depth": 30, "intelligence": 25, "danger": 5 } },
+{"name": "Goblin Shark", "attributes": {"category": "Sharks", "size": 65, "weight": 70, "speed": 40, "depth": 90, "intelligence": 30, "danger": 60 } },
+{"name": "Gray Whale", "attributes": {"category": "Whales", "size": 80, "weight": 75, "speed": 40, "depth": 45, "intelligence": 72, "danger": 20 } },
+{"name": "Great White Shark", "attributes": {"category": "Sharks", "size": 85, "weight": 80, "speed": 75, "depth": 80, "intelligence": 70, "danger": 95 } },
+{"name": "Green Sea Turtle", "attributes": {"category": "Reptiles", "size": 65, "weight": 60, "speed": 35, "depth": 55, "intelligence": 50, "danger": 10 } },
+{"name": "Greenland Shark", "attributes": {"category": "Sharks", "size": 80, "weight": 85, "speed": 20, "depth": 95, "intelligence": 40, "danger": 70 } },
+{"name": "Grouper", "attributes": {"category": "Fish", "size": 65, "weight": 60, "speed": 35, "depth": 50, "intelligence": 40, "danger": 40 } },
+{"name": "Hagfish", "attributes": {"category": "Fish", "size": 50, "weight": 45, "speed": 20, "depth": 75, "intelligence": 30, "danger": 30 } },
+{"name": "Halfbeak", "attributes": {"category": "Fish", "size": 45, "weight": 40, "speed": 55, "depth": 35, "intelligence": 30, "danger": 15 } },
+{"name": "Halibut", "attributes": {"category": "Fish", "size": 65, "weight": 60, "speed": 30, "depth": 55, "intelligence": 35, "danger": 20 } },
+{"name": "Hammerhead Shark", "attributes": {"category": "Sharks", "size": 78, "weight": 65, "speed": 70, "depth": 75, "intelligence": 65, "danger": 85 } },
+{"name": "Harbor Seal", "attributes": {"category": "Mammals", "size": 60, "weight": 55, "speed": 45, "depth": 50, "intelligence": 60, "danger": 30 } },
+{"name": "Hermit Crab", "attributes": {"category": "Crustaceans", "size": 35, "weight": 30, "speed": 20, "depth": 30, "intelligence": 30, "danger": 10 } },
+{"name": "Herring", "attributes": {"category": "Fish", "size": 45, "weight": 40, "speed": 45, "depth": 40, "intelligence": 30, "danger": 10 } },
+{"name": "Horseshoe Crab", "attributes": {"category": "Crustaceans", "size": 55, "weight": 50, "speed": 15, "depth": 40, "intelligence": 20, "danger": 5 } },
+{"name": "Humboldt Squid", "attributes": {"category": "Cephalopods", "size": 70, "weight": 60, "speed": 65, "depth": 75, "intelligence": 55, "danger": 75 } },
+{"name": "Humpback Whale", "attributes": {"category": "Whales", "size": 85, "weight": 80, "speed": 55, "depth": 50, "intelligence": 88, "danger": 25 } },
+{"name": "Ice Squid", "attributes": {"category": "Cephalopods", "size": 50, "weight": 40, "speed": 45, "depth": 65, "intelligence": 55, "danger": 25 } },
+{"name": "Icefish", "attributes": {"category": "Fish", "size": 50, "weight": 45, "speed": 35, "depth": 65, "intelligence": 35, "danger": 10 } },
+{"name": "Isopod", "attributes": {"category": "Crustaceans", "size": 25, "weight": 20, "speed": 20, "depth": 50, "intelligence": 15, "danger": 5 } },
+{"name": "Jellyfish", "attributes": {"category": "Cnidarians", "size": 50, "weight": 45, "speed": 30, "depth": 60, "intelligence": 10, "danger": 70 } },
+{"name": "Jewel Squid", "attributes": {"category": "Cephalopods", "size": 45, "weight": 35, "speed": 45, "depth": 55, "intelligence": 50, "danger": 20 } },
+{"name": "King Crab", "attributes": {"category": "Crustaceans", "size": 70, "weight": 75, "speed": 25, "depth": 65, "intelligence": 35, "danger": 30 } },
+{"name": "Krill Swarm", "attributes": {"category": "Crustaceans", "size": 30, "weight": 35, "speed": 35, "depth": 55, "intelligence": 20, "danger": 10 } },
+{"name": "Krill", "attributes": {"category": "Crustaceans", "size": 25, "weight": 20, "speed": 30, "depth": 50, "intelligence": 15, "danger": 5 } },
+{"name": "Lamprey", "attributes": {"category": "Fish", "size": 45, "weight": 40, "speed": 30, "depth": 50, "intelligence": 25, "danger": 40 } },
+{"name": "Lancelet", "attributes": {"category": "Chordates", "size": 25, "weight": 20, "speed": 10, "depth": 35, "intelligence": 10, "danger": 0 } },
+{"name": "Lanternfish", "attributes": {"category": "Fish", "size": 35, "weight": 30, "speed": 30, "depth": 70, "intelligence": 25, "danger": 5 } },
+{"name": "Leatherback Turtle", "attributes": {"category": "Reptiles", "size": 75, "weight": 70, "speed": 40, "depth": 75, "intelligence": 55, "danger": 15 } },
+{"name": "Lemon Shark", "attributes": {"category": "Sharks", "size": 65, "weight": 60, "speed": 55, "depth": 55, "intelligence": 55, "danger": 60 } },
+{"name": "Leopard Seal", "attributes": {"category": "Mammals", "size": 75, "weight": 70, "speed": 60, "depth": 55, "intelligence": 70, "danger": 85 } },
+{"name": "Lionfish", "attributes": {"category": "Fish", "size": 50, "weight": 40, "speed": 35, "depth": 45, "intelligence": 35, "danger": 60 } },
+{"name": "Mackerel", "attributes": {"category": "Fish", "size": 50, "weight": 45, "speed": 60, "depth": 45, "intelligence": 35, "danger": 20 } },
+{"name": "Mako Shark", "attributes": {"category": "Sharks", "size": 70, "weight": 60, "speed": 95, "depth": 65, "intelligence": 60, "danger": 80 } },
+{"name": "Manatee", "attributes": {"category": "Mammals", "size": 75, "weight": 80, "speed": 20, "depth": 40, "intelligence": 55, "danger": 5 } },
+{"name": "Manta Ray", "attributes": {"category": "Rays", "size": 85, "weight": 80, "speed": 60, "depth": 70, "intelligence": 75, "danger": 30 } },
+{"name": "Mantis Shrimp", "attributes": {"category": "Crustaceans", "size": 35, "weight": 30, "speed": 85, "depth": 45, "intelligence": 60, "danger": 75 } },
+{"name": "Marine Iguana", "attributes": {"category": "Reptiles", "size": 45, "weight": 40, "speed": 25, "depth": 35, "intelligence": 35, "danger": 10 } },
+{"name": "Marine Protozoa", "attributes": {"category": "Microorganisms", "size": 20, "weight": 15, "speed": 5, "depth": 40, "intelligence": 5, "danger": 0 } },
+{"name": "Marine Snake", "attributes": {"category": "Reptiles", "size": 50, "weight": 45, "speed": 40, "depth": 45, "intelligence": 35, "danger": 75 } },
+{"name": "Marlin", "attributes": {"category": "Fish", "size": 75, "weight": 65, "speed": 95, "depth": 55, "intelligence": 50, "danger": 70 } },
+{"name": "Mimic Octopus", "attributes": {"category": "Cephalopods", "size": 55, "weight": 40, "speed": 50, "depth": 45, "intelligence": 85, "danger": 60 } },
+{"name": "Minke Whale", "attributes": {"category": "Whales", "size": 70, "weight": 60, "speed": 65, "depth": 50, "intelligence": 70, "danger": 20 } },
+{"name": "Mobula Ray", "attributes": {"category": "Rays", "size": 75, "weight": 65, "speed": 60, "depth": 65, "intelligence": 65, "danger": 30 } },
+{"name": "Moon Jellyfish", "attributes": {"category": "Cnidarians", "size": 45, "weight": 40, "speed": 25, "depth": 50, "intelligence": 10, "danger": 20 } },
+{"name": "Moonfish", "attributes": {"category": "Fish", "size": 50, "weight": 45, "speed": 45, "depth": 40, "intelligence": 30, "danger": 15 } },
+{"name": "Moray Eel", "attributes": {"category": "Fish", "size": 60, "weight": 45, "speed": 35, "depth": 50, "intelligence": 45, "danger": 60 } },
+{"name": "Mudskipper", "attributes": {"category": "Fish", "size": 40, "weight": 35, "speed": 35, "depth": 25, "intelligence": 35, "danger": 10 } },
+{"name": "Narwhal", "attributes": {"category": "Whales", "size": 68, "weight": 58, "speed": 45, "depth": 55, "intelligence": 80, "danger": 35 } },
+{"name": "Nautilus", "attributes": {"category": "Cephalopods", "size": 50, "weight": 45, "speed": 25, "depth": 70, "intelligence": 40, "danger": 10 } },
+{"name": "Needlefish", "attributes": {"category": "Fish", "size": 50, "weight": 45, "speed": 60, "depth": 40, "intelligence": 35, "danger": 30 } },
+{"name": "Nudibranch", "attributes": {"category": "Mollusks", "size": 40, "weight": 35, "speed": 5, "depth": 45, "intelligence": 10, "danger": 20 } },
+{"name": "Nurse Shark", "attributes": {"category": "Sharks", "size": 60, "weight": 55, "speed": 25, "depth": 50, "intelligence": 40, "danger": 30 } },
+{"name": "Oarfish", "attributes": {"category": "Fish", "size": 85, "weight": 70, "speed": 25, "depth": 90, "intelligence": 35, "danger": 10 } },
+{"name": "Oceanic Whitetip Shark", "attributes": {"category": "Sharks", "size": 72, "weight": 60, "speed": 60, "depth": 65, "intelligence": 55, "danger": 80 } },
+{"name": "Orca", "attributes": {"category": "Whales", "size": 75, "weight": 70, "speed": 70, "depth": 65, "intelligence": 95, "danger": 90 } },
+{"name": "Parrotfish", "attributes": {"category": "Fish", "size": 50, "weight": 45, "speed": 35, "depth": 35, "intelligence": 40, "danger": 15 } },
+{"name": "Pelican", "attributes": {"category": "Birds", "size": 65, "weight": 60, "speed": 45, "depth": 30, "intelligence": 50, "danger": 5 } },
+{"name": "Penguin", "attributes": {"category": "Birds", "size": 60, "weight": 55, "speed": 50, "depth": 60, "intelligence": 55, "danger": 15 } },
+{"name": "Pilot Whale", "attributes": {"category": "Whales", "size": 72, "weight": 68, "speed": 55, "depth": 70, "intelligence": 88, "danger": 65 } },
+{"name": "Pipefish", "attributes": {"category": "Fish", "size": 40, "weight": 35, "speed": 20, "depth": 40, "intelligence": 35, "danger": 5 } },
+{"name": "Pistol Shrimp", "attributes": {"category": "Crustaceans", "size": 30, "weight": 25, "speed": 35, "depth": 40, "intelligence": 40, "danger": 65 } },
+{"name": "Plankton Bloom", "attributes": {"category": "Microorganisms", "size": 30, "weight": 35, "speed": 10, "depth": 40, "intelligence": 5, "danger": 0 } },
+{"name": "Plankton Colony", "attributes": {"category": "Microorganisms", "size": 30, "weight": 35, "speed": 10, "depth": 40, "intelligence": 5, "danger": 0 } },
+{"name": "Polychaete Worm", "attributes": {"category": "Annelids", "size": 35, "weight": 30, "speed": 10, "depth": 70, "intelligence": 10, "danger": 0 } },
+{"name": "Pomfret", "attributes": {"category": "Fish", "size": 50, "weight": 45, "speed": 45, "depth": 40, "intelligence": 30, "danger": 15 } },
+{"name": "Porbeagle Shark", "attributes": {"category": "Sharks", "size": 70, "weight": 65, "speed": 85, "depth": 70, "intelligence": 55, "danger": 80 } },
+{"name": "Portuguese Man O’ War", "attributes": {"category": "Cnidarians", "size": 55, "weight": 45, "speed": 20, "depth": 45, "intelligence": 5, "danger": 85 } },
+{"name": "Pufferfish", "attributes": {"category": "Fish", "size": 45, "weight": 40, "speed": 25, "depth": 45, "intelligence": 40, "danger": 70 } },
+{"name": "Rabbitfish", "attributes": {"category": "Fish", "size": 45, "weight": 40, "speed": 40, "depth": 35, "intelligence": 35, "danger": 25 } },
+{"name": "Radiolarian", "attributes": {"category": "Microorganisms", "size": 20, "weight": 15, "speed": 5, "depth": 45, "intelligence": 5, "danger": 0 } },
+{"name": "Remora", "attributes": {"category": "Fish", "size": 50, "weight": 45, "speed": 35, "depth": 45, "intelligence": 30, "danger": 10 } },
+{"name": "Ribbon Seal", "attributes": {"category": "Mammals", "size": 58, "weight": 52, "speed": 45, "depth": 50, "intelligence": 58, "danger": 25 } },
+{"name": "Right Whale", "attributes": {"category": "Whales", "size": 88, "weight": 85, "speed": 30, "depth": 40, "intelligence": 70, "danger": 15 } },
+{"name": "Rockfish", "attributes": {"category": "Fish", "size": 55, "weight": 50, "speed": 30, "depth": 55, "intelligence": 35, "danger": 40 } },
+{"name": "Sailfish", "attributes": {"category": "Fish", "size": 70, "weight": 60, "speed": 100, "depth": 50, "intelligence": 45, "danger": 65 } },
+{"name": "Salp", "attributes": {"category": "Tunicates", "size": 35, "weight": 40, "speed": 15, "depth": 55, "intelligence": 5, "danger": 0 } },
+{"name": "Saltwater Crocodile", "attributes": {"category": "Reptiles", "size": 80, "weight": 85, "speed": 45, "depth": 40, "intelligence": 60, "danger": 95 } },
+{"name": "Sand Lance", "attributes": {"category": "Fish", "size": 40, "weight": 35, "speed": 45, "depth": 35, "intelligence": 30, "danger": 10 } },
+{"name": "Sand Tiger Shark", "attributes": {"category": "Sharks", "size": 70, "weight": 65, "speed": 50, "depth": 60, "intelligence": 50, "danger": 70 } },
+{"name": "Sardine", "attributes": {"category": "Fish", "size": 35, "weight": 30, "speed": 40, "depth": 35, "intelligence": 25, "danger": 5 } },
+{"name": "Sawfish", "attributes": {"category": "Rays", "size": 80, "weight": 75, "speed": 45, "depth": 60, "intelligence": 45, "danger": 80 } },
+{"name": "Scorpionfish", "attributes": {"category": "Fish", "size": 50, "weight": 45, "speed": 25, "depth": 45, "intelligence": 35, "danger": 70 } },
+{"name": "Sculpin", "attributes": {"category": "Fish", "size": 45, "weight": 40, "speed": 25, "depth": 45, "intelligence": 30, "danger": 30 } },
+{"name": "Sea Anemone", "attributes": {"category": "Cnidarians", "size": 35, "weight": 40, "speed": 5, "depth": 45, "intelligence": 10, "danger": 10 } },
+{"name": "Sea Bird (Gannet)", "attributes": {"category": "Birds", "size": 55, "weight": 45, "speed": 70, "depth": 40, "intelligence": 55, "danger": 10 } },
+{"name": "Sea Cucumber", "attributes": {"category": "Echinoderms", "size": 40, "weight": 45, "speed": 5, "depth": 60, "intelligence": 10, "danger": 0 } },
+{"name": "Sea Krait", "attributes": {"category": "Reptiles", "size": 55, "weight": 50, "speed": 40, "depth": 45, "intelligence": 40, "danger": 85 } },
+{"name": "Sea Lion", "attributes": {"category": "Mammals", "size": 65, "weight": 60, "speed": 50, "depth": 45, "intelligence": 65, "danger": 35 } },
+{"name": "Sea Louse", "attributes": {"category": "Crustaceans", "size": 20, "weight": 15, "speed": 20, "depth": 30, "intelligence": 10, "danger": 5 } },
+{"name": "Sea Otter", "attributes": {"category": "Mammals", "size": 55, "weight": 45, "speed": 35, "depth": 40, "intelligence": 75, "danger": 20 } },
+{"name": "Sea Pen", "attributes": {"category": "Cnidarians", "size": 40, "weight": 45, "speed": 0, "depth": 70, "intelligence": 5, "danger": 0 } },
+{"name": "Sea Skink", "attributes": {"category": "Reptiles", "size": 40, "weight": 35, "speed": 30, "depth": 30, "intelligence": 30, "danger": 10 } },
+{"name": "Sea Slug", "attributes": {"category": "Mollusks", "size": 35, "weight": 30, "speed": 5, "depth": 40, "intelligence": 10, "danger": 10 } },
+{"name": "Sea Snail", "attributes": {"category": "Mollusks", "size": 30, "weight": 25, "speed": 5, "depth": 40, "intelligence": 10, "danger": 5 } },
+{"name": "Sea Snake", "attributes": {"category": "Reptiles", "size": 55, "weight": 50, "speed": 40, "depth": 45, "intelligence": 40, "danger": 80 } },
+{"name": "Sea Spider", "attributes": {"category": "Arthropods", "size": 30, "weight": 25, "speed": 20, "depth": 60, "intelligence": 20, "danger": 5 } },
+{"name": "Sea Squirt", "attributes": {"category": "Tunicates", "size": 30, "weight": 35, "speed": 0, "depth": 40, "intelligence": 5, "danger": 0 } },
+{"name": "Sea Turtle Hatchling", "attributes": {"category": "Reptiles", "size": 30, "weight": 25, "speed": 35, "depth": 25, "intelligence": 25, "danger": 5 } },
+{"name": "Sea Turtle", "attributes": {"category": "Reptiles", "size": 65, "weight": 60, "speed": 35, "depth": 60, "intelligence": 50, "danger": 10 } },
+{"name": "Sea Urchin", "attributes": {"category": "Echinoderms", "size": 35, "weight": 40, "speed": 5, "depth": 50, "intelligence": 10, "danger": 20 } },
+{"name": "Seahorse", "attributes": {"category": "Fish", "size": 35, "weight": 30, "speed": 15, "depth": 40, "intelligence": 35, "danger": 5 } },
+{"name": "Sei Whale", "attributes": {"category": "Whales", "size": 88, "weight": 78, "speed": 65, "depth": 55, "intelligence": 75, "danger": 25 } },
+{"name": "Shrimp", "attributes": {"category": "Crustaceans", "size": 30, "weight": 25, "speed": 40, "depth": 40, "intelligence": 25, "danger": 10 } },
+{"name": "Siphonophore", "attributes": {"category": "Cnidarians", "size": 50, "weight": 55, "speed": 20, "depth": 80, "intelligence": 15, "danger": 20 } },
+{"name": "Skate", "attributes": {"category": "Rays", "size": 55, "weight": 50, "speed": 35, "depth": 60, "intelligence": 35, "danger": 30 } },
+{"name": "Smelt", "attributes": {"category": "Fish", "size": 40, "weight": 35, "speed": 40, "depth": 35, "intelligence": 30, "danger": 10 } },
+{"name": "Snapper", "attributes": {"category": "Fish", "size": 55, "weight": 50, "speed": 45, "depth": 45, "intelligence": 35, "danger": 25 } },
+{"name": "Snow Crab", "attributes": {"category": "Crustaceans", "size": 65, "weight": 60, "speed": 25, "depth": 70, "intelligence": 30, "danger": 25 } },
+{"name": "Sperm Whale", "attributes": {"category": "Whales", "size": 90, "weight": 95, "speed": 50, "depth": 100, "intelligence": 90, "danger": 70 } },
+{"name": "Spiny Lobster", "attributes": {"category": "Crustaceans", "size": 50, "weight": 45, "speed": 35, "depth": 55, "intelligence": 35, "danger": 30 } },
+{"name": "Squat Lobster", "attributes": {"category": "Crustaceans", "size": 40, "weight": 35, "speed": 30, "depth": 60, "intelligence": 25, "danger": 10 } },
+{"name": "Starfish", "attributes": {"category": "Echinoderms", "size": 35, "weight": 40, "speed": 5, "depth": 45, "intelligence": 15, "danger": 5 } },
+{"name": "Stingray", "attributes": {"category": "Rays", "size": 65, "weight": 55, "speed": 45, "depth": 50, "intelligence": 40, "danger": 65 } },
+{"name": "Stonefish", "attributes": {"category": "Fish", "size": 45, "weight": 40, "speed": 20, "depth": 45, "intelligence": 30, "danger": 90 } },
+{"name": "Sunfish (Mola)", "attributes": {"category": "Fish", "size": 80, "weight": 85, "speed": 20, "depth": 70, "intelligence": 30, "danger": 5 } },
+{"name": "Surgeonfish", "attributes": {"category": "Fish", "size": 45, "weight": 40, "speed": 40, "depth": 35, "intelligence": 35, "danger": 30 } },
+{"name": "Swordfish", "attributes": {"category": "Fish", "size": 75, "weight": 65, "speed": 90, "depth": 60, "intelligence": 50, "danger": 70 } },
+{"name": "Thresher Shark", "attributes": {"category": "Sharks", "size": 75, "weight": 58, "speed": 75, "depth": 65, "intelligence": 60, "danger": 75 } },
+{"name": "Tiger Shark", "attributes": {"category": "Sharks", "size": 82, "weight": 78, "speed": 70, "depth": 75, "intelligence": 65, "danger": 90 } },
+{"name": "Toothfish", "attributes": {"category": "Fish", "size": 65, "weight": 60, "speed": 45, "depth": 75, "intelligence": 40, "danger": 35 } },
+{"name": "Triggerfish", "attributes": {"category": "Fish", "size": 50, "weight": 45, "speed": 40, "depth": 40, "intelligence": 45, "danger": 45 } },
+{"name": "Tube Worm", "attributes": {"category": "Annelids", "size": 45, "weight": 40, "speed": 0, "depth": 90, "intelligence": 10, "danger": 0 } },
+{"name": "Tuna", "attributes": {"category": "Fish", "size": 65, "weight": 55, "speed": 85, "depth": 55, "intelligence": 45, "danger": 50 } },
+{"name": "Vampire Squid", "attributes": {"category": "Cephalopods", "size": 55, "weight": 45, "speed": 30, "depth": 90, "intelligence": 65, "danger": 25 } },
+{"name": "Walrus", "attributes": {"category": "Mammals", "size": 70, "weight": 75, "speed": 30, "depth": 45, "intelligence": 65, "danger": 40 } },
+{"name": "Weddell Seal", "attributes": {"category": "Mammals", "size": 70, "weight": 68, "speed": 45, "depth": 80, "intelligence": 60, "danger": 40 } },
+{"name": "Whale Shark", "attributes": {"category": "Sharks", "size": 90, "weight": 95, "speed": 30, "depth": 70, "intelligence": 40, "danger": 10 } },
+{"name": "Wolf Eel", "attributes": {"category": "Fish", "size": 60, "weight": 55, "speed": 35, "depth": 60, "intelligence": 40, "danger": 55 } },
+{"name": "Wrasse", "attributes": {"category": "Fish", "size": 45, "weight": 40, "speed": 40, "depth": 35, "intelligence": 40, "danger": 15 } },
+{"name": "Yeti Crab", "attributes": {"category": "Crustaceans", "size": 45, "weight": 40, "speed": 25, "depth": 80, "intelligence": 30, "danger": 10 } },
+  ];
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    selectedCards.push(...ocean);
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

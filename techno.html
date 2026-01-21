@@ -1,0 +1,446 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Techno</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="playersCheckbox"> Players</label><br>
+    <label><input type="checkbox" id="relicsCheckbox"> Relics</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    <br><br>
+    <div style="margin-bottom: 20px;">
+      <h3>Rules</h3>
+      <p id="rulesResult" style="color: white;">-</p>
+      <button id="shuffleRulesButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+"Warehouse Takeover: Choose one opponent. Compare Club Impact. Winner steals one Relic card from the loser.",
+"Analog Overdrive: Add +10 Sound Influence to one Artist or Relic for this round.",
+"Modular Jam: Re-roll or reselect one attribute comparison of your choice.",
+"White Label Drop: Reveal the top card of the deck. If it is an Artist, gain +5 Innovation permanently.",
+"Underground Circuit: Ignore Global Recognition this round. Only underground-focused attributes are valid.",
+"Acid Revival: Select one analog-related Relic. It gains +8 Timelessness for the rest of the game.",
+"Berlin Night Shift: Play two cards in the same turn, then discard one at the end of the turn.",
+"Detroit Roots: If you play a founding-era Artist or Relic, you win all ties this round.",
+"Minimal Reset: All players discard their active card and draw a new one.",
+"Sound System Calibration: Choose one Relic. Double its Sound Influence for this comparison only.",
+"Boiler Room Exposure: Add +12 Global Recognition to your active Artist for this turn.",
+"Dubplate Exclusive: Your opponent cannot use Action cards during this round.",
+"Dark Room Energy: If Club Impact is 95 or higher, automatically win the round.",
+"Alias Switch: Swap your active Artist with one from your discard pile.",
+"Hardware Failure: Select one opponent Relic. All its attributes are reduced by 5 for this round.",
+"Live Set Improvisation: Choose which attribute will be compared after cards are revealed.",
+"Closed Door Policy: Ignore all opponent bonuses and modifiers this round.",
+"Rave Shutdown: Cancel the current round. No player scores. All cards return to hand.",
+"Timeless Pressing: If your active Relic has Timelessness of 90 or higher, gain one extra turn.",
+"Afterhours Momentum: If you won the previous round, gain +5 to all attributes this round.",
+  ];
+
+  const rules = [
+    `A: Am(add9) – Fmaj7 – Em9 – Am
+B: Dm7 – Em7 – Fmaj7 – Gsus4
+A Minor: A, B, C, D, E, F, G
+F Lydian: F, G, A, B, C, D, E
+E Dorian: E, F#, G, A, B, C#, D
+D Dorian: D, E, F, G, A, B, C
+E Aeolian: E, F#, G, A, B, C, D
+G Mixolydian: G, A, B, C, D, E, F`,
+`A: Em – C – G – D
+B: Bm – D – A – Em
+E Minor: E, F#, G, A, B, C, D
+B Minor: B, C#, D, E, F#, G, A
+G Major: G, A, B, C, D, E, F#`,
+`A: Fm7 – Abmaj7 – Eb – Fm7
+B: Bb – C – Fm7 – Eb
+F Minor: F, G, Ab, Bb, C, Db, Eb
+Ab Major: Ab, Bb, C, Db, Eb, F, G
+Eb Major: Eb, F, G, Ab, Bb, C, D
+Bb Major: Bb, C, D, Eb, F, G, A`,
+`A: Cmaj7 – G6 – Am7 – Fmaj7
+B: Dm9 – Em7 – G6 – Cmaj7
+C Major: C, D, E, F, G, A, B
+G Major: G, A, B, C, D, E, F#
+A Dorian: A, B, C, D, E, F#, G
+F Lydian: F, G, A, B, C, D, E
+D Dorian: D, E, F, G, A, B, C
+E Aeolian: E, F#, G, A, B, C, D`,
+`A: Dm – A – G – Dm
+B: F – G – A – Dm
+D Aeolian: D, E, F, G, A, Bb, C
+F Major: F, G, A, Bb, C, D, E
+G Mixolydian: G, A, B, C, D, E, F`,
+`A: Bm7 – A – E – G
+B: F#m7 – G – A – E
+B Minor: B, C#, D, E, F#, G, A
+A Major: A, B, C#, D, E, F#, G#
+E Major: E, F#, G#, A, B, C#, D#
+G Major: G, A, B, C, D, E, F#
+F# Dorian: F#, G#, A, B, C#, D#, E`,
+`A: Gm9 – Eb – F – Gm9
+B: Bb – C – Eb – F
+G Minor: G, A, Bb, C, D, Eb, F
+Bb Major: Bb, C, D, Eb, F, G, A
+Eb Major: Eb, F, G, Ab, Bb, C, D
+C Mixolydian: C, D, E, F, G, A, Bb`,
+`A: Em7 – G – D – A
+B: C – D – Em7 – G
+E Dorian: E, F#, G, A, B, C#, D
+G Major: G, A, B, C, D, E, F#
+D Major: D, E, F#, G, A, B, C#
+C Major: C, D, E, F, G, A, B`,
+`A: Cm – Ab – Bb – Cm
+B: Eb – Bb – Ab – Cm
+C Minor: C, D, Eb, F, G, Ab, Bb
+Eb Major: Eb, F, G, Ab, Bb, C, D
+Bb Mixolydian: Bb, C, D, Eb, F, G, Ab`,
+`A: Am – E – F – G
+B: C – G – Am – Em
+A Aeolian: A, B, C, D, E, F, G
+C Major: C, D, E, F, G, A, B
+G Major: G, A, B, C, D, E, F#`,
+`A: F#m – D – E – F#m
+B: Bm – E – A – F#m
+F# Aeolian: F#, G#, A, B, C#, D, E
+D Major: D, E, F#, G, A, B, C#
+E Mixolydian: E, F#, G#, A, B, C#, D
+B Minor: B, C#, D, E, F#, G, A`,
+`A: Bbmin7 – Dbmaj7 – F7 – Bbmin7
+B: Eb – F7 – Gbmaj7 – Dbmaj7
+Bb Minor: Bb, C, Db, Eb, F, Gb, Ab
+Db Major: Db, Eb, F, Gb, Ab, Bb, C
+Eb Mixolydian: Eb, F, G, Ab, Bb, C, Db
+Gb Lydian: Gb, Ab, Bb, C, Db, Eb, F`,
+`A: Dmaj7 – A – Bm7 – Gmaj7
+B: E7 – F#m7 – A – Dmaj7
+D Major: D, E, F#, G, A, B, C#
+A Major: A, B, C#, D, E, F#, G#
+B Dorian: B, C#, D, E, F#, G#, A
+E Mixolydian: E, F#, G#, A, B, C#, D
+F# Dorian: F#, G#, A, B, C#, D#, E`,
+`A: Em(add9) – Bm(add9) – C – G
+B: Am7 – D – G – Em
+E Minor: E, F#, G, A, B, C, D
+B Minor: B, C#, D, E, F#, G, A
+C Major: C, D, E, F, G, A, B
+G Major: G, A, B, C, D, E, F#
+A Dorian: A, B, C, D, E, F#, G
+D Mixolydian: D, E, F#, G, A, B, C`,
+`A: Cm9 – Gm7 – F – Cm9
+B: Ab – Bb – Cm – F
+C Minor: C, D, Eb, F, G, Ab, Bb
+G Dorian: G, A, Bb, C, D, E, F
+Ab Major: Ab, Bb, C, Db, Eb, F, G
+Bb Mixolydian: Bb, C, D, Eb, F, G, Ab`,
+`A: Gmaj7 – D – Em7 – Cmaj7
+B: Bm7 – Em7 – A – G
+G Major: G, A, B, C, D, E, F#
+D Major: D, E, F#, G, A, B, C#
+E Dorian: E, F#, G, A, B, C#, D
+C Lydian: C, D, E, F#, G, A, B
+B Minor: B, C#, D, E, F#, G, A
+A Mixolydian: A, B, C#, D, E, F#, G`,
+`A: Am7 – Gmaj7 – F – Em7
+B: C – D – Em7 – Gmaj7
+A Minor: A, B, C, D, E, F, G
+G Major: G, A, B, C, D, E, F#
+F Lydian: F, G, A, B, C, D, E
+C Major: C, D, E, F, G, A, B
+D Mixolydian: D, E, F#, G, A, B, C`,
+`A: F#m7 – B7 – Emaj7 – C#m7
+B: G#m7 – A – E – B7
+F# Dorian: F#, G#, A, B, C#, D#, E
+B Mixolydian: B, C#, D#, E, F#, G#, A
+E Major: E, F#, G#, A, B, C#, D#
+C# Dorian: C#, D#, E, F#, G#, A#, B
+G# Aeolian: G#, A#, B, C#, D#, E, F#
+A Lydian: A, B, C#, D#, E, F#, G#`,
+`A: Ebm9 – Ab7 – Dbmaj7 – Ebm9
+B: Gb – F7 – Db – Ab7
+Eb Minor: Eb, F, Gb, Ab, Bb, Cb, Db
+Ab Mixolydian: Ab, Bb, C, Db, Eb, F, Gb
+Db Major: Db, Eb, F, Gb, Ab, Bb, C
+Gb Major: Gb, Ab, Bb, Cb, Db, Eb, F
+F Mixolydian: F, G, A, Bb, C, D, Eb`,
+`A: Dm9 – G7 – Cmaj7 – Dm9
+B: Fmaj7 – Em7 – Am7 – Cmaj7
+D Dorian: D, E, F, G, A, B, C
+G Mixolydian: G, A, B, C, D, E, F
+C Major: C, D, E, F, G, A, B
+F Lydian: F, G, A, B, C, D, E
+E Aeolian: E, F#, G, A, B, C, D
+A Dorian: A, B, C, D, E, F#, G`
+
+  ];  
+ 
+const players = [
+{"name":"Adam Beyer", "attributes": {"technical_skill":94,"innovation":88,"club_impact":97,"global_recognition":95,"longevity":96}},
+{"name":"Adam X", "attributes": {"technical_skill":93,"innovation":94,"club_impact":91,"global_recognition":86,"longevity":95}},
+{"name":"Alan Fitzpatrick", "attributes": {"technical_skill":92,"innovation":87,"club_impact":93,"global_recognition":90,"longevity":88}},
+{"name":"Alarico", "attributes": {"technical_skill":90,"innovation":88,"club_impact":91,"global_recognition":86,"longevity":83}},
+{"name":"Amelie Lens", "attributes": {"technical_skill":91,"innovation":89,"club_impact":96,"global_recognition":92,"longevity":84}},
+{"name":"Ancient Methods", "attributes": {"technical_skill":92,"innovation":91,"club_impact":93,"global_recognition":87,"longevity":90}},
+{"name":"ANNA", "attributes": {"technical_skill":91,"innovation":90,"club_impact":94,"global_recognition":92,"longevity":84}},
+{"name":"Answer Code Request", "attributes": {"technical_skill":92,"innovation":91,"club_impact":93,"global_recognition":87,"longevity":89}},
+{"name":"Ben Klock", "attributes": {"technical_skill":95,"innovation":88,"club_impact":97,"global_recognition":90,"longevity":92}},
+{"name":"Blawan", "attributes": {"technical_skill":95,"innovation":96,"club_impact":94,"global_recognition":89,"longevity":88}},
+{"name":"Blazej Malinowski", "attributes": {"technical_skill":91,"innovation":90,"club_impact":92,"global_recognition":86,"longevity":89}},
+{"name":"British Murder Boys (Alias)", "attributes": {"technical_skill":95,"innovation":94,"club_impact":93,"global_recognition":88,"longevity":94}},
+{"name":"British Murder Boys", "attributes": {"technical_skill":96,"innovation":95,"club_impact":94,"global_recognition":89,"longevity":94}},
+{"name":"Carl Cox", "attributes": {"technical_skill":95,"innovation":90,"club_impact":98,"global_recognition":97,"longevity":100}},
+{"name":"Charlotte de Witte", "attributes": {"technical_skill":92,"innovation":90,"club_impact":98,"global_recognition":94,"longevity":85}},
+{"name":"Chris Liebing", "attributes": {"technical_skill":97,"innovation":91,"club_impact":94,"global_recognition":89,"longevity":95}},
+{"name":"Claude Young", "attributes": {"technical_skill":92,"innovation":96,"club_impact":90,"global_recognition":86,"longevity":95}},
+{"name":"Daniel Avery", "attributes": {"technical_skill":91,"innovation":90,"club_impact":91,"global_recognition":92,"longevity":88}},
+{"name":"Darko Esser", "attributes": {"technical_skill":90,"innovation":88,"club_impact":91,"global_recognition":86,"longevity":90}},
+{"name":"Dave Clarke", "attributes": {"technical_skill":95,"innovation":92,"club_impact":94,"global_recognition":91,"longevity":97}},
+{"name":"Denise Rabe", "attributes": {"technical_skill":90,"innovation":88,"club_impact":91,"global_recognition":86,"longevity":84}},
+{"name":"Derrick May", "attributes": {"technical_skill":94,"innovation":100,"club_impact":92,"global_recognition":91,"longevity":100}},
+{"name":"Developer", "attributes": {"technical_skill":92,"innovation":90,"club_impact":92,"global_recognition":87,"longevity":91}},
+{"name":"DJ Bone", "attributes": {"technical_skill":94,"innovation":93,"club_impact":94,"global_recognition":87,"longevity":96}},
+{"name":"DJ Nobu", "attributes": {"technical_skill":94,"innovation":92,"club_impact":94,"global_recognition":87,"longevity":91}},
+{"name":"DJ Rush", "attributes": {"technical_skill":94,"innovation":90,"club_impact":95,"global_recognition":88,"longevity":94}},
+{"name":"Donato Dozzy", "attributes": {"technical_skill":93,"innovation":94,"club_impact":92,"global_recognition":90,"longevity":94}},
+{"name":"Drumcell", "attributes": {"technical_skill":91,"innovation":88,"club_impact":92,"global_recognition":87,"longevity":89}},
+{"name":"DVS1", "attributes": {"technical_skill":96,"innovation":89,"club_impact":97,"global_recognition":88,"longevity":92}},
+{"name":"Ellen Allien", "attributes": {"technical_skill":92,"innovation":95,"club_impact":91,"global_recognition":93,"longevity":97}},
+{"name":"Enrico Sangiuliano", "attributes": {"technical_skill":94,"innovation":90,"club_impact":95,"global_recognition":92,"longevity":87}},
+{"name":"FJAAK", "attributes": {"technical_skill":90,"innovation":87,"club_impact":92,"global_recognition":89,"longevity":82}},
+{"name":"Floorplan", "attributes": {"technical_skill":92,"innovation":91,"club_impact":94,"global_recognition":89,"longevity":92}},
+{"name":"Function", "attributes": {"technical_skill":93,"innovation":90,"club_impact":92,"global_recognition":88,"longevity":91}},
+{"name":"Green Velvet", "attributes": {"technical_skill":91,"innovation":94,"club_impact":93,"global_recognition":94,"longevity":98}},
+{"name":"Hadone", "attributes": {"technical_skill":91,"innovation":90,"club_impact":92,"global_recognition":88,"longevity":85}},
+{"name":"Helena Hauff", "attributes": {"technical_skill":92,"innovation":94,"club_impact":93,"global_recognition":90,"longevity":86}},
+{"name":"I Hate Models", "attributes": {"technical_skill":91,"innovation":92,"club_impact":93,"global_recognition":90,"longevity":83}},
+{"name":"James Ruskin", "attributes": {"technical_skill":93,"innovation":91,"club_impact":91,"global_recognition":87,"longevity":94}},
+{"name":"Jeff Mills", "attributes": {"technical_skill":98,"innovation":100,"club_impact":96,"global_recognition":93,"longevity":99}},
+{"name":"Joey Beltram", "attributes": {"technical_skill":93,"innovation":97,"club_impact":92,"global_recognition":90,"longevity":98}},
+{"name":"Jonas Kopp", "attributes": {"technical_skill":90,"innovation":88,"club_impact":91,"global_recognition":86,"longevity":87}},
+{"name":"Juan Atkins", "attributes": {"technical_skill":92,"innovation":100,"club_impact":88,"global_recognition":90,"longevity":100}},
+{"name":"Kangding Ray", "attributes": {"technical_skill":92,"innovation":91,"club_impact":92,"global_recognition":89,"longevity":90}},
+{"name":"Karenn", "attributes": {"technical_skill":94,"innovation":95,"club_impact":93,"global_recognition":89,"longevity":90}},
+{"name":"Kevin Saunderson", "attributes": {"technical_skill":93,"innovation":98,"club_impact":91,"global_recognition":92,"longevity":100}},
+{"name":"KiNK", "attributes": {"technical_skill":92,"innovation":93,"club_impact":94,"global_recognition":91,"longevity":88}},
+{"name":"Laurent Garnier", "attributes": {"technical_skill":94,"innovation":95,"club_impact":93,"global_recognition":94,"longevity":98}},
+{"name":"Legowelt", "attributes": {"technical_skill":93,"innovation":95,"club_impact":90,"global_recognition":88,"longevity":94}},
+{"name":"Len Faki", "attributes": {"technical_skill":94,"innovation":90,"club_impact":96,"global_recognition":91,"longevity":94}},
+{"name":"Lewis Fautzi", "attributes": {"technical_skill":91,"innovation":89,"club_impact":92,"global_recognition":87,"longevity":88}},
+{"name":"Lucy", "attributes": {"technical_skill":92,"innovation":91,"club_impact":92,"global_recognition":88,"longevity":90}},
+{"name":"Luke Slater", "attributes": {"technical_skill":94,"innovation":93,"club_impact":92,"global_recognition":90,"longevity":96}},
+{"name":"Marcel Dettmann", "attributes": {"technical_skill":95,"innovation":91,"club_impact":95,"global_recognition":92,"longevity":94}},
+{"name":"Mathew Jonson", "attributes": {"technical_skill":94,"innovation":93,"club_impact":91,"global_recognition":88,"longevity":90}},
+{"name":"Monoloc", "attributes": {"technical_skill":91,"innovation":88,"club_impact":92,"global_recognition":87,"longevity":89}},
+{"name":"Neel", "attributes": {"technical_skill":92,"innovation":91,"club_impact":91,"global_recognition":87,"longevity":90}},
+{"name":"Nina Kraviz", "attributes": {"technical_skill":93,"innovation":95,"club_impact":94,"global_recognition":96,"longevity":90}},
+{"name":"Objekt", "attributes": {"technical_skill":93,"innovation":96,"club_impact":91,"global_recognition":90,"longevity":86}},
+{"name":"Oscar Mulero", "attributes": {"technical_skill":97,"innovation":90,"club_impact":95,"global_recognition":87,"longevity":93}},
+{"name":"Pan-Pot", "attributes": {"technical_skill":91,"innovation":88,"club_impact":93,"global_recognition":92,"longevity":90}},
+{"name":"Paula Temple", "attributes": {"technical_skill":95,"innovation":92,"club_impact":96,"global_recognition":88,"longevity":85}},
+{"name":"Perc", "attributes": {"technical_skill":94,"innovation":93,"club_impact":94,"global_recognition":88,"longevity":90}},
+{"name":"Peter Van Hoesen", "attributes": {"technical_skill":93,"innovation":92,"club_impact":92,"global_recognition":88,"longevity":92}},
+{"name":"Pfirter", "attributes": {"technical_skill":91,"innovation":88,"club_impact":92,"global_recognition":86,"longevity":89}},
+{"name":"Phase Fatale", "attributes": {"technical_skill":92,"innovation":91,"club_impact":92,"global_recognition":89,"longevity":87}},
+{"name":"Planetary Assault Systems", "attributes": {"technical_skill":95,"innovation":97,"club_impact":93,"global_recognition":90,"longevity":96}},
+{"name":"Plastikman", "attributes": {"technical_skill":97,"innovation":100,"club_impact":90,"global_recognition":93,"longevity":96}},
+{"name":"Polar Inertia", "attributes": {"technical_skill":93,"innovation":94,"club_impact":91,"global_recognition":87,"longevity":90}},
+{"name":"Quelza", "attributes": {"technical_skill":91,"innovation":90,"club_impact":92,"global_recognition":87,"longevity":84}},
+{"name":"Randomer", "attributes": {"technical_skill":92,"innovation":91,"club_impact":94,"global_recognition":88,"longevity":87}},
+{"name":"Rebekah", "attributes": {"technical_skill":93,"innovation":91,"club_impact":94,"global_recognition":86,"longevity":85}},
+{"name":"Regal", "attributes": {"technical_skill":91,"innovation":89,"club_impact":92,"global_recognition":88,"longevity":85}},
+{"name":"Regis", "attributes": {"technical_skill":94,"innovation":96,"club_impact":92,"global_recognition":88,"longevity":97}},
+{"name":"Reinier Zonneveld", "attributes": {"technical_skill":92,"innovation":90,"club_impact":94,"global_recognition":92,"longevity":86}},
+{"name":"Richie Hawtin", "attributes": {"technical_skill":96,"innovation":99,"club_impact":92,"global_recognition":94,"longevity":98}},
+{"name":"Rikhter", "attributes": {"technical_skill":91,"innovation":89,"club_impact":92,"global_recognition":87,"longevity":85}},
+{"name":"Robert Hood", "attributes": {"technical_skill":96,"innovation":97,"club_impact":92,"global_recognition":88,"longevity":98}},
+{"name":"Rødhåd", "attributes": {"technical_skill":93,"innovation":89,"club_impact":95,"global_recognition":87,"longevity":90}},
+{"name":"Rrose", "attributes": {"technical_skill":93,"innovation":95,"club_impact":91,"global_recognition":88,"longevity":89}},
+{"name":"Sam Paganini", "attributes": {"technical_skill":93,"innovation":89,"club_impact":95,"global_recognition":90,"longevity":89}},
+{"name":"Secret Cinema", "attributes": {"technical_skill":91,"innovation":89,"club_impact":92,"global_recognition":90,"longevity":93}},
+{"name":"Setaoc Mass", "attributes": {"technical_skill":92,"innovation":89,"club_impact":93,"global_recognition":88,"longevity":87}},
+{"name":"SHDW", "attributes": {"technical_skill":90,"innovation":88,"club_impact":91,"global_recognition":87,"longevity":84}},
+{"name":"Shifted", "attributes": {"technical_skill":91,"innovation":89,"club_impact":92,"global_recognition":86,"longevity":88}},
+{"name":"Shlømo", "attributes": {"technical_skill":91,"innovation":89,"club_impact":92,"global_recognition":88,"longevity":85}},
+{"name":"Slam", "attributes": {"technical_skill":93,"innovation":94,"club_impact":92,"global_recognition":91,"longevity":98}},
+{"name":"Speedy J", "attributes": {"technical_skill":95,"innovation":96,"club_impact":92,"global_recognition":91,"longevity":98}},
+{"name":"Stephan Bodzin", "attributes": {"technical_skill":93,"innovation":91,"club_impact":92,"global_recognition":94,"longevity":90}},
+{"name":"Surgeon", "attributes": {"technical_skill":95,"innovation":94,"club_impact":93,"global_recognition":89,"longevity":95}},
+{"name":"Sven Väth", "attributes": {"technical_skill":90,"innovation":94,"club_impact":95,"global_recognition":96,"longevity":100}},
+{"name":"Takaaki Itoh", "attributes": {"technical_skill":92,"innovation":91,"club_impact":92,"global_recognition":86,"longevity":94}},
+{"name":"The Advent", "attributes": {"technical_skill":94,"innovation":92,"club_impact":93,"global_recognition":89,"longevity":96}},
+{"name":"Thomas Heckmann", "attributes": {"technical_skill":93,"innovation":94,"club_impact":91,"global_recognition":87,"longevity":96}},
+{"name":"Truncate", "attributes": {"technical_skill":91,"innovation":89,"club_impact":92,"global_recognition":87,"longevity":88}},
+{"name":"Truss", "attributes": {"technical_skill":92,"innovation":90,"club_impact":93,"global_recognition":87,"longevity":88}},
+{"name":"UFO95", "attributes": {"technical_skill":90,"innovation":88,"club_impact":91,"global_recognition":86,"longevity":83}},
+{"name":"VTSS", "attributes": {"technical_skill":91,"innovation":92,"club_impact":93,"global_recognition":89,"longevity":83}},
+ ];
+
+const relics = [
+{"name": "Anonymous DJ Alias", "attributes": {"historical_impact": 88, "sound_influence": 85, "rarity": 92, "cultural_legacy": 91, "timelessness": 90}},
+{"name": "Berghain Concrete Sound System", "attributes": {"historical_impact": 92, "sound_influence": 95, "rarity": 85, "cultural_legacy": 96, "timelessness": 94}},
+{"name": "DAT Tape", "attributes": {"historical_impact": 88, "sound_influence": 86, "rarity": 87, "cultural_legacy": 90, "timelessness": 80}},
+{"name": "Detroit Underground Warehouse", "attributes": {"historical_impact": 95, "sound_influence": 88, "rarity": 90, "cultural_legacy": 97, "timelessness": 92}},
+{"name": "DIY Rave Generator", "attributes": {"historical_impact": 87, "sound_influence": 83, "rarity": 88, "cultural_legacy": 90, "timelessness": 85}},
+{"name": "Drumcode White Label", "attributes": {"historical_impact": 85, "sound_influence": 90, "rarity": 83, "cultural_legacy": 88, "timelessness": 86}},
+{"name": "Dubplate Vinyl", "attributes": {"historical_impact": 90, "sound_influence": 92, "rarity": 88, "cultural_legacy": 94, "timelessness": 89}},
+{"name": "Early Acid Bassline Patch", "attributes": {"historical_impact": 93, "sound_influence": 96, "rarity": 84, "cultural_legacy": 94, "timelessness": 92}},
+{"name": "Fog Machine", "attributes": {"historical_impact": 82, "sound_influence": 78, "rarity": 65, "cultural_legacy": 89, "timelessness": 86}},
+{"name": "Industrial Earplugs", "attributes": {"historical_impact": 75, "sound_influence": 70, "rarity": 60, "cultural_legacy": 85, "timelessness": 88}},
+{"name": "Minimal Techno Laptop (Early 2000s)", "attributes": {"historical_impact": 89, "sound_influence": 87, "rarity": 75, "cultural_legacy": 91, "timelessness": 85}},
+{"name": "Modular Synth Wall", "attributes": {"historical_impact": 91, "sound_influence": 94, "rarity": 92, "cultural_legacy": 93, "timelessness": 90}},
+{"name": "Photocopied Techno Flyer", "attributes": {"historical_impact": 86, "sound_influence": 72, "rarity": 91, "cultural_legacy": 88, "timelessness": 82}},
+{"name": "Roland TB-303", "attributes": {"historical_impact": 97, "sound_influence": 96, "rarity": 90, "cultural_legacy": 98, "timelessness": 96}},
+{"name": "Roland TR-808", "attributes": {"historical_impact": 98, "sound_influence": 95, "rarity": 88, "cultural_legacy": 100, "timelessness": 97}},
+{"name": "Roland TR-909", "attributes": {"historical_impact": 100, "sound_influence": 98, "rarity": 85, "cultural_legacy": 100, "timelessness": 98}},
+{"name": "Strobe Light", "attributes": {"historical_impact": 84, "sound_influence": 80, "rarity": 68, "cultural_legacy": 90, "timelessness": 87}},
+{"name": "Technics SL-1200", "attributes": {"historical_impact": 96, "sound_influence": 85, "rarity": 82, "cultural_legacy": 99, "timelessness": 100}},
+{"name": "Tresor Basement Vault", "attributes": {"historical_impact": 94, "sound_influence": 92, "rarity": 89, "cultural_legacy": 95, "timelessness": 93}},
+{"name": "Vinyl-only DJ Booth", "attributes": {"historical_impact": 88, "sound_influence": 85, "rarity": 80, "cultural_legacy": 92, "timelessness": 87}},
+ ];
+ 
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playersCheckbox').checked) selectedCards.push(...players);
+    if (document.getElementById('relicsCheckbox').checked) selectedCards.push(...relics);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  document.getElementById('shuffleRulesButton').addEventListener('click', function() {
+    shuffleDeck(rules, 'rulesResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+		body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

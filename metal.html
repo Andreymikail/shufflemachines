@@ -7,7 +7,7 @@
   <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
     <label><input type="checkbox" id="bandsCheckbox"> Bands</label><br>
     <label><input type="checkbox" id="playersCheckbox"> Players</label><br>
-    <label><input type="checkbox" id="instrumentsCheckbox"> Relics</label><br>
+    <label><input type="checkbox" id="relicsCheckbox"> Relics</label><br>
   </div>
 
   <!-- Cards per page selection -->
@@ -268,6 +268,7 @@ const players = [
 {"name": "Courtney LaPlante", "attributes": {"role": "Vocals", "technical_skill": 92, "stage_presence": 95, "influence": 93, "global_recognition": 94, "innovation": 96 }},
 {"name": "Cristina Scabbia", "attributes": {"role": "Vocals", "technical_skill": 90, "stage_presence": 95, "influence": 90, "global_recognition": 92, "innovation": 88 }},
 {"name": "Dani Filth", "attributes": {"role": "Vocals", "technical_skill": 92, "stage_presence": 95, "influence": 90, "global_recognition": 89, "innovation": 94 }},
+{"name": "Derrick Green", "attributes": {"role": "Vocals", "technical_skill": 88, "stage_presence": 95, "influence": 90, "global_recognition": 89, "innovation": 85 }},
 {"name": "Daron Malakian", "attributes": {"role": "Guitar", "technical_skill": 90, "stage_presence": 92, "influence": 93, "global_recognition": 94, "innovation": 95 }},
 {"name": "Dave Grohl", "attributes": {"role": "Drums / Vocals", "technical_skill": 90, "stage_presence": 95, "influence": 94, "global_recognition": 100, "innovation": 90 }},
 {"name": "Dave Lombardo", "attributes": {"role": "Drums", "technical_skill": 98, "stage_presence": 90, "influence": 97, "global_recognition": 92, "innovation": 95 }},
@@ -350,7 +351,7 @@ const players = [
 {"name": "Zakk Wylde", "attributes": {"role": "Guitar", "technical_skill": 94, "stage_presence": 95, "influence": 92, "global_recognition": 93, "innovation": 90 }},
  ];
 
-const instruments = [
+const relics = [
 {"name": "Cross Necklace", "attributes": {"associated_artist": "Ozzy Osbourne", "type": "Personal Artifact", "historical_impact": 90, "sound_power": 70, "cultural_legacy": 95, "rarity": 88, "myth_status": 98, "flavor_text": "Faith, madness, and metal mythology intertwined."}},
 {"name": "Dean ML Guitar", "attributes": {"associated_artist": "Dimebag Darrell", "type": "Instrument", "historical_impact": 96, "sound_power": 99, "cultural_legacy": 94, "rarity": 90, "myth_status": 98, "flavor_text": "Groove metal perfected through fire and feedback."}},
 {"name": "Eddie (Original Stage Prop)", "attributes": {"associated_artist": "Iron Maiden", "type": "Stage Relic", "historical_impact": 92, "sound_power": 65, "cultural_legacy": 100, "rarity": 90, "myth_status": 95, "flavor_text": "The most recognizable face in heavy metal."}},
@@ -380,7 +381,7 @@ const instruments = [
     // Gather selected decks
     if (document.getElementById('bandsCheckbox').checked) selectedCards.push(...bands);
     if (document.getElementById('playersCheckbox').checked) selectedCards.push(...players);
-    if (document.getElementById('instrumentsCheckbox').checked) selectedCards.push(...instruments);
+    if (document.getElementById('relicsCheckbox').checked) selectedCards.push(...relics);
 
     if (selectedCards.length === 0) {
       alert("Please select at least one theme!");

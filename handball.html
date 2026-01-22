@@ -1,0 +1,299 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Handball</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="playmCheckbox"> Player M</label><br>
+    <label><input type="checkbox" id="playfCheckbox"> Player F</label><br>
+    <label><input type="checkbox" id="coachCheckbox"> Coach</label><br>
+    <label><input type="checkbox" id="courtCheckbox"> Court</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Fast Break: +10 Attack Power for one round",
+"Set Play Execution: Use Playmaking instead of Attack Power this round",
+"Backcourt Rotation: Swap Attack Power and Speed & Agility values for this round",
+"Pivot Screen: Opponent’s Defensive Skill −10 this round",
+"Wing Overload: If player is a Wing, +15 Speed & Agility",
+"6–0 Defensive Wall: +10 Defensive Skill for this round",
+"5–1 Aggressive Press: Compare Speed & Agility instead of the chosen stat",
+"Shot Block: Negate opponent’s Attack Power bonus cards this round",
+"Double Coverage: Opponent must replay the same stat next turn",
+"Goalkeeper Heroics: If you control a Goalkeeper, automatic win this round",
+"Penalty Save: Cancel opponent’s round win if they used Attack Power",
+"Fast Throw-Off: Play immediately after winning a round",
+"Last-Second Save: Round ends in a draw regardless of stats",
+"Empty Net Risk: +20 Attack Power, but lose instantly if opponent wins",
+"Tactical Timeout: Re-select the category after cards are revealed",
+"Game Plan Adjustment: +10 Adaptability applied to any category",
+"Defensive Masterclass: Use coach’s Defensive Systems instead of player stats",
+"Offensive Blueprint: Use coach’s Offensive Systems instead of player stats",
+"Host Nation Pressure: +10 Home Advantage Factor",
+"Deafening Crowd: Opponent’s Playmaking −10",
+"Neutral Venue: Ignore all Home Advantage effects this round",
+"Historic Arena Energy: Use Historical Significance as the compared stat",
+"Momentum Swing: Winner keeps control even if they lose this round",
+"Injury Timeout: Opponent skips their next action card",
+"Referee Warning: Both players discard one action card",
+"Suspension (2 Minutes): Opponent’s next stat is reduced by −15",
+"VAR Review: Replay the round with a different category",
+"Golden Goal: Next round winner wins the game instantly",
+"Captain’s Leadership: +10 to all stats for one round",
+"Legendary Performance: If Career Achievements ≥ 95, automatic win"];
+  
+const playm = [
+    {"name": "Aleix Gomez", "attributes": {"position": "Right Wing", "attack power": 86, "defensive skill": 78, "playmaking": 79, "physical strength": 77, "speed agility": 97, "career achievements": 88, "global impact": 86}},
+{"name": "Andreas Wolff", "attributes": {"position": "Goalkeeper", "attack power": 40, "defensive skill": 99, "playmaking": 75, "physical strength": 95, "speed agility": 88, "career achievements": 94, "global impact": 93}},
+{"name": "Aron Palmarsson", "attributes": {"position": "Centre / Left Back", "attack power": 91, "defensive skill": 87, "playmaking": 96, "physical strength": 89, "speed agility": 86, "career achievements": 93, "global impact": 92}},
+{"name": "Dika Mem", "attributes": {"position": "Right Back", "attack power": 96, "defensive skill": 85, "playmaking": 86, "physical strength": 91, "speed agility": 92, "career achievements": 89, "global impact": 90}},
+{"name": "Domagoj Duvnjak", "attributes": {"position": "Centre Back", "attack power": 90, "defensive skill": 92, "playmaking": 95, "physical strength": 91, "speed agility": 87, "career achievements": 96, "global impact": 94}},
+{"name": "Filip Jicha", "attributes": {"position": "Left Back", "attack power": 92, "defensive skill": 85, "playmaking": 90, "physical strength": 91, "speed agility": 83, "career achievements": 95, "global impact": 93}},
+{"name": "Gedeon Guardiola", "attributes": {"position": "Pivot", "attack power": 80, "defensive skill": 94, "playmaking": 74, "physical strength": 99, "speed agility": 70, "career achievements": 88, "global impact": 86}},
+{"name": "Gonzalo Perez de Vargas", "attributes": {"position": "Goalkeeper", "attack power": 42, "defensive skill": 96, "playmaking": 74, "physical strength": 92, "speed agility": 87, "career achievements": 91, "global impact": 90}},
+{"name": "Hampus Wanne", "attributes": {"position": "Left Wing", "attack power": 87, "defensive skill": 81, "playmaking": 80, "physical strength": 82, "speed agility": 95, "career achievements": 89, "global impact": 87}},
+{"name": "Hans Lindberg", "attributes": {"position": "Right Wing", "attack power": 89, "defensive skill": 80, "playmaking": 82, "physical strength": 81, "speed agility": 95, "career achievements": 92, "global impact": 90}},
+{"name": "Ivano Balic", "attributes": {"position": "Centre Back", "attack power": 91, "defensive skill": 85, "playmaking": 100, "physical strength": 84, "speed agility": 90, "career achievements": 99, "global impact": 98}},
+{"name": "Jackson Richardson", "attributes": {"position": "Centre Back", "attack power": 88, "defensive skill": 87, "playmaking": 96, "physical strength": 89, "speed agility": 84, "career achievements": 97, "global impact": 96}},
+{"name": "Jim Gottfridsson", "attributes": {"position": "Centre Back", "attack power": 87, "defensive skill": 85, "playmaking": 93, "physical strength": 84, "speed agility": 89, "career achievements": 89, "global impact": 87}},
+{"name": "Karol Bielecki", "attributes": {"position": "Left Back", "attack power": 93, "defensive skill": 83, "playmaking": 84, "physical strength": 92, "speed agility": 80, "career achievements": 92, "global impact": 90}},
+{"name": "Kent Robin Tonnesen", "attributes": {"position": "Right Back", "attack power": 89, "defensive skill": 82, "playmaking": 80, "physical strength": 93, "speed agility": 84, "career achievements": 85, "global impact": 82}},
+{"name": "Kiril Lazarov", "attributes": {"position": "Right Back", "attack power": 99, "defensive skill": 82, "playmaking": 85, "physical strength": 88, "speed agility": 86, "career achievements": 96, "global impact": 95}},
+{"name": "Luc Abalo", "attributes": {"position": "Right Wing", "attack power": 88, "defensive skill": 79, "playmaking": 83, "physical strength": 80, "speed agility": 98, "career achievements": 94, "global impact": 93}},
+{"name": "Ludovic Fabregas", "attributes": {"position": "Pivot", "attack power": 85, "defensive skill": 92, "playmaking": 80, "physical strength": 98, "speed agility": 78, "career achievements": 90, "global impact": 88}},
+{"name": "Luka Cindric", "attributes": {"position": "Centre Back", "attack power": 88, "defensive skill": 85, "playmaking": 94, "physical strength": 86, "speed agility": 92, "career achievements": 89, "global impact": 88}},
+{"name": "Mathias Gidsel", "attributes": {"position": "Right Back", "attack power": 95, "defensive skill": 84, "playmaking": 88, "physical strength": 87, "speed agility": 94, "career achievements": 90, "global impact": 91}},
+{"name": "Mikkel Hansen", "attributes": {"position": "Left Back", "attack power": 98, "defensive skill": 85, "playmaking": 92, "physical strength": 90, "speed agility": 89, "career achievements": 97, "global impact": 98}},
+{"name": "Momir Ilic", "attributes": {"position": "Left Back", "attack power": 94, "defensive skill": 84, "playmaking": 88, "physical strength": 90, "speed agility": 85, "career achievements": 93, "global impact": 91}},
+{"name": "Nikola Karabatic", "attributes": {"position": "Centre Back", "attack power": 92, "defensive skill": 94, "playmaking": 97, "physical strength": 93, "speed agility": 88, "career achievements": 100, "global impact": 99}},
+{"name": "Sander Sagosen", "attributes": {"position": "Left Back", "attack power": 94, "defensive skill": 86, "playmaking": 91, "physical strength": 92, "speed agility": 90, "career achievements": 88, "global impact": 90}},
+{"name": "Talant Dujshebaev", "attributes": {"position": "Centre Back", "attack power": 89, "defensive skill": 86, "playmaking": 97, "physical strength": 88, "speed agility": 85, "career achievements": 98, "global impact": 97}},
+{"name": "Thierry Omeyer", "attributes": {"position": "Goalkeeper", "attack power": 35, "defensive skill": 100, "playmaking": 78, "physical strength": 96, "speed agility": 86, "career achievements": 100, "global impact": 99}},
+{"name": "Uwe Gensheimer", "attributes": {"position": "Left Wing", "attack power": 90, "defensive skill": 80, "playmaking": 85, "physical strength": 82, "speed agility": 96, "career achievements": 92, "global impact": 90}},
+{"name": "Valero Rivera", "attributes": {"position": "Left Wing", "attack power": 87, "defensive skill": 78, "playmaking": 80, "physical strength": 79, "speed agility": 96, "career achievements": 91, "global impact": 89}},
+
+  ];
+
+  const playf = [
+{"name": "Alexandra Lacrabere", "attributes": {"position": "Left Back", "attack power": 91, "defensive skill": 85, "playmaking": 86, "physical strength": 89, "speed agility": 88, "career achievements": 90, "global impact": 89}},
+{"name": "Alina Grijseels", "attributes": {"position": "Centre Back", "attack power": 86, "defensive skill": 84, "playmaking": 91, "physical strength": 85, "speed agility": 89, "career achievements": 86, "global impact": 85}},
+{"name": "Allison Pineau", "attributes": {"position": "Left Back", "attack power": 92, "defensive skill": 86, "playmaking": 91, "physical strength": 89, "speed agility": 85, "career achievements": 94, "global impact": 92}},
+{"name": "Amandine Leynaud", "attributes": {"position": "Goalkeeper", "attack power": 35, "defensive skill": 99, "playmaking": 74, "physical strength": 95, "speed agility": 88, "career achievements": 97, "global impact": 95}},
+{"name": "Ana Gros", "attributes": {"position": "Right Back", "attack power": 94, "defensive skill": 84, "playmaking": 87, "physical strength": 90, "speed agility": 89, "career achievements": 91, "global impact": 90}},
+{"name": "Andrea Lekic", "attributes": {"position": "Centre Back", "attack power": 91, "defensive skill": 86, "playmaking": 94, "physical strength": 88, "speed agility": 87, "career achievements": 93, "global impact": 91}},
+{"name": "Anna Vyakhireva", "attributes": {"position": "Right Wing", "attack power": 94, "defensive skill": 83, "playmaking": 90, "physical strength": 85, "speed agility": 96, "career achievements": 93, "global impact": 92}},
+{"name": "Anne Mette Hansen", "attributes": {"position": "Left Back", "attack power": 91, "defensive skill": 86, "playmaking": 85, "physical strength": 90, "speed agility": 86, "career achievements": 90, "global impact": 89}},
+{"name": "Bojana Popovic", "attributes": {"position": "Centre / Left Back", "attack power": 90, "defensive skill": 88, "playmaking": 95, "physical strength": 87, "speed agility": 86, "career achievements": 98, "global impact": 96}},
+{"name": "Camilla Herrem", "attributes": {"position": "Left Wing", "attack power": 88, "defensive skill": 82, "playmaking": 84, "physical strength": 80, "speed agility": 97, "career achievements": 96, "global impact": 94}},
+{"name": "Carmen Martin", "attributes": {"position": "Right Wing", "attack power": 88, "defensive skill": 80, "playmaking": 81, "physical strength": 82, "speed agility": 96, "career achievements": 90, "global impact": 88}},
+{"name": "Chloe Valentini", "attributes": {"position": "Left Wing", "attack power": 86, "defensive skill": 80, "playmaking": 81, "physical strength": 82, "speed agility": 95, "career achievements": 89, "global impact": 87}},
+{"name": "Cristina Neagu", "attributes": {"position": "Left Back", "attack power": 98, "defensive skill": 88, "playmaking": 92, "physical strength": 90, "speed agility": 89, "career achievements": 100, "global impact": 99}},
+{"name": "Daniela Piedade", "attributes": {"position": "Left Wing", "attack power": 87, "defensive skill": 83, "playmaking": 81, "physical strength": 84, "speed agility": 95, "career achievements": 90, "global impact": 88}},
+{"name": "Daria Dmitrieva", "attributes": {"position": "Centre Back", "attack power": 90, "defensive skill": 85, "playmaking": 92, "physical strength": 88, "speed agility": 89, "career achievements": 91, "global impact": 90}},
+{"name": "Eduarda Amorim", "attributes": {"position": "Left Back", "attack power": 93, "defensive skill": 90, "playmaking": 88, "physical strength": 94, "speed agility": 86, "career achievements": 96, "global impact": 95}},
+{"name": "Elizabeth Omoregie", "attributes": {"position": "Centre Back", "attack power": 88, "defensive skill": 83, "playmaking": 90, "physical strength": 86, "speed agility": 91, "career achievements": 86, "global impact": 87}},
+{"name": "Emily Bolk", "attributes": {"position": "Left Back", "attack power": 91, "defensive skill": 85, "playmaking": 86, "physical strength": 90, "speed agility": 88, "career achievements": 89, "global impact": 88}},
+{"name": "Estavana Polman", "attributes": {"position": "Centre Back", "attack power": 90, "defensive skill": 84, "playmaking": 95, "physical strength": 86, "speed agility": 88, "career achievements": 92, "global impact": 93}},
+{"name": "Grace Zaadi", "attributes": {"position": "Centre Back", "attack power": 87, "defensive skill": 86, "playmaking": 94, "physical strength": 84, "speed agility": 89, "career achievements": 89, "global impact": 88}},
+{"name": "Heidi Loke", "attributes": {"position": "Pivot", "attack power": 86, "defensive skill": 95, "playmaking": 80, "physical strength": 98, "speed agility": 78, "career achievements": 96, "global impact": 93}},
+{"name": "Henny Reistad", "attributes": {"position": "Left Back", "attack power": 95, "defensive skill": 87, "playmaking": 89, "physical strength": 92, "speed agility": 90, "career achievements": 90, "global impact": 92}},
+{"name": "Iveta Luzumova", "attributes": {"position": "Left Back", "attack power": 89, "defensive skill": 84, "playmaking": 86, "physical strength": 90, "speed agility": 86, "career achievements": 87, "global impact": 85}},
+{"name": "Jovanka Radicevic", "attributes": {"position": "Right Wing", "attack power": 89, "defensive skill": 81, "playmaking": 82, "physical strength": 83, "speed agility": 96, "career achievements": 94, "global impact": 92}},
+{"name": "Kari Brattset Dale", "attributes": {"position": "Pivot", "attack power": 88, "defensive skill": 94, "playmaking": 82, "physical strength": 96, "speed agility": 82, "career achievements": 95, "global impact": 92}},
+{"name": "Katarina Bulatovic", "attributes": {"position": "Left Back", "attack power": 97, "defensive skill": 84, "playmaking": 86, "physical strength": 91, "speed agility": 83, "career achievements": 94, "global impact": 92}},
+{"name": "Katrine Lunde", "attributes": {"position": "Goalkeeper", "attack power": 36, "defensive skill": 100, "playmaking": 75, "physical strength": 96, "speed agility": 87, "career achievements": 100, "global impact": 99}},
+{"name": "Kristina Kristiansen", "attributes": {"position": "Centre Back", "attack power": 85, "defensive skill": 84, "playmaking": 92, "physical strength": 83, "speed agility": 90, "career achievements": 87, "global impact": 85}},
+{"name": "Line Haugsted", "attributes": {"position": "Centre Back", "attack power": 86, "defensive skill": 87, "playmaking": 90, "physical strength": 85, "speed agility": 88, "career achievements": 88, "global impact": 86}},
+{"name": "Linn Blohm", "attributes": {"position": "Pivot", "attack power": 87, "defensive skill": 93, "playmaking": 79, "physical strength": 97, "speed agility": 78, "career achievements": 89, "global impact": 87}},
+{"name": "Louise Burgaard", "attributes": {"position": "Left Back", "attack power": 89, "defensive skill": 85, "playmaking": 84, "physical strength": 88, "speed agility": 86, "career achievements": 87, "global impact": 85}},
+{"name": "Marta Lopez", "attributes": {"position": "Left Wing", "attack power": 85, "defensive skill": 80, "playmaking": 79, "physical strength": 81, "speed agility": 94, "career achievements": 86, "global impact": 84}},
+{"name": "Nerea Pena", "attributes": {"position": "Left Back", "attack power": 90, "defensive skill": 84, "playmaking": 87, "physical strength": 89, "speed agility": 87, "career achievements": 88, "global impact": 86}},
+{"name": "Nora Mork", "attributes": {"position": "Right Back", "attack power": 96, "defensive skill": 85, "playmaking": 90, "physical strength": 88, "speed agility": 94, "career achievements": 97, "global impact": 96}},
+{"name": "Nycke Groot", "attributes": {"position": "Centre Back", "attack power": 89, "defensive skill": 83, "playmaking": 96, "physical strength": 84, "speed agility": 93, "career achievements": 95, "global impact": 94}},
+{"name": "Radmila Lekic", "attributes": {"position": "Pivot", "attack power": 85, "defensive skill": 96, "playmaking": 78, "physical strength": 99, "speed agility": 72, "career achievements": 97, "global impact": 94}},
+{"name": "Sandra Stojanovic", "attributes": {"position": "Goalkeeper", "attack power": 34, "defensive skill": 94, "playmaking": 72, "physical strength": 92, "speed agility": 86, "career achievements": 87, "global impact": 85}},
+{"name": "Sandra Toft", "attributes": {"position": "Goalkeeper", "attack power": 38, "defensive skill": 98, "playmaking": 76, "physical strength": 94, "speed agility": 90, "career achievements": 94, "global impact": 93}},
+{"name": "Sanja Radosavljevic", "attributes": {"position": "Pivot", "attack power": 84, "defensive skill": 92, "playmaking": 78, "physical strength": 95, "speed agility": 76, "career achievements": 85, "global impact": 83}},
+{"name": "Sanne Troelsgaard", "attributes": {"position": "Centre Back", "attack power": 88, "defensive skill": 86, "playmaking": 89, "physical strength": 87, "speed agility": 87, "career achievements": 88, "global impact": 86}},
+{"name": "Silje Solberg", "attributes": {"position": "Goalkeeper", "attack power": 37, "defensive skill": 96, "playmaking": 74, "physical strength": 94, "speed agility": 89, "career achievements": 91, "global impact": 90}},
+{"name": "Stine Oftedal", "attributes": {"position": "Centre Back", "attack power": 88, "defensive skill": 87, "playmaking": 97, "physical strength": 84, "speed agility": 92, "career achievements": 96, "global impact": 95}},
+{"name": "Tatiana Khmyrova", "attributes": {"position": "Left Wing", "attack power": 87, "defensive skill": 81, "playmaking": 82, "physical strength": 83, "speed agility": 95, "career achievements": 89, "global impact": 87}},
+{"name": "Veronica Kristiansen", "attributes": {"position": "Left Wing", "attack power": 90, "defensive skill": 82, "playmaking": 83, "physical strength": 85, "speed agility": 94, "career achievements": 91, "global impact": 90}},
+{"name": "Xenia Smits", "attributes": {"position": "Left Back", "attack power": 92, "defensive skill": 85, "playmaking": 87, "physical strength": 91, "speed agility": 86, "career achievements": 88, "global impact": 87}},
+   
+  ];
+
+const coach = [
+{"name": "Alfred Gislason", "attributes": {"nationality": "Iceland", "tactical intelligence": 96, "player development": 91, "defensive systems": 97, "offensive systems": 90, "adaptability": 94, "career achievements": 96, "global influence": 95}},
+{"name": "Bennett Wiegert", "attributes": {"nationality": "Germany", "tactical intelligence": 92, "player development": 91, "defensive systems": 90, "offensive systems": 89, "adaptability": 90, "career achievements": 88, "global influence": 87}},
+{"name": "Bojan Hadzic", "attributes": {"nationality": "Serbia", "tactical intelligence": 88, "player development": 90, "defensive systems": 87, "offensive systems": 89, "adaptability": 86, "career achievements": 84, "global influence": 82}},
+{"name": "Claude Onesta", "attributes": {"nationality": "France", "tactical intelligence": 98, "player development": 94, "defensive systems": 96, "offensive systems": 95, "adaptability": 96, "career achievements": 100, "global influence": 99}},
+{"name": "Didier Dinart", "attributes": {"nationality": "France", "tactical intelligence": 95, "player development": 90, "defensive systems": 99, "offensive systems": 88, "adaptability": 92, "career achievements": 97, "global influence": 95}},
+{"name": "Eduardo Gallardo", "attributes": {"nationality": "Argentina", "tactical intelligence": 89, "player development": 92, "defensive systems": 86, "offensive systems": 88, "adaptability": 90, "career achievements": 87, "global influence": 85}},
+{"name": "Gyorgy Elek", "attributes": {"nationality": "Hungary", "tactical intelligence": 91, "player development": 93, "defensive systems": 88, "offensive systems": 90, "adaptability": 89, "career achievements": 90, "global influence": 88}},
+{"name": "Juan Carlos Pastor", "attributes": {"nationality": "Spain", "tactical intelligence": 95, "player development": 90, "defensive systems": 93, "offensive systems": 92, "adaptability": 91, "career achievements": 94, "global influence": 92}},
+{"name": "Ola Lindgren", "attributes": {"nationality": "Sweden", "tactical intelligence": 92, "player development": 90, "defensive systems": 91, "offensive systems": 88, "adaptability": 89, "career achievements": 89, "global influence": 87}},
+{"name": "Per Johansson", "attributes": {"nationality": "Sweden", "tactical intelligence": 90, "player development": 95, "defensive systems": 88, "offensive systems": 92, "adaptability": 93, "career achievements": 91, "global influence": 90}},
+{"name": "Talant Dujshebaev", "attributes": {"nationality": "Spain", "tactical intelligence": 97, "player development": 92, "defensive systems": 94, "offensive systems": 96, "adaptability": 95, "career achievements": 98, "global influence": 97}},
+{"name": "Thorir Hergeirsson", "attributes": {"nationality": "Iceland / Norway", "tactical intelligence": 96, "player development": 98, "defensive systems": 95, "offensive systems": 94, "adaptability": 97, "career achievements": 99, "global influence": 98}},
+{"name": "Uwe Gensheimer", "attributes": {"nationality": "Germany", "tactical intelligence": 90, "player development": 88, "defensive systems": 87, "offensive systems": 91, "adaptability": 89, "career achievements": 85, "global influence": 84}},
+{"name": "Veselin Vujovic", "attributes": {"nationality": "Montenegro", "tactical intelligence": 93, "player development": 89, "defensive systems": 91, "offensive systems": 94, "adaptability": 88, "career achievements": 92, "global influence": 90}},
+{"name": "Washington Nunes", "attributes": {"nationality": "Brazil", "tactical intelligence": 88, "player development": 91, "defensive systems": 87, "offensive systems": 89, "adaptability": 90, "career achievements": 86, "global influence": 84}},
+  ];
+
+const court = [
+{"name": "Accor Arena", "attributes": {"city": "Paris", "country": "France", "seating capacity": 95, "atmosphere intensity": 92, "historical significance": 94, "modern infrastructure": 98, "host experience": 97, "global recognition": 96, "home advantage factor": 93}},
+{"name": "Arena Bercy", "attributes": {"city": "Paris", "country": "France", "seating capacity": 94, "atmosphere intensity": 91, "historical significance": 93, "modern infrastructure": 97, "host experience": 96, "global recognition": 95, "home advantage factor": 92}},
+{"name": "Arena Ciudad de Malaga", "attributes": {"city": "Malaga", "country": "Spain", "seating capacity": 85, "atmosphere intensity": 88, "historical significance": 87, "modern infrastructure": 89, "host experience": 88, "global recognition": 86, "home advantage factor": 90}},
+{"name": "Arena Nurnberger Versicherung", "attributes": {"city": "Nuremberg", "country": "Germany", "seating capacity": 87, "atmosphere intensity": 88, "historical significance": 90, "modern infrastructure": 94, "host experience": 91, "global recognition": 89, "home advantage factor": 90}},
+{"name": "Cairo Stadium Indoor Halls", "attributes": {"city": "Cairo", "country": "Egypt", "seating capacity": 95, "atmosphere intensity": 96, "historical significance": 92, "modern infrastructure": 90, "host experience": 94, "global recognition": 93, "home advantage factor": 98}},
+{"name": "Ginasio do Ibirapuera", "attributes": {"city": "Sao Paulo", "country": "Brazil", "seating capacity": 92, "atmosphere intensity": 94, "historical significance": 98, "modern infrastructure": 85, "host experience": 93, "global recognition": 91, "home advantage factor": 97}},
+{"name": "Jyske Bank Boxen", "attributes": {"city": "Herning", "country": "Denmark", "seating capacity": 94, "atmosphere intensity": 97, "historical significance": 93, "modern infrastructure": 96, "host experience": 95, "global recognition": 94, "home advantage factor": 96}},
+{"name": "Lanxess Arena", "attributes": {"city": "Cologne", "country": "Germany", "seating capacity": 100, "atmosphere intensity": 98, "historical significance": 96, "modern infrastructure": 99, "host experience": 100, "global recognition": 99, "home advantage factor": 95}},
+{"name": "Malmo Arena", "attributes": {"city": "Malmo", "country": "Sweden", "seating capacity": 88, "atmosphere intensity": 90, "historical significance": 89, "modern infrastructure": 95, "host experience": 90, "global recognition": 88, "home advantage factor": 91}},
+{"name": "Mercedes-Benz Arena", "attributes": {"city": "Berlin", "country": "Germany", "seating capacity": 92, "atmosphere intensity": 90, "historical significance": 91, "modern infrastructure": 97, "host experience": 94, "global recognition": 95, "home advantage factor": 92}},
+{"name": "Papp Laszlo Sportarena", "attributes": {"city": "Budapest", "country": "Hungary", "seating capacity": 93, "atmosphere intensity": 96, "historical significance": 92, "modern infrastructure": 95, "host experience": 94, "global recognition": 93, "home advantage factor": 97}},
+{"name": "Royal Arena", "attributes": {"city": "Copenhagen", "country": "Denmark", "seating capacity": 90, "atmosphere intensity": 93, "historical significance": 88, "modern infrastructure": 99, "host experience": 92, "global recognition": 91, "home advantage factor": 94}},
+{"name": "Saitama Super Arena", "attributes": {"city": "Saitama", "country": "Japan", "seating capacity": 97, "atmosphere intensity": 89, "historical significance": 90, "modern infrastructure": 100, "host experience": 92, "global recognition": 95, "home advantage factor": 88}},
+{"name": "Spodek", "attributes": {"city": "Katowice", "country": "Poland", "seating capacity": 89, "atmosphere intensity": 95, "historical significance": 91, "modern infrastructure": 90, "host experience": 92, "global recognition": 90, "home advantage factor": 96}},
+{"name": "Zagreb Arena", "attributes": {"city": "Zagreb", "country": "Croatia", "seating capacity": 91, "atmosphere intensity": 99, "historical significance": 95, "modern infrastructure": 92, "host experience": 93, "global recognition": 92, "home advantage factor": 98}},
+
+  ];
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playmCheckbox').checked) selectedCards.push(...playm);
+    if (document.getElementById('playfCheckbox').checked) selectedCards.push(...playf);
+    if (document.getElementById('coachCheckbox').checked) selectedCards.push(...coach);
+    if (document.getElementById('courtCheckbox').checked) selectedCards.push(...court);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

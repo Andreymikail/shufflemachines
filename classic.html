@@ -1,0 +1,692 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Classic</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+   	<label><input type="checkbox" id="composersCheckbox"> Composers</label><br>
+   	<label><input type="checkbox" id="orchestrasCheckbox"> Orchestras</label><br>
+    <label><input type="checkbox" id="maestrosCheckbox"> Conductors</label><br>
+    <label><input type="checkbox" id="pianistsCheckbox"> Pianists</label><br>
+    <label><input type="checkbox" id="violinCheckbox"> Violinists</label><br>
+    <label><input type="checkbox" id="instrumentsCheckbox"> Instruments</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    <br><br>
+    <div style="margin-bottom: 20px;">
+      <h3>Rules</h3>
+      <p id="rulesResult" style="color: white;">-</p>
+      <button id="shuffleRulesButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+"Perfect Intonation: Gain +10 Precision on this round.",
+"Unified Bowing: Add +8 Leadership or Orchestral Importance.",
+"Virtuoso Passage: Double Agility for this comparison.",
+"Flawless Ensemble: Your lowest stat this round becomes 85.",
+"Sectional Rehearsal: Choose one section (Strings, Brass, Woodwinds, Percussion) and gain +6 to all related stats.",
+"Authoritative Downbeat: Add +10 Authority or Prestige.",
+"Inspired Interpretation: Swap one stat comparison after cards are revealed.",
+"Legendary Maestro: If paired with a Maestro card, gain +5 to all stats.",
+"Emergency Cue: Cancel a negative effect played against you.",
+"Tempo Control: Force opponent to compare a stat of your choice.",
+"Solo Cadenza: Use Solo Potential instead of the chosen stat.",
+"Standing Ovation: Gain +10 Influence after winning the round.",
+"Star Soloist: If using Pianist or Concertmaster, add +8 Prestige.",
+"Encore Performance: Replay the same stat in the next round.",
+"Fortissimo: Add +12 Power for this round.",
+"Pianissimo Control: Reduce opponent’s Power by -6.",
+"Tutti Explosion: If using an Orchestra card, add +6 to Power and Importance.",
+"Muted Section: Opponent loses -8 Power or Agility.",
+"Unexpected Modulation: Randomly change the compared stat.",
+"Page Turn Mishap: Opponent skips this round’s bonus effects.",
+"Broken String: Reduce opponent’s Precision by -10.",
+"Late Entrance: Opponent must use their lowest stat.",
+"Over-Rehearsed: Opponent cannot play Action Cards next round.",
+"Historic Performance: Add +10 Legacy.",
+"Iconic Recording: Gain +8 Recording Impact.",
+"World Tour: Add +10 Touring or Influence.",
+"Cultural Milestone: If your card has Legacy >= 95, win ties automatically.",
+"Experimental Program: Gain +15 Versatility, but -5 Precision.",
+"Premiere Night: If you win this round, gain +10 Influence; if you lose, discard a card.",
+"All Eyes on the Stage: Both players must use their highest stat.",
+  ];
+
+  const rules = [
+    `Ab Major
+Ab – Eb/G – Fm – Bb7 – Eb – Ab
+Ab Major: Ab Bb C Db Eb F G`,
+`Ab Major
+Ab – Db – Eb – Ab
+Ab Major: Ab Bb C Db Eb F G`,
+`Ab Major
+Ab – Cm – Fm – Bb7 – Eb – Ab
+Ab Major + C minor color: Ab Bb C Db Eb F G`,
+`Ab Major
+Ab – Fm – Db – Eb – Ab
+Ab Major: Ab Bb C Db Eb F G`,
+`Ab Major
+Ab – Eb – Cm – Fm – Bb7 – Eb – Ab
+Ab Major: Ab Bb C Db Eb F G`,
+`F Minor
+Fm – Db – Bb7 – Eb – Ab
+F Harmonic Minor: F G Ab Bb C Db E`,
+`F Minor
+Fm – Cm – Db – C7 – Fm
+F Harmonic Minor: F G Ab Bb C Db E`,
+`C Minor
+Cm – Ab – Fm – G7 – Cm
+C Harmonic Minor: C D Eb F G Ab B`,
+`C Minor
+Cm – Eb – Ab – Fm – G7 – Cm
+C Harmonic Minor: C D Eb F G Ab B`,
+`Eb Major
+Eb – Cm – Fm – Bb7 – Eb
+Eb Major: Eb F G Ab Bb C D`,
+`Db Major
+Db – Ab – Bb7 – Eb – Ab – Db
+Db Major: Db Eb F Gb Ab Bb C`,
+`Ab Major (Modal Mix)
+Ab – Gb – Db – Eb – Ab
+Ab Mixolydian flavor: Ab Bb C Db Eb F Gb`,
+`Ab Lydian
+Ab – Bb – Cm – Ab
+Ab Lydian: Ab Bb C D Eb F G`,
+`Ab Major
+Ab – Cm/Eb – Db – Ab/Eb – Eb – Ab
+Ab Major: Ab Bb C Db Eb F G`,
+`Ab Major
+Ab – Fm – Bb7 – Eb – Cm – F7 – Bb – Eb – Ab
+Ab Major: Ab Bb C Db Eb F G`,
+`Ab Major
+Ab – Db – Fm – Bb7 – Eb – Ab
+Ab Major: Ab Bb C Db Eb F G`,
+`F Minor → Ab Major
+Fm – Ab – Db – Bb7 – Eb – Ab
+F Harmonic Minor: F G Ab Bb C Db E
+Ab Major: Ab Bb C Db Eb F G`,
+`Ab Major
+Ab – Eb – Db – Ab/Eb – Eb – Ab
+Ab Major: Ab Bb C Db Eb F G`,
+`Ab Major
+Ab – Cm – Db – Eb – Ab
+Ab Major: Ab Bb C Db Eb F G`    
+  ];  
+const orchestras = [
+{"name":"Ankara State Symphony Orchestra", attributes: {"city":"Ankara","country":"Turkey","precision":81,"prestige":80,"legacy":79,"touring":80,"recording":81,"influence":80}},
+{"name":"Armenian National Philharmonic Orchestra", attributes: {"city":"Yerevan","country":"Armenia","precision":82,"prestige":81,"legacy":80,"touring":81,"recording":82,"influence":81}},
+{"name":"Athens State Orchestra", attributes: {"city":"Athens","country":"Greece","precision":82,"prestige":81,"legacy":80,"touring":81,"recording":82,"influence":81}},
+{"name":"Atlanta Symphony Orchestra", attributes: {"city":"Atlanta","country":"United States","precision":86,"prestige":85,"legacy":84,"touring":83,"recording":86,"influence":84}},
+{"name":"Barcelona Symphony Orchestra", attributes: {"city":"Barcelona","country":"Spain","precision":86,"prestige":85,"legacy":84,"touring":83,"recording":85,"influence":84}},
+{"name":"Basel Symphony Orchestra", attributes: {"city":"Basel","country":"Switzerland","precision":86,"prestige":85,"legacy":84,"touring":83,"recording":86,"influence":84}},
+{"name":"Bavarian Radio Symphony Orchestra", attributes: {"city":"Munich","country":"Germany","precision":96,"prestige":95,"legacy":94,"touring":89,"recording":97,"influence":94}},
+{"name":"Belgrade Philharmonic", attributes: {"city":"Belgrade","country":"Serbia","precision":84,"prestige":83,"legacy":82,"touring":83,"recording":84,"influence":83}},
+{"name":"Berlin Philharmonic", attributes: {"city":"Berlin","country":"Germany","precision":99,"prestige":100,"legacy":100,"touring":95,"recording":97,"influence":100}},
+{"name":"Bogotá Philharmonic Orchestra", attributes: {"city":"Bogotá","country":"Colombia","precision":84,"prestige":83,"legacy":82,"touring":81,"recording":83,"influence":82}},
+{"name":"Boston Symphony Orchestra", attributes: {"city":"Boston","country":"United States","precision":94,"prestige":94,"legacy":96,"touring":89,"recording":95,"influence":93}},
+{"name":"Brazilian Symphony Orchestra", attributes: {"city":"Rio de Janeiro","country":"Brazil","precision":84,"prestige":83,"legacy":85,"touring":82,"recording":84,"influence":83}},
+{"name":"Budapest Festival Orchestra", attributes: {"city":"Budapest","country":"Hungary","precision":94,"prestige":92,"legacy":90,"touring":91,"recording":93,"influence":92}},
+{"name":"Buenos Aires Philharmonic", attributes: {"city":"Buenos Aires","country":"Argentina","precision":85,"prestige":84,"legacy":83,"touring":82,"recording":84,"influence":83}},
+{"name":"Cairo Symphony Orchestra", attributes: {"city":"Cairo","country":"Egypt","precision":80,"prestige":79,"legacy":78,"touring":79,"recording":80,"influence":79}},
+{"name":"Cape Town Philharmonic Orchestra", attributes: {"city":"Cape Town","country":"South Africa","precision":83,"prestige":82,"legacy":81,"touring":83,"recording":84,"influence":82}},
+{"name":"Chicago Symphony Orchestra", attributes: {"city":"Chicago","country":"United States","precision":96,"prestige":95,"legacy":94,"touring":90,"recording":96,"influence":94}},
+{"name":"Chile Symphony Orchestra", attributes: {"city":"Santiago","country":"Chile","precision":83,"prestige":82,"legacy":81,"touring":80,"recording":82,"influence":81}},
+{"name":"China Philharmonic Orchestra", attributes: {"city":"Beijing","country":"China","precision":88,"prestige":87,"legacy":86,"touring":89,"recording":88,"influence":87}},
+{"name":"Cleveland Orchestra", attributes: {"city":"Cleveland","country":"United States","precision":95,"prestige":94,"legacy":92,"touring":88,"recording":93,"influence":92}},
+{"name":"Cologne Gürzenich Orchestra", attributes: {"city":"Cologne","country":"Germany","precision":87,"prestige":86,"legacy":88,"touring":84,"recording":87,"influence":86}},
+{"name":"Cyprus Symphony Orchestra", attributes: {"city":"Nicosia","country":"Cyprus","precision":78,"prestige":77,"legacy":76,"touring":77,"recording":78,"influence":77}},
+{"name":"Czech Philharmonic", attributes: {"city":"Prague","country":"Czech Republic","precision":92,"prestige":93,"legacy":97,"touring":89,"recording":91,"influence":94}},
+{"name":"Dallas Symphony Orchestra", attributes: {"city":"Dallas","country":"United States","precision":85,"prestige":84,"legacy":83,"touring":82,"recording":85,"influence":83}},
+{"name":"Danish National Symphony Orchestra", attributes: {"city":"Copenhagen","country":"Denmark","precision":90,"prestige":89,"legacy":87,"touring":86,"recording":91,"influence":88}},
+{"name":"Detroit Symphony Orchestra", attributes: {"city":"Detroit","country":"United States","precision":85,"prestige":84,"legacy":83,"touring":82,"recording":85,"influence":83}},
+{"name":"Dresden Staatskapelle", attributes: {"city":"Dresden","country":"Germany","precision":94,"prestige":94,"legacy":98,"touring":88,"recording":91,"influence":93}},
+{"name":"Estonian National Symphony Orchestra", attributes: {"city":"Tallinn","country":"Estonia","precision":83,"prestige":82,"legacy":81,"touring":82,"recording":84,"influence":82}},
+{"name":"Finnish Radio Symphony Orchestra", attributes: {"city":"Helsinki","country":"Finland","precision":90,"prestige":89,"legacy":87,"touring":86,"recording":91,"influence":88}},
+{"name":"Frankfurt Radio Symphony", attributes: {"city":"Frankfurt","country":"Germany","precision":90,"prestige":89,"legacy":88,"touring":86,"recording":92,"influence":89}},
+{"name":"Georgian National Symphony Orchestra", attributes: {"city":"Tbilisi","country":"Georgia","precision":81,"prestige":80,"legacy":79,"touring":80,"recording":81,"influence":80}},
+{"name":"Gothenburg Symphony Orchestra", attributes: {"city":"Gothenburg","country":"Sweden","precision":89,"prestige":88,"legacy":87,"touring":85,"recording":90,"influence":88}},
+{"name":"Hamburg Philharmonic", attributes: {"city":"Hamburg","country":"Germany","precision":88,"prestige":87,"legacy":86,"touring":85,"recording":88,"influence":86}},
+{"name":"Hong Kong Philharmonic Orchestra", attributes: {"city":"Hong Kong","country":"China","precision":90,"prestige":89,"legacy":86,"touring":91,"recording":90,"influence":89}},
+{"name":"Houston Symphony", attributes: {"city":"Houston","country":"United States","precision":86,"prestige":85,"legacy":84,"touring":83,"recording":86,"influence":84}},
+{"name":"Iceland Symphony Orchestra", attributes: {"city":"Reykjavik","country":"Iceland","precision":85,"prestige":84,"legacy":83,"touring":84,"recording":86,"influence":84}},
+{"name":"Israel Philharmonic Orchestra", attributes: {"city":"Tel Aviv","country":"Israel","precision":92,"prestige":92,"legacy":94,"touring":90,"recording":90,"influence":91}},
+{"name":"Istanbul State Symphony Orchestra", attributes: {"city":"Istanbul","country":"Turkey","precision":83,"prestige":82,"legacy":81,"touring":82,"recording":83,"influence":82}},
+{"name":"Jerusalem Symphony Orchestra", attributes: {"city":"Jerusalem","country":"Israel","precision":82,"prestige":81,"legacy":80,"touring":81,"recording":82,"influence":81}},
+{"name":"Kazakhstan Symphony Orchestra", attributes: {"city":"Almaty","country":"Kazakhstan","precision":80,"prestige":79,"legacy":78,"touring":79,"recording":80,"influence":79}},
+{"name":"Krakow Philharmonic", attributes: {"city":"Krakow","country":"Poland","precision":82,"prestige":81,"legacy":80,"touring":81,"recording":82,"influence":81}},
+{"name":"Latvian National Symphony Orchestra", attributes: {"city":"Riga","country":"Latvia","precision":82,"prestige":81,"legacy":80,"touring":81,"recording":82,"influence":81}},
+{"name":"Leipzig Gewandhaus Orchestra", attributes: {"city":"Leipzig","country":"Germany","precision":95,"prestige":96,"legacy":100,"touring":90,"recording":92,"influence":95}},
+{"name":"Lithuanian National Symphony Orchestra", attributes: {"city":"Vilnius","country":"Lithuania","precision":81,"prestige":80,"legacy":79,"touring":80,"recording":81,"influence":80}},
+{"name":"London Philharmonic Orchestra", attributes: {"city":"London","country":"United Kingdom","precision":91,"prestige":92,"legacy":93,"touring":92,"recording":90,"influence":91}},
+{"name":"London Symphony Orchestra", attributes: {"city":"London","country":"United Kingdom","precision":94,"prestige":96,"legacy":95,"touring":96,"recording":98,"influence":95}},
+{"name":"Los Angeles Philharmonic", attributes: {"city":"Los Angeles","country":"United States","precision":92,"prestige":94,"legacy":88,"touring":94,"recording":93,"influence":98}},
+{"name":"Lucerne Symphony Orchestra", attributes: {"city":"Lucerne","country":"Switzerland","precision":88,"prestige":87,"legacy":85,"touring":84,"recording":88,"influence":86}},
+{"name":"Mariinsky Orchestra", attributes: {"city":"Saint Petersburg","country":"Russia","precision":93,"prestige":93,"legacy":95,"touring":90,"recording":92,"influence":94}},
+{"name":"Melbourne Symphony Orchestra", attributes: {"city":"Melbourne","country":"Australia","precision":87,"prestige":86,"legacy":85,"touring":87,"recording":88,"influence":86}},
+{"name":"Minnesota Orchestra", attributes: {"city":"Minneapolis","country":"United States","precision":88,"prestige":87,"legacy":86,"touring":85,"recording":89,"influence":87}},
+{"name":"Mongolian State Philharmonic", attributes: {"city":"Ulaanbaatar","country":"Mongolia","precision":77,"prestige":76,"legacy":75,"touring":76,"recording":77,"influence":76}},
+{"name":"Montreal Symphony Orchestra", attributes: {"city":"Montreal","country":"Canada","precision":90,"prestige":89,"legacy":90,"touring":87,"recording":91,"influence":89}},
+{"name":"Moroccan Philharmonic Orchestra", attributes: {"city":"Rabat","country":"Morocco","precision":80,"prestige":79,"legacy":78,"touring":80,"recording":81,"influence":79}},
+{"name":"Nairobi Philharmonic Orchestra", attributes: {"city":"Nairobi","country":"Kenya","precision":78,"prestige":77,"legacy":76,"touring":78,"recording":79,"influence":77}},
+{"name":"National Arts Centre Orchestra", attributes: {"city":"Ottawa","country":"Canada","precision":86,"prestige":85,"legacy":84,"touring":83,"recording":86,"influence":84}},
+{"name":"National Symphony Orchestra of Costa Rica", attributes: {"city":"San José","country":"Costa Rica","precision":78,"prestige":77,"legacy":76,"touring":75,"recording":77,"influence":76}},
+{"name":"National Symphony Orchestra of Mexico", attributes: {"city":"Mexico City","country":"Mexico","precision":84,"prestige":83,"legacy":82,"touring":81,"recording":83,"influence":82}},
+{"name":"National Symphony Orchestra of Ukraine", attributes: {"city":"Kyiv","country":"Ukraine","precision":86,"prestige":87,"legacy":90,"touring":85,"recording":88,"influence":89}},
+{"name":"National Symphony Orchestra of Vietnam", attributes: {"city":"Hanoi","country":"Vietnam","precision":79,"prestige":78,"legacy":77,"touring":78,"recording":79,"influence":78}},
+{"name":"Netherlands Philharmonic Orchestra", attributes: {"city":"Amsterdam","country":"Netherlands","precision":89,"prestige":88,"legacy":86,"touring":85,"recording":88,"influence":87}},
+{"name":"New York Philharmonic", attributes: {"city":"New York","country":"United States","precision":93,"prestige":97,"legacy":100,"touring":93,"recording":94,"influence":96}},
+{"name":"New Zealand Symphony Orchestra", attributes: {"city":"Wellington","country":"New Zealand","precision":84,"prestige":83,"legacy":82,"touring":84,"recording":85,"influence":83}},
+{"name":"NHK Symphony Orchestra", attributes: {"city":"Tokyo","country":"Japan","precision":94,"prestige":90,"legacy":92,"touring":87,"recording":92,"influence":90}},
+{"name":"Odessa Philharmonic Orchestra", attributes: {"city":"Odessa","country":"Ukraine","precision":83,"prestige":82,"legacy":81,"touring":82,"recording":83,"influence":82}},
+{"name":"Orchestra dell'Accademia Nazionale di Santa Cecilia", attributes: {"city":"Rome","country":"Italy","precision":92,"prestige":93,"legacy":95,"touring":90,"recording":92,"influence":93}},
+{"name":"Orchestre de Paris", attributes: {"city":"Paris","country":"France","precision":91,"prestige":92,"legacy":90,"touring":88,"recording":89,"influence":91}},
+{"name":"Oslo Philharmonic", attributes: {"city":"Oslo","country":"Norway","precision":89,"prestige":88,"legacy":86,"touring":85,"recording":89,"influence":87}},
+{"name":"Peru National Symphony Orchestra", attributes: {"city":"Lima","country":"Peru","precision":80,"prestige":79,"legacy":78,"touring":77,"recording":79,"influence":78}},
+{"name":"Petrobras Symphony Orchestra", attributes: {"city":"Rio de Janeiro","country":"Brazil","precision":82,"prestige":80,"legacy":78,"touring":79,"recording":81,"influence":80}},
+{"name":"Philadelphia Orchestra", attributes: {"city":"Philadelphia","country":"United States","precision":92,"prestige":92,"legacy":95,"touring":90,"recording":94,"influence":92}},
+{"name":"Pittsburgh Symphony Orchestra", attributes: {"city":"Pittsburgh","country":"United States","precision":87,"prestige":86,"legacy":85,"touring":84,"recording":87,"influence":85}},
+{"name":"Qatar Philharmonic Orchestra", attributes: {"city":"Doha","country":"Qatar","precision":84,"prestige":85,"legacy":78,"touring":86,"recording":85,"influence":84}},
+{"name":"RAI National Symphony Orchestra", attributes: {"city":"Turin","country":"Italy","precision":88,"prestige":87,"legacy":86,"touring":85,"recording":89,"influence":86}},
+{"name":"Royal Concertgebouw Orchestra", attributes: {"city":"Amsterdam","country":"Netherlands","precision":96,"prestige":98,"legacy":98,"touring":91,"recording":95,"influence":97}},
+{"name":"Royal Scottish National Orchestra", attributes: {"city":"Glasgow","country":"Scotland","precision":84,"prestige":83,"legacy":82,"touring":83,"recording":84,"influence":83}},
+{"name":"San Francisco Symphony", attributes: {"city":"San Francisco","country":"United States","precision":93,"prestige":93,"legacy":92,"touring":91,"recording":95,"influence":93}},
+{"name":"São Paulo Symphony Orchestra (OSESP)", attributes: {"city":"São Paulo","country":"Brazil","precision":89,"prestige":90,"legacy":88,"touring":87,"recording":89,"influence":90}},
+{"name":"Scottish Chamber Orchestra", attributes: {"city":"Edinburgh","country":"Scotland","precision":83,"prestige":82,"legacy":81,"touring":82,"recording":83,"influence":82}},
+{"name":"Seoul Philharmonic Orchestra", attributes: {"city":"Seoul","country":"South Korea","precision":90,"prestige":89,"legacy":88,"touring":90,"recording":91,"influence":89}},
+{"name":"Shanghai Symphony Orchestra", attributes: {"city":"Shanghai","country":"China","precision":89,"prestige":88,"legacy":87,"touring":90,"recording":89,"influence":88}},
+{"name":"Singapore Symphony Orchestra", attributes: {"city":"Singapore","country":"Singapore","precision":88,"prestige":87,"legacy":85,"touring":88,"recording":89,"influence":87}},
+{"name":"Slovak Philharmonic", attributes: {"city":"Bratislava","country":"Slovakia","precision":86,"prestige":85,"legacy":84,"touring":82,"recording":85,"influence":83}},
+{"name":"South African National Symphony Orchestra", attributes: {"city":"Johannesburg","country":"South Africa","precision":82,"prestige":81,"legacy":80,"touring":82,"recording":83,"influence":81}},
+{"name":"Spanish National Orchestra", attributes: {"city":"Madrid","country":"Spain","precision":87,"prestige":86,"legacy":85,"touring":84,"recording":86,"influence":85}},
+{"name":"St. Louis Symphony Orchestra", attributes: {"city":"St. Louis","country":"United States","precision":87,"prestige":86,"legacy":88,"touring":84,"recording":87,"influence":86}},
+{"name":"Swedish Radio Symphony Orchestra", attributes: {"city":"Stockholm","country":"Sweden","precision":91,"prestige":90,"legacy":88,"touring":87,"recording":92,"influence":89}},
+{"name":"Sydney Symphony Orchestra", attributes: {"city":"Sydney","country":"Australia","precision":88,"prestige":87,"legacy":86,"touring":88,"recording":89,"influence":87}},
+{"name":"Taipei Symphony Orchestra", attributes: {"city":"Taipei","country":"Taiwan","precision":85,"prestige":84,"legacy":83,"touring":85,"recording":86,"influence":84}},
+{"name":"Teatro alla Scala Orchestra", attributes: {"city":"Milan","country":"Italy","precision":93,"prestige":95,"legacy":98,"touring":91,"recording":93,"influence":95}},
+{"name":"Tehran Symphony Orchestra", attributes: {"city":"Tehran","country":"Iran","precision":83,"prestige":82,"legacy":84,"touring":80,"recording":81,"influence":82}},
+{"name":"Tokyo Metropolitan Symphony Orchestra", attributes: {"city":"Tokyo","country":"Japan","precision":89,"prestige":88,"legacy":87,"touring":89,"recording":90,"influence":88}},
+{"name":"Toronto Symphony Orchestra", attributes: {"city":"Toronto","country":"Canada","precision":88,"prestige":87,"legacy":86,"touring":85,"recording":88,"influence":86}},
+{"name":"Ulster Orchestra", attributes: {"city":"Belfast","country":"Northern Ireland","precision":80,"prestige":79,"legacy":78,"touring":79,"recording":80,"influence":79}},
+{"name":"United Arab Emirates National Orchestra", attributes: {"city":"Abu Dhabi","country":"United Arab Emirates","precision":81,"prestige":82,"legacy":76,"touring":85,"recording":82,"influence":81}},
+{"name":"Uruguay Symphony Orchestra", attributes: {"city":"Montevideo","country":"Uruguay","precision":79,"prestige":78,"legacy":77,"touring":76,"recording":78,"influence":77}},
+{"name":"Vienna Philharmonic", attributes: {"city":"Vienna","country":"Austria","precision":97,"prestige":99,"legacy":100,"touring":92,"recording":96,"influence":100}},
+{"name":"Vienna Symphony", attributes: {"city":"Vienna","country":"Austria","precision":90,"prestige":91,"legacy":92,"touring":88,"recording":89,"influence":90}},
+{"name":"Warsaw Philharmonic", attributes: {"city":"Warsaw","country":"Poland","precision":86,"prestige":87,"legacy":90,"touring":85,"recording":88,"influence":89}},
+{"name":"Zurich Tonhalle Orchestra", attributes: {"city":"Zurich","country":"Switzerland","precision":91,"prestige":90,"legacy":89,"touring":87,"recording":90,"influence":89}},
+  ];
+  
+const maestros = [
+{"name":"Conductor Alondra de la Parra",attributes: {"nationality":"Mexico","precision":90,"prestige":88,"legacy":82,"authority":88,"recording":86,"influence":89}},
+{"name":"Conductor Andris Nelsons",attributes: {"nationality":"Latvia","precision":94,"prestige":93,"legacy":90,"authority":93,"recording":92,"influence":93}},
+{"name":"Conductor Antonio Pappano",attributes: {"nationality":"Italy / United Kingdom","precision":94,"prestige":93,"legacy":90,"authority":93,"recording":92,"influence":92}},
+{"name":"Conductor Arturo Toscanini",attributes: {"nationality":"Italy","precision":98,"prestige":100,"legacy":100,"authority":99,"recording":96,"influence":100}},
+{"name":"Conductor Carlos Kleiber",attributes: {"nationality":"Austria","precision":100,"prestige":96,"legacy":98,"authority":97,"recording":93,"influence":96}},
+{"name":"Conductor Christian Thielemann",attributes: {"nationality":"Germany","precision":96,"prestige":94,"legacy":92,"authority":95,"recording":91,"influence":93}},
+{"name":"Conductor Christoph Eschenbach",attributes: {"nationality":"Germany","precision":93,"prestige":92,"legacy":91,"authority":92,"recording":91,"influence":92}},
+{"name":"Conductor Claudio Abbado",attributes: {"nationality":"Italy","precision":96,"prestige":97,"legacy":99,"authority":95,"recording":94,"influence":97}},
+{"name":"Conductor Claudio Monteverdi",attributes: {"nationality":"Italy","precision":90,"prestige":98,"legacy":100,"authority":95,"recording":85,"influence":99}},
+{"name":"Conductor Dalia Stasevska",attributes: {"nationality":"Finland","precision":91,"prestige":88,"legacy":83,"authority":89,"recording":87,"influence":88}},
+{"name":"Conductor Daniel Barenboim",attributes: {"nationality":"Argentina / Israel","precision":95,"prestige":97,"legacy":99,"authority":96,"recording":94,"influence":97}},
+{"name":"Conductor Erich Kleiber",attributes: {"nationality":"Austria","precision":95,"prestige":94,"legacy":96,"authority":95,"recording":92,"influence":95}},
+{"name":"Conductor Esa-Pekka Salonen",attributes: {"nationality":"Finland","precision":95,"prestige":94,"legacy":91,"authority":92,"recording":96,"influence":94}},
+{"name":"Conductor Fabio Luisi",attributes: {"nationality":"Italy","precision":93,"prestige":91,"legacy":88,"authority":92,"recording":91,"influence":90}},
+{"name":"Conductor Franz Welser-Möst",attributes: {"nationality":"Austria","precision":94,"prestige":92,"legacy":90,"authority":93,"recording":91,"influence":90}},
+{"name":"Conductor Georg Solti",attributes: {"nationality":"Hungary / United Kingdom","precision":96,"prestige":97,"legacy":97,"authority":96,"recording":99,"influence":95}},
+{"name":"Conductor Gianandrea Noseda",attributes: {"nationality":"Italy","precision":94,"prestige":91,"legacy":88,"authority":93,"recording":92,"influence":91}},
+{"name":"Conductor Gustavo Dudamel",attributes: {"nationality":"Venezuela","precision":93,"prestige":94,"legacy":88,"authority":92,"recording":91,"influence":95}},
+{"name":"Conductor Herbert von Karajan",attributes: {"nationality":"Austria","precision":99,"prestige":100,"legacy":100,"authority":100,"recording":100,"influence":100}},
+{"name":"Conductor Iván Fischer",attributes: {"nationality":"Hungary","precision":96,"prestige":93,"legacy":92,"authority":95,"recording":93,"influence":94}},
+{"name":"Conductor Jaap van Zweden",attributes: {"nationality":"Netherlands","precision":95,"prestige":92,"legacy":88,"authority":94,"recording":91,"influence":90}},
+{"name":"Conductor John Eliot Gardiner",attributes: {"nationality":"United Kingdom","precision":95,"prestige":93,"legacy":94,"authority":92,"recording":96,"influence":93}},
+{"name":"Conductor Juanjo Mena",attributes: {"nationality":"Spain","precision":91,"prestige":88,"legacy":85,"authority":89,"recording":88,"influence":87}},
+{"name":"Conductor Kazuki Yamada",attributes: {"nationality":"Japan","precision":92,"prestige":88,"legacy":84,"authority":90,"recording":89,"influence":88}},
+{"name":"Conductor Kent Nagano",attributes: {"nationality":"United States","precision":91,"prestige":90,"legacy":89,"authority":90,"recording":92,"influence":90}},
+{"name":"Conductor Kirill Petrenko",attributes: {"nationality":"Russia","precision":98,"prestige":94,"legacy":90,"authority":97,"recording":90,"influence":92}},
+{"name":"Conductor Kurt Masur",attributes: {"nationality":"Germany","precision":94,"prestige":93,"legacy":96,"authority":95,"recording":91,"influence":93}},
+{"name":"Conductor Leonard Bernstein",attributes: {"nationality":"United States","precision":92,"prestige":98,"legacy":100,"authority":96,"recording":97,"influence":100}},
+{"name":"Conductor Leopold Stokowski",attributes: {"nationality":"United Kingdom","precision":92,"prestige":96,"legacy":97,"authority":95,"recording":98,"influence":97}},
+{"name":"Conductor Marin Alsop",attributes: {"nationality":"United States","precision":92,"prestige":91,"legacy":90,"authority":91,"recording":92,"influence":93}},
+{"name":"Conductor Mariss Jansons",attributes: {"nationality":"Latvia","precision":96,"prestige":94,"legacy":95,"authority":95,"recording":93,"influence":94}},
+{"name":"Conductor Mark Elder",attributes: {"nationality":"United Kingdom","precision":92,"prestige":90,"legacy":88,"authority":91,"recording":90,"influence":89}},
+{"name":"Conductor Mirga Gražinytė-Tyla",attributes: {"nationality":"Lithuania","precision":94,"prestige":90,"legacy":85,"authority":91,"recording":92,"influence":90}},
+{"name":"Conductor Myung-Whun Chung",attributes: {"nationality":"South Korea","precision":92,"prestige":91,"legacy":89,"authority":91,"recording":90,"influence":91}},
+{"name":"Conductor Nikolaus Harnoncourt",attributes: {"nationality":"Austria","precision":94,"prestige":92,"legacy":96,"authority":93,"recording":95,"influence":95}},
+{"name":"Conductor Oksana Lyniv",attributes: {"nationality":"Ukraine","precision":92,"prestige":89,"legacy":84,"authority":90,"recording":88,"influence":89}},
+{"name":"Conductor Osmo Vänskä",attributes: {"nationality":"Finland","precision":95,"prestige":91,"legacy":90,"authority":94,"recording":94,"influence":91}},
+{"name":"Conductor Paavo Järvi",attributes: {"nationality":"Estonia","precision":93,"prestige":91,"legacy":88,"authority":91,"recording":92,"influence":90}},
+{"name":"Conductor Pierre Boulez",attributes: {"nationality":"France","precision":97,"prestige":95,"legacy":98,"authority":93,"recording":97,"influence":96}},
+{"name":"Conductor Pierre Monteux",attributes: {"nationality":"France","precision":94,"prestige":95,"legacy":97,"authority":96,"recording":93,"influence":96}},
+{"name":"Conductor Riccardo Muti",attributes: {"nationality":"Italy","precision":97,"prestige":96,"legacy":98,"authority":98,"recording":95,"influence":96}},
+{"name":"Conductor Seiji Ozawa",attributes: {"nationality":"Japan","precision":93,"prestige":94,"legacy":94,"authority":92,"recording":95,"influence":93}},
+{"name":"Conductor Semyon Bychkov",attributes: {"nationality":"Russia / United States","precision":94,"prestige":91,"legacy":90,"authority":92,"recording":91,"influence":90}},
+{"name":"Conductor Simon Rattle",attributes: {"nationality":"United Kingdom","precision":94,"prestige":95,"legacy":92,"authority":94,"recording":96,"influence":94}},
+{"name":"Conductor Tugan Sokhiev",attributes: {"nationality":"Ossetia","precision":93,"prestige":89,"legacy":86,"authority":91,"recording":90,"influence":88}},
+{"name":"Conductor Valery Gergiev",attributes: {"nationality":"Russia","precision":93,"prestige":95,"legacy":94,"authority":96,"recording":93,"influence":95}},
+{"name":"Conductor Vasily Petrenko",attributes: {"nationality":"Russia","precision":94,"prestige":90,"legacy":87,"authority":92,"recording":92,"influence":89}},
+{"name":"Conductor Wilhelm Furtwängler",attributes: {"nationality":"Germany","precision":95,"prestige":99,"legacy":100,"authority":98,"recording":92,"influence":99}},
+{"name":"Conductor Yannick Nézet-Séguin",attributes: {"nationality":"Canada","precision":94,"prestige":93,"legacy":89,"authority":93,"recording":92,"influence":93}},
+{"name":"Conductor Zubin Mehta",attributes: {"nationality":"India","precision":92,"prestige":96,"legacy":95,"authority":94,"recording":92,"influence":96}},
+  ];
+  
+const pianists = [
+{"name":"Pianist Alondra de la Parra",attributes: {"nationality":"Mexico","precision":90,"prestige":88,"legacy":82,"authority":88,"recording":86,"influence":89}},
+{"name":"Pianist Andris Nelsons",attributes: {"nationality":"Latvia","precision":94,"prestige":93,"legacy":90,"authority":93,"recording":92,"influence":93}},
+{"name":"Pianist Antonio Pappano",attributes: {"nationality":"Italy / United Kingdom","precision":94,"prestige":93,"legacy":90,"authority":93,"recording":92,"influence":92}},
+{"name":"Pianist Arturo Toscanini",attributes: {"nationality":"Italy","precision":98,"prestige":100,"legacy":100,"authority":99,"recording":96,"influence":100}},
+{"name":"Pianist Carlos Kleiber",attributes: {"nationality":"Austria","precision":100,"prestige":96,"legacy":98,"authority":97,"recording":93,"influence":96}},
+{"name":"Pianist Christian Thielemann",attributes: {"nationality":"Germany","precision":96,"prestige":94,"legacy":92,"authority":95,"recording":91,"influence":93}},
+{"name":"Pianist Christoph Eschenbach",attributes: {"nationality":"Germany","precision":93,"prestige":92,"legacy":91,"authority":92,"recording":91,"influence":92}},
+{"name":"Pianist Claudio Abbado",attributes: {"nationality":"Italy","precision":96,"prestige":97,"legacy":99,"authority":95,"recording":94,"influence":97}},
+{"name":"Pianist Claudio Monteverdi",attributes: {"nationality":"Italy","precision":90,"prestige":98,"legacy":100,"authority":95,"recording":85,"influence":99}},
+{"name":"Pianist Dalia Stasevska",attributes: {"nationality":"Finland","precision":91,"prestige":88,"legacy":83,"authority":89,"recording":87,"influence":88}},
+{"name":"Pianist Daniel Barenboim",attributes: {"nationality":"Argentina / Israel","precision":95,"prestige":97,"legacy":99,"authority":96,"recording":94,"influence":97}},
+{"name":"Pianist Erich Kleiber",attributes: {"nationality":"Austria","precision":95,"prestige":94,"legacy":96,"authority":95,"recording":92,"influence":95}},
+{"name":"Pianist Esa-Pekka Salonen",attributes: {"nationality":"Finland","precision":95,"prestige":94,"legacy":91,"authority":92,"recording":96,"influence":94}},
+{"name":"Pianist Fabio Luisi",attributes: {"nationality":"Italy","precision":93,"prestige":91,"legacy":88,"authority":92,"recording":91,"influence":90}},
+{"name":"Pianist Franz Welser-Möst",attributes: {"nationality":"Austria","precision":94,"prestige":92,"legacy":90,"authority":93,"recording":91,"influence":90}},
+{"name":"Pianist Georg Solti",attributes: {"nationality":"Hungary / United Kingdom","precision":96,"prestige":97,"legacy":97,"authority":96,"recording":99,"influence":95}},
+{"name":"Pianist Gianandrea Noseda",attributes: {"nationality":"Italy","precision":94,"prestige":91,"legacy":88,"authority":93,"recording":92,"influence":91}},
+{"name":"Pianist Gustavo Dudamel",attributes: {"nationality":"Venezuela","precision":93,"prestige":94,"legacy":88,"authority":92,"recording":91,"influence":95}},
+{"name":"Pianist Herbert von Karajan",attributes: {"nationality":"Austria","precision":99,"prestige":100,"legacy":100,"authority":100,"recording":100,"influence":100}},
+{"name":"Pianist Iván Fischer",attributes: {"nationality":"Hungary","precision":96,"prestige":93,"legacy":92,"authority":95,"recording":93,"influence":94}},
+{"name":"Pianist Jaap van Zweden",attributes: {"nationality":"Netherlands","precision":95,"prestige":92,"legacy":88,"authority":94,"recording":91,"influence":90}},
+{"name":"Pianist John Eliot Gardiner",attributes: {"nationality":"United Kingdom","precision":95,"prestige":93,"legacy":94,"authority":92,"recording":96,"influence":93}},
+{"name":"Pianist Juanjo Mena",attributes: {"nationality":"Spain","precision":91,"prestige":88,"legacy":85,"authority":89,"recording":88,"influence":87}},
+{"name":"Pianist Kazuki Yamada",attributes: {"nationality":"Japan","precision":92,"prestige":88,"legacy":84,"authority":90,"recording":89,"influence":88}},
+{"name":"Pianist Kent Nagano",attributes: {"nationality":"United States","precision":91,"prestige":90,"legacy":89,"authority":90,"recording":92,"influence":90}},
+{"name":"Pianist Kirill Petrenko",attributes: {"nationality":"Russia","precision":98,"prestige":94,"legacy":90,"authority":97,"recording":90,"influence":92}},
+{"name":"Pianist Kurt Masur",attributes: {"nationality":"Germany","precision":94,"prestige":93,"legacy":96,"authority":95,"recording":91,"influence":93}},
+{"name":"Pianist Leonard Bernstein",attributes: {"nationality":"United States","precision":92,"prestige":98,"legacy":100,"authority":96,"recording":97,"influence":100}},
+{"name":"Pianist Leopold Stokowski",attributes: {"nationality":"United Kingdom","precision":92,"prestige":96,"legacy":97,"authority":95,"recording":98,"influence":97}},
+{"name":"Pianist Marin Alsop",attributes: {"nationality":"United States","precision":92,"prestige":91,"legacy":90,"authority":91,"recording":92,"influence":93}},
+{"name":"Pianist Mariss Jansons",attributes: {"nationality":"Latvia","precision":96,"prestige":94,"legacy":95,"authority":95,"recording":93,"influence":94}},
+{"name":"Pianist Mark Elder",attributes: {"nationality":"United Kingdom","precision":92,"prestige":90,"legacy":88,"authority":91,"recording":90,"influence":89}},
+{"name":"Pianist Mirga Gražinytė-Tyla",attributes: {"nationality":"Lithuania","precision":94,"prestige":90,"legacy":85,"authority":91,"recording":92,"influence":90}},
+{"name":"Pianist Myung-Whun Chung",attributes: {"nationality":"South Korea","precision":92,"prestige":91,"legacy":89,"authority":91,"recording":90,"influence":91}},
+{"name":"Pianist Nikolaus Harnoncourt",attributes: {"nationality":"Austria","precision":94,"prestige":92,"legacy":96,"authority":93,"recording":95,"influence":95}},
+{"name":"Pianist Oksana Lyniv",attributes: {"nationality":"Ukraine","precision":92,"prestige":89,"legacy":84,"authority":90,"recording":88,"influence":89}},
+{"name":"Pianist Osmo Vänskä",attributes: {"nationality":"Finland","precision":95,"prestige":91,"legacy":90,"authority":94,"recording":94,"influence":91}},
+{"name":"Pianist Paavo Järvi",attributes: {"nationality":"Estonia","precision":93,"prestige":91,"legacy":88,"authority":91,"recording":92,"influence":90}},
+{"name":"Pianist Pierre Boulez",attributes: {"nationality":"France","precision":97,"prestige":95,"legacy":98,"authority":93,"recording":97,"influence":96}},
+{"name":"Pianist Pierre Monteux",attributes: {"nationality":"France","precision":94,"prestige":95,"legacy":97,"authority":96,"recording":93,"influence":96}},
+{"name":"Pianist Riccardo Muti",attributes: {"nationality":"Italy","precision":97,"prestige":96,"legacy":98,"authority":98,"recording":95,"influence":96}},
+{"name":"Pianist Seiji Ozawa",attributes: {"nationality":"Japan","precision":93,"prestige":94,"legacy":94,"authority":92,"recording":95,"influence":93}},
+{"name":"Pianist Semyon Bychkov",attributes: {"nationality":"Russia / United States","precision":94,"prestige":91,"legacy":90,"authority":92,"recording":91,"influence":90}},
+{"name":"Pianist Simon Rattle",attributes: {"nationality":"United Kingdom","precision":94,"prestige":95,"legacy":92,"authority":94,"recording":96,"influence":94}},
+{"name":"Pianist Tugan Sokhiev",attributes: {"nationality":"Ossetia","precision":93,"prestige":89,"legacy":86,"authority":91,"recording":90,"influence":88}},
+{"name":"Pianist Valery Gergiev",attributes: {"nationality":"Russia","precision":93,"prestige":95,"legacy":94,"authority":96,"recording":93,"influence":95}},
+{"name":"Pianist Vasily Petrenko",attributes: {"nationality":"Russia","precision":94,"prestige":90,"legacy":87,"authority":92,"recording":92,"influence":89}},
+{"name":"Pianist Wilhelm Furtwängler",attributes: {"nationality":"Germany","precision":95,"prestige":99,"legacy":100,"authority":98,"recording":92,"influence":99}},
+{"name":"Pianist Yannick Nézet-Séguin",attributes: {"nationality":"Canada","precision":94,"prestige":93,"legacy":89,"authority":93,"recording":92,"influence":93}},
+{"name":"Pianist Zubin Mehta",attributes: {"nationality":"India","precision":92,"prestige":96,"legacy":95,"authority":94,"recording":92,"influence":96}},
+  ];
+
+const violin = [
+{"name":"Violinist Akiko Suwanai",attributes: {"nationality":"Japan","precision":96,"prestige":94,"legacy":91,"leadership":93,"presence":93,"influence":94}},
+{"name":"Violinist Alina Ibragimova",attributes: {"nationality":"Russia","precision":97,"prestige":94,"legacy":92,"leadership":93,"presence":93,"influence":94}},
+{"name":"Violinist Andreas Röhn",attributes: {"nationality":"Germany","precision":94,"prestige":93,"legacy":89,"leadership":95,"presence":96,"influence":91}},
+{"name":"Violinist Anne-Sophie Mutter",attributes: {"nationality":"Germany","precision":97,"prestige":99,"legacy":98,"leadership":96,"presence":95,"influence":98}},
+{"name":"Violinist Arabella Steinbacher",attributes: {"nationality":"Germany","precision":96,"prestige":94,"legacy":89,"leadership":92,"presence":93,"influence":93}},
+{"name":"Violinist Augustin Hadelich",attributes: {"nationality":"Germany / United States","precision":98,"prestige":96,"legacy":90,"leadership":93,"presence":94,"influence":95}},
+{"name":"Violinist Bronisław Huberman",attributes: {"nationality":"Poland","precision":96,"prestige":97,"legacy":98,"leadership":96,"presence":93,"influence":97}},
+{"name":"Violinist Christian Ferras",attributes: {"nationality":"France","precision":98,"prestige":96,"legacy":97,"leadership":94,"presence":93,"influence":96}},
+{"name":"Violinist Christian Tetzlaff",attributes: {"nationality":"Germany","precision":97,"prestige":95,"legacy":92,"leadership":93,"presence":94,"influence":94}},
+{"name":"Violinist Daishin Kashimoto",attributes: {"nationality":"Japan","precision":97,"prestige":96,"legacy":91,"leadership":96,"presence":98,"influence":95}},
+{"name":"Violinist David Oistrakh",attributes: {"nationality":"Soviet Union","precision":100,"prestige":100,"legacy":100,"leadership":98,"presence":97,"influence":100}},
+{"name":"Violinist Erich Höbarth",attributes: {"nationality":"Austria","precision":95,"prestige":94,"legacy":92,"leadership":96,"presence":97,"influence":93}},
+{"name":"Violinist Frank Peter Zimmermann",attributes: {"nationality":"Germany","precision":98,"prestige":97,"legacy":94,"leadership":94,"presence":95,"influence":96}},
+{"name":"Violinist Gidon Kremer",attributes: {"nationality":"Latvia","precision":97,"prestige":97,"legacy":98,"leadership":95,"presence":94,"influence":97}},
+{"name":"Violinist Gil Shaham",attributes: {"nationality":"United States","precision":98,"prestige":96,"legacy":95,"leadership":94,"presence":94,"influence":96}},
+{"name":"Violinist Glenn Dicterow",attributes: {"nationality":"United States","precision":94,"prestige":96,"legacy":96,"leadership":98,"presence":99,"influence":95}},
+{"name":"Violinist Guy Braunstein",attributes: {"nationality":"Israel","precision":96,"prestige":95,"legacy":90,"leadership":97,"presence":97,"influence":93}},
+{"name":"Violinist Henryk Szeryng",attributes: {"nationality":"Poland / Mexico","precision":98,"prestige":97,"legacy":99,"leadership":96,"presence":94,"influence":98}},
+{"name":"Violinist Hilary Hahn",attributes: {"nationality":"United States","precision":98,"prestige":97,"legacy":94,"leadership":94,"presence":95,"influence":97}},
+{"name":"Violinist Ida Haendel",attributes: {"nationality":"Poland / United Kingdom","precision":97,"prestige":96,"legacy":98,"leadership":95,"presence":93,"influence":97}},
+{"name":"Violinist Isabelle Faust",attributes: {"nationality":"Germany","precision":97,"prestige":96,"legacy":93,"leadership":94,"presence":95,"influence":95}},
+{"name":"Violinist Itzhak Perlman",attributes: {"nationality":"Israel / United States","precision":98,"prestige":100,"legacy":100,"leadership":96,"presence":94,"influence":100}},
+{"name":"Violinist James Ehnes",attributes: {"nationality":"Canada","precision":97,"prestige":95,"legacy":92,"leadership":94,"presence":94,"influence":94}},
+{"name":"Violinist Janine Jansen",attributes: {"nationality":"Netherlands","precision":98,"prestige":96,"legacy":92,"leadership":93,"presence":95,"influence":96}},
+{"name":"Violinist Jascha Heifetz",attributes: {"nationality":"Lithuania / United States","precision":100,"prestige":100,"legacy":100,"leadership":98,"presence":94,"influence":100}},
+{"name":"Violinist Joseph Silverstein",attributes: {"nationality":"United States","precision":97,"prestige":96,"legacy":98,"leadership":98,"presence":99,"influence":96}},
+{"name":"Violinist Joshua Bell",attributes: {"nationality":"United States","precision":97,"prestige":97,"legacy":94,"leadership":94,"presence":95,"influence":97}},
+{"name":"Violinist Kolja Blacher",attributes: {"nationality":"Germany","precision":95,"prestige":93,"legacy":90,"leadership":94,"presence":95,"influence":92}},
+{"name":"Violinist Laurent Korcia",attributes: {"nationality":"France","precision":95,"prestige":94,"legacy":90,"leadership":94,"presence":95,"influence":92}},
+{"name":"Violinist Leila Josefowicz",attributes: {"nationality":"Canada / United States","precision":96,"prestige":94,"legacy":90,"leadership":93,"presence":94,"influence":93}},
+{"name":"Violinist Leonidas Kavakos",attributes: {"nationality":"Greece","precision":98,"prestige":96,"legacy":93,"leadership":94,"presence":95,"influence":95}},
+{"name":"Violinist Leonidas Kavakos",attributes: {"nationality":"Greece","precision":98,"prestige":96,"legacy":93,"leadership":94,"presence":95,"influence":95}},
+{"name":"Violinist Lev Aronson",attributes: {"nationality":"Russia","precision":94,"prestige":93,"legacy":94,"leadership":95,"presence":94,"influence":93}},
+{"name":"Violinist Lisa Batiashvili",attributes: {"nationality":"Georgia","precision":97,"prestige":95,"legacy":93,"leadership":94,"presence":94,"influence":95}},
+{"name":"Violinist Maxim Vengerov",attributes: {"nationality":"Russia","precision":99,"prestige":98,"legacy":96,"leadership":95,"presence":94,"influence":98}},
+{"name":"Violinist Michel Schwalbé",attributes: {"nationality":"France","precision":97,"prestige":96,"legacy":98,"leadership":98,"presence":99,"influence":96}},
+{"name":"Violinist Midori",attributes: {"nationality":"Japan","precision":98,"prestige":97,"legacy":96,"leadership":95,"presence":94,"influence":97}},
+{"name":"Violinist Nathan Milstein",attributes: {"nationality":"Russia / United States","precision":98,"prestige":97,"legacy":99,"leadership":95,"presence":93,"influence":98}},
+{"name":"Violinist Nemanja Radulović",attributes: {"nationality":"Serbia","precision":95,"prestige":93,"legacy":88,"leadership":92,"presence":93,"influence":94}},
+{"name":"Violinist Noah Bendix-Balgley",attributes: {"nationality":"United States","precision":95,"prestige":94,"legacy":88,"leadership":96,"presence":98,"influence":92}},
+{"name":"Violinist Pinchas Zukerman",attributes: {"nationality":"Israel / United States","precision":97,"prestige":98,"legacy":97,"leadership":96,"presence":95,"influence":98}},
+{"name":"Violinist Rainer Küchl",attributes: {"nationality":"Austria","precision":95,"prestige":97,"legacy":95,"leadership":98,"presence":99,"influence":95}},
+{"name":"Violinist Ray Chen",attributes: {"nationality":"Australia","precision":96,"prestige":94,"legacy":88,"leadership":92,"presence":94,"influence":96}},
+{"name":"Violinist Renaud Capuçon",attributes: {"nationality":"France","precision":96,"prestige":95,"legacy":92,"leadership":94,"presence":94,"influence":94}},
+{"name":"Violinist Roman Simovic",attributes: {"nationality":"Montenegro","precision":96,"prestige":94,"legacy":89,"leadership":95,"presence":96,"influence":92}},
+{"name":"Violinist Szymon Goldberg",attributes: {"nationality":"Poland","precision":96,"prestige":95,"legacy":97,"leadership":97,"presence":96,"influence":95}},
+{"name":"Violinist Vadim Gluzman",attributes: {"nationality":"Ukraine","precision":97,"prestige":95,"legacy":91,"leadership":93,"presence":94,"influence":94}},
+{"name":"Violinist Vesa-Matti Leppänen",attributes: {"nationality":"Finland","precision":96,"prestige":93,"legacy":90,"leadership":95,"presence":96,"influence":92}},
+{"name":"Violinist Willi Boskovsky",attributes: {"nationality":"Austria","precision":96,"prestige":98,"legacy":99,"leadership":99,"presence":96,"influence":97}},
+{"name":"Violinist Yehudi Menuhin",attributes: {"nationality":"United States","precision":97,"prestige":100,"legacy":100,"leadership":97,"presence":94,"influence":100}},
+  ];
+  
+const composers = [  
+{"name":"Composer Aaron Copland", attributes: {"country":"United States","era":"Modern","innovation":92,"prestige":96,"legacy":96,"orchestralImpact":94,"versatility":92,"influence":96}},
+{"name":"Composer Alban Berg", attributes: {"country":"Austria","era":"Modern","innovation":95,"prestige":94,"legacy":95,"orchestralImpact":88,"versatility":90,"influence":96}},
+{"name":"Composer Alberto Ginastera", attributes: {"country":"Argentina","era":"Modern","innovation":92,"prestige":93,"legacy":94,"orchestralImpact":92,"versatility":90,"influence":93}},
+{"name":"Composer Alexander Scriabin", attributes: {"country":"Russia","era":"Early Modern","innovation":97,"prestige":94,"legacy":95,"orchestralImpact":88,"versatility":90,"influence":96}},
+{"name":"Composer Alfred Schnittke", attributes: {"country":"Russia","era":"Modern","innovation":98,"prestige":95,"legacy":94,"orchestralImpact":92,"versatility":95,"influence":97}},
+{"name":"Composer Anton Bruckner", attributes: {"country":"Austria","era":"Romantic","innovation":92,"prestige":95,"legacy":96,"orchestralImpact":96,"versatility":85,"influence":94}},
+{"name":"Composer Anton Webern", attributes: {"country":"Austria","era":"Modern","innovation":98,"prestige":93,"legacy":94,"orchestralImpact":80,"versatility":85,"influence":95}},
+{"name":"Composer Antonín Dvořák", attributes: {"country":"Czech Republic","era":"Romantic","innovation":92,"prestige":96,"legacy":96,"orchestralImpact":95,"versatility":94,"influence":94}},
+{"name":"Composer Antonio Salieri", attributes: {"country":"Italy","era":"Classical","innovation":85,"prestige":93,"legacy":90,"orchestralImpact":85,"versatility":88,"influence":85}},
+{"name":"Composer Antonio Vivaldi", attributes: {"country":"Italy","era":"Baroque","innovation":90,"prestige":95,"legacy":96,"orchestralImpact":92,"versatility":90,"influence":96}},
+{"name":"Composer Arcangelo Corelli", attributes: {"country":"Italy","era":"Baroque","innovation":87,"prestige":93,"legacy":94,"orchestralImpact":88,"versatility":85,"influence":92}},
+{"name":"Composer Arnold Schoenberg", attributes: {"country":"Austria","era":"Modernism","innovation":100,"prestige":95,"legacy":96,"orchestralImpact":85,"versatility":90,"influence":99}},
+{"name":"Composer Arvo Pärt", attributes: {"country":"Estonia","era":"Contemporary","innovation":95,"prestige":94,"legacy":90,"orchestralImpact":85,"versatility":80,"influence":96}},
+{"name":"Composer Astor Piazzolla", attributes: {"country":"Argentina","era":"Modern","innovation":95,"prestige":96,"legacy":95,"orchestralImpact":90,"versatility":98,"influence":97}},
+{"name":"Composer Bedřich Smetana", attributes: {"country":"Czech Republic","era":"Romantic","innovation":90,"prestige":93,"legacy":94,"orchestralImpact":92,"versatility":88,"influence":92}},
+{"name":"Composer Bedřich Smetana", attributes: {"country":"Czech Republic","era":"Romantic","innovation":90,"prestige":93,"legacy":94,"orchestralImpact":92,"versatility":88,"influence":92}},
+{"name":"Composer Béla Bartók", attributes: {"country":"Hungary","era":"Modernism","innovation":98,"prestige":95,"legacy":96,"orchestralImpact":94,"versatility":90,"influence":98}},
+{"name":"Composer Benjamin Britten", attributes: {"country":"United Kingdom","era":"Modern","innovation":92,"prestige":96,"legacy":95,"orchestralImpact":94,"versatility":92,"influence":95}},
+{"name":"Composer Camille Saint-Saëns", attributes: {"country":"France","era":"Romantic","innovation":88,"prestige":94,"legacy":94,"orchestralImpact":92,"versatility":95,"influence":92}},
+{"name":"Composer Camille Saint-Saëns", attributes: {"country":"France","era":"Romantic","innovation":88,"prestige":94,"legacy":94,"orchestralImpact":92,"versatility":95,"influence":92}},
+{"name":"Composer Carl Maria von Weber", attributes: {"country":"Germany","era":"Early Romantic","innovation":87,"prestige":93,"legacy":92,"orchestralImpact":90,"versatility":85,"influence":90}},
+{"name":"Composer Carl Orff", attributes: {"country":"Germany","era":"Modern","innovation":90,"prestige":94,"legacy":93,"orchestralImpact":90,"versatility":85,"influence":92}},
+{"name":"Composer Carl Philipp Emanuel Bach", attributes: {"country":"Germany","era":"Classical","innovation":92,"prestige":94,"legacy":95,"orchestralImpact":85,"versatility":90,"influence":95}},
+{"name":"Composer Carlos Chávez", attributes: {"country":"Mexico","era":"Modern","innovation":92,"prestige":92,"legacy":93,"orchestralImpact":92,"versatility":88,"influence":93}},
+{"name":"Composer César Franck", attributes: {"country":"Belgium / France","era":"Romantic","innovation":85,"prestige":93,"legacy":93,"orchestralImpact":90,"versatility":88,"influence":90}},
+{"name":"Composer Charles Ives", attributes: {"country":"United States","era":"Modern","innovation":98,"prestige":95,"legacy":96,"orchestralImpact":88,"versatility":90,"influence":98}},
+{"name":"Composer Christoph Willibald Gluck", attributes: {"country":"Germany","era":"Classical","innovation":90,"prestige":94,"legacy":94,"orchestralImpact":88,"versatility":85,"influence":93}},
+{"name":"Composer Claude Debussy", attributes: {"country":"France","era":"Impressionism","innovation":99,"prestige":95,"legacy":96,"orchestralImpact":92,"versatility":90,"influence":97}},
+{"name":"Composer Claudio Monteverdi", attributes: {"country":"Italy","era":"Baroque","innovation":97,"prestige":96,"legacy":97,"orchestralImpact":88,"versatility":92,"influence":98}},
+{"name":"Composer Dieterich Buxtehude", attributes: {"country":"Denmark / Germany","era":"Baroque","innovation":88,"prestige":91,"legacy":92,"orchestralImpact":80,"versatility":85,"influence":93}},
+{"name":"Composer Dmitri Shostakovich", attributes: {"country":"Russia","era":"Modernism","innovation":97,"prestige":96,"legacy":97,"orchestralImpact":98,"versatility":90,"influence":98}},
+{"name":"Composer Edvard Grieg", attributes: {"country":"Norway","era":"Romantic","innovation":88,"prestige":94,"legacy":95,"orchestralImpact":90,"versatility":90,"influence":93}},
+{"name":"Composer Erik Satie", attributes: {"country":"France","era":"Early Modern","innovation":95,"prestige":92,"legacy":93,"orchestralImpact":80,"versatility":85,"influence":95}},
+{"name":"Composer Ernest Bloch", attributes: {"country":"Switzerland / United States","era":"Modern","innovation":92,"prestige":93,"legacy":93,"orchestralImpact":90,"versatility":88,"influence":92}},
+{"name":"Composer Esa-Pekka Salonen", attributes: {"country":"Finland","era":"Contemporary","innovation":94,"prestige":94,"legacy":92,"orchestralImpact":92,"versatility":90,"influence":93}},
+{"name":"Composer Felix Mendelssohn", attributes: {"country":"Germany","era":"Early Romantic","innovation":88,"prestige":95,"legacy":96,"orchestralImpact":94,"versatility":93,"influence":94}},
+{"name":"Composer Florence Price", attributes: {"country":"United States","era":"Modern","innovation":92,"prestige":94,"legacy":93,"orchestralImpact":92,"versatility":90,"influence":94}},
+{"name":"Composer François-Joseph Gossec", attributes: {"country":"France","era":"Classical","innovation":83,"prestige":90,"legacy":88,"orchestralImpact":80,"versatility":85,"influence":85}},
+{"name":"Composer Franz Liszt", attributes: {"country":"Hungary","era":"Romantic","innovation":98,"prestige":96,"legacy":97,"orchestralImpact":92,"versatility":98,"influence":98}},
+{"name":"Composer Franz Schubert", attributes: {"country":"Austria","era":"Early Romantic","innovation":90,"prestige":96,"legacy":97,"orchestralImpact":90,"versatility":98,"influence":95}},
+{"name":"Composer Georg Philipp Telemann", attributes: {"country":"Germany","era":"Baroque","innovation":86,"prestige":92,"legacy":93,"orchestralImpact":85,"versatility":95,"influence":90}},
+{"name":"Composer George Frideric Handel", attributes: {"country":"Germany / United Kingdom","era":"Baroque","innovation":92,"prestige":98,"legacy":98,"orchestralImpact":95,"versatility":95,"influence":98}},
+{"name":"Composer George Gershwin", attributes: {"country":"United States","era":"Modern","innovation":94,"prestige":97,"legacy":96,"orchestralImpact":92,"versatility":98,"influence":97}},
+{"name":"Composer Giacomo Puccini", attributes: {"country":"Italy","era":"Late Romantic","innovation":88,"prestige":98,"legacy":97,"orchestralImpact":92,"versatility":85,"influence":96}},
+{"name":"Composer Giuseppe Verdi", attributes: {"country":"Italy","era":"Romantic","innovation":90,"prestige":99,"legacy":99,"orchestralImpact":92,"versatility":90,"influence":98}},
+{"name":"Composer Gustav Mahler", attributes: {"country":"Austria","era":"Late Romantic","innovation":98,"prestige":96,"legacy":97,"orchestralImpact":100,"versatility":88,"influence":98}},
+{"name":"Composer Gustav Mahler", attributes: {"country":"Austria","era":"Late Romantic","innovation":98,"prestige":96,"legacy":97,"orchestralImpact":100,"versatility":88,"influence":98}},
+{"name":"Composer György Ligeti", attributes: {"country":"Hungary","era":"Modern","innovation":98,"prestige":95,"legacy":94,"orchestralImpact":90,"versatility":85,"influence":97}},
+{"name":"Composer Hans Zimmer", attributes: {"country":"Germany","era":"Contemporary","innovation":88,"prestige":97,"legacy":94,"orchestralImpact":96,"versatility":95,"influence":97}},
+{"name":"Composer Hector Berlioz", attributes: {"country":"France","era":"Early Romantic","innovation":98,"prestige":94,"legacy":95,"orchestralImpact":97,"versatility":85,"influence":96}},
+{"name":"Composer Hector Berlioz", attributes: {"country":"France","era":"Early Romantic","innovation":98,"prestige":94,"legacy":95,"orchestralImpact":97,"versatility":85,"influence":96}},
+{"name":"Composer Heitor Villa-Lobos", attributes: {"country":"Brazil","era":"Modern","innovation":94,"prestige":95,"legacy":96,"orchestralImpact":94,"versatility":98,"influence":96}},
+{"name":"Composer Henry Purcell", attributes: {"country":"United Kingdom","era":"Baroque","innovation":88,"prestige":94,"legacy":95,"orchestralImpact":85,"versatility":90,"influence":94}},
+{"name":"Composer Igor Stravinsky", attributes: {"country":"Russia","era":"Modernism","innovation":100,"prestige":97,"legacy":98,"orchestralImpact":96,"versatility":95,"influence":100}},
+{"name":"Composer Isang Yun", attributes: {"country":"South Korea","era":"Modern","innovation":95,"prestige":93,"legacy":92,"orchestralImpact":90,"versatility":85,"influence":94}},
+{"name":"Composer Jean Françaix", attributes: {"country":"France","era":"Modern","innovation":90,"prestige":92,"legacy":92,"orchestralImpact":85,"versatility":90,"influence":90}},
+{"name":"Composer Jean Sibelius", attributes: {"country":"Finland","era":"Late Romantic","innovation":94,"prestige":95,"legacy":95,"orchestralImpact":98,"versatility":85,"influence":94}},
+{"name":"Composer Jean Sibelius", attributes: {"country":"Finland","era":"Late Romantic","innovation":94,"prestige":95,"legacy":95,"orchestralImpact":98,"versatility":85,"influence":94}},
+{"name":"Composer Jean-Baptiste Lully", attributes: {"country":"France","era":"Baroque","innovation":85,"prestige":92,"legacy":93,"orchestralImpact":85,"versatility":80,"influence":90}},
+{"name":"Composer Jean-Philippe Rameau", attributes: {"country":"France","era":"Baroque","innovation":92,"prestige":94,"legacy":95,"orchestralImpact":88,"versatility":85,"influence":94}},
+{"name":"Composer Jennifer Higdon", attributes: {"country":"United States","era":"Contemporary","innovation":92,"prestige":94,"legacy":91,"orchestralImpact":92,"versatility":90,"influence":93}},
+{"name":"Composer Johann Nepomuk Hummel", attributes: {"country":"Austria","era":"Classical","innovation":88,"prestige":91,"legacy":92,"orchestralImpact":82,"versatility":90,"influence":88}},
+{"name":"Composer Johann Sebastian Bach", attributes: {"country":"Germany","era":"Baroque","innovation":95,"prestige":100,"legacy":100,"orchestralImpact":90,"versatility":100,"influence":100}},
+{"name":"Composer Johannes Brahms", attributes: {"country":"Germany","era":"Romantic","innovation":90,"prestige":98,"legacy":98,"orchestralImpact":95,"versatility":92,"influence":96}},
+{"name":"Composer John Adams", attributes: {"country":"United States","era":"Contemporary","innovation":94,"prestige":94,"legacy":93,"orchestralImpact":88,"versatility":92,"influence":94}},
+{"name":"Composer John Williams", attributes: {"country":"United States","era":"Contemporary","innovation":90,"prestige":98,"legacy":96,"orchestralImpact":98,"versatility":95,"influence":98}},
+{"name":"Composer Joseph Haydn", attributes: {"country":"Austria","era":"Classical","innovation":97,"prestige":98,"legacy":99,"orchestralImpact":96,"versatility":95,"influence":99}},
+{"name":"Composer Kaija Saariaho", attributes: {"country":"Finland","era":"Contemporary","innovation":96,"prestige":94,"legacy":92,"orchestralImpact":88,"versatility":90,"influence":95}},
+{"name":"Composer Krzysztof Penderecki", attributes: {"country":"Poland","era":"Modern","innovation":97,"prestige":95,"legacy":94,"orchestralImpact":92,"versatility":85,"influence":96}},
+{"name":"Composer Lili Boulanger", attributes: {"country":"France","era":"Early Modern","innovation":94,"prestige":94,"legacy":95,"orchestralImpact":88,"versatility":90,"influence":95}},
+{"name":"Composer Lou Harrison", attributes: {"country":"United States","era":"Modern","innovation":93,"prestige":92,"legacy":90,"orchestralImpact":85,"versatility":95,"influence":92}},
+{"name":"Composer Luciano Berio", attributes: {"country":"Italy","era":"Modern","innovation":97,"prestige":94,"legacy":93,"orchestralImpact":88,"versatility":92,"influence":96}},
+{"name":"Composer Ludwig van Beethoven", attributes: {"country":"Germany","era":"Classical / Romantic","innovation":100,"prestige":100,"legacy":100,"orchestralImpact":100,"versatility":95,"influence":100}},
+{"name":"Composer Luigi Boccherini", attributes: {"country":"Italy","era":"Classical","innovation":88,"prestige":92,"legacy":93,"orchestralImpact":85,"versatility":90,"influence":90}},
+{"name":"Composer Maurice Ravel", attributes: {"country":"France","era":"Impressionism","innovation":96,"prestige":95,"legacy":96,"orchestralImpact":94,"versatility":92,"influence":95}},
+{"name":"Composer Mieczysław Weinberg", attributes: {"country":"Poland","era":"Modern","innovation":94,"prestige":93,"legacy":92,"orchestralImpact":94,"versatility":88,"influence":94}},
+{"name":"Composer Muzio Clementi", attributes: {"country":"Italy","era":"Classical","innovation":89,"prestige":92,"legacy":93,"orchestralImpact":80,"versatility":95,"influence":90}},
+{"name":"Composer Olivier Messiaen", attributes: {"country":"France","era":"Modernism","innovation":99,"prestige":94,"legacy":95,"orchestralImpact":92,"versatility":88,"influence":98}},
+{"name":"Composer Osvaldo Golijov", attributes: {"country":"Argentina","era":"Contemporary","innovation":93,"prestige":93,"legacy":90,"orchestralImpact":88,"versatility":90,"influence":94}},
+{"name":"Composer Ottorino Respighi", attributes: {"country":"Italy","era":"Modern","innovation":92,"prestige":95,"legacy":95,"orchestralImpact":96,"versatility":90,"influence":95}},
+{"name":"Composer Paul Hindemith", attributes: {"country":"Germany","era":"Modern","innovation":92,"prestige":93,"legacy":94,"orchestralImpact":90,"versatility":95,"influence":92}},
+{"name":"Composer Philip Glass", attributes: {"country":"United States","era":"Contemporary","innovation":95,"prestige":95,"legacy":94,"orchestralImpact":85,"versatility":92,"influence":95}},
+{"name":"Composer Pierre Boulez", attributes: {"country":"France","era":"Modern","innovation":99,"prestige":95,"legacy":94,"orchestralImpact":85,"versatility":90,"influence":97}},
+{"name":"Composer Pyotr Ilyich Tchaikovsky", attributes: {"country":"Russia","era":"Romantic","innovation":92,"prestige":98,"legacy":98,"orchestralImpact":99,"versatility":94,"influence":97}},
+{"name":"Composer Qigang Chen", attributes: {"country":"China","era":"Contemporary","innovation":93,"prestige":92,"legacy":90,"orchestralImpact":88,"versatility":88,"influence":92}},
+{"name":"Composer Richard Strauss", attributes: {"country":"Germany","era":"Late Romantic","innovation":96,"prestige":96,"legacy":97,"orchestralImpact":98,"versatility":90,"influence":97}},
+{"name":"Composer Richard Strauss", attributes: {"country":"Germany","era":"Late Romantic","innovation":96,"prestige":96,"legacy":97,"orchestralImpact":98,"versatility":90,"influence":97}},
+{"name":"Composer Richard Wagner", attributes: {"country":"Germany","era":"Romantic","innovation":100,"prestige":97,"legacy":99,"orchestralImpact":100,"versatility":85,"influence":100}},
+{"name":"Composer Robert Schumann", attributes: {"country":"Germany","era":"Early Romantic","innovation":90,"prestige":94,"legacy":95,"orchestralImpact":88,"versatility":95,"influence":93}},
+{"name":"Composer Samuel Barber", attributes: {"country":"United States","era":"Modern","innovation":90,"prestige":95,"legacy":95,"orchestralImpact":94,"versatility":90,"influence":94}},
+{"name":"Composer Sergei Prokofiev", attributes: {"country":"Russia","era":"Modernism","innovation":96,"prestige":95,"legacy":96,"orchestralImpact":96,"versatility":92,"influence":97}},
+{"name":"Composer Silvestre Revueltas", attributes: {"country":"Mexico","era":"Modern","innovation":94,"prestige":92,"legacy":93,"orchestralImpact":90,"versatility":85,"influence":94}},
+{"name":"Composer Sofia Gubaidulina", attributes: {"country":"Russia","era":"Contemporary","innovation":97,"prestige":94,"legacy":93,"orchestralImpact":90,"versatility":85,"influence":96}},
+{"name":"Composer Steve Reich", attributes: {"country":"United States","era":"Contemporary","innovation":96,"prestige":95,"legacy":94,"orchestralImpact":85,"versatility":90,"influence":96}},
+{"name":"Composer Tan Dun", attributes: {"country":"China","era":"Contemporary","innovation":95,"prestige":94,"legacy":92,"orchestralImpact":90,"versatility":92,"influence":95}},
+{"name":"Composer Thomas Adès", attributes: {"country":"United Kingdom","era":"Contemporary","innovation":95,"prestige":93,"legacy":92,"orchestralImpact":90,"versatility":92,"influence":94}},
+{"name":"Composer Tōru Takemitsu", attributes: {"country":"Japan","era":"Modern","innovation":97,"prestige":94,"legacy":95,"orchestralImpact":92,"versatility":88,"influence":97}},
+{"name":"Composer Unsuk Chin", attributes: {"country":"South Korea","era":"Contemporary","innovation":96,"prestige":93,"legacy":92,"orchestralImpact":90,"versatility":92,"influence":94}},
+{"name":"Composer Witold Lutosławski", attributes: {"country":"Poland","era":"Modern","innovation":95,"prestige":94,"legacy":94,"orchestralImpact":90,"versatility":88,"influence":95}},
+{"name":"Composer Wolfgang Amadeus Mozart", attributes: {"country":"Austria","era":"Classical","innovation":98,"prestige":100,"legacy":100,"orchestralImpact":98,"versatility":100,"influence":100}},
+  ];
+  
+const instruments = [
+{"name":"Instrument Accordion", attributes:{"range":90,"power":85,"agility":85,"versatility":90,"importance":55,"solo":90}},
+{"name":"Instrument Alto Flute", attributes:{"range":88,"power":75,"agility":85,"versatility":80,"importance":70,"solo":78}},
+{"name":"Instrument Alto Saxophone", attributes:{"range":90,"power":85,"agility":90,"versatility":85,"importance":60,"solo":88}},
+{"name":"Instrument Anvil", attributes:{"range":45,"power":98,"agility":20,"versatility":35,"importance":50,"solo":20}},
+{"name":"Instrument Bandoneon", attributes:{"range":88,"power":85,"agility":80,"versatility":85,"importance":50,"solo":88}},
+{"name":"Instrument Baritone Saxophone", attributes:{"range":88,"power":90,"agility":75,"versatility":80,"importance":58,"solo":85}},
+{"name":"Instrument Baroque Violin", attributes:{"range":90,"power":80,"agility":95,"versatility":85,"importance":65,"solo":90}},
+{"name":"Instrument Bass Clarinet", attributes:{"range":90,"power":85,"agility":80,"versatility":88,"importance":85,"solo":86}},
+{"name":"Instrument Bass Drum", attributes:{"range":70,"power":100,"agility":60,"versatility":70,"importance":80,"solo":55}},
+{"name":"Instrument Bass Trombone", attributes:{"range":85,"power":98,"agility":70,"versatility":80,"importance":88,"solo":75}},
+{"name":"Instrument Bassoon", attributes:{"range":90,"power":85,"agility":80,"versatility":88,"importance":87,"solo":83}},
+{"name":"Instrument Celesta", attributes:{"range":75,"power":65,"agility":85,"versatility":80,"importance":78,"solo":85}},
+{"name":"Instrument Cello", attributes:{"range":92,"power":90,"agility":85,"versatility":95,"importance":92,"solo":96}},
+{"name":"Instrument Clarinet", attributes:{"range":95,"power":80,"agility":92,"versatility":98,"importance":90,"solo":94}},
+{"name":"Instrument Contrabass Clarinet", attributes:{"range":82,"power":95,"agility":55,"versatility":65,"importance":75,"solo":60}},
+{"name":"Instrument Contrabassoon", attributes:{"range":80,"power":90,"agility":60,"versatility":70,"importance":82,"solo":65}},
+{"name":"Instrument Cornet", attributes:{"range":85,"power":90,"agility":92,"versatility":80,"importance":78,"solo":88}},
+{"name":"Instrument Cymbals", attributes:{"range":70,"power":98,"agility":65,"versatility":75,"importance":82,"solo":60}},
+{"name":"Instrument Double Bass", attributes:{"range":85,"power":95,"agility":75,"versatility":80,"importance":90,"solo":70}},
+{"name":"Instrument E-flat Clarinet", attributes:{"range":88,"power":85,"agility":95,"versatility":75,"importance":78,"solo":82}},
+{"name":"Instrument Electronic Keyboard", attributes:{"range":100,"power":95,"agility":95,"versatility":100,"importance":55,"solo":95}},
+{"name":"Instrument English Horn", attributes:{"range":82,"power":78,"agility":80,"versatility":85,"importance":80,"solo":88}},
+{"name":"Instrument Euphonium", attributes:{"range":88,"power":85,"agility":80,"versatility":80,"importance":70,"solo":85}},
+{"name":"Instrument Flexatone", attributes:{"range":65,"power":70,"agility":75,"versatility":80,"importance":50,"solo":75}},
+{"name":"Instrument Flute", attributes:{"range":90,"power":70,"agility":98,"versatility":92,"importance":85,"solo":90}},
+{"name":"Instrument French Horn", attributes:{"range":92,"power":90,"agility":75,"versatility":90,"importance":95,"solo":88}},
+{"name":"Instrument Glockenspiel", attributes:{"range":80,"power":88,"agility":95,"versatility":75,"importance":78,"solo":80}},
+{"name":"Instrument Harp", attributes:{"range":88,"power":70,"agility":85,"versatility":90,"importance":80,"solo":92}},
+{"name":"Instrument Harpsichord", attributes:{"range":85,"power":70,"agility":90,"versatility":80,"importance":65,"solo":85}},
+{"name":"Instrument Mandolin", attributes:{"range":85,"power":75,"agility":90,"versatility":80,"importance":55,"solo":85}},
+{"name":"Instrument Marimba", attributes:{"range":90,"power":85,"agility":90,"versatility":92,"importance":78,"solo":88}},
+{"name":"Instrument Natural Horn", attributes:{"range":88,"power":85,"agility":70,"versatility":75,"importance":65,"solo":80}},
+{"name":"Instrument Natural Trumpet", attributes:{"range":85,"power":90,"agility":75,"versatility":70,"importance":65,"solo":82}},
+{"name":"Instrument Oboe", attributes:{"range":85,"power":75,"agility":88,"versatility":85,"importance":88,"solo":89}},
+{"name":"Instrument Octobass", attributes:{"range":75,"power":100,"agility":40,"versatility":50,"importance":65,"solo":45}},
+{"name":"Instrument Orchestral Synthesizer", attributes:{"range":100,"power":98,"agility":95,"versatility":100,"importance":50,"solo":98}},
+{"name":"Instrument Organ", attributes:{"range":100,"power":100,"agility":70,"versatility":85,"importance":75,"solo":98}},
+{"name":"Instrument Piano (Orchestral)", attributes:{"range":100,"power":95,"agility":92,"versatility":100,"importance":85,"solo":100}},
+{"name":"Instrument Piccolo", attributes:{"range":85,"power":90,"agility":98,"versatility":75,"importance":82,"solo":80}},
+{"name":"Instrument Prepared Piano", attributes:{"range":95,"power":85,"agility":80,"versatility":90,"importance":60,"solo":88}},
+{"name":"Instrument Recorder", attributes:{"range":80,"power":60,"agility":85,"versatility":75,"importance":55,"solo":78}},
+{"name":"Instrument Snare Drum", attributes:{"range":75,"power":90,"agility":95,"versatility":80,"importance":78,"solo":60}},
+{"name":"Instrument Subcontrabass Flute", attributes:{"range":80,"power":90,"agility":50,"versatility":60,"importance":70,"solo":55}},
+{"name":"Instrument Tambourine", attributes:{"range":65,"power":85,"agility":90,"versatility":70,"importance":75,"solo":60}},
+{"name":"Instrument Tenor Saxophone", attributes:{"range":92,"power":88,"agility":85,"versatility":85,"importance":60,"solo":90}},
+{"name":"Instrument Thunder Sheet", attributes:{"range":55,"power":90,"agility":40,"versatility":45,"importance":58,"solo":35}},
+{"name":"Instrument Timpani", attributes:{"range":80,"power":95,"agility":85,"versatility":82,"importance":92,"solo":65}},
+{"name":"Instrument Triangle", attributes:{"range":60,"power":85,"agility":90,"versatility":65,"importance":75,"solo":55}},
+{"name":"Instrument Trombone", attributes:{"range":90,"power":95,"agility":80,"versatility":85,"importance":90,"solo":85}},
+{"name":"Instrument Trumpet", attributes:{"range":88,"power":98,"agility":90,"versatility":85,"importance":92,"solo":95}},
+{"name":"Instrument Tuba", attributes:{"range":85,"power":100,"agility":65,"versatility":75,"importance":88,"solo":70}},
+{"name":"Instrument Vibraphone", attributes:{"range":88,"power":80,"agility":85,"versatility":90,"importance":70,"solo":85}},
+{"name":"Instrument Viola d'Amore", attributes:{"range":88,"power":75,"agility":85,"versatility":70,"importance":55,"solo":82}},
+{"name":"Instrument Viola", attributes:{"range":88,"power":80,"agility":90,"versatility":92,"importance":85,"solo":82}},
+{"name":"Instrument Violin Piccolo", attributes:{"range":85,"power":75,"agility":95,"versatility":70,"importance":55,"solo":80}},
+{"name":"Instrument Violin", attributes:{"range":95,"power":85,"agility":98,"versatility":100,"importance":100,"solo":98}},
+{"name":"Instrument Waterphone", attributes:{"range":70,"power":75,"agility":60,"versatility":85,"importance":55,"solo":80}},
+{"name":"Instrument Whip (Slapstick)", attributes:{"range":50,"power":95,"agility":30,"versatility":40,"importance":55,"solo":25}},
+{"name":"Instrument Wind Machine", attributes:{"range":60,"power":80,"agility":65,"versatility":50,"importance":60,"solo":30}},
+{"name":"Instrument Xylophone", attributes:{"range":85,"power":85,"agility":98,"versatility":88,"importance":80,"solo":75}},
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('orchestrasCheckbox').checked) selectedCards.push(...orchestras);
+    if (document.getElementById('maestrosCheckbox').checked) selectedCards.push(...maestros);
+    if (document.getElementById('pianistsCheckbox').checked) selectedCards.push(...pianists);
+    if (document.getElementById('violinCheckbox').checked) selectedCards.push(...violin);
+    if (document.getElementById('composersCheckbox').checked) selectedCards.push(...composers);
+    if (document.getElementById('instrumentsCheckbox').checked) selectedCards.push(...instruments);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  document.getElementById('shuffleRulesButton').addEventListener('click', function() {
+    shuffleDeck(rules, 'rulesResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+		body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

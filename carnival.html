@@ -1,0 +1,330 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Brazilian Carnival</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="riodCheckbox"> Rio de Janeiro (RJ)</label><br>
+    <label><input type="checkbox" id="saopCheckbox"> São Paulo (SP)</label><br>
+    <label><input type="checkbox" id="olindaCheckbox"> Olinda (PE)</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+"Perfect 10: Increase a chosen attribute by +10",
+"Beverage Explode: Samba Impact or Musical Impact automatically wins",
+"Perfect Evolution: Add +5 to all attributes",
+"Historic Parade: Legacy cannot be defeated",
+"CrowdPower: Fanbase or Crowd Power gains +8",
+"Allegory Breaks: The opponent loses -8 Visual Grandeur",
+"Harmony Problem: The opponent loses -6 Parade Score",
+"Commission Penalizes: The opponent must play with a random attribute reduced by -10.",
+"Delay in the Parade: The opponent skips attribute selection",
+"Evolution Error: The opponent must use their lowest attribute",
+"Judgment Turn: The lowest attribute wins",
+"Technical Criteria: Only Parade Score (or equivalent) is valid in" ,
+"Night Parade: Visual Grandeur and Visual Identity are doubled",
+"Street Carnival: Crowd Power, Fanbase, or Energy Level decides",
+"Popular Judgment: Fanbase or Crowd Power beats any other attribute",
+"Rain on the Avenue: All players randomly swap the value of one attribute.",
+"Concentration Confusion: Attributes are chosen randomly",
+"Technical Tie: In case of a tie, both players discard a card.",
+"Chaotic Parade: The highest and lowest attributes are ignored",
+"Off-Season Carnival: All action cards playedare canceled.",
+"Resource Accepted: Cancel a Sabotage action played against you.",
+"Community Unites: Restore all attributes to their original values.",
+"Intense Rehearsals: Recover +5 in a previously played attribute.",
+"Avenue Experience: Ignore a Rule Change effect",
+"Cultural Resistance: Legacy or Tradition cannot be reduced",
+  ];
+
+  
+const riod = [
+{"name": "Acadêmicos da Abolição (RJ)", "attributes": {"Tier": "Access", "Titles": 59, "Parade Score": 76, "Samba Impact": 78, "Visual Grandeur": 75, "Fanbase": 72, "Legacy": 76}},
+{"name": "Acadêmicos da Rocinha (RJ)", "attributes": {"Tier": "Traditional", "Titles": 63, "Parade Score": 83, "Samba Impact": 84, "Visual Grandeur": 82, "Fanbase": 80, "Legacy": 79}},
+{"name": "Acadêmicos de Santa Cruz (RJ)", "attributes": {"Tier": "Traditional", "Titles": 60, "Parade Score": 81, "Samba Impact": 80, "Visual Grandeur": 79, "Fanbase": 76, "Legacy": 74}},
+{"name": "Acadêmicos de Vigário Geral (RJ)", "attributes": {"Tier": "Traditional", "Titles": 62, "Parade Score": 82, "Samba Impact": 81, "Visual Grandeur": 80, "Fanbase": 77, "Legacy": 75}},
+{"name": "Acadêmicos do Dendê (RJ)", "attributes": {"Tier": "Historic", "Titles": 63, "Parade Score": 78, "Samba Impact": 79, "Visual Grandeur": 76, "Fanbase": 74, "Legacy": 77}},
+{"name": "Acadêmicos do Grande Rio (RJ)", "attributes": {"Tier": "Elite", "Titles": 82, "Parade Score": 95, "Samba Impact": 89, "Visual Grandeur": 96, "Fanbase": 91, "Legacy": 86}},
+{"name": "Acadêmicos do Salgueiro (RJ)", "attributes": {"Tier": "Legends", "Titles": 88, "Parade Score": 95, "Samba Impact": 97, "Visual Grandeur": 94, "Fanbase": 93, "Legacy": 95}},
+{"name": "Acadêmicos do Sossego (RJ)", "attributes": {"Tier": "Elite", "Titles": 60, "Parade Score": 85, "Samba Impact": 84, "Visual Grandeur": 83, "Fanbase": 78, "Legacy": 75}},
+{"name": "Alegria da Zona Sul (RJ)", "attributes": {"Tier": "Historic", "Titles": 68, "Parade Score": 79, "Samba Impact": 81, "Visual Grandeur": 77, "Fanbase": 76, "Legacy": 80}},
+{"name": "Arame de Ricardo (RJ)", "attributes": {"Tier": "Access", "Titles": 57, "Parade Score": 74, "Samba Impact": 76, "Visual Grandeur": 73, "Fanbase": 70, "Legacy": 73}},
+{"name": "Arranco do Engenho de Dentro (RJ)", "attributes": {"Tier": "Traditional", "Titles": 66, "Parade Score": 84, "Samba Impact": 83, "Visual Grandeur": 82, "Fanbase": 79, "Legacy": 81}},
+{"name": "Bangay (RJ)", "attributes": {"Tier": "Access", "Titles": 55, "Parade Score": 74, "Samba Impact": 76, "Visual Grandeur": 73, "Fanbase": 70, "Legacy": 72}},
+{"name": "Beija-Flor de Nilópolis (RJ)", "attributes": {"Tier": "Legends", "Titles": 94, "Parade Score": 98, "Samba Impact": 96, "Visual Grandeur": 100, "Fanbase": 95, "Legacy": 97}},
+{"name": "Boca de Siri (RJ)", "attributes": {"Tier": "Historic", "Titles": 60, "Parade Score": 76, "Samba Impact": 77, "Visual Grandeur": 74, "Fanbase": 72, "Legacy": 75}},
+{"name": "Cacique de Ramos (RJ)", "attributes": {"Tier": "Access", "Titles": 85, "Parade Score": 88, "Samba Impact": 95, "Visual Grandeur": 82, "Fanbase": 96, "Legacy": 100}},
+{"name": "Caprichosos de Pilares (RJ)", "attributes": {"Tier": "Historic", "Titles": 74, "Parade Score": 82, "Samba Impact": 86, "Visual Grandeur": 83, "Fanbase": 84, "Legacy": 89}},
+{"name": "Em Cima da Hora (RJ)", "attributes": {"Tier": "Traditional", "Titles": 72, "Parade Score": 85, "Samba Impact": 87, "Visual Grandeur": 84, "Fanbase": 81, "Legacy": 86}},
+{"name": "Estácio de Sá (RJ)", "attributes": {"Tier": "Elite", "Titles": 74, "Parade Score": 87, "Samba Impact": 90, "Visual Grandeur": 84, "Fanbase": 85, "Legacy": 88}},
+{"name": "Flor da Mina do Andaraí (RJ)", "attributes": {"Tier": "Historic", "Titles": 65, "Parade Score": 78, "Samba Impact": 80, "Visual Grandeur": 76, "Fanbase": 74, "Legacy": 82}},
+{"name": "Imperadores Rubro-Negros (RJ)", "attributes": {"Tier": "Access", "Titles": 58, "Parade Score": 75, "Samba Impact": 77, "Visual Grandeur": 74, "Fanbase": 71, "Legacy": 74}},
+{"name": "Imperatriz Leopoldinense (RJ)", "attributes": {"Tier": "Legends", "Titles": 92, "Parade Score": 93, "Samba Impact": 91, "Visual Grandeur": 94, "Fanbase": 90, "Legacy": 94}},
+{"name": "Império da Tijuca (RJ)", "attributes": {"Tier": "Historic", "Titles": 75, "Parade Score": 80, "Samba Impact": 85, "Visual Grandeur": 78, "Fanbase": 82, "Legacy": 90}},
+{"name": "Império da Uva (RJ)", "attributes": {"Tier": "Historic", "Titles": 62, "Parade Score": 77, "Samba Impact": 78, "Visual Grandeur": 75, "Fanbase": 73, "Legacy": 76}},
+{"name": "Império Serrano (RJ)", "attributes": {"Tier": "Traditional", "Titles": 90, "Parade Score": 82, "Samba Impact": 92, "Visual Grandeur": 88, "Fanbase": 91, "Legacy": 97}},
+{"name": "Inocentes de Belford Roxo (RJ)", "attributes": {"Tier": "Elite", "Titles": 62, "Parade Score": 86, "Samba Impact": 83, "Visual Grandeur": 82, "Fanbase": 79, "Legacy": 76}},
+{"name": "Leão de Quintino (RJ)", "attributes": {"Tier": "Access", "Titles": 58, "Parade Score": 75, "Samba Impact": 77, "Visual Grandeur": 74, "Fanbase": 71, "Legacy": 74}},
+{"name": "Mangueira (RJ)", "attributes": {"Tier": "Legends", "Titles": 97, "Parade Score": 95, "Samba Impact": 100, "Visual Grandeur": 93, "Fanbase": 100, "Legacy": 100}},
+{"name": "Mocidade Independente de Padre Miguel (RJ)", "attributes": {"Tier": "Legends", "Titles": 90, "Parade Score": 94, "Samba Impact": 92, "Visual Grandeur": 95, "Fanbase": 92, "Legacy": 93}},
+{"name": "Mocidade Unida do Santa Marta (RJ)", "attributes": {"Tier": "Historic", "Titles": 64, "Parade Score": 77, "Samba Impact": 79, "Visual Grandeur": 75, "Fanbase": 73, "Legacy": 78}},
+{"name": "Paraíso do Tuiuti (RJ)", "attributes": {"Tier": "Elite", "Titles": 78, "Parade Score": 93, "Samba Impact": 91, "Visual Grandeur": 89, "Fanbase": 88, "Legacy": 85}},
+{"name": "Portela (RJ)", "attributes": {"Tier": "Legends", "Titles": 100, "Parade Score": 96, "Samba Impact": 98, "Visual Grandeur": 92, "Fanbase": 99, "Legacy": 100}},
+{"name": "Porto da Pedra (RJ)", "attributes": {"Tier": "Traditional", "Titles": 70, "Parade Score": 87, "Samba Impact": 86, "Visual Grandeur": 85, "Fanbase": 83, "Legacy": 84}},
+{"name": "Renascer de Jacarepaguá (RJ)", "attributes": {"Tier": "Access", "Titles": 60, "Parade Score": 77, "Samba Impact": 79, "Visual Grandeur": 76, "Fanbase": 73, "Legacy": 78}},
+{"name": "São Clemente (RJ)", "attributes": {"Tier": "Elite", "Titles": 70, "Parade Score": 88, "Samba Impact": 87, "Visual Grandeur": 85, "Fanbase": 86, "Legacy": 82}},
+{"name": "Sereno de Campo Grande (RJ)", "attributes": {"Tier": "Access", "Titles": 60, "Parade Score": 77, "Samba Impact": 79, "Visual Grandeur": 76, "Fanbase": 73, "Legacy": 78}},
+{"name": "Tradição (RJ)", "attributes": {"Tier": "Traditional", "Titles": 67, "Parade Score": 85, "Samba Impact": 86, "Visual Grandeur": 84, "Fanbase": 82, "Legacy": 85}},
+{"name": "União da Ilha do Governador (RJ)", "attributes": {"Tier": "Elite", "Titles": 72, "Parade Score": 89, "Samba Impact": 88, "Visual Grandeur": 86, "Fanbase": 87, "Legacy": 84}},
+{"name": "União de Maricá (RJ)", "attributes": {"Tier": "Traditional", "Titles": 65, "Parade Score": 85, "Samba Impact": 84, "Visual Grandeur": 83, "Fanbase": 80, "Legacy": 78}},
+{"name": "União do Jacarezinho (RJ)", "attributes": {"Tier": "Traditional", "Titles": 61, "Parade Score": 83, "Samba Impact": 82, "Visual Grandeur": 81, "Fanbase": 78, "Legacy": 76}},
+{"name": "União do Parque Acari (RJ)", "attributes": {"Tier": "Traditional", "Titles": 63, "Parade Score": 83, "Samba Impact": 82, "Visual Grandeur": 81, "Fanbase": 78, "Legacy": 77}},
+{"name": "Unidos da Ponte (RJ)", "attributes": {"Tier": "Traditional", "Titles": 65, "Parade Score": 84, "Samba Impact": 83, "Visual Grandeur": 82, "Fanbase": 79, "Legacy": 80}},
+{"name": "Unidos da Tijuca (RJ)", "attributes": {"Tier": "Elite", "Titles": 85, "Parade Score": 94, "Samba Impact": 90, "Visual Grandeur": 93, "Fanbase": 89, "Legacy": 88}},
+{"name": "Unidos da Vila Kennedy (RJ)", "attributes": {"Tier": "Access", "Titles": 56, "Parade Score": 74, "Samba Impact": 75, "Visual Grandeur": 72, "Fanbase": 70, "Legacy": 72}},
+{"name": "Unidos de Bangu (RJ)", "attributes": {"Tier": "Traditional", "Titles": 64, "Parade Score": 84, "Samba Impact": 83, "Visual Grandeur": 82, "Fanbase": 79, "Legacy": 78}},
+{"name": "Unidos de Padre Miguel (RJ)", "attributes": {"Tier": "Traditional", "Titles": 68, "Parade Score": 86, "Samba Impact": 85, "Visual Grandeur": 84, "Fanbase": 82, "Legacy": 83}},
+{"name": "Unidos de Vila Isabel (RJ)", "attributes": {"Tier": "Elite", "Titles": 86, "Parade Score": 92, "Samba Impact": 94, "Visual Grandeur": 90, "Fanbase": 92, "Legacy": 90}},
+{"name": "Unidos do Cabuçu (RJ)", "attributes": {"Tier": "Historic", "Titles": 66, "Parade Score": 79, "Samba Impact": 81, "Visual Grandeur": 77, "Fanbase": 75, "Legacy": 81}},
+{"name": "Unidos do Jacarezinho (RJ)", "attributes": {"Tier": "Access", "Titles": 61, "Parade Score": 78, "Samba Impact": 80, "Visual Grandeur": 77, "Fanbase": 74, "Legacy": 79}},
+{"name": "Unidos do Viradouro (RJ)", "attributes": {"Tier": "Elite", "Titles": 84, "Parade Score": 94, "Samba Impact": 88, "Visual Grandeur": 92, "Fanbase": 90, "Legacy": 87}},
+{"name": "Vizinha Faladeira (RJ)", "attributes": {"Tier": "Historic", "Titles": 70, "Parade Score": 78, "Samba Impact": 80, "Visual Grandeur": 76, "Fanbase": 75, "Legacy": 88}},
+ 	];
+ 	
+ 	
+const saop = [
+{"name": "Acadêmicos de São Jorge (SP)", "attributes": {"Tier": "Historic", "Titles": 55, "Parade Score": 76, "Samba Impact": 73, "Visual Grandeur": 72, "Fanbase": 71, "Legacy": 68}},
+{"name": "Acadêmicos do Tatuapé (SP)", "attributes": {"Tier": "Legends", "Titles": 84, "Parade Score": 93, "Samba Impact": 86, "Visual Grandeur": 90, "Fanbase": 87, "Legacy": 84}},
+{"name": "Acadêmicos do Tucuruvi (SP)", "attributes": {"Tier": "Elite", "Titles": 76, "Parade Score": 88, "Samba Impact": 84, "Visual Grandeur": 85, "Fanbase": 84, "Legacy": 81}},
+{"name": "Águia de Ouro (SP)", "attributes": {"Tier": "Legends", "Titles": 85, "Parade Score": 92, "Samba Impact": 87, "Visual Grandeur": 89, "Fanbase": 90, "Legacy": 85}},
+{"name": "Amizade Zona Leste (SP)", "attributes": {"Tier": "Traditional", "Titles": 62, "Parade Score": 82, "Samba Impact": 78, "Visual Grandeur": 78, "Fanbase": 76, "Legacy": 72}},
+{"name": "Barroca Zona Sul (SP)", "attributes": {"Tier": "Legends", "Titles": 74, "Parade Score": 89, "Samba Impact": 84, "Visual Grandeur": 86, "Fanbase": 82, "Legacy": 80}},
+{"name": "Brinco da Marquesa (SP)", "attributes": {"Tier": "Historic", "Titles": 60, "Parade Score": 78, "Samba Impact": 75, "Visual Grandeur": 74, "Fanbase": 74, "Legacy": 71}},
+{"name": "Camisa 12 (SP)", "attributes": {"Tier": "Elite", "Titles": 66, "Parade Score": 86, "Samba Impact": 82, "Visual Grandeur": 82, "Fanbase": 86, "Legacy": 74}},
+{"name": "Camisa Verde e Branco (SP)", "attributes": {"Tier": "Legends", "Titles": 87, "Parade Score": 91, "Samba Impact": 88, "Visual Grandeur": 87, "Fanbase": 92, "Legacy": 92}},
+{"name": "Colorado do Brás (SP)", "attributes": {"Tier": "Legends", "Titles": 78, "Parade Score": 90, "Samba Impact": 86, "Visual Grandeur": 88, "Fanbase": 84, "Legacy": 82}},
+{"name": "Combinados de Sapopemba (SP)", "attributes": {"Tier": "Historic", "Titles": 55, "Parade Score": 76, "Samba Impact": 73, "Visual Grandeur": 72, "Fanbase": 72, "Legacy": 68}},
+{"name": "Dom Bosco de Itaquera (SP)", "attributes": {"Tier": "Elite", "Titles": 68, "Parade Score": 86, "Samba Impact": 82, "Visual Grandeur": 81, "Fanbase": 81, "Legacy": 77}},
+{"name": "Dragões da Real (SP)", "attributes": {"Tier": "Legends", "Titles": 80, "Parade Score": 92, "Samba Impact": 87, "Visual Grandeur": 91, "Fanbase": 90, "Legacy": 83}},
+{"name": "Estrela do Terceiro Milênio (SP)", "attributes": {"Tier": "Legends", "Titles": 79, "Parade Score": 91, "Samba Impact": 86, "Visual Grandeur": 89, "Fanbase": 86, "Legacy": 82}},
+{"name": "Filhos da Santa (SP)", "attributes": {"Tier": "Historic", "Titles": 54, "Parade Score": 75, "Samba Impact": 72, "Visual Grandeur": 71, "Fanbase": 70, "Legacy": 67}},
+{"name": "Flor de Vila Dalila (SP)", "attributes": {"Tier": "Access", "Titles": 50, "Parade Score": 70, "Samba Impact": 68, "Visual Grandeur": 66, "Fanbase": 66, "Legacy": 62}},
+{"name": "Gaviões da Fiel (SP)", "attributes": {"Tier": "Legends", "Titles": 84, "Parade Score": 92, "Samba Impact": 86, "Visual Grandeur": 90, "Fanbase": 98, "Legacy": 85}},
+{"name": "Imperador do Ipiranga (SP)", "attributes": {"Tier": "Traditional", "Titles": 65, "Parade Score": 82, "Samba Impact": 79, "Visual Grandeur": 79, "Fanbase": 77, "Legacy": 74}},
+{"name": "Imperatriz da Paulicéia (SP)", "attributes": {"Tier": "Traditional", "Titles": 64, "Parade Score": 83, "Samba Impact": 78, "Visual Grandeur": 78, "Fanbase": 76, "Legacy": 73}},
+{"name": "Império de Casa Verde (SP)", "attributes": {"Tier": "Legends", "Titles": 86, "Parade Score": 92, "Samba Impact": 88, "Visual Grandeur": 90, "Fanbase": 89, "Legacy": 86}},
+{"name": "Independente Tricolor (SP)", "attributes": {"Tier": "Elite", "Titles": 69, "Parade Score": 86, "Samba Impact": 81, "Visual Grandeur": 81, "Fanbase": 84, "Legacy": 76}},
+{"name": "Lavapés (SP)", "attributes": {"Tier": "Historic", "Titles": 64, "Parade Score": 79, "Samba Impact": 77, "Visual Grandeur": 74, "Fanbase": 78, "Legacy": 82}},
+{"name": "Leandro de Itaquera (SP)", "attributes": {"Tier": "Historic", "Titles": 62, "Parade Score": 78, "Samba Impact": 76, "Visual Grandeur": 74, "Fanbase": 76, "Legacy": 74}},
+{"name": "Mancha Verde (SP)", "attributes": {"Tier": "Elite", "Titles": 78, "Parade Score": 89, "Samba Impact": 83, "Visual Grandeur": 86, "Fanbase": 90, "Legacy": 80}},
+{"name": "Mocidade Alegre (SP)", "attributes": {"Tier": "Legends", "Titles": 90, "Parade Score": 94, "Samba Impact": 89, "Visual Grandeur": 92, "Fanbase": 91, "Legacy": 88}},
+{"name": "Mocidade Robruense (SP)", "attributes": {"Tier": "Access", "Titles": 48, "Parade Score": 69, "Samba Impact": 66, "Visual Grandeur": 65, "Fanbase": 64, "Legacy": 61}},
+{"name": "Mocidade Unida da Mooca (SP)", "attributes": {"Tier": "Legends", "Titles": 82, "Parade Score": 93, "Samba Impact": 88, "Visual Grandeur": 90, "Fanbase": 86, "Legacy": 84}},
+{"name": "Morro da Casa Verde (SP)", "attributes": {"Tier": "Traditional", "Titles": 63, "Parade Score": 82, "Samba Impact": 78, "Visual Grandeur": 78, "Fanbase": 76, "Legacy": 72}},
+{"name": "Nenê de Vila Matilde (SP)", "attributes": {"Tier": "Elite", "Titles": 82, "Parade Score": 87, "Samba Impact": 88, "Visual Grandeur": 83, "Fanbase": 88, "Legacy": 92}},
+{"name": "Penha (SP)", "attributes": {"Tier": "Historic", "Titles": 57, "Parade Score": 76, "Samba Impact": 73, "Visual Grandeur": 72, "Fanbase": 73, "Legacy": 69}},
+{"name": "Pérola Negra (SP)", "attributes": {"Tier": "Elite", "Titles": 70, "Parade Score": 86, "Samba Impact": 83, "Visual Grandeur": 82, "Fanbase": 82, "Legacy": 78}},
+{"name": "Primeira da Cidade Líder (SP)", "attributes": {"Tier": "Traditional", "Titles": 61, "Parade Score": 81, "Samba Impact": 77, "Visual Grandeur": 77, "Fanbase": 74, "Legacy": 70}},
+{"name": "Raízes do Samba (SP)", "attributes": {"Tier": "Historic", "Titles": 56, "Parade Score": 76, "Samba Impact": 74, "Visual Grandeur": 72, "Fanbase": 72, "Legacy": 69}},
+{"name": "Rosas de Ouro (SP)", "attributes": {"Tier": "Legends", "Titles": 88, "Parade Score": 94, "Samba Impact": 89, "Visual Grandeur": 91, "Fanbase": 88, "Legacy": 86}},
+{"name": "Saudosa Maloca (SP)", "attributes": {"Tier": "Historic", "Titles": 58, "Parade Score": 77, "Samba Impact": 74, "Visual Grandeur": 73, "Fanbase": 74, "Legacy": 70}},
+{"name": "Tom Maior (SP)", "attributes": {"Tier": "Legends", "Titles": 81, "Parade Score": 91, "Samba Impact": 85, "Visual Grandeur": 88, "Fanbase": 85, "Legacy": 82}},
+{"name": "Torcida Jovem (SP)", "attributes": {"Tier": "Traditional", "Titles": 61, "Parade Score": 82, "Samba Impact": 77, "Visual Grandeur": 78, "Fanbase": 80, "Legacy": 70}},
+{"name": "Tradição Albertinense (SP)", "attributes": {"Tier": "Access", "Titles": 48, "Parade Score": 69, "Samba Impact": 66, "Visual Grandeur": 65, "Fanbase": 64, "Legacy": 61}},
+{"name": "Uirapuru da Mooca (SP)", "attributes": {"Tier": "Traditional", "Titles": 60, "Parade Score": 81, "Samba Impact": 77, "Visual Grandeur": 77, "Fanbase": 74, "Legacy": 70}},
+{"name": "União Imperial (SP)", "attributes": {"Tier": "Access", "Titles": 49, "Parade Score": 69, "Samba Impact": 67, "Visual Grandeur": 65, "Fanbase": 65, "Legacy": 61}},
+{"name": "União Independente da Zona Sul (SP)", "attributes": {"Tier": "Access", "Titles": 49, "Parade Score": 70, "Samba Impact": 67, "Visual Grandeur": 66, "Fanbase": 65, "Legacy": 62}},
+{"name": "Unidos de Guaianases (SP)", "attributes": {"Tier": "Access", "Titles": 52, "Parade Score": 71, "Samba Impact": 69, "Visual Grandeur": 67, "Fanbase": 67, "Legacy": 66}},
+{"name": "Unidos de Santa Bárbara (SP)", "attributes": {"Tier": "Historic", "Titles": 55, "Parade Score": 76, "Samba Impact": 73, "Visual Grandeur": 72, "Fanbase": 71, "Legacy": 68}},
+{"name": "Unidos de São Lucas (SP)", "attributes": {"Tier": "Traditional", "Titles": 66, "Parade Score": 83, "Samba Impact": 79, "Visual Grandeur": 79, "Fanbase": 78, "Legacy": 74}},
+{"name": "Unidos de São Miguel (SP)", "attributes": {"Tier": "Historic", "Titles": 56, "Parade Score": 76, "Samba Impact": 73, "Visual Grandeur": 72, "Fanbase": 73, "Legacy": 68}},
+{"name": "Unidos de Vila Maria (SP)", "attributes": {"Tier": "Elite", "Titles": 74, "Parade Score": 88, "Samba Impact": 84, "Visual Grandeur": 84, "Fanbase": 86, "Legacy": 80}},
+{"name": "Unidos do Peruche (SP)", "attributes": {"Tier": "Traditional", "Titles": 78, "Parade Score": 83, "Samba Impact": 85, "Visual Grandeur": 79, "Fanbase": 86, "Legacy": 90}},
+{"name": "Unidos do Vale Encantado (SP)", "attributes": {"Tier": "Historic", "Titles": 55, "Parade Score": 76, "Samba Impact": 73, "Visual Grandeur": 72, "Fanbase": 71, "Legacy": 68}},
+{"name": "Vai-Vai (SP)", "attributes": {"Tier": "Legends", "Titles": 95, "Parade Score": 92, "Samba Impact": 95, "Visual Grandeur": 88, "Fanbase": 100, "Legacy": 100}},
+{"name": "X-9 Paulistana (SP)", "attributes": {"Tier": "Traditional", "Titles": 72, "Parade Score": 84, "Samba Impact": 82, "Visual Grandeur": 80, "Fanbase": 83, "Legacy": 80}},
+ 	];
+ 	
+ 	
+const olinda = [
+{"name": "Bacalhau do Batata (PE)", "attributes": {"Tier": "Elite", "Crowd Power": 87, "Musical Impact": 90, "Visual Identity": 88, "Tradition": 95, "Cultural Impact": 92, "Energy Level": 89}},
+{"name": "Banhistas do Pina (PE)", "attributes": {"Tier": "Traditional", "Crowd Power": 82, "Musical Impact": 82, "Visual Identity": 88, "Tradition": 85, "Cultural Impact": 83, "Energy Level": 87}},
+{"name": "Bloco Afro Axé Omolu (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 73, "Musical Impact": 80, "Visual Identity": 79, "Tradition": 82, "Cultural Impact": 81, "Energy Level": 75}},
+{"name": "Bloco da Saudade (PE)", "attributes": {"Tier": "Traditional", "Crowd Power": 80, "Musical Impact": 84, "Visual Identity": 82, "Tradition": 88, "Cultural Impact": 85, "Energy Level": 78}},
+{"name": "Bloco das Flores (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 71, "Musical Impact": 76, "Visual Identity": 75, "Tradition": 80, "Cultural Impact": 78, "Energy Level": 74}},
+{"name": "Bloco do Amparo (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 72, "Musical Impact": 77, "Visual Identity": 76, "Tradition": 81, "Cultural Impact": 79, "Energy Level": 74}},
+{"name": "Bloco do Barba (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 67, "Musical Impact": 72, "Visual Identity": 71, "Tradition": 76, "Cultural Impact": 74, "Energy Level": 71}},
+{"name": "Bloco do Boi (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 68, "Musical Impact": 73, "Visual Identity": 74, "Tradition": 78, "Cultural Impact": 76, "Energy Level": 72}},
+{"name": "Bloco do Cachorro (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 68, "Musical Impact": 73, "Visual Identity": 72, "Tradition": 77, "Cultural Impact": 75, "Energy Level": 72}},
+{"name": "Bloco do Eu Sozinho (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 69, "Musical Impact": 74, "Visual Identity": 73, "Tradition": 78, "Cultural Impact": 76, "Energy Level": 72}},
+{"name": "Bloco do Maracatu Mirim (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 65, "Musical Impact": 70, "Visual Identity": 69, "Tradition": 74, "Cultural Impact": 72, "Energy Level": 69}},
+{"name": "Bloco do Neco (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 70, "Musical Impact": 75, "Visual Identity": 74, "Tradition": 79, "Cultural Impact": 77, "Energy Level": 73}},
+{"name": "Bloco do Pinguim (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 66, "Musical Impact": 71, "Visual Identity": 70, "Tradition": 75, "Cultural Impact": 73, "Energy Level": 70}},
+{"name": "Cambinda Brasileira (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 72, "Musical Impact": 79, "Visual Identity": 77, "Tradition": 83, "Cultural Impact": 80, "Energy Level": 74}},
+{"name": "Cariri Olindense (PE)", "attributes": {"Tier": "Traditional", "Crowd Power": 78, "Musical Impact": 81, "Visual Identity": 80, "Tradition": 84, "Cultural Impact": 82, "Energy Level": 79}},
+{"name": "Ceroula de Olinda (PE)", "attributes": {"Tier": "Traditional", "Crowd Power": 77, "Musical Impact": 80, "Visual Identity": 82, "Tradition": 83, "Cultural Impact": 81, "Energy Level": 80}},
+{"name": "Clube Carnavalesco Misto Lenhadores (PE)", "attributes": {"Tier": "Elite", "Crowd Power": 83, "Musical Impact": 85, "Visual Identity": 84, "Tradition": 90, "Cultural Impact": 86, "Energy Level": 85}},
+{"name": "Cordas e Retalhos (PE)", "attributes": {"Tier": "Traditional", "Crowd Power": 79, "Musical Impact": 83, "Visual Identity": 80, "Tradition": 86, "Cultural Impact": 84, "Energy Level": 80}},
+{"name": "Elefante de Olinda (PE)", "attributes": {"Tier": "Legends", "Crowd Power": 90, "Musical Impact": 91, "Visual Identity": 95, "Tradition": 97, "Cultural Impact": 94, "Energy Level": 88}},
+{"name": "Eu Acho É Pouco (PE)", "attributes": {"Tier": "Elite", "Crowd Power": 86, "Musical Impact": 88, "Visual Identity": 92, "Tradition": 93, "Cultural Impact": 91, "Energy Level": 90}},
+{"name": "Flor da Lira (PE)", "attributes": {"Tier": "Elite", "Crowd Power": 84, "Musical Impact": 86, "Visual Identity": 85, "Tradition": 92, "Cultural Impact": 87, "Energy Level": 86}},
+{"name": "Galo da Madrugada (PE)", "attributes": {"Tier": "Legends", "Crowd Power": 100, "Musical Impact": 98, "Visual Identity": 95, "Tradition": 97, "Cultural Impact": 100, "Energy Level": 99}},
+{"name": "Homem da Meia-Noite (PE)", "attributes": {"Tier": "Legends", "Crowd Power": 95, "Musical Impact": 92, "Visual Identity": 100, "Tradition": 100, "Cultural Impact": 98, "Energy Level": 90}},
+{"name": "Maracatu Leão Coroado (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 74, "Musical Impact": 81, "Visual Identity": 79, "Tradition": 86, "Cultural Impact": 84, "Energy Level": 75}},
+{"name": "Maracatu Nação Pernambuco (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 74, "Musical Impact": 82, "Visual Identity": 78, "Tradition": 85, "Cultural Impact": 83, "Energy Level": 76}},
+{"name": "Menino da Tarde (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 75, "Musical Impact": 78, "Visual Identity": 76, "Tradition": 82, "Cultural Impact": 79, "Energy Level": 77}},
+{"name": "O Bonde (PE)", "attributes": {"Tier": "Elite", "Crowd Power": 85, "Musical Impact": 87, "Visual Identity": 86, "Tradition": 90, "Cultural Impact": 88, "Energy Level": 89}},
+{"name": "Ocupação das Ladeiras (PE)", "attributes": {"Tier": "Historic", "Crowd Power": 70, "Musical Impact": 75, "Visual Identity": 74, "Tradition": 79, "Cultural Impact": 77, "Energy Level": 73}},
+{"name": "Pitombeira dos Quatro Cantos (PE)", "attributes": {"Tier": "Legends", "Crowd Power": 92, "Musical Impact": 94, "Visual Identity": 90, "Tradition": 98, "Cultural Impact": 96, "Energy Level": 92}},
+{"name": "Vassourinhas (PE)", "attributes": {"Tier": "Elite", "Crowd Power": 88, "Musical Impact": 100, "Visual Identity": 85, "Tradition": 99, "Cultural Impact": 95, "Energy Level": 90}},
+  ];
+  
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('riodCheckbox').checked) selectedCards.push(...riod);
+    if (document.getElementById('saopCheckbox').checked) selectedCards.push(...saop);
+    if (document.getElementById('olindaCheckbox').checked) selectedCards.push(...olinda);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+		body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

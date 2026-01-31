@@ -12,6 +12,7 @@
     <label><input type="checkbox" id="violinCheckbox"> Violinists</label><br>
     <label><input type="checkbox" id="synphCheckbox"> Symphony</label><br>
     <label><input type="checkbox" id="instrumentsCheckbox"> Instruments</label><br>
+    <label><input type="checkbox" id="hallCheckbox"> Concert Hall</label><br>
   </div>
 
   <!-- Cards per page selection -->
@@ -670,6 +671,111 @@ const instruments = [
 {"name":"Instrument Xylophone", attributes:{"range":85,"power":85,"agility":98,"versatility":88,"importance":80,"solo":75}},
   ];
 
+
+const hall = [
+{"name": "Ahmed Adnan Saygun Arts Center", "attributes": {"country": "Turkey", "city": "Izmir", "tier": "Modern", "Acoustics": 93, "Prestige": 91, "Historical Legacy": 88, "Architectural Impact": 92, "Capacity": 86, "Global Recognition": 91}},
+{"name": "Arts Centre Melbourne", "attributes": {"country": "Australia", "city": "Melbourne", "tier": "Iconic", "Acoustics": 93, "Prestige": 92, "Historical Legacy": 90, "Architectural Impact": 94, "Capacity": 90, "Global Recognition": 92}},
+{"name": "Auditorio de Tenerife", "attributes": {"country": "Spain", "city": "Santa Cruz de Tenerife", "tier": "Modern", "Acoustics": 93, "Prestige": 92, "Historical Legacy": 85, "Architectural Impact": 98, "Capacity": 87, "Global Recognition": 92}},
+{"name": "Auditorio Nacional de Música", "attributes": {"country": "Spain", "city": "Madrid", "tier": "Regional", "Acoustics": 95, "Prestige": 94, "Historical Legacy": 92, "Architectural Impact": 92, "Capacity": 88, "Global Recognition": 94}},
+{"name": "Auditorio Nacional", "attributes": {"country": "Spain", "city": "Madrid", "tier": "Iconic", "Acoustics": 95, "Prestige": 93, "Historical Legacy": 90, "Architectural Impact": 91, "Capacity": 88, "Global Recognition": 93}},
+{"name": "Auditorium Parco della Musica", "attributes": {"country": "Italy", "city": "Rome", "tier": "Iconic", "Acoustics": 96, "Prestige": 95, "Historical Legacy": 92, "Architectural Impact": 96, "Capacity": 90, "Global Recognition": 95}},
+{"name": "Barbican Centre", "attributes": {"country": "United Kingdom", "city": "London", "tier": "Regional", "Acoustics": 90, "Prestige": 92, "Historical Legacy": 88, "Architectural Impact": 90, "Capacity": 89, "Global Recognition": 93}},
+{"name": "Berlin Philharmonie", "attributes": {"country": "Germany", "city": "Berlin", "tier": "Legendary", "Acoustics": 99, "Prestige": 96, "Historical Legacy": 94, "Architectural Impact": 98, "Capacity": 87, "Global Recognition": 96}},
+{"name": "Bolshoi Theatre", "attributes": {"country": "Russia", "city": "Moscow", "tier": "Legendary", "Acoustics": 94, "Prestige": 98, "Historical Legacy": 99, "Architectural Impact": 94, "Capacity": 92, "Global Recognition": 97}},
+{"name": "Boston Symphony Hall", "attributes": {"country": "USA", "city": "Boston", "tier": "Legendary", "Acoustics": 99, "Prestige": 96, "Historical Legacy": 95, "Architectural Impact": 89, "Capacity": 86, "Global Recognition": 94}},
+{"name": "Bozar (Palais des Beaux-Arts)", "attributes": {"country": "Belgium", "city": "Brussels", "tier": "Modern", "Acoustics": 95, "Prestige": 93, "Historical Legacy": 92, "Architectural Impact": 90, "Capacity": 85, "Global Recognition": 93}},
+{"name": "Bridgewater Hall", "attributes": {"country": "United Kingdom", "city": "Manchester", "tier": "Iconic", "Acoustics": 95, "Prestige": 92, "Historical Legacy": 88, "Architectural Impact": 90, "Capacity": 87, "Global Recognition": 92}},
+{"name": "Bunkamura Orchard Hall", "attributes": {"country": "Japan", "city": "Tokyo", "tier": "Modern", "Acoustics": 94, "Prestige": 92, "Historical Legacy": 88, "Architectural Impact": 90, "Capacity": 86, "Global Recognition": 92}},
+{"name": "Cairo Opera House", "attributes": {"country": "Egypt", "city": "Cairo", "tier": "Iconic", "Acoustics": 91, "Prestige": 92, "Historical Legacy": 94, "Architectural Impact": 90, "Capacity": 88, "Global Recognition": 92}},
+{"name": "Carnegie Hall", "attributes": {"country": "USA", "city": "New York City", "tier": "Legendary", "Acoustics": 98, "Prestige": 100, "Historical Legacy": 99, "Architectural Impact": 92, "Capacity": 90, "Global Recognition": 100}},
+{"name": "Concertgebouw", "attributes": {"country": "Netherlands", "city": "Amsterdam", "tier": "Legendary", "Acoustics": 100, "Prestige": 97, "Historical Legacy": 98, "Architectural Impact": 90, "Capacity": 88, "Global Recognition": 97}},
+{"name": "Cultural Centre of Belém", "attributes": {"country": "Portugal", "city": "Lisbon", "tier": "Modern", "Acoustics": 92, "Prestige": 91, "Historical Legacy": 88, "Architectural Impact": 90, "Capacity": 88, "Global Recognition": 91}},
+{"name": "DR Koncerthuset", "attributes": {"country": "Denmark", "city": "Copenhagen", "tier": "Modern", "Acoustics": 96, "Prestige": 92, "Historical Legacy": 85, "Architectural Impact": 94, "Capacity": 88, "Global Recognition": 92}},
+{"name": "Dubai Opera", "attributes": {"country": "United Arab Emirates", "city": "Dubai", "tier": "Iconic", "Acoustics": 91, "Prestige": 93, "Historical Legacy": 85, "Architectural Impact": 96, "Capacity": 90, "Global Recognition": 93}},
+{"name": "Elbphilharmonie", "attributes": {"country": "Germany", "city": "Hamburg", "tier": "Modern", "Acoustics": 98, "Prestige": 94, "Historical Legacy": 85, "Architectural Impact": 100, "Capacity": 92, "Global Recognition": 94}},
+{"name": "Esplanade – Theatres on the Bay", "attributes": {"country": "Singapore", "city": "Singapore", "tier": "Iconic", "Acoustics": 94, "Prestige": 93, "Historical Legacy": 88, "Architectural Impact": 96, "Capacity": 92, "Global Recognition": 93}},
+{"name": "Estates Theatre", "attributes": {"country": "Czech Republic", "city": "Prague", "tier": "Iconic", "Acoustics": 92, "Prestige": 93, "Historical Legacy": 98, "Architectural Impact": 88, "Capacity": 80, "Global Recognition": 90}},
+{"name": "Gasteig Philharmonie", "attributes": {"country": "Germany", "city": "Munich", "tier": "Modern", "Acoustics": 94, "Prestige": 90, "Historical Legacy": 88, "Architectural Impact": 91, "Capacity": 90, "Global Recognition": 90}},
+{"name": "Gran Teatre del Liceu", "attributes": {"country": "Spain", "city": "Barcelona", "tier": "Iconic", "Acoustics": 94, "Prestige": 96, "Historical Legacy": 96, "Architectural Impact": 92, "Capacity": 89, "Global Recognition": 96}},
+{"name": "Gran Teatro Nacional", "attributes": {"country": "Peru", "city": "Lima", "tier": "Modern", "Acoustics": 93, "Prestige": 92, "Historical Legacy": 88, "Architectural Impact": 94, "Capacity": 90, "Global Recognition": 92}},
+{"name": "Gulbenkian Hall", "attributes": {"country": "Portugal", "city": "Lisbon", "tier": "Modern", "Acoustics": 94, "Prestige": 92, "Historical Legacy": 90, "Architectural Impact": 91, "Capacity": 86, "Global Recognition": 92}},
+{"name": "Harpa Concert Hall", "attributes": {"country": "Iceland", "city": "Reykjav\u00edk", "tier": "Modern", "Acoustics": 95, "Prestige": 92, "Historical Legacy": 80, "Architectural Impact": 96, "Capacity": 88, "Global Recognition": 92}},
+{"name": "Helsinki Music Centre", "attributes": {"country": "Finland", "city": "Helsinki", "tier": "Modern", "Acoustics": 95, "Prestige": 90, "Historical Legacy": 85, "Architectural Impact": 92, "Capacity": 86, "Global Recognition": 90}},
+{"name": "Helsinki Opera House", "attributes": {"country": "Finland", "city": "Helsinki", "tier": "Iconic", "Acoustics": 93, "Prestige": 94, "Historical Legacy": 92, "Architectural Impact": 92, "Capacity": 87, "Global Recognition": 94}},
+{"name": "Hong Kong Cultural Centre", "attributes": {"country": "China", "city": "Hong Kong", "tier": "Iconic", "Acoustics": 94, "Prestige": 93, "Historical Legacy": 90, "Architectural Impact": 92, "Capacity": 92, "Global Recognition": 93}},
+{"name": "K\u00f6lner Philharmonie", "attributes": {"country": "Germany", "city": "Cologne", "tier": "Iconic", "Acoustics": 96, "Prestige": 91, "Historical Legacy": 88, "Architectural Impact": 93, "Capacity": 84, "Global Recognition": 90}},
+{"name": "Kauffman Center for the Performing Arts", "attributes": {"country": "USA", "city": "Kansas City", "tier": "Modern", "Acoustics": 96, "Prestige": 91, "Historical Legacy": 85, "Architectural Impact": 95, "Capacity": 87, "Global Recognition": 91}},
+{"name": "Kennedy Center", "attributes": {"country": "USA", "city": "Washington, D.C.", "tier": "Iconic", "Acoustics": 92, "Prestige": 97, "Historical Legacy": 94, "Architectural Impact": 93, "Capacity": 97, "Global Recognition": 98}},
+{"name": "King Fahad Cultural Centre", "attributes": {"country": "Saudi Arabia", "city": "Riyadh", "tier": "Regional", "Acoustics": 90, "Prestige": 89, "Historical Legacy": 85, "Architectural Impact": 88, "Capacity": 94, "Global Recognition": 89}},
+{"name": "Konzerthaus Berlin", "attributes": {"country": "Germany", "city": "Berlin", "tier": "Iconic", "Acoustics": 95, "Prestige": 94, "Historical Legacy": 95, "Architectural Impact": 92, "Capacity": 86, "Global Recognition": 94}},
+{"name": "Konzerthaus Vienna", "attributes": {"country": "Austria", "city": "Vienna", "tier": "Legendary", "Acoustics": 96, "Prestige": 95, "Historical Legacy": 96, "Architectural Impact": 93, "Capacity": 87, "Global Recognition": 95}},
+{"name": "La Fenice", "attributes": {"country": "Italy", "city": "Venice", "tier": "Iconic", "Acoustics": 93, "Prestige": 96, "Historical Legacy": 97, "Architectural Impact": 91, "Capacity": 85, "Global Recognition": 95}},
+{"name": "Liceu Opera House", "attributes": {"country": "Spain", "city": "Barcelona", "tier": "Iconic", "Acoustics": 93, "Prestige": 95, "Historical Legacy": 96, "Architectural Impact": 90, "Capacity": 89, "Global Recognition": 95}},
+{"name": "Lincoln Center", "attributes": {"country": "USA", "city": "New York City", "tier": "Iconic", "Acoustics": 92, "Prestige": 99, "Historical Legacy": 95, "Architectural Impact": 94, "Capacity": 98, "Global Recognition": 99}},
+{"name": "Lucerne Concert Hall (KKL Luzern)", "attributes": {"country": "Switzerland", "city": "Lucerne", "tier": "Iconic", "Acoustics": 98, "Prestige": 94, "Historical Legacy": 90, "Architectural Impact": 92, "Capacity": 84, "Global Recognition": 94}},
+{"name": "Maison Symphonique", "attributes": {"country": "Canada", "city": "Montreal", "tier": "Modern", "Acoustics": 97, "Prestige": 91, "Historical Legacy": 85, "Architectural Impact": 93, "Capacity": 88, "Global Recognition": 91}},
+{"name": "Mariinsky Theatre", "attributes": {"country": "Russia", "city": "Saint Petersburg", "tier": "Legendary", "Acoustics": 95, "Prestige": 97, "Historical Legacy": 98, "Architectural Impact": 92, "Capacity": 88, "Global Recognition": 96}},
+{"name": "Megaron Concert Hall", "attributes": {"country": "Greece", "city": "Athens", "tier": "Iconic", "Acoustics": 94, "Prestige": 92, "Historical Legacy": 88, "Architectural Impact": 92, "Capacity": 90, "Global Recognition": 92}},
+{"name": "Musikverein", "attributes": {"country": "Austria", "city": "Vienna", "tier": "Legendary", "Acoustics": 100, "Prestige": 99, "Historical Legacy": 100, "Architectural Impact": 88, "Capacity": 85, "Global Recognition": 98}},
+{"name": "National Centre for the Performing Arts", "attributes": {"country": "China", "city": "Beijing", "tier": "Modern", "Acoustics": 94, "Prestige": 93, "Historical Legacy": 85, "Architectural Impact": 98, "Capacity": 96, "Global Recognition": 94}},
+{"name": "National Concert Hall", "attributes": {"country": "Ireland", "city": "Dublin", "tier": "Iconic", "Acoustics": 94, "Prestige": 93, "Historical Legacy": 90, "Architectural Impact": 89, "Capacity": 85, "Global Recognition": 93}},
+{"name": "National Kaohsiung Center for the Arts", "attributes": {"country": "Taiwan", "city": "Kaohsiung", "tier": "Modern", "Acoustics": 94, "Prestige": 92, "Historical Legacy": 85, "Architectural Impact": 98, "Capacity": 90, "Global Recognition": 92}},
+{"name": "National Symphony Hall", "attributes": {"country": "Taiwan", "city": "Taipei", "tier": "Modern", "Acoustics": 95, "Prestige": 93, "Historical Legacy": 88, "Architectural Impact": 94, "Capacity": 88, "Global Recognition": 93}},
+{"name": "National Theatre", "attributes": {"country": "Czech Republic", "city": "Prague", "tier": "Regional", "Acoustics": 93, "Prestige": 95, "Historical Legacy": 97, "Architectural Impact": 94, "Capacity": 88, "Global Recognition": 95}},
+{"name": "National Theatre", "attributes": {"country": "Romania", "city": "Bucharest", "tier": "Regional", "Acoustics": 91, "Prestige": 92, "Historical Legacy": 94, "Architectural Impact": 90, "Capacity": 88, "Global Recognition": 92}},
+{"name": "Norwegian National Opera and Ballet", "attributes": {"country": "Norway", "city": "Oslo", "tier": "Modern", "Acoustics": 94, "Prestige": 93, "Historical Legacy": 90, "Architectural Impact": 96, "Capacity": 88, "Global Recognition": 93}},
+{"name": "Op\u00e9ra Bastille", "attributes": {"country": "France", "city": "Paris", "tier": "Iconic", "Acoustics": 91, "Prestige": 94, "Historical Legacy": 90, "Architectural Impact": 92, "Capacity": 95, "Global Recognition": 95}},
+{"name": "Opéra de Lyon", "attributes": {"country": "France", "city": "Lyon", "tier": "Iconic", "Acoustics": 93, "Prestige": 94, "Historical Legacy": 92, "Architectural Impact": 94, "Capacity": 86, "Global Recognition": 94}},
+{"name": "Opéra de Monte-Carlo", "attributes": {"country": "Monaco", "city": "Monte-Carlo", "tier": "Iconic", "Acoustics": 92, "Prestige": 95, "Historical Legacy": 95, "Architectural Impact": 93, "Capacity": 82, "Global Recognition": 95}},
+{"name": "Opera Vlaanderen", "attributes": {"country": "Belgium", "city": "Antwerp", "tier": "Regional", "Acoustics": 92, "Prestige": 91, "Historical Legacy": 90, "Architectural Impact": 90, "Capacity": 85, "Global Recognition": 91}},
+{"name": "Oslo Opera House", "attributes": {"country": "Norway", "city": "Oslo", "tier": "Modern", "Acoustics": 94, "Prestige": 93, "Historical Legacy": 88, "Architectural Impact": 97, "Capacity": 87, "Global Recognition": 93}},
+{"name": "Palacio de Bellas Artes", "attributes": {"country": "Mexico", "city": "Mexico City", "tier": "Iconic", "Acoustics": 94, "Prestige": 95, "Historical Legacy": 97, "Architectural Impact": 96, "Capacity": 90, "Global Recognition": 96}},
+{"name": "Palais Garnier", "attributes": {"country": "France", "city": "Paris", "tier": "Legendary", "Acoustics": 93, "Prestige": 99, "Historical Legacy": 98, "Architectural Impact": 99, "Capacity": 90, "Global Recognition": 98}},
+{"name": "Palau de la M\u00fasica Catalana", "attributes": {"country": "Spain", "city": "Barcelona", "tier": "Legendary", "Acoustics": 95, "Prestige": 97, "Historical Legacy": 98, "Architectural Impact": 99, "Capacity": 85, "Global Recognition": 97}},
+{"name": "Perth Concert Hall", "attributes": {"country": "Australia", "city": "Perth", "tier": "Modern", "Acoustics": 92, "Prestige": 90, "Historical Legacy": 88, "Architectural Impact": 89, "Capacity": 85, "Global Recognition": 90}},
+{"name": "Philharmonie de Paris", "attributes": {"country": "France", "city": "Paris", "tier": "Modern", "Acoustics": 97, "Prestige": 94, "Historical Legacy": 85, "Architectural Impact": 97, "Capacity": 92, "Global Recognition": 94}},
+{"name": "Qatar National Convention Centre", "attributes": {"country": "Qatar", "city": "Doha", "tier": "Regional", "Acoustics": 90, "Prestige": 90, "Historical Legacy": 85, "Architectural Impact": 95, "Capacity": 98, "Global Recognition": 90}},
+{"name": "Queen Elizabeth Hall", "attributes": {"country": "United Kingdom", "city": "London", "tier": "Regional", "Acoustics": 89, "Prestige": 91, "Historical Legacy": 88, "Architectural Impact": 87, "Capacity": 88, "Global Recognition": 92}},
+{"name": "Roy Thomson Hall", "attributes": {"country": "Canada", "city": "Toronto", "tier": "Iconic", "Acoustics": 94, "Prestige": 93, "Historical Legacy": 90, "Architectural Impact": 92, "Capacity": 92, "Global Recognition": 93}},
+{"name": "Royal Albert Hall", "attributes": {"country": "United Kingdom", "city": "London", "tier": "Legendary", "Acoustics": 92, "Prestige": 98, "Historical Legacy": 97, "Architectural Impact": 95, "Capacity": 100, "Global Recognition": 99}},
+{"name": "Royal Concert Hall", "attributes": {"country": "United Kingdom", "city": "Nottingham", "tier": "Regional", "Acoustics": 90, "Prestige": 88, "Historical Legacy": 85, "Architectural Impact": 87, "Capacity": 88, "Global Recognition": 88}},
+{"name": "Royal Danish Opera House", "attributes": {"country": "Denmark", "city": "Copenhagen", "tier": "Modern", "Acoustics": 94, "Prestige": 94, "Historical Legacy": 90, "Architectural Impact": 97, "Capacity": 89, "Global Recognition": 94}},
+{"name": "Royal Opera House", "attributes": {"country": "United Kingdom", "city": "London", "tier": "Iconic", "Acoustics": 94, "Prestige": 98, "Historical Legacy": 97, "Architectural Impact": 93, "Capacity": 90, "Global Recognition": 98}},
+{"name": "Royal Opera", "attributes": {"country": "Sweden", "city": "Stockholm", "tier": "Iconic", "Acoustics": 94, "Prestige": 96, "Historical Legacy": 97, "Architectural Impact": 93, "Capacity": 88, "Global Recognition": 96}},
+{"name": "Royal Swedish Opera", "attributes": {"country": "Sweden", "city": "Stockholm", "tier": "Legendary", "Acoustics": 94, "Prestige": 96, "Historical Legacy": 97, "Architectural Impact": 92, "Capacity": 88, "Global Recognition": 96}},
+{"name": "Sala S\u00e3o Paulo", "attributes": {"country": "Brazil", "city": "S\u00e3o Paulo", "tier": "Modern", "Acoustics": 97, "Prestige": 94, "Historical Legacy": 90, "Architectural Impact": 94, "Capacity": 87, "Global Recognition": 94}},
+{"name": "Salle Pleyel", "attributes": {"country": "France", "city": "Paris", "tier": "Iconic", "Acoustics": 96, "Prestige": 94, "Historical Legacy": 92, "Architectural Impact": 88, "Capacity": 85, "Global Recognition": 93}},
+{"name": "Salle Wilfrid-Pelletier", "attributes": {"country": "Canada", "city": "Montreal", "tier": "Iconic", "Acoustics": 94, "Prestige": 93, "Historical Legacy": 90, "Architectural Impact": 91, "Capacity": 88, "Global Recognition": 93}},
+{"name": "San Carlo Theatre", "attributes": {"country": "Italy", "city": "Naples", "tier": "Legendary", "Acoustics": 94, "Prestige": 97, "Historical Legacy": 100, "Architectural Impact": 89, "Capacity": 87, "Global Recognition": 96}},
+{"name": "Santa Cecilia Hall", "attributes": {"country": "Italy", "city": "Rome", "tier": "Iconic", "Acoustics": 96, "Prestige": 94, "Historical Legacy": 92, "Architectural Impact": 93, "Capacity": 88, "Global Recognition": 94}},
+{"name": "Semperoper", "attributes": {"country": "Germany", "city": "Dresden", "tier": "Iconic", "Acoustics": 94, "Prestige": 96, "Historical Legacy": 98, "Architectural Impact": 93, "Capacity": 86, "Global Recognition": 95}},
+{"name": "Seoul Arts Center", "attributes": {"country": "South Korea", "city": "Seoul", "tier": "Modern", "Acoustics": 95, "Prestige": 92, "Historical Legacy": 88, "Architectural Impact": 93, "Capacity": 90, "Global Recognition": 92}},
+{"name": "Shanghai Symphony Hall", "attributes": {"country": "China", "city": "Shanghai", "tier": "Modern", "Acoustics": 97, "Prestige": 92, "Historical Legacy": 88, "Architectural Impact": 94, "Capacity": 88, "Global Recognition": 92}},
+{"name": "Southbank Centre (Royal Festival Hall)", "attributes": {"country": "United Kingdom", "city": "London", "tier": "Regional", "Acoustics": 91, "Prestige": 93, "Historical Legacy": 90, "Architectural Impact": 89, "Capacity": 92, "Global Recognition": 94}},
+{"name": "Stockholm Concert Hall", "attributes": {"country": "Sweden", "city": "Stockholm", "tier": "Legendary", "Acoustics": 96, "Prestige": 95, "Historical Legacy": 96, "Architectural Impact": 91, "Capacity": 85, "Global Recognition": 95}},
+{"name": "Suntory Hall", "attributes": {"country": "Japan", "city": "Tokyo", "tier": "Iconic", "Acoustics": 98, "Prestige": 94, "Historical Legacy": 90, "Architectural Impact": 92, "Capacity": 86, "Global Recognition": 94}},
+{"name": "Sydney Opera House", "attributes": {"country": "Australia", "city": "Sydney", "tier": "Legendary", "Acoustics": 94, "Prestige": 99, "Historical Legacy": 92, "Architectural Impact": 100, "Capacity": 90, "Global Recognition": 100}},
+{"name": "Tanglewood Music Shed", "attributes": {"country": "USA", "city": "Lenox (Massachusetts)", "tier": "Modern", "Acoustics": 95, "Prestige": 93, "Historical Legacy": 92, "Architectural Impact": 88, "Capacity": 95, "Global Recognition": 94}},
+{"name": "Teatro alla Scala", "attributes": {"country": "Italy", "city": "Milan", "tier": "Legendary", "Acoustics": 95, "Prestige": 100, "Historical Legacy": 100, "Architectural Impact": 90, "Capacity": 88, "Global Recognition": 99}},
+{"name": "Teatro Amazonas", "attributes": {"country": "Brazil", "city": "Manaus", "tier": "Iconic", "Acoustics": 92, "Prestige": 94, "Historical Legacy": 97, "Architectural Impact": 95, "Capacity": 85, "Global Recognition": 95}},
+{"name": "Teatro Col\u00f3n", "attributes": {"country": "Argentina", "city": "Buenos Aires", "tier": "Legendary", "Acoustics": 96, "Prestige": 97, "Historical Legacy": 99, "Architectural Impact": 94, "Capacity": 91, "Global Recognition": 96}},
+{"name": "Teatro Comunale", "attributes": {"country": "Italy", "city": "Bologna", "tier": "Iconic", "Acoustics": 93, "Prestige": 93, "Historical Legacy": 94, "Architectural Impact": 90, "Capacity": 86, "Global Recognition": 93}},
+{"name": "Teatro Massimo", "attributes": {"country": "Italy", "city": "Palermo", "tier": "Iconic", "Acoustics": 95, "Prestige": 95, "Historical Legacy": 97, "Architectural Impact": 93, "Capacity": 89, "Global Recognition": 95}},
+{"name": "Teatro Municipal de S\u00e3o Paulo", "attributes": {"country": "Brazil", "city": "S\u00e3o Paulo", "tier": "Iconic", "Acoustics": 93, "Prestige": 95, "Historical Legacy": 96, "Architectural Impact": 92, "Capacity": 88, "Global Recognition": 95}},
+{"name": "Teatro Municipal do Rio de Janeiro", "attributes": {"country": "Brazil", "city": "Rio de Janeiro", "tier": "Iconic", "Acoustics": 93, "Prestige": 95, "Historical Legacy": 97, "Architectural Impact": 93, "Capacity": 90, "Global Recognition": 95}},
+{"name": "Teatro Nacional Cláudio Santoro", "attributes": {"country": "Brazil", "city": "Brasília", "tier": "Modern", "Acoustics": 91, "Prestige": 90, "Historical Legacy": 88, "Architectural Impact": 95, "Capacity": 85, "Global Recognition": 90}},
+{"name": "Teatro Nacional de Costa Rica", "attributes": {"country": "Costa Rica", "city": "San José", "tier": "Regional", "Acoustics": 92, "Prestige": 93, "Historical Legacy": 96, "Architectural Impact": 91, "Capacity": 85, "Global Recognition": 93}},
+{"name": "Teatro Regio", "attributes": {"country": "Italy", "city": "Turin", "tier": "Iconic", "Acoustics": 94, "Prestige": 94, "Historical Legacy": 95, "Architectural Impact": 91, "Capacity": 87, "Global Recognition": 94}},
+{"name": "Teatro Solís", "attributes": {"country": "Uruguay", "city": "Montevideo", "tier": "Regional", "Acoustics": 92, "Prestige": 91, "Historical Legacy": 94, "Architectural Impact": 90, "Capacity": 85, "Global Recognition": 91}},
+{"name": "Teatro Teresa Carreño", "attributes": {"country": "Venezuela", "city": "Caracas", "tier": "Iconic", "Acoustics": 92, "Prestige": 93, "Historical Legacy": 94, "Architectural Impact": 92, "Capacity": 91, "Global Recognition": 93}},
+{"name": "Tokyo Opera City Concert Hall", "attributes": {"country": "Japan", "city": "Tokyo", "tier": "Modern", "Acoustics": 97, "Prestige": 92, "Historical Legacy": 88, "Architectural Impact": 94, "Capacity": 88, "Global Recognition": 92}},
+{"name": "Tonhalle Zurich", "attributes": {"country": "Switzerland", "city": "Zurich", "tier": "Iconic", "Acoustics": 97, "Prestige": 94, "Historical Legacy": 95, "Architectural Impact": 92, "Capacity": 85, "Global Recognition": 94}},
+{"name": "Usher Hall", "attributes": {"country": "United Kingdom", "city": "Edinburgh", "tier": "Iconic", "Acoustics": 92, "Prestige": 91, "Historical Legacy": 90, "Architectural Impact": 88, "Capacity": 89, "Global Recognition": 91}},
+{"name": "Vienna State Opera", "attributes": {"country": "Austria", "city": "Vienna", "tier": "Legendary", "Acoustics": 94, "Prestige": 98, "Historical Legacy": 99, "Architectural Impact": 92, "Capacity": 89, "Global Recognition": 97}},
+{"name": "Walt Disney Concert Hall", "attributes": {"country": "USA", "city": "Los Angeles", "tier": "Modern", "Acoustics": 97, "Prestige": 95, "Historical Legacy": 88, "Architectural Impact": 99, "Capacity": 85, "Global Recognition": 95}},
+  ];
+
+
   // Shuffle array
   function shuffleArray(array) {
     return array.sort(() => Math.random() - 0.5);
@@ -687,6 +793,7 @@ const instruments = [
     if (document.getElementById('synphCheckbox').checked) selectedCards.push(...synph);
     if (document.getElementById('composersCheckbox').checked) selectedCards.push(...composers);
     if (document.getElementById('instrumentsCheckbox').checked) selectedCards.push(...instruments);
+    if (document.getElementById('hallCheckbox').checked) selectedCards.push(...hall);
 
     if (selectedCards.length === 0) {
       alert("Please select at least one theme!");

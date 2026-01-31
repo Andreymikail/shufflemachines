@@ -8,6 +8,7 @@
     <label><input type="checkbox" id="riodCheckbox"> Rio de Janeiro (RJ)</label><br>
     <label><input type="checkbox" id="saopCheckbox"> São Paulo (SP)</label><br>
     <label><input type="checkbox" id="olindaCheckbox"> Olinda (PE)</label><br>
+    <label><input type="checkbox" id="salvadorCheckbox"> Salvador (BA)</label><br>
   </div>
 
   <!-- Cards per page selection -->
@@ -208,7 +209,40 @@ const olinda = [
   ];
   
 
-
+const salvador = [
+{"name": "Afoxé Filhos de Korin Efan", "attributes": {"tier": "Classic", "genre influence": "Afoxé / Afro-Religious", "crowd energy": 79, "musical legacy": 90, "visual impact": 92, "historical importance": 91, "founded": 1982}},
+{"name": "Bloco Alerta Geral", "attributes": {"tier": "Modern", "genre influence": "Samba / Percussion", "crowd energy": 83, "musical legacy": 85, "visual impact": 81, "historical importance": 82, "founded": 1986}},
+{"name": "Bloco Alvorada", "attributes": {"tier": "Classic", "genre influence": "Traditional Afro", "crowd energy": 82, "musical legacy": 88, "visual impact": 84, "historical importance": 85, "founded": 1975}},
+{"name": "Bloco Amor e Paixão", "attributes": {"tier": "Modern", "genre influence": "Romantic Axé", "crowd energy": 85, "musical legacy": 84, "visual impact": 82, "historical importance": 80, "founded": 1993}},
+{"name": "Bloco Araketu", "attributes": {"tier": "Iconic", "genre influence": "Samba-Reggae", "crowd energy": 89, "musical legacy": 94, "visual impact": 87, "historical importance": 92, "founded": 1980}},
+{"name": "Bloco Asa de Águia", "attributes": {"tier": "Modern", "genre influence": "Axé", "crowd energy": 91, "musical legacy": 90, "visual impact": 88, "historical importance": 86, "founded": 1988}},
+{"name": "Bloco Aspiral do Reggae", "attributes": {"tier": "Modern", "genre influence": "Reggae", "crowd energy": 80, "musical legacy": 87, "visual impact": 83, "historical importance": 82, "founded": 2001}},
+{"name": "Bloco Baby Léguas", "attributes": {"tier": "Modern", "genre influence": "Children’s Carnival", "crowd energy": 78, "musical legacy": 82, "visual impact": 86, "historical importance": 79, "founded": 1992}},
+{"name": "Bloco Bankoma", "attributes": {"tier": "Classic", "genre influence": "Afro-Percussion", "crowd energy": 83, "musical legacy": 87, "visual impact": 86, "historical importance": 84, "founded": 1981}},
+{"name": "Bloco Camaleão", "attributes": {"tier": "Iconic", "genre influence": "Axé", "crowd energy": 95, "musical legacy": 94, "visual impact": 92, "historical importance": 90, "founded": 1979}},
+{"name": "Bloco Cheiro de Amor", "attributes": {"tier": "Modern", "genre influence": "Axé / Pop", "crowd energy": 88, "musical legacy": 89, "visual impact": 85, "historical importance": 84, "founded": 1980}},
+{"name": "Bloco Commanche do Pelô", "attributes": {"tier": "Classic", "genre influence": "Samba-Reggae", "crowd energy": 87, "musical legacy": 90, "visual impact": 86, "historical importance": 88, "founded": 1976}},
+{"name": "Bloco Cortejo Afro", "attributes": {"tier": "Classic", "genre influence": "Afro-Contemporary", "crowd energy": 87, "musical legacy": 92, "visual impact": 96, "historical importance": 91, "founded": 1998}},
+{"name": "Bloco Coruja", "attributes": {"tier": "Iconic", "genre influence": "Axé", "crowd energy": 92, "musical legacy": 91, "visual impact": 89, "historical importance": 87, "founded": 1963}},
+{"name": "Bloco Didá", "attributes": {"tier": "Classic", "genre influence": "Afro-Percussion", "crowd energy": 84, "musical legacy": 91, "visual impact": 90, "historical importance": 89, "founded": 1993}},
+{"name": "Bloco Eva", "attributes": {"tier": "Iconic", "genre influence": "Axé / Pop", "crowd energy": 93, "musical legacy": 91, "visual impact": 90, "historical importance": 88, "founded": 1980}},
+{"name": "Bloco Happy", "attributes": {"tier": "Modern", "genre influence": "Pop / Axé", "crowd energy": 86, "musical legacy": 83, "visual impact": 84, "historical importance": 78, "founded": 2005}},
+{"name": "Bloco Malê Debalê", "attributes": {"tier": "Iconic", "genre influence": "Afro-Cultural", "crowd energy": 84, "musical legacy": 89, "visual impact": 91, "historical importance": 90, "founded": 1979}},
+{"name": "Bloco Me Deixe à Vontade", "attributes": {"tier": "Classic", "genre influence": "Samba / Traditional", "crowd energy": 82, "musical legacy": 85, "visual impact": 80, "historical importance": 83, "founded": 1952}},
+{"name": "Bloco Muzenza", "attributes": {"tier": "Classic", "genre influence": "Afro / Samba-Reggae", "crowd energy": 86, "musical legacy": 90, "visual impact": 88, "historical importance": 87, "founded": 1981}},
+{"name": "Bloco Nova Saga", "attributes": {"tier": "Classic", "genre influence": "Afro-Reggae", "crowd energy": 84, "musical legacy": 88, "visual impact": 85, "historical importance": 86, "founded": 1983}},
+{"name": "Bloco Olodum", "attributes": {"tier": "Legendary", "genre influence": "Samba-Reggae", "crowd energy": 92, "musical legacy": 99, "visual impact": 97, "historical importance": 100, "founded": 1979}},
+{"name": "Bloco Os Mascarados", "attributes": {"tier": "Legendary", "genre influence": "Traditional Carnival", "crowd energy": 83, "musical legacy": 86, "visual impact": 94, "historical importance": 85, "founded": 1906}},
+{"name": "Bloco Pagodart", "attributes": {"tier": "Modern", "genre influence": "Pagode Baiano", "crowd energy": 91, "musical legacy": 87, "visual impact": 88, "historical importance": 84, "founded": 2001}},
+{"name": "Bloco Paparazzi", "attributes": {"tier": "Modern", "genre influence": "Axé / Pop", "crowd energy": 89, "musical legacy": 86, "visual impact": 88, "historical importance": 81, "founded": 2002}},
+{"name": "Bloco Timbalada", "attributes": {"tier": "Iconic", "genre influence": "Afro-Pop / Percussion", "crowd energy": 94, "musical legacy": 93, "visual impact": 95, "historical importance": 90, "founded": 1991}},
+{"name": "Bloco Traz a Massa", "attributes": {"tier": "Modern", "genre influence": "Afro-Pop", "crowd energy": 88, "musical legacy": 86, "visual impact": 85, "historical importance": 83, "founded": 2013}},
+{"name": "Bloco Vumbora", "attributes": {"tier": "Modern", "genre influence": "Axé / Pop", "crowd energy": 95, "musical legacy": 88, "visual impact": 90, "historical importance": 82, "founded": 2016}},
+{"name": "Filhos de Gandhy", "attributes": {"tier": "Legendary", "genre influence": "Afro-Brazilian", "crowd energy": 85, "musical legacy": 95, "visual impact": 99, "historical importance": 98, "founded": 1949}},
+{"name": "Ilê Aiyê", "attributes": {"tier": "Legendary", "genre influence": "Afro-Brazilian", "crowd energy": 88, "musical legacy": 98, "visual impact": 96, "historical importance": 100, "founded": 1974}},
+  ];
+  
+  
   // Shuffle array
   function shuffleArray(array) {
     return array.sort(() => Math.random() - 0.5);
@@ -222,6 +256,7 @@ const olinda = [
     if (document.getElementById('riodCheckbox').checked) selectedCards.push(...riod);
     if (document.getElementById('saopCheckbox').checked) selectedCards.push(...saop);
     if (document.getElementById('olindaCheckbox').checked) selectedCards.push(...olinda);
+    if (document.getElementById('salvadorCheckbox').checked) selectedCards.push(...salvador);
 
     if (selectedCards.length === 0) {
       alert("Please select at least one theme!");

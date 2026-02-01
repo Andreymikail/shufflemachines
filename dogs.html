@@ -1,0 +1,268 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Dog</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Obedience Training: Your breed gains +10 Trainability this round.",
+"Agility Course: Your breed gains +10 Agility this round.",
+"Strength Conditioning: Your breed gains +10 Strength this round.",
+"Bonding Session: Your breed gains +10 Loyalty this round.",
+"Scent Work: Your breed gains +10 Special Trait this round.",
+"Treat Bribe: Both breeds gain +5 Trainability this round.",
+"Distraction Toy: Opponent gets -8 Trainability this round.",
+"Loud Fireworks: Opponent gets -6 Loyalty and -6 Agility this round.",
+"Leash Control: Choose Agility or Trainability: your breed gets +8 to the chosen stat this round.",
+"Pack Formation: Your breed gains +8 Loyalty and +6 Strength this round.",
+"Vet Checkup: Remove all negative stat modifiers affecting your breed.",
+"Warm-Up Stretch: Your breed gains +6 Agility and +6 Strength this round.",
+"Handler Focus: Your breed gains +8 Intelligence and +6 Trainability this round.",
+"Crowd Cheers: Your breed gains +8 Loyalty this round (+4 more if Companion or Toy).",
+"Guard Mode: Your breed gains +4 Strength and +4 Loyalty this round (Guardian breeds gain +8 Strength and +6 Loyalty instead).",
+"Work Command: Your breed gains +6 Trainability this round (Working breeds also gain +10 Trainability and +6 Agility).",
+"Intimidation Stare: Opponent gets -10 Loyalty this round (no effect on Guardian or Legendary).",
+"Rule Swap: Swap the chosen stat comparison to any other stat of your choice.",
+"Ability Lock: Disable both breeds’ special abilities this round.",
+"Top Form: Your breed gains +6 to all stats this round.",
+"Legendary Spotlight: If your breed is Legendary, it gains +10 Strength, +10 Intelligence, and +10 Agility this round.",
+"Underdog Surge: If Toy vs Legendary, your breed gains +15 Agility and +10 Trainability this round.",
+"Championship Round: Play best-of-three stat comparisons this round; winner takes the round.",
+"Perfect Recall: Your breed’s Intelligence is treated as at least 95 this round.",
+"Final Stand: If you lost the previous round, gain +12 Strength and +12 Loyalty this round.",
+"Referee's Whistle: Cancel all stat modifiers and abilities this round; compare raw stats only.",
+"Perfect Handler: Double all positive modifiers applied to your breed this round.",
+"Pack Alpha: Your breed gains +15 Loyalty this round.",
+"Search & Rescue: If you would lose this round, negate the loss once.",
+"Showtime: Choose a stat: opponent’s value for that stat is treated as max 85 this round.",];
+
+  const mega = [
+{"name": "Afghan Hound", "attributes": {"tier": "Companion", "strength": 70, "intelligence": 75, "agility": 85, "trainability": 70, "loyalty": 80, "special trait": 96, "special ability": "Noble Grace – Gains +10 elegance-type stats."}},
+{"name": "Akita", "attributes": {"tier": "Guardian", "strength": 92, "intelligence": 80, "agility": 70, "trainability": 75, "loyalty": 95, "special trait": 94, "special ability": "Silent Loyalty – Loyalty cannot be beaten by abilities."}},
+{"name": "Alaskan Malamute", "attributes": {"tier": "Working", "strength": 94, "intelligence": 78, "agility": 75, "trainability": 72, "loyalty": 90, "special trait": 98, "special ability": "Heavy Hauler – Strength increases each round played."}},
+{"name": "American Bulldog", "attributes": {"tier": "Guardian",  "strength": 92, "intelligence": 75, "agility": 70, "trainability": 72, "loyalty": 92, "special trait": 94, "special ability": "Frontline Guard – Wins Strength ties."}},
+{"name": "American Eskimo Dog", "attributes": {"tier": "Companion",  "strength": 65, "intelligence": 85, "agility": 88, "trainability": 90, "loyalty": 92, "special trait": 94, "special ability": "Snow Acrobat – Gains +10 Agility in the first round."}},
+{"name": "American Pit Bull Terrier", "attributes": {"tier": "Guardian",  "strength": 88, "intelligence": 78, "agility": 85, "trainability": 80, "loyalty": 95, "special trait": 96, "special ability": "Heart of Steel – Strength cannot be reduced."}},
+{"name": "Anatolian Shepherd", "attributes": {"tier": "Legendary",  "strength": 97, "intelligence": 78, "agility": 72, "trainability": 75, "loyalty": 94, "special trait": 98, "special ability": "Flock Guardian – Wins all Guardian vs Guardian matchups."}},
+{"name": "Australian Cattle Dog", "attributes": {"tier": "Legendary",  "strength": 82, "intelligence": 92, "agility": 90, "trainability": 95, "loyalty": 90, "special trait": 96, "special ability": "Iron Herding – Trainability always treated as 100."}},
+{"name": "Australian Shepherd", "attributes": {"tier": "Working", "strength": 78, "intelligence": 95, "agility": 92, "trainability": 96, "loyalty": 91, "special trait": 97, "special ability": "Adaptive Herding – May reroll one lost round."}},
+{"name": "Azawakh", "attributes": {"tier": "Working",  "strength": 68, "intelligence": 75, "agility": 95, "trainability": 70, "loyalty": 80, "special trait": 96, "special ability": "Sahel Speed – Agility treated as 100 in first round."}},
+{"name": "Basenji", "attributes": {"tier": "Working", "strength": 65, "intelligence": 78, "agility": 90, "trainability": 60, "loyalty": 75, "special trait": 98, "special ability": "Silent Hunter – Opponent abilities do not trigger."}},
+{"name": "Basset Hound", "attributes": {"tier": "Working", "strength": 68, "intelligence": 70, "agility": 55, "trainability": 60, "loyalty": 94, "special trait": 98, "special ability": "Low & Slow Tracker – Smell-based stats always win."}},
+{"name": "Beagle", "attributes": {"tier": "Working", "strength": 68, "intelligence": 78, "agility": 85, "trainability": 75, "loyalty": 92, "special trait": 99, "special ability": "Master Tracker – Automatically wins sense-based comparisons."}},
+{"name": "Belgian Laekenois", "attributes": {"tier": "Working",  "strength": 82, "intelligence": 88, "agility": 90, "trainability": 92, "loyalty": 90, "special trait": 94, "special ability": "Wire Sentinel – Opponent bonuses reduced by 5."}},
+{"name": "Belgian Malinois", "attributes": {"tier": "Legendary", "strength": 90, "intelligence": 94, "agility": 96, "trainability": 98, "loyalty": 92, "special trait": 99, "special ability": "Special Forces – Gains +10 to all stats vs non-Legendary cards."}},
+{"name": "Belgian Tervuren", "attributes": {"tier": "Working",  "strength": 85, "intelligence": 90, "agility": 92, "trainability": 95, "loyalty": 92, "special trait": 96, "special ability": "Mental Agility – May choose which stat is compared."}},
+{"name": "Bernese Mountain Dog", "attributes": {"tier": "Guardian", "strength": 88, "intelligence": 75, "agility": 65, "trainability": 70, "loyalty": 96, "special trait": 94, "special ability": "Alpine Strength – Gains +10 Durability in Guardian battles."}},
+{"name": "Bloodhound", "attributes": {"tier": "Legendary", "strength": 80, "intelligence": 78, "agility": 65, "trainability": 70, "loyalty": 90, "special trait": 100, "special ability": "Ultimate Nose – Sense of Smell is always treated as 100."}},
+{"name": "Boerboel", "attributes": {"tier": "Legendary",  "strength": 98, "intelligence": 75, "agility": 70, "trainability": 72, "loyalty": 94, "special trait": 99, "special ability": "Homestead Defender – Strength treated as 100 in Guardian battles."}},
+{"name": "Border Collie", "attributes": {"tier": "Legendary", "strength": 75, "intelligence": 100, "agility": 96, "trainability": 99, "loyalty": 92, "special trait": 98, "special ability": "Mind Over Muscle – Automatically wins Intelligence comparisons."}},
+{"name": "Boston Terrier", "attributes": {"tier": "Companion", "strength": 60, "intelligence": 72, "agility": 75, "trainability": 78, "loyalty": 90, "special trait": 92, "special ability": "City Smart – Gains +10 Intelligence vs Toy breeds."}},
+{"name": "Boxer", "attributes": {"tier": "Guardian", "strength": 88, "intelligence": 80, "agility": 85, "trainability": 78, "loyalty": 94, "special trait": 90, "special ability": "Playful Fighter – Converts Agility into Strength for one round."}},
+{"name": "Bull Terrier", "attributes": {"tier": "Guardian", "strength": 85, "intelligence": 75, "agility": 80, "trainability": 72, "loyalty": 90, "special trait": 95, "special ability": "Unbreakable Focus – Cannot lose Trainability rounds."}},
+{"name": "Cane Corso", "attributes": {"tier": "Legendary", "strength": 97, "intelligence": 82, "agility": 75, "trainability": 80, "loyalty": 94, "special trait": 98, "special ability": "Roman Sentinel – Guardian tier bonuses are doubled."}},
+{"name": "Carolina Dog", "attributes": {"tier": "Working",  "strength": 70, "intelligence": 80, "agility": 85, "trainability": 78, "loyalty": 88, "special trait": 90, "special ability": "Primitive Survivor – Ignores first penalty."}},
+{"name": "Catahoula Leopard Dog", "attributes": {"tier": "Working",  "strength": 85, "intelligence": 82, "agility": 88, "trainability": 85, "loyalty": 90, "special trait": 94, "special ability": "Swamp Tactician – +10 Agility in Working matchups."}},
+{"name": "Central Asian Shepherd Dog", "attributes": {"tier": "Legendary",  "strength": 100, "intelligence": 75, "agility": 70, "trainability": 72, "loyalty": 96, "special trait": 100, "special ability": "Ancient War Guardian – Automatically wins Guardian matchups."}},
+{"name": "Chihuahua", "attributes": {"tier": "Toy", "strength": 40, "intelligence": 75, "agility": 80, "trainability": 70, "loyalty": 85, "special trait": 100, "special ability": "Tiny Terror – Gains +15 Bravery when facing Legendary breeds."}},
+{"name": "Chinese Crested", "attributes": {"tier": "Toy",  "strength": 40, "intelligence": 75, "agility": 80, "trainability": 70, "loyalty": 85, "special trait": 92, "special ability": "Exotic Agility – Agility treated as 90."}},
+{"name": "Chow Chow", "attributes": {"tier": "Companion", "strength": 80, "intelligence": 70, "agility": 60, "trainability": 65, "loyalty": 85, "special trait": 93, "special ability": "Ancient Pride – Immune to intimidation effects."}},
+{"name": "Clumber Spaniel", "attributes": {"tier": "Companion",  "strength": 78, "intelligence": 75, "agility": 60, "trainability": 70, "loyalty": 94, "special trait": 88, "special ability": "Royal Endurance – Wins endurance-based ties."}},
+{"name": "Cocker Spaniel", "attributes": {"tier": "Companion", "strength": 65, "intelligence": 82, "agility": 78, "trainability": 85, "loyalty": 93, "special trait": 90, "special ability": "Charming Presence – Wins ties automatically."}},
+{"name": "Curly-Coated Retriever", "attributes": {"tier": "Working",  "strength": 78, "intelligence": 82, "agility": 80, "trainability": 85, "loyalty": 94, "special trait": 90, "special ability": "Water Curl – Gains +10 Endurance-type stats."}},
+{"name": "Dachshund", "attributes": {"tier": "Companion", "strength": 55, "intelligence": 72, "agility": 70, "trainability": 68, "loyalty": 90, "special trait": 95, "special ability": "Tunnel Hunter – Gains +10 Intelligence vs Guardian breeds."}},
+{"name": "Doberman Pinscher", "attributes": {"tier": "Guardian", "strength": 90, "intelligence": 88, "agility": 92, "trainability": 91, "loyalty": 94, "special trait": 97, "special ability": "Precision Guard – Wins ties when Guard or Speed applies."}},
+{"name": "Dogo Argentino", "attributes": {"tier": "Guardian",  "strength": 95, "intelligence": 78, "agility": 80, "trainability": 75, "loyalty": 92, "special trait": 97, "special ability": "White Hunter – Gains +10 Strength vs Working breeds."}},
+{"name": "English Bulldog", "attributes": {"tier": "Companion", "strength": 78, "intelligence": 68, "agility": 50, "trainability": 60, "loyalty": 92, "special trait": 95, "special ability": "Unmovable – Cannot lose durability-based rounds."}},
+{"name": "English Setter", "attributes": {"tier": "Working",  "strength": 72, "intelligence": 82, "agility": 85, "trainability": 88, "loyalty": 93, "special trait": 90, "special ability": "Field Precision – Reroll one Agility comparison."}},
+{"name": "English Springer Spaniel", "attributes": {"tier": "Working",  "strength": 72, "intelligence": 85, "agility": 85, "trainability": 88, "loyalty": 94, "special trait": 92, "special ability": "Flush & Fetch – May reroll one lost round."}},
+{"name": "Fila Brasileiro", "attributes": {"tier": "Legendary",  "strength": 96, "intelligence": 75, "agility": 70, "trainability": 72, "loyalty": 98, "special trait": 99, "special ability": "Ojeriza Instinct – Opponent abilities are disabled."}},
+{"name": "Finnish Lapphund", "attributes": {"tier": "Working",  "strength": 72, "intelligence": 85, "agility": 80, "trainability": 88, "loyalty": 94, "special trait": 92, "special ability": "Reindeer Partner – Trainability wins ties."}},
+{"name": "Finnish Spitz", "attributes": {"tier": "Working",  "strength": 60, "intelligence": 78, "agility": 80, "trainability": 75, "loyalty": 90, "special trait": 88, "special ability": "Forest Caller – Forces an Agility comparison."}},
+{"name": "Flat-Coated Retriever", "attributes": {"tier": "Companion",  "strength": 75, "intelligence": 85, "agility": 82, "trainability": 88, "loyalty": 96, "special trait": 93, "special ability": "Eternal Optimist – Ignores first loss."}},
+{"name": "Fox Terrier", "attributes": {"tier": "Working", "strength": 62, "intelligence": 82, "agility": 88, "trainability": 80, "loyalty": 86, "special trait": 92, "special ability": "Pest Control – Gains +10 Agility vs Working breeds."}},
+{"name": "French Bulldog", "attributes": {"tier": "Companion", "strength": 65, "intelligence": 70, "agility": 60, "trainability": 68, "loyalty": 95, "special trait": 94, "special ability": "Urban Charmer – Neutralizes Toy-tier penalties."}},
+{"name": "German Shepherd", "attributes": {"tier": "Working", "strength": 92, "intelligence": 94, "agility": 88, "trainability": 95, "loyalty": 97, "special trait": 96, "special ability": "Elite K-9 Unit – Gains +10 Trainability and +10 Loyalty when facing Guardian or Working breeds."}},
+{"name": "Giant Schnauzer", "attributes": {"tier": "Guardian", "strength": 88, "intelligence": 88, "agility": 82, "trainability": 90, "loyalty": 94, "special trait": 93, "special ability": "Command Presence – Guardian allies gain +5."}},
+{"name": "Golden Retriever", "attributes": {"tier": "Companion", "strength": 80, "intelligence": 88, "agility": 82, "trainability": 94, "loyalty": 98, "special trait": 99, "special ability": "Therapy Aura – Neutralizes opponent’s aggressive bonus abilities."}},
+{"name": "Gordon Setter", "attributes": {"tier": "Working",  "strength": 80, "intelligence": 80, "agility": 82, "trainability": 85, "loyalty": 92, "special trait": 88, "special ability": "Steady Hunter – Trainability cannot drop below 80."}},
+{"name": "Great Dane", "attributes": {"tier": "Guardian", "strength": 95, "intelligence": 78, "agility": 65, "trainability": 72, "loyalty": 90, "special trait": 96, "special ability": "Gentle Giant – Strength cannot drop below 90."}},
+{"name": "Greyhound", "attributes": {"tier": "Working", "strength": 70, "intelligence": 75, "agility": 100, "trainability": 68, "loyalty": 85, "special trait": 99, "special ability": "Pure Velocity – Automatically wins Speed rounds."}},
+{"name": "Havanese", "attributes": {"tier": "Companion", "strength": 48, "intelligence": 82, "agility": 75, "trainability": 80, "loyalty": 94, "special trait": 93, "special ability": "Social Expert – Forces friendliness-based comparisons."}},
+{"name": "Icelandic Sheepdog", "attributes": {"tier": "Working",  "strength": 65, "intelligence": 82, "agility": 78, "trainability": 85, "loyalty": 92, "special trait": 90, "special ability": "Viking Helper – Reroll one lost round."}},
+{"name": "Irish Setter", "attributes": {"tier": "Companion",  "strength": 75, "intelligence": 82, "agility": 88, "trainability": 85, "loyalty": 94, "special trait": 90, "special ability": "Red Momentum – Gains +10 Agility after a win."}},
+{"name": "Irish Wolfhound", "attributes": {"tier": "Legendary", "strength": 96, "intelligence": 75, "agility": 65, "trainability": 70, "loyalty": 90, "special trait": 97, "special ability": "Ancient Giant – Gains +10 Strength vs all opponents."}},
+{"name": "Jack Russell Terrier", "attributes": {"tier": "Working", "strength": 60, "intelligence": 88, "agility": 95, "trainability": 85, "loyalty": 92, "special trait": 94, "special ability": "Relentless Energy – Reroll any Agility loss."}},
+{"name": "Japanese Chin", "attributes": {"tier": "Toy",  "strength": 42, "intelligence": 72, "agility": 65, "trainability": 68, "loyalty": 90, "special trait": 90, "special ability": "Imperial Grace – Wins ties against Toy breeds."}},
+{"name": "Kangal Shepherd Dog", "attributes": {"tier": "Legendary",  "strength": 99, "intelligence": 78, "agility": 75, "trainability": 75, "loyalty": 95, "special trait": 100, "special ability": "Wolf Crusher – Strength cannot be beaten."}},
+{"name": "Keeshond", "attributes": {"tier": "Companion",  "strength": 65, "intelligence": 80, "agility": 75, "trainability": 82, "loyalty": 92, "special trait": 90, "special ability": "Watchful Smile – Wins ties against Companion breeds."}},
+{"name": "Komondor", "attributes": {"tier": "Guardian",  "strength": 90, "intelligence": 70, "agility": 60, "trainability": 65, "loyalty": 92, "special trait": 98, "special ability": "Living Fortress – Opponent Strength bonuses are ignored."}},
+{"name": "Korean Jindo", "attributes": {"tier": "Legendary",  "strength": 78, "intelligence": 85, "agility": 88, "trainability": 80, "loyalty": 96, "special trait": 95, "special ability": "Unbreakable Loyalty – Loyalty automatically wins."}},
+{"name": "Kuvasz", "attributes": {"tier": "Guardian",  "strength": 92, "intelligence": 75, "agility": 70, "trainability": 72, "loyalty": 94, "special trait": 96, "special ability": "Ancient Watchdog – Guardian tier effects are doubled."}},
+{"name": "Labrador Retriever", "attributes": {"tier": "Companion", "strength": 82, "intelligence": 87, "agility": 80, "trainability": 93, "loyalty": 97, "special trait": 98, "special ability": "Universal Helper – May copy one non-combat stat from the opponent."}},
+{"name": "Leonberger", "attributes": {"tier": "Legendary",  "strength": 96, "intelligence": 78, "agility": 65, "trainability": 72, "loyalty": 98, "special trait": 97, "special ability": "Gentle Colossus – Loyalty always wins."}},
+{"name": "Lhasa Apso", "attributes": {"tier": "Toy", "strength": 50, "intelligence": 75, "agility": 65, "trainability": 70, "loyalty": 90, "special trait": 88, "special ability": "Temple Guardian – Acts as Guardian tier for one round."}},
+{"name": "Maltese", "attributes": {"tier": "Toy", "strength": 44, "intelligence": 80, "agility": 72, "trainability": 78, "loyalty": 96, "special trait": 92, "special ability": "Royal Lapdog – Wins ties automatically."}},
+{"name": "Miniature Schnauzer", "attributes": {"tier": "Companion", "strength": 55, "intelligence": 85, "agility": 80, "trainability": 88, "loyalty": 92, "special trait": 90, "special ability": "Alert Companion – Gains +10 Alertness."}},
+{"name": "Newfoundland", "attributes": {"tier": "Guardian", "strength": 94, "intelligence": 75, "agility": 60, "trainability": 70, "loyalty": 99, "special trait": 98, "special ability": "Water Savior – Wins endurance-based comparisons."}},
+{"name": "Norwegian Elkhound", "attributes": {"tier": "Working",  "strength": 85, "intelligence": 82, "agility": 78, "trainability": 80, "loyalty": 92, "special trait": 90, "special ability": "Moose Tracker – +10 Strength in endurance-based rounds."}},
+{"name": "Nova Scotia Duck Tolling Retriever", "attributes": {"tier": "Legendary",  "strength": 72, "intelligence": 90, "agility": 92, "trainability": 94, "loyalty": 92, "special trait": 95, "special ability": "Tolling Master – Automatically wins Trainability rounds."}},
+{"name": "Old English Sheepdog", "attributes": {"tier": "Working",  "strength": 80, "intelligence": 78, "agility": 65, "trainability": 72, "loyalty": 94, "special trait": 90, "special ability": "Wool Wall – Reduces opponent Strength by 5."}},
+{"name": "Papillon", "attributes": {"tier": "Toy", "strength": 45, "intelligence": 90, "agility": 85, "trainability": 88, "loyalty": 92, "special trait": 95, "special ability": "Butterfly Speed – Agility treated as 95."}},
+{"name": "Peruvian Inca Orchid", "attributes": {"tier": "Companion",  "strength": 55, "intelligence": 78, "agility": 88, "trainability": 75, "loyalty": 85, "special trait": 92, "special ability": "Ancient Bond – Loyalty treated as 95."}},
+{"name": "Pomeranian", "attributes": {"tier": "Toy", "strength": 42, "intelligence": 78, "agility": 82, "trainability": 75, "loyalty": 90, "special trait": 96, "special ability": "Fluff Shield – First loss is ignored."}},
+{"name": "Poodle (Standard)", "attributes": {"tier": "Companion", "strength": 72, "intelligence": 95, "agility": 90, "trainability": 97, "loyalty": 90, "special trait": 98, "special ability": "Elegant Genius – Gains +10 Intelligence in non-combat rounds."}},
+{"name": "Portuguese Water Dog", "attributes": {"tier": "Working",  "strength": 75, "intelligence": 88, "agility": 85, "trainability": 90, "loyalty": 94, "special trait": 95, "special ability": "Wave Runner – Agility wins ties."}},
+{"name": "Pug", "attributes": {"tier": "Toy", "strength": 50, "intelligence": 65, "agility": 55, "trainability": 60, "loyalty": 92, "special trait": 95, "special ability": "Comic Relief – Forces a random stat comparison."}},
+{"name": "Pyrenean Mountain Dog", "attributes": {"tier": "Guardian",  "strength": 95, "intelligence": 72, "agility": 62, "trainability": 68, "loyalty": 96, "special trait": 96, "special ability": "Snow Watcher – Loyalty cannot be reduced."}},
+{"name": "Rhodesian Ridgeback", "attributes": {"tier": "Guardian",  "strength": 90, "intelligence": 80, "agility": 85, "trainability": 78, "loyalty": 92, "special trait": 94, "special ability": "Lion Hunter – Gains +10 Strength when facing Guardian or Legendary breeds."}},
+{"name": "Rottweiler", "attributes": {"tier": "Guardian", "strength": 96, "intelligence": 85, "agility": 78, "trainability": 88, "loyalty": 95, "special trait": 97, "special ability": "Iron Protector – Opponent’s Strength bonuses are halved."}},
+{"name": "Saint Bernard", "attributes": {"tier": "Guardian", "strength": 96, "intelligence": 72, "agility": 55, "trainability": 68, "loyalty": 98, "special trait": 97, "special ability": "Mountain Rescue – Revives one lost round."}},
+{"name": "Saluki", "attributes": {"tier": "Working",  "strength": 72, "intelligence": 78, "agility": 96, "trainability": 70, "loyalty": 85, "special trait": 97, "special ability": "Desert Wind – Agility cannot be beaten in the first round."}},
+{"name": "Samoyed", "attributes": {"tier": "Companion", "strength": 82, "intelligence": 78, "agility": 85, "trainability": 80, "loyalty": 94, "special trait": 98, "special ability": "Arctic Smile – Reduces opponent’s Guard stats by 5."}},
+{"name": "Scottish Terrier", "attributes": {"tier": "Companion", "strength": 60, "intelligence": 78, "agility": 70, "trainability": 72, "loyalty": 88, "special trait": 90, "special ability": "Stubborn Will – Ignores one stat reduction."}},
+{"name": "Shar Pei", "attributes": {"tier": "Companion", "strength": 78, "intelligence": 70, "agility": 65, "trainability": 68, "loyalty": 88, "special trait": 92, "special ability": "Wrinkled Resolve – Reduces opponent bonuses by 5."}},
+{"name": "Shetland Sheepdog", "attributes": {"tier": "Working",  "strength": 65, "intelligence": 90, "agility": 88, "trainability": 92, "loyalty": 93, "special trait": 94, "special ability": "Mini Strategist – Wins Intelligence ties."}},
+{"name": "Shiba Inu", "attributes": {"tier": "Companion",  "strength": 68, "intelligence": 80, "agility": 85, "trainability": 70, "loyalty": 88, "special trait": 92, "special ability": "Independent Spirit – Ignores one opponent ability."}},
+{"name": "Shih Tzu", "attributes": {"tier": "Toy", "strength": 45, "intelligence": 70, "agility": 60, "trainability": 65, "loyalty": 88, "special trait": 92, "special ability": "Imperial Calm – Cancels intimidation effects."}},
+{"name": "Siberian Husky", "attributes": {"tier": "Working", "strength": 85, "intelligence": 80, "agility": 94, "trainability": 78, "loyalty": 85, "special trait": 99, "special ability": "Endless Run – Agility cannot be reduced by abilities."}},
+{"name": "Sloughi", "attributes": {"tier": "Working",  "strength": 70, "intelligence": 78, "agility": 94, "trainability": 72, "loyalty": 82, "special trait": 95, "special ability": "Desert Precision – Wins Agility ties."}},
+{"name": "Spanish Mastiff", "attributes": {"tier": "Guardian",  "strength": 98, "intelligence": 70, "agility": 60, "trainability": 65, "loyalty": 94, "special trait": 97, "special ability": "Iberian Shield – Opponent Strength bonuses are nullified."}},
+{"name": "Staffordshire Bull Terrier", "attributes": {"tier": "Guardian",  "strength": 85, "intelligence": 80, "agility": 82, "trainability": 78, "loyalty": 94, "special trait": 93, "special ability": "Nanny Dog – Protects Companion breeds from penalties."}},
+{"name": "Sussex Spaniel", "attributes": {"tier": "Companion",  "strength": 70, "intelligence": 72, "agility": 60, "trainability": 68, "loyalty": 92, "special trait": 86, "special ability": "Low Tempo Control – Forces opponent to use lowest stat."}},
+{"name": "Thai Ridgeback", "attributes": {"tier": "Working",  "strength": 85, "intelligence": 80, "agility": 88, "trainability": 78, "loyalty": 90, "special trait": 94, "special ability": "Tropical Hunter – Gains +10 Agility vs Guardian breeds."}},
+{"name": "Tibetan Mastiff", "attributes": {"tier": "Legendary",  "strength": 98, "intelligence": 72, "agility": 60, "trainability": 65, "loyalty": 90, "special trait": 99, "special ability": "Mountain Emperor – Opponent bonuses are reduced by 10."}},
+{"name": "Vizsla", "attributes": {"tier": "Working",  "strength": 78, "intelligence": 88, "agility": 92, "trainability": 90, "loyalty": 94, "special trait": 93, "special ability": "Velcro Partner – Copies opponent Loyalty if higher."}},
+{"name": "Weimaraner", "attributes": {"tier": "Working", "strength": 85, "intelligence": 85, "agility": 90, "trainability": 88, "loyalty": 92, "special trait": 94, "special ability": "Silver Shadow – Ignores opponent Speed bonuses."}},
+{"name": "Whippet", "attributes": {"tier": "Working", "strength": 65, "intelligence": 78, "agility": 98, "trainability": 72, "loyalty": 88, "special trait": 96, "special ability": "Flash Dash – Gains +15 Agility in the first round."}},
+{"name": "Xoloitzcuintli", "attributes": {"tier": "Companion",  "strength": 60, "intelligence": 80, "agility": 82, "trainability": 78, "loyalty": 88, "special trait": 93, "special ability": "Spiritual Guardian – Neutralizes opponent abilities once."}},
+{"name": "Yorkshire Terrier", "attributes": {"tier": "Toy", "strength": 45, "intelligence": 80, "agility": 85, "trainability": 82, "loyalty": 90, "special trait": 95, "special ability": "Big Attitude – Strength treated as minimum 70."}},
+  ];
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    selectedCards.push(...mega);
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

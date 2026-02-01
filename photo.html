@@ -14,6 +14,7 @@
     <label><input type="checkbox" id="mountCheckbox"> Mountain</label><br>
     <label><input type="checkbox" id="natpCheckbox"> National Park</label><br>
     <label><input type="checkbox" id="trailCheckbox"> Trail</label><br>
+    <label><input type="checkbox" id="beaCheckbox"> Beach</label><br>
   </div>
 
   <!-- Cards per page selection -->
@@ -1717,6 +1718,111 @@ const trail = [
 {name: "Trail: Wadi Rum Desert", attributes: {Country: "Jordan", Length: "Varies (~20–80 km)", Difficulty: "Moderate", "Highest Elevation": "~1,750 m", "Breathtaking Factor": 9, Popularity: 6, "Wildlife Encounters": 6, "Mystique Level": 10}},
 {name: "Trail: West Highland Way", attributes: {Country: "Scotland", Length: "154 km", Difficulty: "Moderate", "Highest Elevation": "550 m", "Breathtaking Factor": 7, Popularity: 8, "Wildlife Encounters": 6, "Mystique Level": 7}},
   ];
+  
+
+const bea = [
+{"name": "Agiba Beach", "attributes": {"country": "Egypt", "tier": "Exotic", "beauty": 92, "water clarity": 90, "exclusivity": 88, "accessibility": 58, "global fame": 78}},
+{"name": "Anse Intendance", "attributes": {"country": "Seychelles", "tier": "Legendary", "beauty": 97, "water clarity": 94, "exclusivity": 92, "accessibility": 55, "global fame": 84}},
+{"name": "Anse Lazio", "attributes": {"country": "Seychelles", "tier": "Legendary", "beauty": 97, "water clarity": 95, "exclusivity": 90, "accessibility": 60, "global fame": 86}},
+{"name": "Anse Major", "attributes": {"country": "Seychelles", "tier": "Exotic", "beauty": 94, "water clarity": 92, "exclusivity": 88, "accessibility": 55, "global fame": 80}},
+{"name": "Anse Source d’Argent", "attributes": {"country": "Seychelles", "tier": "Legendary", "beauty": 99, "water clarity": 95, "exclusivity": 92, "accessibility": 55, "global fame": 90}},
+{"name": "Anse Takamaka", "attributes": {"country": "Seychelles", "tier": "Iconic", "beauty": 94, "water clarity": 92, "exclusivity": 85, "accessibility": 65, "global fame": 82}},
+{"name": "Ao Nang Beach", "attributes": {"country": "Thailand", "tier": "Accessible", "beauty": 88, "water clarity": 87, "exclusivity": 70, "accessibility": 88, "global fame": 86}},
+{"name": "Baía do Sancho", "attributes": {"country": "Brazil", "tier": "Legendary", "beauty": 99, "water clarity": 98, "exclusivity": 95, "accessibility": 50, "global fame": 88}},
+{"name": "Banana Beach", "attributes": {"country": "Thailand", "tier": "Accessible", "beauty": 87, "water clarity": 88, "exclusivity": 70, "accessibility": 85, "global fame": 80}},
+{"name": "Bondi Beach", "attributes": {"country": "Australia", "tier": "Accessible", "beauty": 88, "water clarity": 87, "exclusivity": 68, "accessibility": 92, "global fame": 91}},
+{"name": "Boulders Beach", "attributes": {"country": "South Africa", "tier": "Iconic", "beauty": 92, "water clarity": 89, "exclusivity": 80, "accessibility": 78, "global fame": 88}},
+{"name": "Cable Beach", "attributes": {"country": "Australia", "tier": "Iconic", "beauty": 93, "water clarity": 91, "exclusivity": 82, "accessibility": 75, "global fame": 84}},
+{"name": "Cala Brandinchi", "attributes": {"country": "Italy", "tier": "Iconic", "beauty": 94, "water clarity": 92, "exclusivity": 82, "accessibility": 73, "global fame": 84}},
+{"name": "Cala Goloritzé", "attributes": {"country": "Italy", "tier": "Exotic", "beauty": 96, "water clarity": 93, "exclusivity": 88, "accessibility": 60, "global fame": 82}},
+{"name": "Cala Luna", "attributes": {"country": "Italy", "tier": "Exotic", "beauty": 94, "water clarity": 92, "exclusivity": 88, "accessibility": 62, "global fame": 81}},
+{"name": "Cala Macarella", "attributes": {"country": "Spain", "tier": "Iconic", "beauty": 94, "water clarity": 92, "exclusivity": 82, "accessibility": 70, "global fame": 83}},
+{"name": "Caló des Moro", "attributes": {"country": "Spain", "tier": "Exotic", "beauty": 96, "water clarity": 94, "exclusivity": 90, "accessibility": 55, "global fame": 86}},
+{"name": "Camps Bay Beach", "attributes": {"country": "South Africa", "tier": "Iconic", "beauty": 93, "water clarity": 89, "exclusivity": 80, "accessibility": 78, "global fame": 86}},
+{"name": "Cayo Coco", "attributes": {"country": "Cuba", "tier": "Iconic", "beauty": 93, "water clarity": 92, "exclusivity": 84, "accessibility": 70, "global fame": 83}},
+{"name": "Cayo Levantado", "attributes": {"country": "Dominican Republic", "tier": "Iconic", "beauty": 93, "water clarity": 92, "exclusivity": 82, "accessibility": 75, "global fame": 84}},
+{"name": "Clearwater Beach", "attributes": {"country": "United States", "tier": "Accessible", "beauty": 88, "water clarity": 89, "exclusivity": 70, "accessibility": 90, "global fame": 82}},
+{"name": "Copacabana Beach", "attributes": {"country": "Brazil", "tier": "Accessible", "beauty": 89, "water clarity": 87, "exclusivity": 65, "accessibility": 95, "global fame": 96}},
+{"name": "Diani Beach", "attributes": {"country": "Kenya", "tier": "Exotic", "beauty": 93, "water clarity": 91, "exclusivity": 87, "accessibility": 65, "global fame": 79}},
+{"name": "Dreamland Beach", "attributes": {"country": "Indonesia", "tier": "Exotic", "beauty": 93, "water clarity": 91, "exclusivity": 86, "accessibility": 62, "global fame": 81}},
+{"name": "Durdle Door Beach", "attributes": {"country": "England", "tier": "Iconic", "beauty": 94, "water clarity": 91, "exclusivity": 82, "accessibility": 75, "global fame": 88}},
+{"name": "Eagle Beach", "attributes": {"country": "Aruba", "tier": "Iconic", "beauty": 93, "water clarity": 94, "exclusivity": 82, "accessibility": 80, "global fame": 86}},
+{"name": "El Nido Beach", "attributes": {"country": "Philippines", "tier": "Exotic", "beauty": 96, "water clarity": 93, "exclusivity": 90, "accessibility": 55, "global fame": 85}},
+{"name": "Flamenco Beach", "attributes": {"country": "Puerto Rico", "tier": "Iconic", "beauty": 94, "water clarity": 93, "exclusivity": 80, "accessibility": 78, "global fame": 84}},
+{"name": "Fulhadhoo Beach", "attributes": {"country": "Maldives", "tier": "Legendary", "beauty": 97, "water clarity": 96, "exclusivity": 94, "accessibility": 52, "global fame": 82}},
+{"name": "Grace Bay", "attributes": {"country": "Turks and Caicos", "tier": "Iconic", "beauty": 95, "water clarity": 97, "exclusivity": 88, "accessibility": 75, "global fame": 86}},
+{"name": "Grand Anse", "attributes": {"country": "Grenada", "tier": "Iconic", "beauty": 94, "water clarity": 92, "exclusivity": 82, "accessibility": 75, "global fame": 83}},
+{"name": "Haukland Beach", "attributes": {"country": "Norway", "tier": "Exotic", "beauty": 92, "water clarity": 90, "exclusivity": 88, "accessibility": 55, "global fame": 76}},
+{"name": "Hidden Beach", "attributes": {"country": "Mexico", "tier": "Exotic", "beauty": 96, "water clarity": 93, "exclusivity": 92, "accessibility": 50, "global fame": 88}},
+{"name": "Horseshoe Bay", "attributes": {"country": "Bermuda", "tier": "Iconic", "beauty": 95, "water clarity": 94, "exclusivity": 85, "accessibility": 72, "global fame": 87}},
+{"name": "Ipanema Beach", "attributes": {"country": "Brazil", "tier": "Accessible", "beauty": 90, "water clarity": 88, "exclusivity": 70, "accessibility": 90, "global fame": 92}},
+{"name": "Kaputas Beach", "attributes": {"country": "Turkey", "tier": "Iconic", "beauty": 94, "water clarity": 92, "exclusivity": 82, "accessibility": 68, "global fame": 83}},
+{"name": "Kelingking Beach", "attributes": {"country": "Indonesia", "tier": "Exotic", "beauty": 96, "water clarity": 93, "exclusivity": 90, "accessibility": 55, "global fame": 87}},
+{"name": "Ko Phi Phi Leh", "attributes": {"country": "Thailand", "tier": "Iconic", "beauty": 95, "water clarity": 92, "exclusivity": 85, "accessibility": 58, "global fame": 90}},
+{"name": "Kolymbithres Beach", "attributes": {"country": "Greece", "tier": "Iconic", "beauty": 92, "water clarity": 90, "exclusivity": 80, "accessibility": 75, "global fame": 82}},
+{"name": "Lanikai Beach", "attributes": {"country": "United States", "tier": "Iconic", "beauty": 95, "water clarity": 94, "exclusivity": 83, "accessibility": 72, "global fame": 88}},
+{"name": "Long Beach", "attributes": {"country": "Vietnam", "tier": "Accessible", "beauty": 89, "water clarity": 88, "exclusivity": 72, "accessibility": 85, "global fame": 78}},
+{"name": "Macaroni Beach", "attributes": {"country": "Venezuela", "tier": "Exotic", "beauty": 94, "water clarity": 92, "exclusivity": 89, "accessibility": 55, "global fame": 79}},
+{"name": "Manuel Antonio Beach", "attributes": {"country": "Costa Rica", "tier": "Iconic", "beauty": 92, "water clarity": 90, "exclusivity": 78, "accessibility": 80, "global fame": 85}},
+{"name": "Matadero Beach", "attributes": {"country": "Chile", "tier": "Exotic", "beauty": 92, "water clarity": 90, "exclusivity": 88, "accessibility": 55, "global fame": 76}},
+{"name": "Matira Beach", "attributes": {"country": "French Polynesia", "tier": "Legendary", "beauty": 98, "water clarity": 96, "exclusivity": 94, "accessibility": 58, "global fame": 91}},
+{"name": "Maya Bay", "attributes": {"country": "Thailand", "tier": "Iconic", "beauty": 96, "water clarity": 93, "exclusivity": 84, "accessibility": 55, "global fame": 91}},
+{"name": "Myrtos Beach", "attributes": {"country": "Greece", "tier": "Iconic", "beauty": 95, "water clarity": 93, "exclusivity": 83, "accessibility": 70, "global fame": 86}},
+{"name": "Navagio Beach", "attributes": {"country": "Greece", "tier": "Legendary", "beauty": 97, "water clarity": 94, "exclusivity": 85, "accessibility": 60, "global fame": 92}},
+{"name": "Navagio Cove", "attributes": {"country": "Greece", "tier": "Iconic", "beauty": 96, "water clarity": 94, "exclusivity": 85, "accessibility": 60, "global fame": 90}},
+{"name": "Navarre Beach", "attributes": {"country": "United States", "tier": "Accessible", "beauty": 89, "water clarity": 90, "exclusivity": 72, "accessibility": 88, "global fame": 74}},
+{"name": "Navarre Plage", "attributes": {"country": "France", "tier": "Accessible", "beauty": 86, "water clarity": 88, "exclusivity": 70, "accessibility": 85, "global fame": 76}},
+{"name": "Navio Beach", "attributes": {"country": "Philippines", "tier": "Exotic", "beauty": 93, "water clarity": 91, "exclusivity": 87, "accessibility": 60, "global fame": 80}},
+{"name": "Nissi Beach", "attributes": {"country": "Cyprus", "tier": "Accessible", "beauty": 88, "water clarity": 87, "exclusivity": 72, "accessibility": 88, "global fame": 83}},
+{"name": "Nosy Iranja", "attributes": {"country": "Madagascar", "tier": "Exotic", "beauty": 95, "water clarity": 93, "exclusivity": 90, "accessibility": 50, "global fame": 77}},
+{"name": "Nungwi Beach", "attributes": {"country": "Tanzania", "tier": "Exotic", "beauty": 94, "water clarity": 92, "exclusivity": 88, "accessibility": 65, "global fame": 80}},
+{"name": "Palm Cove", "attributes": {"country": "Australia", "tier": "Accessible", "beauty": 88, "water clarity": 89, "exclusivity": 72, "accessibility": 82, "global fame": 75}},
+{"name": "Papakōlea Green Sand Beach", "attributes": {"country": "United States", "tier": "Exotic", "beauty": 91, "water clarity": 88, "exclusivity": 87, "accessibility": 60, "global fame": 80}},
+{"name": "Paradise Beach", "attributes": {"country": "Greece", "tier": "Accessible", "beauty": 88, "water clarity": 87, "exclusivity": 70, "accessibility": 88, "global fame": 86}},
+{"name": "Paradise Cove", "attributes": {"country": "United States", "tier": "Accessible", "beauty": 88, "water clarity": 89, "exclusivity": 72, "accessibility": 85, "global fame": 82}},
+{"name": "Perhentian Kecil Beach", "attributes": {"country": "Malaysia", "tier": "Exotic", "beauty": 94, "water clarity": 93, "exclusivity": 88, "accessibility": 60, "global fame": 78}},
+{"name": "Pink Sands Beach", "attributes": {"country": "Bahamas", "tier": "Iconic", "beauty": 94, "water clarity": 93, "exclusivity": 87, "accessibility": 70, "global fame": 85}},
+{"name": "Plage de Palombaggia", "attributes": {"country": "France", "tier": "Iconic", "beauty": 95, "water clarity": 93, "exclusivity": 84, "accessibility": 72, "global fame": 85}},
+{"name": "Playa Balandra", "attributes": {"country": "Mexico", "tier": "Iconic", "beauty": 93, "water clarity": 92, "exclusivity": 82, "accessibility": 70, "global fame": 81}},
+{"name": "Playa Blanca", "attributes": {"country": "Colombia", "tier": "Accessible", "beauty": 90, "water clarity": 89, "exclusivity": 75, "accessibility": 82, "global fame": 78}},
+{"name": "Playa Blanca", "attributes": {"country": "Spain", "tier": "Accessible", "beauty": 90, "water clarity": 89, "exclusivity": 74, "accessibility": 85, "global fame": 80}},
+{"name": "Playa Carrillo", "attributes": {"country": "Costa Rica", "tier": "Iconic", "beauty": 92, "water clarity": 91, "exclusivity": 82, "accessibility": 75, "global fame": 82}},
+{"name": "Playa Conchal", "attributes": {"country": "Costa Rica", "tier": "Iconic", "beauty": 93, "water clarity": 92, "exclusivity": 82, "accessibility": 78, "global fame": 84}},
+{"name": "Playa Cossies", "attributes": {"country": "Colombia", "tier": "Exotic", "beauty": 91, "water clarity": 89, "exclusivity": 85, "accessibility": 60, "global fame": 76}},
+{"name": "Playa de las Catedrales", "attributes": {"country": "Spain", "tier": "Iconic", "beauty": 94, "water clarity": 90, "exclusivity": 82, "accessibility": 68, "global fame": 85}},
+{"name": "Playa del Amor", "attributes": {"country": "Mexico", "tier": "Exotic", "beauty": 95, "water clarity": 92, "exclusivity": 90, "accessibility": 55, "global fame": 84}},
+{"name": "Playa Esmeralda", "attributes": {"country": "Dominican Republic", "tier": "Iconic", "beauty": 94, "water clarity": 92, "exclusivity": 82, "accessibility": 75, "global fame": 83}},
+{"name": "Playa Grande", "attributes": {"country": "Nicaragua", "tier": "Exotic", "beauty": 92, "water clarity": 90, "exclusivity": 85, "accessibility": 65, "global fame": 78}},
+{"name": "Playa La Ropa", "attributes": {"country": "Mexico", "tier": "Accessible", "beauty": 88, "water clarity": 87, "exclusivity": 72, "accessibility": 85, "global fame": 80}},
+{"name": "Playa Maderas", "attributes": {"country": "Nicaragua", "tier": "Exotic", "beauty": 92, "water clarity": 90, "exclusivity": 85, "accessibility": 65, "global fame": 79}},
+{"name": "Playa Norte", "attributes": {"country": "Mexico", "tier": "Accessible", "beauty": 91, "water clarity": 92, "exclusivity": 75, "accessibility": 85, "global fame": 82}},
+{"name": "Playa Paraiso", "attributes": {"country": "Cuba", "tier": "Iconic", "beauty": 92, "water clarity": 91, "exclusivity": 82, "accessibility": 75, "global fame": 82}},
+{"name": "Playa Rincón", "attributes": {"country": "Dominican Republic", "tier": "Iconic", "beauty": 94, "water clarity": 93, "exclusivity": 84, "accessibility": 70, "global fame": 85}},
+{"name": "Playa Roja", "attributes": {"country": "Peru", "tier": "Exotic", "beauty": 91, "water clarity": 89, "exclusivity": 86, "accessibility": 60, "global fame": 77}},
+{"name": "Playa Santa Giulia", "attributes": {"country": "France", "tier": "Iconic", "beauty": 93, "water clarity": 92, "exclusivity": 82, "accessibility": 75, "global fame": 84}},
+{"name": "Playa Uvita", "attributes": {"country": "Costa Rica", "tier": "Exotic", "beauty": 92, "water clarity": 90, "exclusivity": 86, "accessibility": 65, "global fame": 79}},
+{"name": "Porto Katsiki", "attributes": {"country": "Greece", "tier": "Iconic", "beauty": 95, "water clarity": 93, "exclusivity": 84, "accessibility": 68, "global fame": 86}},
+{"name": "Praia da Marinha", "attributes": {"country": "Portugal", "tier": "Iconic", "beauty": 94, "water clarity": 92, "exclusivity": 80, "accessibility": 75, "global fame": 83}},
+{"name": "Praia do Camilo", "attributes": {"country": "Portugal", "tier": "Iconic", "beauty": 95, "water clarity": 93, "exclusivity": 84, "accessibility": 70, "global fame": 85}},
+{"name": "Praia dos Carneiros", "attributes": {"country": "Brazil", "tier": "Iconic", "beauty": 93, "water clarity": 91, "exclusivity": 82, "accessibility": 75, "global fame": 85}},
+{"name": "Punta Cana Beach", "attributes": {"country": "Dominican Republic", "tier": "Accessible", "beauty": 89, "water clarity": 90, "exclusivity": 72, "accessibility": 90, "global fame": 88}},
+{"name": "Punta Uva", "attributes": {"country": "Costa Rica", "tier": "Exotic", "beauty": 93, "water clarity": 92, "exclusivity": 86, "accessibility": 65, "global fame": 80}},
+{"name": "Railay Beach", "attributes": {"country": "Thailand", "tier": "Iconic", "beauty": 95, "water clarity": 92, "exclusivity": 82, "accessibility": 68, "global fame": 87}},
+{"name": "Reethi Rah Beach", "attributes": {"country": "Maldives", "tier": "Legendary", "beauty": 98, "water clarity": 97, "exclusivity": 95, "accessibility": 50, "global fame": 85}},
+{"name": "Ses Illetes", "attributes": {"country": "Spain", "tier": "Iconic", "beauty": 95, "water clarity": 93, "exclusivity": 85, "accessibility": 72, "global fame": 86}},
+{"name": "Seven Mile Beach", "attributes": {"country": "Cayman Islands", "tier": "Accessible", "beauty": 93, "water clarity": 94, "exclusivity": 80, "accessibility": 78, "global fame": 84}},
+{"name": "Sunset Beach", "attributes": {"country": "United States", "tier": "Accessible", "beauty": 88, "water clarity": 87, "exclusivity": 72, "accessibility": 85, "global fame": 82}},
+{"name": "Tikehau Beach", "attributes": {"country": "French Polynesia", "tier": "Legendary", "beauty": 97, "water clarity": 96, "exclusivity": 94, "accessibility": 48, "global fame": 82}},
+{"name": "Tulum Beach", "attributes": {"country": "Mexico", "tier": "Accessible", "beauty": 92, "water clarity": 90, "exclusivity": 78, "accessibility": 85, "global fame": 89}},
+{"name": "Vík í Mýrdal Black Sand Beach", "attributes": {"country": "Iceland", "tier": "Exotic", "beauty": 91, "water clarity": 85, "exclusivity": 88, "accessibility": 60, "global fame": 84}},
+{"name": "Waikiki Beach", "attributes": {"country": "United States", "tier": "Accessible", "beauty": 85, "water clarity": 86, "exclusivity": 60, "accessibility": 95, "global fame": 95}},
+{"name": "White Beach", "attributes": {"country": "Philippines", "tier": "Iconic", "beauty": 93, "water clarity": 92, "exclusivity": 80, "accessibility": 82, "global fame": 88}},
+{"name": "Whitehaven Beach", "attributes": {"country": "Australia", "tier": "Legendary", "beauty": 98, "water clarity": 96, "exclusivity": 90, "accessibility": 65, "global fame": 88}},
+{"name": "Whitepark Bay", "attributes": {"country": "Northern Ireland", "tier": "Exotic", "beauty": 91, "water clarity": 88, "exclusivity": 85, "accessibility": 60, "global fame": 78}},
+{"name": "Xpu-Ha Beach", "attributes": {"country": "Mexico", "tier": "Accessible", "beauty": 89, "water clarity": 90, "exclusivity": 75, "accessibility": 82, "global fame": 78}},
+{"name": "Zlatni Rat", "attributes": {"country": "Croatia", "tier": "Iconic", "beauty": 94, "water clarity": 90, "exclusivity": 80, "accessibility": 75, "global fame": 86}},
+  ];  
+  
   // Shuffle array
   function shuffleArray(array) {
     return array.sort(() => Math.random() - 0.5);
@@ -1736,6 +1842,7 @@ const trail = [
     if (document.getElementById('mountCheckbox').checked) selectedCards.push(...mount);
     if (document.getElementById('natpCheckbox').checked) selectedCards.push(...natp);
     if (document.getElementById('trailCheckbox').checked) selectedCards.push(...trail);
+    if (document.getElementById('beaCheckbox').checked) selectedCards.push(...bea);
 
     if (selectedCards.length === 0) {
       alert("Please select at least one theme!");

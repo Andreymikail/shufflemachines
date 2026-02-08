@@ -1,0 +1,242 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Dog</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Pounce Attack: Deal damage based on Strength + Agility. Bonus if Agility > 90.",
+"Silent Stalk: Become untargetable for 1 turn. Next attack deals +25% damage.",
+"Territory Mark: Reduce enemy stats by -10 for 2 turns.",
+"Feral Fury: Massive damage. Strength +30% but lose Adaptability next turn.",
+"Whisker Sense: Reveal enemy card and gain +15 Intelligence for 2 turns.",
+"Claw Defense: Reduce incoming damage by 35% for 2 turns.",
+"Nine Lives: Revive with 40% HP once per match.",
+"Playful Distraction: Lower enemy Accuracy and Strength by 15.",
+"Hunter's Focus: Increase Strength and Agility by +20 for 2 turns.",
+"Fur Shield: Convert Size into temporary armor.",
+"Midnight Sprint: Act first next round. Gain +15 Agility.",
+"Mind Purrification: Remove all debuffs and restore morale.",
+"Savage Leap: High critical chance based on Agility.",
+"Pack Instinct: All allies gain +10 to all stats for 2 turns.",
+"Shadow Blend: Increase evasion by 40% for 1 turn.",
+"Adaptive Reflex: Copy last enemy buff.",
+"Climbing Mastery: Ignore terrain penalties.",
+"Predator Roar Fear: Enemy loses next action.",
+"Healing Groom: Restore HP over 3 turns.",
+"Zen Nap: Skip turn to restore energy and HP.",
+"Territorial Clash: Damage increases when defending home field.",
+"Reflex Counter: Counter next attack with 50% power.",
+"Social Bond: Share buffs between allies.",
+"Instinct Surge: Temporarily max one random stat.",
+"Focused Gaze: Enemy cannot use abilities next turn.",
+"Ambush Strike: Double damage if used from Stealth.",
+"Survival Instinct: Auto-activate shield below 25% HP.",
+"Claw Frenzy: Multi-hit attack (3x small damage).",
+"Guardian Stance: Redirect damage from allies.",
+"Alpha Presence: Massive stat boost for Guardian-tier cats.",
+];
+
+  const mega = [
+{"name": "Abyssinian", "attributes": {"Size": 75, "Strength": 78, "Intelligence": 94, "Friendliness": 85, "Agility": 96, "Adaptability": 90, "Tier": "Working", "Special Ability":  "Explorer Mode – Bonus on first turn."}},
+{"name": "American Curl", "attributes": {"Size": 76, "Strength": 74, "Intelligence": 88, "Friendliness": 92, "Agility": 85, "Adaptability": 90, "Tier": "Companion", "Special Ability":  "Echo Listen – Detects enemy moves."}},
+{"name": "American Shorthair", "attributes": {"Size": 78, "Strength": 80, "Intelligence": 84, "Friendliness": 88, "Agility": 82, "Adaptability": 92, "Tier": "Guardian", "Special Ability":  "All-Rounder – Balanced stat buff."}},
+{"name": "Arabian Mau", "attributes": {"Size": 80, "Strength": 82, "Intelligence": 86, "Friendliness": 78, "Agility": 95, "Adaptability": 93, "Tier": "Working", "Special Ability":  "Desert Sprint – Speed boost in hot zones."}},
+{"name": "Australian Mist", "attributes": {"Size": 77, "Strength": 75, "Intelligence": 85, "Friendliness": 92, "Agility": 83, "Adaptability": 90, "Tier": "Companion", "Special Ability":  "Mist Veil – Reduces enemy accuracy."}},
+{"name": "Balinese", "attributes": {"Size": 76, "Strength": 74, "Intelligence": 93, "Friendliness": 88, "Agility": 91, "Adaptability": 89, "Tier": "Working", "Special Ability":  "Grace Leap – Dodge bonus."}},
+{"name": "Bambino", "attributes": {"Size": 62, "Strength": 58, "Intelligence": 85, "Friendliness": 94, "Agility": 78, "Adaptability": 90, "Tier": "Toy", "Special Ability":  "Tiny Shield – Temporary immunity."}},
+{"name": "Bengal", "attributes": {"Size": 82, "Strength": 85, "Intelligence": 90, "Friendliness": 80, "Agility": 97, "Adaptability": 85, "Tier": "Working", "Special Ability":  "Jungle Rush – Gains +15 Agility."}},
+{"name": "Birman", "attributes": {"Size": 80, "Strength": 78, "Intelligence": 85, "Friendliness": 93, "Agility": 75, "Adaptability": 85, "Tier": "Companion", "Special Ability":  "Sacred Balance – Heals allies."}},
+{"name": "Blue Point Siamese", "attributes": {"Size": 74, "Strength": 70, "Intelligence": 95, "Friendliness": 92, "Agility": 89, "Adaptability": 90, "Tier": "Companion", "Special Ability":  "Crystal Voice – Control enemy actions."}},
+{"name": "Bombay", "attributes": {"Size": 74, "Strength": 76, "Intelligence": 89, "Friendliness": 90, "Agility": 85, "Adaptability": 88, "Tier": "Companion", "Special Ability":  "Shadow Blend – Evasion increase."}},
+{"name": "British Shorthair", "attributes": {"Size": 80, "Strength": 82, "Intelligence": 86, "Friendliness": 85, "Agility": 72, "Adaptability": 90, "Tier": "Guardian", "Special Ability":  "Iron Paws – Boosts long-term defense."}},
+{"name": "Burmese", "attributes": {"Size": 78, "Strength": 80, "Intelligence": 87, "Friendliness": 95, "Agility": 82, "Adaptability": 92, "Tier": "Guardian", "Special Ability":  "Golden Bond – Ally buff."}},
+{"name": "Burmilla", "attributes": {"Size": 76, "Strength": 74, "Intelligence": 87, "Friendliness": 90, "Agility": 85, "Adaptability": 89, "Tier": "Companion", "Special Ability":  "Silver Grace – Team speed bonus."}},
+{"name": "California Spangled", "attributes": {"Size": 84, "Strength": 82, "Intelligence": 87, "Friendliness": 78, "Agility": 92, "Adaptability": 86, "Tier": "Working", "Special Ability":  "Urban Leopard – Stealth bonus."}},
+{"name": "Chartreux", "attributes": {"Size": 82, "Strength": 85, "Intelligence": 88, "Friendliness": 80, "Agility": 78, "Adaptability": 87, "Tier": "Guardian", "Special Ability":  "Stone Guard – Defense boost."}},
+{"name": "Chausie", "attributes": {"Size": 90, "Strength": 88, "Intelligence": 89, "Friendliness": 72, "Agility": 95, "Adaptability": 85, "Tier": "Legendary", "Special Ability":  "Desert Hunter – Critical hit chance."}},
+{"name": "Chocolate Point Siamese", "attributes": {"Size": 74, "Strength": 71, "Intelligence": 93, "Friendliness": 90, "Agility": 87, "Adaptability": 88, "Tier": "Companion", "Special Ability":  "Sweet Focus – Accuracy increase."}},
+{"name": "Cornish Rex", "attributes": {"Size": 70, "Strength": 68, "Intelligence": 92, "Friendliness": 87, "Agility": 96, "Adaptability": 90, "Tier": "Working", "Special Ability":  "Velocity Coil – Massive dodge boost."}},
+{"name": "Cymric", "attributes": {"Size": 82, "Strength": 80, "Intelligence": 85, "Friendliness": 88, "Agility": 75, "Adaptability": 86, "Tier": "Guardian", "Special Ability":  "Tail Guard – Defense increase."}},
+{"name": "Devon Rex", "attributes": {"Size": 72, "Strength": 70, "Intelligence": 90, "Friendliness": 92, "Agility": 94, "Adaptability": 91, "Tier": "Working", "Special Ability":  "Pixie Dash – Speed and evasion up."}},
+{"name": "Domestic Longhair", "attributes": {"Size": 80, "Strength": 76, "Intelligence": 83, "Friendliness": 90, "Agility": 80, "Adaptability": 97, "Tier": "Guardian", "Special Ability":  "Fluff Shield – Damage reduction."}},
+{"name": "Domestic Mediumhair", "attributes": {"Size": 78, "Strength": 77, "Intelligence": 84, "Friendliness": 89, "Agility": 82, "Adaptability": 96, "Tier": "Guardian", "Special Ability":  "Balanced Instinct – Stat normalization."}},
+{"name": "Domestic Shorthair", "attributes": {"Size": 77, "Strength": 78, "Intelligence": 82, "Friendliness": 88, "Agility": 85, "Adaptability": 98, "Tier": "Guardian", "Special Ability":  "Street Smart – Adapts to any field."}},
+{"name": "Donskoy", "attributes": {"Size": 72, "Strength": 70, "Intelligence": 91, "Friendliness": 92, "Agility": 86, "Adaptability": 94, "Tier": "Legendary", "Special Ability":  "Heat Aura – Regenerates allies."}},
+{"name": "Egyptian Mau", "attributes": {"Size": 78, "Strength": 76, "Intelligence": 90, "Friendliness": 82, "Agility": 98, "Adaptability": 88, "Tier": "Working", "Special Ability":  "Pharaoh Sprint – Extreme speed boost."}},
+{"name": "European Shorthair", "attributes": {"Size": 78, "Strength": 80, "Intelligence": 84, "Friendliness": 85, "Agility": 82, "Adaptability": 95, "Tier": "Working", "Special Ability":  "Urban Survivor – Bonus in city environments."}},
+{"name": "Havana Brown", "attributes": {"Size": 75, "Strength": 74, "Intelligence": 89, "Friendliness": 88, "Agility": 86, "Adaptability": 85, "Tier": "Working", "Special Ability":  "Cocoa Strike – Attack boost."}},
+{"name": "Highland Fold", "attributes": {"Size": 80, "Strength": 78, "Intelligence": 86, "Friendliness": 92, "Agility": 75, "Adaptability": 88, "Tier": "Companion", "Special Ability":  "Soft Guard – Team defense boost."}},
+{"name": "Highlander", "attributes": {"Size": 90, "Strength": 88, "Intelligence": 85, "Friendliness": 80, "Agility": 82, "Adaptability": 87, "Tier": "Guardian", "Special Ability":  "Mountain Force – Power surge."}},
+{"name": "Himalayan", "attributes": {"Size": 80, "Strength": 72, "Intelligence": 82, "Friendliness": 90, "Agility": 65, "Adaptability": 78, "Tier": "Toy", "Special Ability":  "Snow Aura – Reduces enemy speed."}},
+{"name": "Japanese Bobtail", "attributes": {"Size": 72, "Strength": 70, "Intelligence": 88, "Friendliness": 92, "Agility": 90, "Adaptability": 89, "Tier": "Companion", "Special Ability":  "Lucky Tail – Random stat bonus."}},
+{"name": "Khao Manee", "attributes": {"Size": 75, "Strength": 72, "Intelligence": 90, "Friendliness": 88, "Agility": 89, "Adaptability": 87, "Tier": "Companion", "Special Ability":  "Diamond Sight – Reveals enemy stats."}},
+{"name": "Korat", "attributes": {"Size": 74, "Strength": 72, "Intelligence": 91, "Friendliness": 85, "Agility": 88, "Adaptability": 90, "Tier": "Working", "Special Ability":  "Silver Mind – Boosts intelligence-based effects."}},
+{"name": "Kurilian Bobtail", "attributes": {"Size": 88, "Strength": 86, "Intelligence": 84, "Friendliness": 82, "Agility": 80, "Adaptability": 91, "Tier": "Guardian", "Special Ability":  "Island Guard – Defense boost."}},
+{"name": "LaPerm", "attributes": {"Size": 75, "Strength": 73, "Intelligence": 89, "Friendliness": 90, "Agility": 85, "Adaptability": 88, "Tier": "Companion", "Special Ability":  "Curl Shield – Reduces damage."}},
+{"name": "Lilac Point Siamese", "attributes": {"Size": 73, "Strength": 70, "Intelligence": 92, "Friendliness": 89, "Agility": 86, "Adaptability": 87, "Tier": "Companion", "Special Ability":  "Soft Whisper – Reduces enemy power."}},
+{"name": "Lykoi", "attributes": {"Size": 78, "Strength": 76, "Intelligence": 89, "Friendliness": 70, "Agility": 94, "Adaptability": 88, "Tier": "Working", "Special Ability":  "Wolf Shadow – Critical hit chance."}},
+{"name": "Maine Coon", "attributes": {"Size": 98, "Strength": 90, "Intelligence": 88, "Friendliness": 95, "Agility": 85, "Adaptability": 92, "Tier": "Guardian", "Special Ability":  "Gentle Giant – Boosts Team Defense by +10."}},
+{"name": "Manx", "attributes": {"Size": 78, "Strength": 82, "Intelligence": 86, "Friendliness": 88, "Agility": 80, "Adaptability": 87, "Tier": "Guardian", "Special Ability":  "Balance Core – Increases stability."}},
+{"name": "Mekong Bobtail", "attributes": {"Size": 76, "Strength": 74, "Intelligence": 86, "Friendliness": 88, "Agility": 85, "Adaptability": 90, "Tier": "Companion", "Special Ability":  "River Balance – Movement bonus."}},
+{"name": "Munchkin", "attributes": {"Size": 65, "Strength": 60, "Intelligence": 85, "Friendliness": 92, "Agility": 75, "Adaptability": 88, "Tier": "Toy", "Special Ability":  "Low Profile – Evasion bonus."}},
+{"name": "Napoleon (Minuet)", "attributes": {"Size": 68, "Strength": 65, "Intelligence": 82, "Friendliness": 95, "Agility": 72, "Adaptability": 88, "Tier": "Toy", "Special Ability":  "Royal Step – Charm enemies."}},
+{"name": "Norwegian Forest Cat", "attributes": {"Size": 92, "Strength": 88, "Intelligence": 85, "Friendliness": 82, "Agility": 80, "Adaptability": 95, "Tier": "Guardian", "Special Ability":  "Frost Survivor – Ignores terrain penalties."}},
+{"name": "Ocicat", "attributes": {"Size": 82, "Strength": 85, "Intelligence": 87, "Friendliness": 80, "Agility": 92, "Adaptability": 86, "Tier": "Working", "Special Ability":  "Spotted Rush – Speed surge."}},
+{"name": "Ojos Azules", "attributes": {"Size": 75, "Strength": 72, "Intelligence": 88, "Friendliness": 86, "Agility": 84, "Adaptability": 85, "Tier": "Companion", "Special Ability":  "Azure Gaze – Stuns opponents."}},
+{"name": "Oriental Shorthair", "attributes": {"Size": 73, "Strength": 70, "Intelligence": 95, "Friendliness": 85, "Agility": 90, "Adaptability": 92, "Tier": "Working", "Special Ability":  "Mind Focus – Boosts intelligence effects."}},
+{"name": "Persian", "attributes": {"Size": 78, "Strength": 65, "Intelligence": 80, "Friendliness": 94, "Agility": 60, "Adaptability": 75, "Tier": "Toy", "Special Ability":  "Royal Calm – Blocks stress effects."}},
+{"name": "Peterbald", "attributes": {"Size": 73, "Strength": 70, "Intelligence": 93, "Friendliness": 92, "Agility": 88, "Adaptability": 95, "Tier": "Legendary", "Special Ability":  "Mind Link – Copies ally abilities."}},
+{"name": "Pixie-bob", "attributes": {"Size": 88, "Strength": 86, "Intelligence": 84, "Friendliness": 85, "Agility": 78, "Adaptability": 90, "Tier": "Guardian", "Special Ability":  "Wild Guard – Defense boost."}},
+{"name": "Ragamuffin", "attributes": {"Size": 86, "Strength": 80, "Intelligence": 84, "Friendliness": 96, "Agility": 70, "Adaptability": 89, "Tier": "Companion", "Special Ability":  "Warm Heart – Regenerates HP."}},
+{"name": "Ragdoll", "attributes": {"Size": 85, "Strength": 75, "Intelligence": 85, "Friendliness": 98, "Agility": 70, "Adaptability": 88, "Tier": "Companion", "Special Ability":  "Soft Embrace – Reduces damage by 20%."}},
+{"name": "Russian Blue", "attributes": {"Size": 76, "Strength": 75, "Intelligence": 92, "Friendliness": 80, "Agility": 88, "Adaptability": 90, "Tier": "Working", "Special Ability":  "Silent Strike – First attack critical."}},
+{"name": "Savannah", "attributes": {"Size": 95, "Strength": 92, "Intelligence": 90, "Friendliness": 70, "Agility": 98, "Adaptability": 85, "Tier": "Legendary", "Special Ability":  "Wild Sprint – Massive agility boost."}},
+{"name": "Scottish Fold", "attributes": {"Size": 72, "Strength": 68, "Intelligence": 85, "Friendliness": 95, "Agility": 75, "Adaptability": 87, "Tier": "Toy", "Special Ability":  "Cute Overload – Lowers enemy attack."}},
+{"name": "Seal Point Siamese", "attributes": {"Size": 75, "Strength": 72, "Intelligence": 94, "Friendliness": 91, "Agility": 88, "Adaptability": 89, "Tier": "Companion", "Special Ability":  "Dark Resonance – Power boost."}},
+{"name": "Selkirk Rex", "attributes": {"Size": 80, "Strength": 78, "Intelligence": 85, "Friendliness": 88, "Agility": 72, "Adaptability": 86, "Tier": "Companion", "Special Ability":  "Plush Barrier – Defense buff."}},
+{"name": "Serengeti", "attributes": {"Size": 82, "Strength": 80, "Intelligence": 88, "Friendliness": 78, "Agility": 95, "Adaptability": 86, "Tier": "Working", "Special Ability":  "Savannah Leap – Extra movement."}},
+{"name": "Siamese", "attributes": {"Size": 75, "Strength": 70, "Intelligence": 96, "Friendliness": 92, "Agility": 88, "Adaptability": 90, "Tier": "Companion", "Special Ability":  "Vocal Charm – Disorients opponents."}},
+{"name": "Singapura", "attributes": {"Size": 60, "Strength": 58, "Intelligence": 88, "Friendliness": 90, "Agility": 82, "Adaptability": 86, "Tier": "Toy", "Special Ability":  "Tiny Spark – Surprise boost."}},
+{"name": "Snow Bengal", "attributes": {"Size": 83, "Strength": 85, "Intelligence": 89, "Friendliness": 80, "Agility": 94, "Adaptability": 88, "Tier": "Working", "Special Ability":  "Ice Prowler – Speed on cold maps."}},
+{"name": "Snowshoe", "attributes": {"Size": 76, "Strength": 74, "Intelligence": 88, "Friendliness": 90, "Agility": 85, "Adaptability": 87, "Tier": "Companion", "Special Ability":  "Frost Step – Speed on cold terrain."}},
+{"name": "Sokoke", "attributes": {"Size": 74, "Strength": 72, "Intelligence": 90, "Friendliness": 78, "Agility": 92, "Adaptability": 88, "Tier": "Working", "Special Ability":  "Forest Camouflage – Evasion boost."}},
+{"name": "Sphynx", "attributes": {"Size": 70, "Strength": 68, "Intelligence": 92, "Friendliness": 96, "Agility": 85, "Adaptability": 95, "Tier": "Legendary", "Special Ability":  "Thermal Bond – Converts energy into defense."}},
+{"name": "Thai", "attributes": {"Size": 74, "Strength": 72, "Intelligence": 92, "Friendliness": 90, "Agility": 87, "Adaptability": 89, "Tier": "Companion", "Special Ability":  "Ancient Wisdom – Boosts mental stats."}},
+{"name": "Tonkinese", "attributes": {"Size": 77, "Strength": 75, "Intelligence": 91, "Friendliness": 93, "Agility": 88, "Adaptability": 89, "Tier": "Companion", "Special Ability":  "Harmony Link – Team synergy boost."}},
+{"name": "Toyger", "attributes": {"Size": 85, "Strength": 84, "Intelligence": 86, "Friendliness": 80, "Agility": 90, "Adaptability": 87, "Tier": "Working", "Special Ability":  "Stripe Assault – Power attack."}},
+{"name": "Turkish Angora", "attributes": {"Size": 74, "Strength": 72, "Intelligence": 90, "Friendliness": 88, "Agility": 92, "Adaptability": 87, "Tier": "Companion", "Special Ability":  "Silk Dash – Temporary speed boost."}},
+{"name": "Turkish Van", "attributes": {"Size": 85, "Strength": 82, "Intelligence": 88, "Friendliness": 80, "Agility": 90, "Adaptability": 92, "Tier": "Guardian", "Special Ability":  "Water Master – No movement penalties in wet terrain."}},
+{"name": "Ukrainian Levkoy", "attributes": {"Size": 74, "Strength": 72, "Intelligence": 91, "Friendliness": 88, "Agility": 85, "Adaptability": 92, "Tier": "Legendary", "Special Ability":  "Neural Link – Predicts enemy moves."}},
+{"name": "York Chocolate", "attributes": {"Size": 82, "Strength": 78, "Intelligence": 83, "Friendliness": 85, "Agility": 76, "Adaptability": 87, "Tier": "Guardian", "Special Ability":  "Cocoa Guard – Damage resistance."}},
+
+
+  ];
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    selectedCards.push(...mega);
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

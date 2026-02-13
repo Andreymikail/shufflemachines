@@ -9,6 +9,7 @@
     <label><input type="checkbox" id="saopCheckbox"> São Paulo (SP)</label><br>
     <label><input type="checkbox" id="olindaCheckbox"> Olinda (PE)</label><br>
     <label><input type="checkbox" id="salvadorCheckbox"> Salvador (BA)</label><br>
+    <label><input type="checkbox" id="charaCheckbox"> Italian Character</label><br>
   </div>
 
   <!-- Cards per page selection -->
@@ -241,7 +242,18 @@ const salvador = [
 {"name": "Filhos de Gandhy", "attributes": {"tier": "Legendary", "genre influence": "Afro-Brazilian", "crowd energy": 85, "musical legacy": 95, "visual impact": 99, "historical importance": 98, "founded": 1949}},
 {"name": "Ilê Aiyê", "attributes": {"tier": "Legendary", "genre influence": "Afro-Brazilian", "crowd energy": 88, "musical legacy": 98, "visual impact": 96, "historical importance": 100, "founded": 1974}},
   ];
-  
+
+
+const chara = [
+{"name": "Arlecchino (Harlequin)", "attributes": {"power": 90, "agility": 98, "humor": 96, "trickery": 97, "style": 95, "tier": "Iconic"}},
+{"name": "Brighella", "attributes": {"power": 89, "deception": 97, "agility": 94, "strategy": 95, "ambition": 96, "tier": "Iconic"}},
+{"name": "Colombina", "attributes": {"power": 85, "intelligence": 97, "charm": 98, "agility": 94, "elegance": 95, "tier": "Iconic"}},
+{"name": "Il Dottore", "attributes": {"power": 84, "knowledge": 98, "speechcraft": 97, "ego": 95, "comedy": 93, "tier": "Classic"}},
+{"name": "Pantalone", "attributes": {"power": 87, "wealth": 99, "authority": 95, "strategy": 94, "influence": 96, "tier": "Classic"}},
+{"name": "Pierrot", "attributes": {"power": 82, "emotion": 99, "expression": 97, "stage_presence": 94, "artistry": 96, "tier": "Classic"}},
+{"name": "Pulcinella", "attributes": {"power": 88, "humor": 99, "sarcasm": 96, "endurance": 92, "tradition": 98, "tier": "Classic"}},
+  ];
+    
   
   // Shuffle array
   function shuffleArray(array) {
@@ -257,6 +269,7 @@ const salvador = [
     if (document.getElementById('saopCheckbox').checked) selectedCards.push(...saop);
     if (document.getElementById('olindaCheckbox').checked) selectedCards.push(...olinda);
     if (document.getElementById('salvadorCheckbox').checked) selectedCards.push(...salvador);
+    if (document.getElementById('charaCheckbox').checked) selectedCards.push(...chara);
 
     if (selectedCards.length === 0) {
       alert("Please select at least one theme!");

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Image Spin Overlay</title>
 </head>
 
@@ -9,33 +10,39 @@
 
 <div style="text-align:center;">
   <h1>Image Spin</h1>
-  <br><br>
+  <br>
 </div>
 
 <!-- CONTROLES -->
 <div class="controls">
 
-  <button id="startBtn">▶</button>
-  <button id="stopBtn">■</button>
-  <button id="fullscreenBtn">[]</button>
+  <button id="startBtn" title="Start">▶</button>
+  <button id="stopBtn" title="Stop">■</button>
+  <button id="fullscreenBtn" title="Fullscreen">[]</button>
 
   <br><br>
 
   <p>Speed (seconds / turn):</p>
-  <input type="number" id="speedInput" value="2" min="0.1" step="0.1">
+  <input type="number" id="speedInput" value="2" min="0.05" step="0.5">
 
   <br><br>
 
-  <p>Image 1 (Clockwise):</p>
+  <p>Preset:</p>
+  <select id="presetSelect">
+    <option value="">-- select --</option>
+  </select>
+
+  <br><br>
+
+  <p>Load Image 1 (Clockwise):</p>
   <input type="file" id="file1" accept="image/*">
 
   <br><br>
 
-  <p>Image 2 (Counter):</p>
+  <p>Load Image 2 (Counter):</p>
   <input type="file" id="file2" accept="image/*">
 
 </div>
-
 
 <!-- AREA DE ROTAÇÃO -->
 <div class="spin-container">
@@ -52,16 +59,31 @@
 
 </div>
 
-
 <script>
+const IMAGE_SETS = {
+  "Roulette": {
+    cw: "https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/af77cefe-7ef0-4c3e-ba97-7bc8e505a830/roulette.png",
+    ccw: "https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/a64848be-6179-4f8c-b0fc-d84bc372387c/ball.png"
+  },
+  "Preset A": {
+    cw: "https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/c39420e3-a731-42c0-bf22-329ba9240118/01.png",
+    ccw: "https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/89b10f14-46a2-4c97-b7e2-0e984952af5a/02.png"
+  },
+  "Preset B": {
+    cw: "https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/3ad3fec4-61a8-4a56-8616-afdfffcb519c/03.png",
+    ccw: "https://images.squarespace-cdn.com/content/v1/66be651a2ed73a62cf27f270/255d427a-cbe7-46e2-b607-a05ddeb3f6cd/04.png"
+  }
+};
+
 
 const startBtn = document.getElementById("startBtn");
 const stopBtn  = document.getElementById("stopBtn");
-
 const speedInput = document.getElementById("speedInput");
 
 const file1 = document.getElementById("file1");
 const file2 = document.getElementById("file2");
+
+const presetSelect = document.getElementById("presetSelect");
 
 const bmp1 = document.getElementById("bmp1");
 const bmp2 = document.getElementById("bmp2");
@@ -80,23 +102,55 @@ let angle2 = 0;
 
 let lastTime = null;
 
+/* ===== Helpers ===== */
 
-/* CARREGA BMP */
+function clamp(n, min, max) {
+  return Math.min(max, Math.max(min, n));
+}
 
-function loadBMP(input, target) {
+function setBackgroundImage(target, url) {
+  if (!url) return;
+  // Para URLs do site
+  target.style.backgroundImage = `url("${url}")`;
+}
 
-  const file = input.files[0];
+/* ===== Preset Combo ===== */
+
+function populatePresets() {
+  Object.keys(IMAGE_SETS).forEach((name) => {
+    const opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name;
+    presetSelect.appendChild(opt);
+  });
+}
+
+function applyPreset(name) {
+  const preset = IMAGE_SETS[name];
+  if (!preset) return;
+
+  // Carrega as duas imagens
+  setBackgroundImage(bmp1, preset.cw);
+  setBackgroundImage(bmp2, preset.ccw);
+
+  // Opcional: limpa file inputs para evitar confusão visual
+  file1.value = "";
+  file2.value = "";
+}
+
+/* ===== Carrega imagens locais ===== */
+
+function loadLocalFile(input, target) {
+  const file = input.files && input.files[0];
   if (!file) return;
 
   const url = URL.createObjectURL(file);
-  target.style.backgroundImage = `url('${url}')`;
+  setBackgroundImage(target, url);
 }
 
-
-/* LOOP DE ANIMAÇÃO */
+/* ===== Loop de animação ===== */
 
 function animate(time) {
-
   if (!running) return;
 
   if (!lastTime) lastTime = time;
@@ -104,7 +158,7 @@ function animate(time) {
   const dt = (time - lastTime) / 1000;
   lastTime = time;
 
-  const secondsPerTurn = Math.max(0.05, Number(speedInput.value));
+  const secondsPerTurn = Math.max(0.05, Number(speedInput.value) || 2);
   const degPerSec = 360 / secondsPerTurn;
 
   // Horário
@@ -119,60 +173,101 @@ function animate(time) {
   rafId = requestAnimationFrame(animate);
 }
 
-
-/* CONTROLES */
+/* ===== Controles Start/Stop ===== */
 
 function start() {
-
   if (running) return;
-
   running = true;
   lastTime = null;
-
   rafId = requestAnimationFrame(animate);
 }
 
 function stop() {
-
   running = false;
-
   if (rafId) cancelAnimationFrame(rafId);
-
   rafId = null;
   lastTime = null;
 }
 
+function toggleRun() {
+  if (running) stop();
+  else start();
+}
 
-/* EVENTS */
+/* ===== Fullscreen ===== */
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    container.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+/* ===== 1) / 2) Teclado =====
+   - Espaço: start/stop
+   - ArrowUp: mais rápido (reduz seconds/turn)
+   - ArrowDown: mais lento (aumenta seconds/turn)
+*/
+function handleKeydown(e) {
+  // Não roubar tecla quando digitando no input
+  const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
+  const isTypingField = tag === "input" || tag === "textarea" || tag === "select";
+
+  if (e.code === "Space") {
+    e.preventDefault(); // evita scroll
+    toggleRun();
+    return;
+  }
+
+  if (e.code === "ArrowUp" || e.code === "ArrowDown") {
+    // se estiver no input number, ainda assim queremos permitir o atalho?
+    // Aqui eu permito mesmo fora de campo de texto; se preferir sempre, remova o if.
+    if (isTypingField && tag !== "select") return;
+
+    e.preventDefault();
+
+    const current = Number(speedInput.value) || 2;
+
+    // Regra: Speed é seconds/turn. Menor = mais rápido.
+    const step = Number(speedInput.step) || 0.1;
+
+    let next = current;
+    if (e.code === "ArrowUp") next = current - step;
+    if (e.code === "ArrowDown") next = current + step;
+
+    next = clamp(next, Number(speedInput.min) || 0.05, 999);
+    speedInput.value = next.toFixed(2).replace(/\.00$/, ""); // estética
+  }
+}
+
+/* ===== Events ===== */
 
 startBtn.addEventListener("click", start);
 stopBtn.addEventListener("click", stop);
 
-file1.addEventListener("change", () => loadBMP(file1, bmp1));
-file2.addEventListener("change", () => loadBMP(file2, bmp2));
-
-
-
 fullscreenBtn.addEventListener("click", toggleFullscreen);
 
-function toggleFullscreen() {
+file1.addEventListener("change", () => loadLocalFile(file1, bmp1));
+file2.addEventListener("change", () => loadLocalFile(file2, bmp2));
 
-  if (!document.fullscreenElement) {
+presetSelect.addEventListener("change", (e) => {
+  const name = e.target.value;
+  if (name) applyPreset(name);
+});
 
-    container.requestFullscreen();
+document.addEventListener("keydown", handleKeydown);
 
-  } else {
+/* ===== Init ===== */
+populatePresets();
 
-    document.exitFullscreen();
-
-  }
-}
+// Se quiser iniciar com um preset padrão, descomente:
+// presetSelect.value = "Preset A (Logo + Rings)";
+// applyPreset(presetSelect.value);
 
 </script>
 
-
 <style>
-
 body {
   background: black;
   color: white;
@@ -180,18 +275,19 @@ body {
   text-align: center;
 }
 
-
-/* CONTROLES */
-
-.controls {
-  margin-bottom: 25px;
+.hint {
+  margin: 0;
+  opacity: 0.85;
+  font-size: 14px;
 }
 
+/* CONTROLES */
+.controls {
+  margin-bottom: 20px;
+}
 
 /* AREA PRINCIPAL */
-
 .spin-container {
-
   width: 240px;
   height: 240px;
 
@@ -201,9 +297,7 @@ body {
   border-radius: 50%;
 
   position: relative;
-
   background: #111;
-
   overflow: hidden;
 
   display: flex;
@@ -211,13 +305,9 @@ body {
   justify-content: center;
 }
 
-
 /* CADA CAMADA */
-
 .layer {
-
   position: absolute;
-
   width: 200px;
   height: 200px;
 
@@ -228,11 +318,8 @@ body {
   transform-origin: center center;
 }
 
-
 /* BMP */
-
 .bmp {
-
   width: 200px;
   height: 200px;
 
@@ -243,9 +330,8 @@ body {
   image-rendering: pixelated;
 }
 
-
+/* FULLSCREEN */
 .spin-container:fullscreen {
-
   width: 100vw;
   height: 100vw;
 
@@ -255,10 +341,9 @@ body {
   border-radius: 0;
   border: none;
 }
+
 /* BOTÕES */
-
 button {
-
   width: 70px;
   height: 40px;
 
@@ -271,19 +356,21 @@ button {
 }
 
 button:hover {
-
   background: #6E1919;
   color: white;
 }
 
-
-input {
-
+input, select {
   margin-top: 5px;
 }
 
 h1, p, label {
   color: white;
+}
+
+select {
+  width: 260px;
+  height: 34px;
 }
 </style>
 

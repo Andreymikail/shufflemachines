@@ -7,6 +7,7 @@
   <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
     <label><input type="checkbox" id="chefCheckbox"> Chef</label><br>
     <label><input type="checkbox" id="ingCheckbox"> Ingredient</label><br>
+    <label><input type="checkbox" id="fruitCheckbox"> Fruit</label><br>
     <label><input type="checkbox" id="utenCheckbox"> Utensil</label><br>
     <label><input type="checkbox" id="cheeseCheckbox"> Cheese</label><br>
     <label><input type="checkbox" id="wineCheckbox"> Wine</label><br>
@@ -469,7 +470,59 @@ const wine = [
 {"name": "Wine: White Zinfandel", "attributes": {"Country": "United States", "Tier": "Accessible", "Body": 74, "Aging Potential": 55, "Complexity": 72, "Global Prestige": 78, "Balance": 90}},
   ];
   
-  
+
+const fruit = [
+{"name": "Acerola", "attributes": {"tier": "Exotic", "country of origin": "Brazil", "sweetness": 55, "acidity": 85, "nutritional value": 100, "global popularity": 50, "exotic factor": 92, "versatility": 70}},
+{"name": "Apple", "attributes": {"tier": "Classic", "country of origin": "Kazakhstan", "sweetness": 70, "acidity": 60, "nutritional value": 85, "global popularity": 95, "exotic factor": 20, "versatility": 90}},
+{"name": "Apricot", "attributes": {"tier": "Classic", "country of origin": "China", "sweetness": 75, "acidity": 50, "nutritional value": 84, "global popularity": 67, "exotic factor": 35, "versatility": 70}},
+{"name": "Avocado", "attributes": {"tier": "Iconic", "country of origin": "Mexico", "sweetness": 20, "acidity": 15, "nutritional value": 98, "global popularity": 90, "exotic factor": 50, "versatility": 95}},
+{"name": "Banana", "attributes": {"tier": "Classic", "country of origin": "Papua New Guinea", "sweetness": 80, "acidity": 30, "nutritional value": 88, "global popularity": 98, "exotic factor": 15, "versatility": 85}},
+{"name": "Blackberry", "attributes": {"tier": "Iconic", "country of origin": "United Kingdom", "sweetness": 72, "acidity": 65, "nutritional value": 93, "global popularity": 70, "exotic factor": 50, "versatility": 76}},
+{"name": "Blackcurrant", "attributes": {"tier": "Iconic", "country of origin": "United Kingdom", "sweetness": 60, "acidity": 80, "nutritional value": 97, "global popularity": 65, "exotic factor": 55, "versatility": 75}},
+{"name": "Blood Orange", "attributes": {"tier": "Iconic", "country of origin": "Italy", "sweetness": 78, "acidity": 88, "nutritional value": 92, "global popularity": 72, "exotic factor": 60, "versatility": 85}},
+{"name": "Blueberry", "attributes": {"tier": "Iconic", "country of origin": "United States", "sweetness": 75, "acidity": 50, "nutritional value": 95, "global popularity": 85, "exotic factor": 40, "versatility": 90}},
+{"name": "Breadfruit", "attributes": {"tier": "Exotic", "country of origin": "New Guinea", "sweetness": 40, "acidity": 20, "nutritional value": 88, "global popularity": 40, "exotic factor": 90, "versatility": 92}},
+{"name": "Cantaloupe", "attributes": {"tier": "Classic", "country of origin": "India", "sweetness": 82, "acidity": 30, "nutritional value": 78, "global popularity": 70, "exotic factor": 30, "versatility": 65}},
+{"name": "Cherry", "attributes": {"tier": "Classic", "country of origin": "Turkey", "sweetness": 88, "acidity": 60, "nutritional value": 78, "global popularity": 85, "exotic factor": 35, "versatility": 75}},
+{"name": "Clementine", "attributes": {"tier": "Classic", "country of origin": "Algeria", "sweetness": 82, "acidity": 75, "nutritional value": 86, "global popularity": 88, "exotic factor": 20, "versatility": 85}},
+{"name": "Coconut", "attributes": {"tier": "Exotic", "country of origin": "Indonesia", "sweetness": 60, "acidity": 10, "nutritional value": 92, "global popularity": 88, "exotic factor": 70, "versatility": 85}},
+{"name": "Cranberry", "attributes": {"tier": "Exotic", "country of origin": "United States", "sweetness": 15, "acidity": 95, "nutritional value": 90, "global popularity": 75, "exotic factor": 40, "versatility": 85}},
+{"name": "Date", "attributes": {"tier": "Iconic", "country of origin": "Iraq", "sweetness": 95, "acidity": 15, "nutritional value": 96, "global popularity": 75, "exotic factor": 60, "versatility": 85}},
+{"name": "Dragon Fruit", "attributes": {"tier": "Exotic", "country of origin": "Mexico", "sweetness": 65, "acidity": 40, "nutritional value": 80, "global popularity": 60, "exotic factor": 95, "versatility": 60}},
+{"name": "Durian", "attributes": {"tier": "Legendary", "country of origin": "Malaysia", "sweetness": 85, "acidity": 50, "nutritional value": 93, "global popularity": 55, "exotic factor": 100, "versatility": 45}},
+{"name": "Fig", "attributes": {"tier": "Exotic", "country of origin": "Turkey", "sweetness": 82, "acidity": 30, "nutritional value": 90, "global popularity": 60, "exotic factor": 75, "versatility": 55}},
+{"name": "Gooseberry", "attributes": {"tier": "Exotic", "country of origin": "India", "sweetness": 40, "acidity": 88, "nutritional value": 94, "global popularity": 50, "exotic factor": 72, "versatility": 65}},
+{"name": "Grapes", "attributes": {"tier": "Classic", "country of origin": "Georgia", "sweetness": 82, "acidity": 45, "nutritional value": 80, "global popularity": 93, "exotic factor": 25, "versatility": 95}},
+{"name": "Guava", "attributes": {"tier": "Exotic", "country of origin": "Brazil", "sweetness": 84, "acidity": 50, "nutritional value": 95, "global popularity": 68, "exotic factor": 78, "versatility": 72}},
+{"name": "Jackfruit", "attributes": {"tier": "Exotic", "country of origin": "India", "sweetness": 83, "acidity": 35, "nutritional value": 90, "global popularity": 60, "exotic factor": 92, "versatility": 88}},
+{"name": "Kiwi", "attributes": {"tier": "Exotic", "country of origin": "China", "sweetness": 72, "acidity": 70, "nutritional value": 88, "global popularity": 75, "exotic factor": 60, "versatility": 65}},
+{"name": "Kumquat", "attributes": {"tier": "Exotic", "country of origin": "China", "sweetness": 60, "acidity": 90, "nutritional value": 87, "global popularity": 52, "exotic factor": 88, "versatility": 70}},
+{"name": "Lemon", "attributes": {"tier": "Classic", "country of origin": "India", "sweetness": 20, "acidity": 98, "nutritional value": 85, "global popularity": 95, "exotic factor": 15, "versatility": 98}},
+{"name": "Longan", "attributes": {"tier": "Exotic", "country of origin": "China", "sweetness": 88, "acidity": 35, "nutritional value": 84, "global popularity": 48, "exotic factor": 93, "versatility": 50}},
+{"name": "Lychee", "attributes": {"tier": "Exotic", "country of origin": "China", "sweetness": 90, "acidity": 40, "nutritional value": 86, "global popularity": 65, "exotic factor": 88, "versatility": 60}},
+{"name": "Mango", "attributes": {"tier": "Iconic", "country of origin": "India", "sweetness": 92, "acidity": 55, "nutritional value": 90, "global popularity": 85, "exotic factor": 65, "versatility": 80}},
+{"name": "Mangosteen", "attributes": {"tier": "Legendary", "country of origin": "Indonesia", "sweetness": 92, "acidity": 40, "nutritional value": 93, "global popularity": 45, "exotic factor": 98, "versatility": 55}},
+{"name": "Mulberry", "attributes": {"tier": "Exotic", "country of origin": "China", "sweetness": 78, "acidity": 60, "nutritional value": 92, "global popularity": 55, "exotic factor": 70, "versatility": 60}},
+{"name": "Nectarine", "attributes": {"tier": "Classic", "country of origin": "China", "sweetness": 86, "acidity": 55, "nutritional value": 82, "global popularity": 74, "exotic factor": 30, "versatility": 72}},
+{"name": "Orange", "attributes": {"tier": "Classic", "country of origin": "China", "sweetness": 75, "acidity": 85, "nutritional value": 94, "global popularity": 97, "exotic factor": 20, "versatility": 92}},
+{"name": "Papaya", "attributes": {"tier": "Exotic", "country of origin": "Mexico", "sweetness": 85, "acidity": 35, "nutritional value": 92, "global popularity": 70, "exotic factor": 75, "versatility": 68}},
+{"name": "Passion Fruit", "attributes": {"tier": "Exotic", "country of origin": "Brazil", "sweetness": 78, "acidity": 90, "nutritional value": 88, "global popularity": 65, "exotic factor": 85, "versatility": 70}},
+{"name": "Peach", "attributes": {"tier": "Classic", "country of origin": "China", "sweetness": 87, "acidity": 55, "nutritional value": 80, "global popularity": 82, "exotic factor": 30, "versatility": 75}},
+{"name": "Pear", "attributes": {"tier": "Classic", "country of origin": "China", "sweetness": 76, "acidity": 45, "nutritional value": 83, "global popularity": 78, "exotic factor": 25, "versatility": 80}},
+{"name": "Persimmon", "attributes": {"tier": "Exotic", "country of origin": "China", "sweetness": 88, "acidity": 35, "nutritional value": 91, "global popularity": 62, "exotic factor": 75, "versatility": 58}},
+{"name": "Pineapple", "attributes": {"tier": "Exotic", "country of origin": "Brazil", "sweetness": 88, "acidity": 75, "nutritional value": 82, "global popularity": 83, "exotic factor": 70, "versatility": 72}},
+{"name": "Plantain", "attributes": {"tier": "Iconic", "country of origin": "Ghana", "sweetness": 50, "acidity": 25, "nutritional value": 90, "global popularity": 85, "exotic factor": 45, "versatility": 95}},
+{"name": "Plum", "attributes": {"tier": "Classic", "country of origin": "China", "sweetness": 80, "acidity": 55, "nutritional value": 82, "global popularity": 72, "exotic factor": 28, "versatility": 68}},
+{"name": "Pomegranate", "attributes": {"tier": "Iconic", "country of origin": "Iran", "sweetness": 70, "acidity": 65, "nutritional value": 96, "global popularity": 68, "exotic factor": 80, "versatility": 60}},
+{"name": "Rambutan", "attributes": {"tier": "Exotic", "country of origin": "Malaysia", "sweetness": 84, "acidity": 40, "nutritional value": 85, "global popularity": 50, "exotic factor": 95, "versatility": 55}},
+{"name": "Raspberry", "attributes": {"tier": "Iconic", "country of origin": "Turkey", "sweetness": 70, "acidity": 75, "nutritional value": 94, "global popularity": 73, "exotic factor": 45, "versatility": 78}},
+{"name": "Soursop", "attributes": {"tier": "Exotic", "country of origin": "Brazil", "sweetness": 82, "acidity": 65, "nutritional value": 94, "global popularity": 55, "exotic factor": 90, "versatility": 60}},
+{"name": "Starfruit", "attributes": {"tier": "Exotic", "country of origin": "Sri Lanka", "sweetness": 65, "acidity": 85, "nutritional value": 89, "global popularity": 58, "exotic factor": 90, "versatility": 55}},
+{"name": "Strawberry", "attributes": {"tier": "Classic", "country of origin": "France", "sweetness": 85, "acidity": 65, "nutritional value": 78, "global popularity": 92, "exotic factor": 35, "versatility": 88}},
+{"name": "Tamarind", "attributes": {"tier": "Exotic", "country of origin": "Sudan", "sweetness": 45, "acidity": 92, "nutritional value": 91, "global popularity": 58, "exotic factor": 85, "versatility": 90}},
+{"name": "Tangerine", "attributes": {"tier": "Classic", "country of origin": "China", "sweetness": 78, "acidity": 80, "nutritional value": 88, "global popularity": 85, "exotic factor": 22, "versatility": 83}},
+{"name": "Watermelon", "attributes": {"tier": "Classic", "country of origin": "Sudan", "sweetness": 78, "acidity": 25, "nutritional value": 75, "global popularity": 90, "exotic factor": 30, "versatility": 70}},
+  ];
   // Shuffle array
   function shuffleArray(array) {
     return array.sort(() => Math.random() - 0.5);
@@ -482,6 +535,7 @@ const wine = [
     // Gather selected decks
     if (document.getElementById('chefCheckbox').checked) selectedCards.push(...chef);
     if (document.getElementById('ingCheckbox').checked) selectedCards.push(...ing);
+    if (document.getElementById('fruitCheckbox').checked) selectedCards.push(...fruit);
     if (document.getElementById('utenCheckbox').checked) selectedCards.push(...uten);
     if (document.getElementById('cheeseCheckbox').checked) selectedCards.push(...cheese);
     if (document.getElementById('wineCheckbox').checked) selectedCards.push(...wine);

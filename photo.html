@@ -9,7 +9,6 @@
     <label><input type="checkbox" id="equipCheckbox"> Equipment</label><br>
     <label><input type="checkbox" id="genreCheckbox"> Genre</label><br>
     <label><input type="checkbox" id="locCheckbox"> Place / Event</label><br>
-    <label><input type="checkbox" id="flowerCheckbox"> Flower</label><br>
     <label><input type="checkbox" id="mountCheckbox"> Mountain</label><br>
     <label><input type="checkbox" id="natpCheckbox"> National Park</label><br>
     <label><input type="checkbox" id="trailCheckbox"> Trail</label><br>
@@ -424,74 +423,7 @@ const genre = [
 {name: "Place: Zhangjiajie National Forest Park, China", attributes: { "Best Photo Genre": "Landscape & Fantasy-Like Photography", "Scenic Beauty": 100, "Cultural Richness": 75, "Photographer Popularity": 85, Accessibility: 60, "Unique Factor": 100}},
 {name: "Place: Yosemite National Park, USA", attributes: { "Best Photo Genre": "Landscape & Wildlife Photography", "Scenic Beauty": 100, "Cultural Richness": 85, "Photographer Popularity": 90, Accessibility: 60, "Unique Factor": 100}},
   ];
-
-
-const flower = [
-{name: "Flower: African Violet", attributes: {Height: "20 cm", Fragrance: "25", Lifespan: "30 days", Toxicity: 2, Rarity: 3}},
-{name: "Flower: Anemone", attributes: {Height: "50 cm", Fragrance: "35", Lifespan: "7 days", Toxicity: 3, Rarity: 6}},
-{name: "Flower: Belladonna Lily", attributes: {Height: "90 cm", Fragrance: "70", Lifespan: "7 days", Toxicity: 9, Rarity: 7}},
-{name: "Flower: Bird of Paradise", attributes: {Height: "180 cm", Fragrance: "50", Lifespan: "14 days", Toxicity: 3, Rarity: 4}},
-{name: "Flower: Black Bat Flower", attributes: {Height: "90 cm", Fragrance: "20", Lifespan: "14 days", Toxicity: 5, Rarity: 9}},
-{name: "Flower: Bleeding Heart", attributes: {Height: "90 cm", Fragrance: "55", Lifespan: "10 days", Toxicity: 6, Rarity: 8}},
-{name: "Flower: Blue Himalayan Poppy", attributes: {Height: "90 cm", Fragrance: 40, Lifespan: "10 days", Toxicity: 3, Rarity: 9}},
-{name: "Flower: Blue Lotus", attributes: {Height: "25 cm", Fragrance: "85", Lifespan: "7 days", Toxicity: 5, Rarity: 8}},
-{name: "Flower: Bluebonnet", attributes: {Height: "30 cm", Fragrance: "50", Lifespan: "5 days", Toxicity: 4, Rarity: 5}},
-{name: "Flower: Cactus Flower (Saguaro)", attributes: {Height: "1,200 cm (as plant)", Fragrance: "85", Lifespan: "1 day", Toxicity: 1, Rarity: 8}},
-{name: "Flower: Calla Lily", attributes: {Height: "90 cm", Fragrance: "65", Lifespan: "7 days", Toxicity: 8, Rarity: 5}},
-{name: "Flower: Camellia", attributes: {Height: "300 cm (bush)", Fragrance: "75", Lifespan: "20 days", Toxicity: 2, Rarity: 4}},
-{name: "Flower: Cattleya Orchid", attributes: {Height: "50 cm", Fragrance: "90", Lifespan: "14 days", Toxicity: 3, Rarity: 7}},
-{name: "Flower: Cerrado Bloom", attributes: {Height: "40 cm", Fragrance: "60", Lifespan: "45 days", Toxicity: 3, Rarity: 7}},
-{name: "Flower: Cherry Blossom", attributes: {Height: "500 cm (as tree)", Fragrance: "60", Lifespan: "7 days", Toxicity: 1, Rarity: 6}},
-{name: "Flower: Chocolate Cosmos", attributes: {Height: "60 cm", Fragrance: "90 (smells like chocolate!)", Lifespan: "10 days", Toxicity: 2, Rarity: 8}},
-{name: "Flower: Chrysanthemum", attributes: {Height: "120 cm", Fragrance: "55", Lifespan: "25 days", Toxicity: 2, Rarity: 3}},
-{name: "Flower: Cirsium rivulare 'Atropurpureum'", attributes: {Height: "100 cm", Fragrance: "30", Lifespan: "7 days", Toxicity: 2, Rarity: 6}},
-{name: "Flower: Compact Tropical Dogwood", attributes: {Height: "120 cm", Fragrance: "65", Lifespan: "10 days", Toxicity: 3, Rarity: 6}},
-{name: "Flower: Corpse Flower (Titan Arum)", attributes: {Height: "300 cm", Fragrance: "5 (smells terrible!)", Lifespan: "3 days", Toxicity: 1, Rarity: 10}},
-{name: "Flower: Dahlia (Dinnerplate)", attributes: {Height: "120 cm", Fragrance: "50", Lifespan: "12 days", Toxicity: 2, Rarity: 4}},
-{name: "Flower: Dandelion", attributes: {Height: "40 cm", Fragrance: "20", Lifespan: "5 days", Toxicity: 0, Rarity: 2}},
-{name: "Flower: Edelweiss", attributes: {Height: "20 cm", Fragrance: "40", Lifespan: "15 days", Toxicity: 0, Rarity: 9}},
-{name: "Flower: Foxglove", attributes: {Height: "150 cm", Fragrance: "65", Lifespan: "14 days", Toxicity: 10, Rarity: 7}},
-{name: "Flower: Frangipani", attributes: {Height: "800 cm (tree)", Fragrance: "100", Lifespan: "10 days", Toxicity: 5, Rarity: 6}},
-{name: "Flower: Fritillaria persica", attributes: {Height: "120 cm", Fragrance: "40", Lifespan: "10 days", Toxicity: 3, Rarity: 7}},
-{name: "Flower: Fuchsia", attributes: {Height: "120 cm", Fragrance: "50", Lifespan: "15 days", Toxicity: 1, Rarity: 4}},
-{name: "Flower: Ghost Flower (Rare desert bloom)", attributes: {Height: "30 cm", Fragrance: "70", Lifespan: "3 days", Toxicity: 0, Rarity: 10}},
-{name: "Flower: Ghost Orchid", attributes: {Height: "40 cm", Fragrance: "80", Lifespan: "21 days", Toxicity: 0, Rarity: 10}},
-{name: "Flower: Haleakalā Silversword", attributes: {Height: "120 cm", Fragrance: "20", Lifespan: "15 days (bloom phase)", Toxicity: 3, Rarity: 10}},
-{name: "Flower: Helleborus", attributes: {Height: "45 cm", Fragrance: "40", Lifespan: "7–10 days (per bloom)", Toxicity: 5, Rarity: 6}},
-{name: "Flower: Hibiscus", attributes: {Height: "150 cm", Fragrance: "30", Lifespan: "2–3 days (per bloom)", Toxicity: 1, Rarity: 4}},
-{name: "Flower: Hydrangea", attributes: {Height: "250 cm (bush)", Fragrance: "30", Lifespan: "30 days", Toxicity: 8, Rarity: 4}},
-{name: "Flower: Jade Vine", attributes: {Height: "180 cm (vine)", Fragrance: "75", Lifespan: "10 days", Toxicity: 3, Rarity: 9}},
-{name: "Flower: Lavender", attributes: {Height: "75 cm", Fragrance: "95", Lifespan: "30 days", Toxicity: 1, Rarity: 3}},
-{name: "Flower: Leather Flower", attributes: {Height: "60 cm", Fragrance: "30", Lifespan: "7–12 days (per bloom)", Toxicity: 4, Rarity: 5}},
-{name: "Flower: Lily of the Valley", attributes: {Height: "15 cm", Fragrance: "95", Lifespan: "14 days", Toxicity: 9, Rarity: 5}},
-{name: "Flower: Lotus (Sacred Lotus)", attributes: {Height: "150 cm", Fragrance: "95", Lifespan: "7 days", Toxicity: 1, Rarity: 6}},
-{name: "Flower: Magnolia", attributes: {Height: "1,200 cm (tree)", Fragrance: "90", Lifespan: "10 days", Toxicity: 3, Rarity: 6}},
-{name: "Flower: Malva Moschata", attributes: {Height: "60 cm", Fragrance: 70, Lifespan: "20 days", Toxicity: 1, Rarity: 4}},
-{name: "Flower: Marigold", attributes: {Height: "60 cm", Fragrance: "40", Lifespan: "10 days", Toxicity: 2, Rarity: 3}},
-{name: "Flower: Meconopsis betonicifolia", attributes: {Height: "90 cm", Fragrance: "75", Lifespan: "6 days", Toxicity: 2, Rarity: 9}},
-{name: "Flower: Morning Glory", attributes: {Height: "300 cm (vine)", Fragrance: "45", Lifespan: "1 day (blooms and dies)", Toxicity: 6, Rarity: 5}},
-{name: "Flower: Nigella damascena (Love-in-a-Mist)", attributes: {Height: "50 cm", Fragrance: "40", Lifespan: "5–7 days", Toxicity: 3, Rarity: 5}},
-{name: "Flower: Night-Blooming Jasmine", attributes: {Height: "300 cm", Fragrance: "100", Lifespan: "1 day (blooms at night only!)", Toxicity: 4, Rarity: 6}},
-{name: "Flower: Osteospermum", attributes: {Height: "40 cm", Fragrance: 20, Lifespan: "15 days", Toxicity: 2, Rarity: 5}},
-{name: "Flower: Passion Flower", attributes: {Height: "600 cm (vine)", Fragrance: "85", Lifespan: "5 days", Toxicity: 4, Rarity: 6}},
-{name: "Flower: Peony", attributes: {Height: "90 cm", Fragrance: "85", Lifespan: "7 days", Toxicity: 2, Rarity: 5}},
-{name: "Flower: Persian Buttercup", attributes: {Height: "45 cm", Fragrance: "60", Lifespan: "10 days", Toxicity: 5, Rarity: 4}},
-{name: "Flower: Poppy (Opium Poppy)", attributes: {Height: "100 cm", Fragrance: "30", Lifespan: "7 days", Toxicity: 9, Rarity: 8}},
-{name: "Flower: Protea (King Protea)", attributes: {Height: "150 cm", Fragrance: "40", Lifespan: "30 days", Toxicity: 1, Rarity: 7}},
-{name: "Flower: Queen of the Night Cactus", attributes: {Height: "400 cm (vine)", Fragrance: "100", Lifespan: "1 night", Toxicity: 3, Rarity: 10}},
-{name: "Flower: Rose (Damask)", attributes: {Height: "150 cm", Fragrance: "95", Lifespan: "10 days", Toxicity: 2, Rarity: 3}},
-{name: "Flower: Snapdragon", attributes: {Height: "60 cm", Fragrance: "50", Lifespan: "14 days", Toxicity: 2, Rarity: 4}},
-{name: "Flower: Snowdrop", attributes: {Height: "15 cm", Fragrance: "45", Lifespan: "5 days", Toxicity: 4, Rarity: 5}},
-{name: "Flower: Starflower", attributes: {Height: "30 cm", Fragrance: "60", Lifespan: "10 days", Toxicity: 1, Rarity: 5}},
-{name: "Flower: Sunflower", attributes: {Height: "300 cm", Fragrance: "30", Lifespan: "20 days", Toxicity: 0, Rarity: 3}},
-{name: "Flower: Tiger Lily", attributes: {Height: "150 cm", Fragrance: "60", Lifespan: "14 days", Toxicity: 9, Rarity: 5}},
-{name: "Flower: Tuberose", attributes: {Height: "90 cm", Fragrance: "100", Lifespan: "14 days", Toxicity: 4, Rarity: 5}},
-{name: "Flower: Venus Flytrap Flower", attributes: {Height: "15 cm", Fragrance: "20", Lifespan: "5 days", Toxicity: 7, Rarity: 8}},
-{name: "Flower: Water Lily (Victoria Amazonica)", attributes: {Height: "0 cm (floating)", Fragrance: "70", Lifespan: "3 days", Toxicity: 1, Rarity: 7}},
-{name: "Flower: Wisteria", attributes: {Height: "1,000 cm (vine)", Fragrance: "95", Lifespan: "14 days", Toxicity: 5, Rarity: 6}},
-{name: "Flower: Zinnia", attributes: {Height: "90 cm", Fragrance: "30", Lifespan: "14 days", Toxicity: 0, Rarity: 3}},
-  ];
-  
+ 
   
 const mount = [
 {name: "Mountain: Aconcagua", attributes: {Height: "6,961 m", Prominence: "6,962 m", Isolation: "16,534 km", Age: "10 million years", Rarity: 7}},
@@ -825,7 +757,6 @@ const bea = [
     if (document.getElementById('equipCheckbox').checked) selectedCards.push(...equip);
     if (document.getElementById('genreCheckbox').checked) selectedCards.push(...genre);
     if (document.getElementById('locCheckbox').checked) selectedCards.push(...loc);
-    if (document.getElementById('flowerCheckbox').checked) selectedCards.push(...flower);
     if (document.getElementById('mountCheckbox').checked) selectedCards.push(...mount);
     if (document.getElementById('natpCheckbox').checked) selectedCards.push(...natp);
     if (document.getElementById('trailCheckbox').checked) selectedCards.push(...trail);

@@ -1,0 +1,315 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Flowers</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Bloom Burst: Choose one flower card. It gains +15 Fragrance this turn.",
+"Spring Awakening: All your Spring flowers gain +10 Pollinator Appeal this round.",
+"Summer Radiance: One Summer flower gains +12 Color and +8 Rarity this turn.",
+"Autumn Resilience: One flower gains +15 Lifespan this turn.",
+"Winter Bloom: A Winter flower may be played immediately from your hand without cost or restriction.",
+"Perfume Wave: Your active flower gains +20 Fragrance, but loses -5 Pollinator Appeal this turn.",
+"Pollinator Frenzy: Gain +20 Pollinator Appeal on one flower card.",
+"Rare Petals: Increase one flower's Rarity by +2 until the end of the round.",
+"Golden Nectar: Your active flower gains +15 Pollinator Appeal and +10 Fragrance this turn.",
+"Moon Garden: Night-blooming or highly fragrant flowers gain +20 Fragrance this round.",
+"Petal Storm: All opponent flowers lose -10 Color this turn.",
+"Botanical Miracle: Raise one flower's Lifespan by +20 days for this match.",
+"Garden Harmony: If you control 3 different flower colors, all your flowers gain +5 to all attributes this round.",
+"Tropical Bloom: Flowers from Brazil, Mexico, Thailand, or the Philippines gain +12 Color and +12 Pollinator Appeal.",
+"Alpine Survivor: One rare mountain flower gains +18 Rarity this turn.",
+"Desert Miracle: Cactus, desert, or arid-region flowers gain +20 Rarity this round.",
+"Pollination Chain: Choose up to 3 flowers. Each gains +8 Pollinator Appeal.",
+"Honeybee Alliance: Your flower with the highest Pollinator Appeal gains +15 more Pollinator Appeal.",
+"Butterfly Dance: One colorful flower gains +15 Color and +10 Pollinator Appeal.",
+"Hummingbird Visit: Trumpet-shaped or tubular flowers gain +18 Pollinator Appeal this turn.",
+"Fragrant Crown: The flower with the highest Fragrance on your field gains +10 Rarity.",
+"Wild Meadow: All common or meadow flowers gain +12 Pollinator Appeal this round.",
+"Royal Bouquet: Choose one Orchid, Lily, Rose, or Peony. It gains +20 Rarity.",
+"Sacred Pond: Lotus and Water Lily cards gain +15 Fragrance and +10 Rarity.",
+"Orchid Prestige: One Orchid card gains +25 Rarity this turn.",
+"Rose Elegance: One Rose gains +15 Fragrance and +10 Color.",
+"Lavender Calm: Reduce all negative effects on one of your flowers by 50% this round.",
+"Sunlit Field: Yellow and orange flowers gain +12 Color and +10 Pollinator Appeal.",
+"Mystic Bloom: Blue, black, or ghostly flowers gain +20 Rarity this turn.",
+"Poison Warning: Your active flower gains +10 Rarity for every 3 Toxicity it has.",
+"Deadly Beauty: A flower with Toxicity 7 or higher gains +20 Color and +15 Rarity.",
+"Garden Shield: Prevent the next negative action played against one of your flowers.",
+"Petal Recovery: Restore +15 Lifespan to one flower that was reduced earlier in the match.",
+"Seed of Renewal: Return one flower from your discard pile to your hand.",
+"Greenhouse Care: Reduce one flower's Difficulty by 3 and increase its Lifespan by +10.",
+"Master Gardener: Choose one flower. It gains +10 to all non-Toxicity attributes this turn.",
+"Rainfall Blessing: All your flowers gain +8 Lifespan and +8 Pollinator Appeal.",
+"Morning Dew: One flower gains +10 Fragrance and +10 Color this turn.",
+"Fertile Soil: Flowers with Difficulty 5 or less gain +12 Lifespan this round.",
+"Rooted Strength: Flowers over 100 cm tall gain +15 Lifespan.",
+"Miniature Charm: Flowers under 40 cm gain +15 Rarity this turn.",
+"Exotic Collector: If your flower has Rarity 8 or higher, it gains +15 Color and +15 Fragrance.",
+"Festival Garland: Choose 3 flowers of different colors. Each gains +10 Color.",
+"Bouquet of Triumph: Your active flower gains +25 total points divided as you choose between Fragrance, Color, and Pollinator Appeal.",
+"Secret Garden: Hide your next played flower from opponent effects until the end of the round.",
+"Floral Symphony: If you control flowers from 3 different countries, all gain +10 Fragrance.",
+"Cross-Pollination: Copy the Pollinator Appeal of your highest-pollinator flower onto another flower this turn.",
+"Blooming Rivalry: Compare Color values. If your flower wins, it gains +10 Rarity.",
+"Elegant Arrangement: If your hand contains 4 different Bloom Seasons, draw 2 cards.",
+"Legendary Blossom: Choose one flower with Rarity 9 or 10. It gains +20 to one attribute of your choice."];
+
+  const mega = [
+  {name: "Flower: African Violet", attributes: {Height: "20 cm", Fragrance: 25, Lifespan: "30 days", Toxicity: 2, Rarity: 3, Country: "Tanzania", Color: "Purple", "Bloom Season": "Spring", Difficulty: 3, "Pollinator Appeal": 4}},
+  {name: "Flower: Alstroemeria", attributes: {Height: "90 cm", Fragrance: 35, Lifespan: "14 days", Toxicity: 2, Rarity: 4, Country: "Peru", Color: "Pink", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 6}},
+  {name: "Flower: Amaryllis", attributes: {Height: "60 cm", Fragrance: 55, Lifespan: "10 days", Toxicity: 7, Rarity: 5, Country: "Brazil", Color: "Red", "Bloom Season": "Winter", Difficulty: 5, "Pollinator Appeal": 5}},
+  {name: "Flower: Anemone", attributes: {Height: "50 cm", Fragrance: 35, Lifespan: "7 days", Toxicity: 3, Rarity: 6, Country: "Greece", Color: "Red", "Bloom Season": "Spring", Difficulty: 5, "Pollinator Appeal": 6}},
+  {name: "Flower: Angel's Trumpet", attributes: {Height: "300 cm", Fragrance: 90, Lifespan: "5 days", Toxicity: 10, Rarity: 7, Country: "Colombia", Color: "White", "Bloom Season": "Summer", Difficulty: 7, "Pollinator Appeal": 7}},
+  {name: "Flower: Aster", attributes: {Height: "70 cm", Fragrance: 40, Lifespan: "12 days", Toxicity: 1, Rarity: 4, Country: "China", Color: "Lavender", "Bloom Season": "Autumn", Difficulty: 3, "Pollinator Appeal": 8}},
+  {name: "Flower: Azalea", attributes: {Height: "180 cm", Fragrance: 60, Lifespan: "14 days", Toxicity: 8, Rarity: 5, Country: "Japan", Color: "Pink", "Bloom Season": "Spring", Difficulty: 5, "Pollinator Appeal": 5}},
+  {name: "Flower: Baby's Breath", attributes: {Height: "100 cm", Fragrance: 20, Lifespan: "21 days", Toxicity: 1, Rarity: 3, Country: "Turkey", Color: "White", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 5}},
+  {name: "Flower: Balloon Flower", attributes: {Height: "70 cm", Fragrance: 25, Lifespan: "10 days", Toxicity: 1, Rarity: 5, Country: "Korea", Color: "Blue", "Bloom Season": "Summer", Difficulty: 3, "Pollinator Appeal": 7}},
+  {name: "Flower: Bee Balm", attributes: {Height: "120 cm", Fragrance: 70, Lifespan: "12 days", Toxicity: 1, Rarity: 5, Country: "United States", Color: "Red", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 10}},
+  {name: "Flower: Begonia", attributes: {Height: "45 cm", Fragrance: 25, Lifespan: "20 days", Toxicity: 4, Rarity: 4, Country: "Brazil", Color: "Pink", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 4}},
+  {name: "Flower: Belladonna Lily", attributes: {Height: "90 cm", Fragrance: 70, Lifespan: "7 days", Toxicity: 9, Rarity: 7, Country: "South Africa", Color: "Pink", "Bloom Season": "Autumn", Difficulty: 6, "Pollinator Appeal": 5}},
+  {name: "Flower: Bird of Paradise", attributes: {Height: "180 cm", Fragrance: 50, Lifespan: "14 days", Toxicity: 3, Rarity: 4, Country: "South Africa", Color: "Orange", "Bloom Season": "Summer", Difficulty: 5, "Pollinator Appeal": 6}},
+  {name: "Flower: Black Bat Flower", attributes: {Height: "90 cm", Fragrance: 20, Lifespan: "14 days", Toxicity: 5, Rarity: 9, Country: "Thailand", Color: "Black", "Bloom Season": "Summer", Difficulty: 9, "Pollinator Appeal": 3}},
+  {name: "Flower: Black Eyed Susan", attributes: {Height: "90 cm", Fragrance: 25, Lifespan: "15 days", Toxicity: 1, Rarity: 3, Country: "United States", Color: "Yellow", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 8}},
+  {name: "Flower: Blanket Flower", attributes: {Height: "60 cm", Fragrance: 30, Lifespan: "14 days", Toxicity: 1, Rarity: 4, Country: "Mexico", Color: "Red-Yellow", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 8}},
+  {name: "Flower: Bleeding Heart", attributes: {Height: "90 cm", Fragrance: 55, Lifespan: "10 days", Toxicity: 6, Rarity: 8, Country: "Japan", Color: "Pink", "Bloom Season": "Spring", Difficulty: 6, "Pollinator Appeal": 5}},
+  {name: "Flower: Blue Himalayan Poppy", attributes: {Height: "90 cm", Fragrance: 40, Lifespan: "10 days", Toxicity: 3, Rarity: 9, Country: "Bhutan", Color: "Blue", "Bloom Season": "Spring", Difficulty: 9, "Pollinator Appeal": 6}},
+  {name: "Flower: Blue Lotus", attributes: {Height: "25 cm", Fragrance: 85, Lifespan: "7 days", Toxicity: 5, Rarity: 8, Country: "Egypt", Color: "Blue", "Bloom Season": "Summer", Difficulty: 7, "Pollinator Appeal": 6}},
+  {name: "Flower: Bluebonnet", attributes: {Height: "30 cm", Fragrance: 50, Lifespan: "5 days", Toxicity: 4, Rarity: 5, Country: "United States", Color: "Blue", "Bloom Season": "Spring", Difficulty: 3, "Pollinator Appeal": 8}},
+  {name: "Flower: Bougainvillea", attributes: {Height: "500 cm (vine)", Fragrance: 15, Lifespan: "20 days", Toxicity: 3, Rarity: 4, Country: "Brazil", Color: "Magenta", "Bloom Season": "Summer", Difficulty: 3, "Pollinator Appeal": 5}},
+  {name: "Flower: Buttercup", attributes: {Height: "40 cm", Fragrance: 20, Lifespan: "7 days", Toxicity: 5, Rarity: 3, Country: "France", Color: "Yellow", "Bloom Season": "Spring", Difficulty: 2, "Pollinator Appeal": 6}},
+  {name: "Flower: Cactus Flower (Saguaro)", attributes: {Height: "1,200 cm (as plant)", Fragrance: 85, Lifespan: "1 day", Toxicity: 1, Rarity: 8, Country: "Mexico", Color: "White", "Bloom Season": "Summer", Difficulty: 8, "Pollinator Appeal": 7}},
+  {name: "Flower: Calla Lily", attributes: {Height: "90 cm", Fragrance: 65, Lifespan: "7 days", Toxicity: 8, Rarity: 5, Country: "South Africa", Color: "White", "Bloom Season": "Spring", Difficulty: 5, "Pollinator Appeal": 4}},
+  {name: "Flower: Camellia", attributes: {Height: "300 cm (bush)", Fragrance: 75, Lifespan: "20 days", Toxicity: 2, Rarity: 4, Country: "Japan", Color: "Red", "Bloom Season": "Winter", Difficulty: 4, "Pollinator Appeal": 5}},
+  {name: "Flower: Canna Lily", attributes: {Height: "180 cm", Fragrance: 30, Lifespan: "8 days", Toxicity: 2, Rarity: 5, Country: "India", Color: "Orange", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 6}},
+  {name: "Flower: Carnation", attributes: {Height: "60 cm", Fragrance: 75, Lifespan: "21 days", Toxicity: 1, Rarity: 3, Country: "Spain", Color: "Red", "Bloom Season": "Spring", Difficulty: 2, "Pollinator Appeal": 6}},
+  {name: "Flower: Cattleya Orchid", attributes: {Height: "50 cm", Fragrance: 90, Lifespan: "14 days", Toxicity: 3, Rarity: 7, Country: "Brazil", Color: "Purple", "Bloom Season": "Spring", Difficulty: 7, "Pollinator Appeal": 5}},
+  {name: "Flower: Celosia", attributes: {Height: "90 cm", Fragrance: 20, Lifespan: "18 days", Toxicity: 1, Rarity: 4, Country: "Nigeria", Color: "Crimson", "Bloom Season": "Summer", Difficulty: 3, "Pollinator Appeal": 5}},
+  {name: "Flower: Cerrado Bloom", attributes: {Height: "40 cm", Fragrance: 60, Lifespan: "45 days", Toxicity: 3, Rarity: 7, Country: "Brazil", Color: "Yellow", "Bloom Season": "Spring", Difficulty: 6, "Pollinator Appeal": 7}},
+  {name: "Flower: Cherry Blossom", attributes: {Height: "500 cm (as tree)", Fragrance: 60, Lifespan: "7 days", Toxicity: 1, Rarity: 6, Country: "Japan", Color: "Pink", "Bloom Season": "Spring", Difficulty: 5, "Pollinator Appeal": 7}},
+  {name: "Flower: Chocolate Cosmos", attributes: {Height: "60 cm", Fragrance: 90, Lifespan: "10 days", Toxicity: 2, Rarity: 8, Country: "Mexico", Color: "Dark Red", "Bloom Season": "Summer", Difficulty: 7, "Pollinator Appeal": 6}},
+  {name: "Flower: Chrysanthemum", attributes: {Height: "120 cm", Fragrance: 55, Lifespan: "25 days", Toxicity: 2, Rarity: 3, Country: "China", Color: "Yellow", "Bloom Season": "Autumn", Difficulty: 2, "Pollinator Appeal": 5}},
+  {name: "Flower: Columbine", attributes: {Height: "75 cm", Fragrance: 35, Lifespan: "8 days", Toxicity: 4, Rarity: 5, Country: "Canada", Color: "Blue-White", "Bloom Season": "Spring", Difficulty: 4, "Pollinator Appeal": 8}},
+  {name: "Flower: Coneflower", attributes: {Height: "120 cm", Fragrance: 30, Lifespan: "14 days", Toxicity: 1, Rarity: 4, Country: "United States", Color: "Purple", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 9}},
+  {name: "Flower: Coreopsis", attributes: {Height: "60 cm", Fragrance: 25, Lifespan: "10 days", Toxicity: 0, Rarity: 3, Country: "United States", Color: "Yellow", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 8}},
+  {name: "Flower: Cornflower", attributes: {Height: "80 cm", Fragrance: 30, Lifespan: "7 days", Toxicity: 1, Rarity: 4, Country: "Germany", Color: "Blue", "Bloom Season": "Summer", Difficulty: 3, "Pollinator Appeal": 7}},
+  {name: "Flower: Corpse Flower (Titan Arum)", attributes: {Height: "300 cm", Fragrance: 5, Lifespan: "3 days", Toxicity: 1, Rarity: 10, Country: "Indonesia", Color: "Burgundy", "Bloom Season": "Irregular", Difficulty: 10, "Pollinator Appeal": 2}},
+  {name: "Flower: Cosmos", attributes: {Height: "120 cm", Fragrance: 35, Lifespan: "10 days", Toxicity: 1, Rarity: 3, Country: "Mexico", Color: "Pink", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 8}},
+  {name: "Flower: Crocus", attributes: {Height: "15 cm", Fragrance: 40, Lifespan: "5 days", Toxicity: 2, Rarity: 5, Country: "Iran", Color: "Purple", "Bloom Season": "Spring", Difficulty: 4, "Pollinator Appeal": 6}},
+  {name: "Flower: Cyclamen", attributes: {Height: "30 cm", Fragrance: 60, Lifespan: "14 days", Toxicity: 7, Rarity: 5, Country: "Greece", Color: "Pink", "Bloom Season": "Winter", Difficulty: 5, "Pollinator Appeal": 4}},
+  {name: "Flower: Dahlia (Dinnerplate)", attributes: {Height: "120 cm", Fragrance: 50, Lifespan: "12 days", Toxicity: 2, Rarity: 4, Country: "Mexico", Color: "Burgundy", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 7}},
+  {name: "Flower: Dandelion", attributes: {Height: "40 cm", Fragrance: 20, Lifespan: "5 days", Toxicity: 0, Rarity: 2, Country: "France", Color: "Yellow", "Bloom Season": "Spring", Difficulty: 1, "Pollinator Appeal": 8}},
+  {name: "Flower: Delphinium", attributes: {Height: "180 cm", Fragrance: 45, Lifespan: "10 days", Toxicity: 6, Rarity: 6, Country: "England", Color: "Blue", "Bloom Season": "Summer", Difficulty: 6, "Pollinator Appeal": 7}},
+  {name: "Flower: Desert Rose", attributes: {Height: "150 cm", Fragrance: 50, Lifespan: "7 days", Toxicity: 8, Rarity: 7, Country: "Yemen", Color: "Pink", "Bloom Season": "Summer", Difficulty: 7, "Pollinator Appeal": 4}},
+  {name: "Flower: Dutch Iris", attributes: {Height: "70 cm", Fragrance: 55, Lifespan: "8 days", Toxicity: 3, Rarity: 5, Country: "Netherlands", Color: "Blue", "Bloom Season": "Spring", Difficulty: 4, "Pollinator Appeal": 6}},
+  {name: "Flower: Edelweiss", attributes: {Height: "20 cm", Fragrance: 40, Lifespan: "15 days", Toxicity: 0, Rarity: 9, Country: "Austria", Color: "White", "Bloom Season": "Summer", Difficulty: 8, "Pollinator Appeal": 4}},
+  {name: "Flower: Evening Primrose", attributes: {Height: "90 cm", Fragrance: 65, Lifespan: "4 days", Toxicity: 1, Rarity: 4, Country: "United States", Color: "Yellow", "Bloom Season": "Summer", Difficulty: 3, "Pollinator Appeal": 8}},
+  {name: "Flower: Forget-Me-Not", attributes: {Height: "20 cm", Fragrance: 15, Lifespan: "6 days", Toxicity: 0, Rarity: 4, Country: "Germany", Color: "Blue", "Bloom Season": "Spring", Difficulty: 2, "Pollinator Appeal": 6}},
+  {name: "Flower: Foxglove", attributes: {Height: "150 cm", Fragrance: 65, Lifespan: "14 days", Toxicity: 10, Rarity: 7, Country: "England", Color: "Purple", "Bloom Season": "Summer", Difficulty: 5, "Pollinator Appeal": 8}},
+  {name: "Flower: Frangipani", attributes: {Height: "800 cm (tree)", Fragrance: 100, Lifespan: "10 days", Toxicity: 5, Rarity: 6, Country: "Mexico", Color: "White-Yellow", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 7}},
+  {name: "Flower: Fritillaria persica", attributes: {Height: "120 cm", Fragrance: 40, Lifespan: "10 days", Toxicity: 3, Rarity: 7, Country: "Iran", Color: "Plum", "Bloom Season": "Spring", Difficulty: 7, "Pollinator Appeal": 5}},
+  {name: "Flower: Fuchsia", attributes: {Height: "120 cm", Fragrance: 50, Lifespan: "15 days", Toxicity: 1, Rarity: 4, Country: "Peru", Color: "Magenta", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 8}},
+  {name: "Flower: Gardenia", attributes: {Height: "180 cm", Fragrance: 100, Lifespan: "7 days", Toxicity: 3, Rarity: 6, Country: "China", Color: "White", "Bloom Season": "Summer", Difficulty: 6, "Pollinator Appeal": 6}},
+  {name: "Flower: Gaura", attributes: {Height: "120 cm", Fragrance: 25, Lifespan: "9 days", Toxicity: 0, Rarity: 5, Country: "United States", Color: "White", "Bloom Season": "Summer", Difficulty: 3, "Pollinator Appeal": 8}},
+  {name: "Flower: Geranium", attributes: {Height: "60 cm", Fragrance: 45, Lifespan: "12 days", Toxicity: 3, Rarity: 3, Country: "South Africa", Color: "Red", "Bloom Season": "Spring", Difficulty: 2, "Pollinator Appeal": 6}},
+  {name: "Flower: Gerbera Daisy", attributes: {Height: "45 cm", Fragrance: 25, Lifespan: "14 days", Toxicity: 0, Rarity: 3, Country: "South Africa", Color: "Orange", "Bloom Season": "Spring", Difficulty: 3, "Pollinator Appeal": 7}},
+  {name: "Flower: Ghost Flower (Rare desert bloom)", attributes: {Height: "30 cm", Fragrance: 70, Lifespan: "3 days", Toxicity: 0, Rarity: 10, Country: "Chile", Color: "Pale White", "Bloom Season": "Spring", Difficulty: 9, "Pollinator Appeal": 3}},
+  {name: "Flower: Ghost Orchid", attributes: {Height: "40 cm", Fragrance: 80, Lifespan: "21 days", Toxicity: 0, Rarity: 10, Country: "Cuba", Color: "White", "Bloom Season": "Summer", Difficulty: 10, "Pollinator Appeal": 4}},
+  {name: "Flower: Gladiolus", attributes: {Height: "150 cm", Fragrance: 60, Lifespan: "10 days", Toxicity: 4, Rarity: 4, Country: "South Africa", Color: "Pink", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 6}},
+  {name: "Flower: Golden Shower Orchid", attributes: {Height: "90 cm", Fragrance: 80, Lifespan: "16 days", Toxicity: 1, Rarity: 7, Country: "Thailand", Color: "Yellow", "Bloom Season": "Spring", Difficulty: 7, "Pollinator Appeal": 5}},
+  {name: "Flower: Helleborus", attributes: {Height: "45 cm", Fragrance: 40, Lifespan: "10 days", Toxicity: 5, Rarity: 6, Country: "Italy", Color: "Green-White", "Bloom Season": "Winter", Difficulty: 5, "Pollinator Appeal": 4}},
+  {name: "Flower: Heliconia", attributes: {Height: "250 cm", Fragrance: 20, Lifespan: "18 days", Toxicity: 2, Rarity: 6, Country: "Costa Rica", Color: "Red-Yellow", "Bloom Season": "Summer", Difficulty: 5, "Pollinator Appeal": 7}},
+  {name: "Flower: Hibiscus", attributes: {Height: "150 cm", Fragrance: 30, Lifespan: "3 days", Toxicity: 1, Rarity: 4, Country: "China", Color: "Red", "Bloom Season": "Summer", Difficulty: 3, "Pollinator Appeal": 8}},
+  {name: "Flower: Hollyhock", attributes: {Height: "240 cm", Fragrance: 30, Lifespan: "8 days", Toxicity: 2, Rarity: 4, Country: "China", Color: "Pink", "Bloom Season": "Summer", Difficulty: 3, "Pollinator Appeal": 7}},
+  {name: "Flower: Honeysuckle", attributes: {Height: "600 cm (vine)", Fragrance: 95, Lifespan: "6 days", Toxicity: 4, Rarity: 5, Country: "Japan", Color: "Cream", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 9}},
+  {name: "Flower: Hydrangea", attributes: {Height: "250 cm (bush)", Fragrance: 30, Lifespan: "30 days", Toxicity: 8, Rarity: 4, Country: "Japan", Color: "Blue", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 5}},
+  {name: "Flower: Hyacinth", attributes: {Height: "30 cm", Fragrance: 95, Lifespan: "10 days", Toxicity: 6, Rarity: 5, Country: "Turkey", Color: "Purple", "Bloom Season": "Spring", Difficulty: 4, "Pollinator Appeal": 6}},
+  {name: "Flower: Iceland Poppy", attributes: {Height: "45 cm", Fragrance: 35, Lifespan: "6 days", Toxicity: 2, Rarity: 5, Country: "Iceland", Color: "Orange", "Bloom Season": "Spring", Difficulty: 5, "Pollinator Appeal": 7}},
+  {name: "Flower: Impatiens", attributes: {Height: "35 cm", Fragrance: 15, Lifespan: "12 days", Toxicity: 0, Rarity: 3, Country: "Uganda", Color: "Pink", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 5}},
+  {name: "Flower: Iris", attributes: {Height: "100 cm", Fragrance: 55, Lifespan: "8 days", Toxicity: 3, Rarity: 4, Country: "France", Color: "Purple", "Bloom Season": "Spring", Difficulty: 3, "Pollinator Appeal": 6}},
+  {name: "Flower: Jade Vine", attributes: {Height: "180 cm (vine)", Fragrance: 75, Lifespan: "10 days", Toxicity: 3, Rarity: 9, Country: "Philippines", Color: "Turquoise", "Bloom Season": "Spring", Difficulty: 9, "Pollinator Appeal": 6}},
+  {name: "Flower: Jacaranda Bloom", attributes: {Height: "1,000 cm (tree)", Fragrance: 45, Lifespan: "5 days", Toxicity: 1, Rarity: 6, Country: "Brazil", Color: "Lavender", "Bloom Season": "Spring", Difficulty: 5, "Pollinator Appeal": 7}},
+  {name: "Flower: Jasminum officinale", attributes: {Height: "400 cm (vine)", Fragrance: 100, Lifespan: "3 days", Toxicity: 1, Rarity: 5, Country: "India", Color: "White", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 8}},
+  {name: "Flower: Kangaroo Paw", attributes: {Height: "100 cm", Fragrance: 20, Lifespan: "14 days", Toxicity: 1, Rarity: 7, Country: "Australia", Color: "Red-Green", "Bloom Season": "Spring", Difficulty: 6, "Pollinator Appeal": 7}},
+  {name: "Flower: Kniphofia (Red Hot Poker)", attributes: {Height: "120 cm", Fragrance: 25, Lifespan: "10 days", Toxicity: 2, Rarity: 6, Country: "South Africa", Color: "Orange-Red", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 8}},
+  {name: "Flower: Lavender", attributes: {Height: "75 cm", Fragrance: 95, Lifespan: "30 days", Toxicity: 1, Rarity: 3, Country: "France", Color: "Purple", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 10}},
+  {name: "Flower: Lily of the Valley", attributes: {Height: "15 cm", Fragrance: 95, Lifespan: "14 days", Toxicity: 9, Rarity: 5, Country: "France", Color: "White", "Bloom Season": "Spring", Difficulty: 5, "Pollinator Appeal": 4}},
+  {name: "Flower: Lisianthus", attributes: {Height: "75 cm", Fragrance: 50, Lifespan: "15 days", Toxicity: 1, Rarity: 5, Country: "United States", Color: "Lavender", "Bloom Season": "Summer", Difficulty: 5, "Pollinator Appeal": 6}},
+  {name: "Flower: Lotus (Sacred Lotus)", attributes: {Height: "150 cm", Fragrance: 95, Lifespan: "7 days", Toxicity: 1, Rarity: 6, Country: "India", Color: "Pink", "Bloom Season": "Summer", Difficulty: 6, "Pollinator Appeal": 7}},
+  {name: "Flower: Lupine", attributes: {Height: "120 cm", Fragrance: 40, Lifespan: "8 days", Toxicity: 6, Rarity: 5, Country: "Canada", Color: "Purple", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 8}},
+  {name: "Flower: Magnolia", attributes: {Height: "1,200 cm (tree)", Fragrance: 90, Lifespan: "10 days", Toxicity: 3, Rarity: 6, Country: "United States", Color: "White", "Bloom Season": "Spring", Difficulty: 5, "Pollinator Appeal": 6}},
+  {name: "Flower: Malva Moschata", attributes: {Height: "60 cm", Fragrance: 70, Lifespan: "20 days", Toxicity: 1, Rarity: 4, Country: "England", Color: "Pink", "Bloom Season": "Summer", Difficulty: 3, "Pollinator Appeal": 7}},
+  {name: "Flower: Marigold", attributes: {Height: "60 cm", Fragrance: 40, Lifespan: "10 days", Toxicity: 2, Rarity: 3, Country: "Mexico", Color: "Orange", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 7}},
+  {name: "Flower: Meconopsis betonicifolia", attributes: {Height: "90 cm", Fragrance: 75, Lifespan: "6 days", Toxicity: 2, Rarity: 9, Country: "China", Color: "Sky Blue", "Bloom Season": "Spring", Difficulty: 9, "Pollinator Appeal": 6}},
+  {name: "Flower: Moonflower", attributes: {Height: "500 cm (vine)", Fragrance: 90, Lifespan: "1 night", Toxicity: 5, Rarity: 7, Country: "Mexico", Color: "White", "Bloom Season": "Summer", Difficulty: 6, "Pollinator Appeal": 8}},
+  {name: "Flower: Morning Glory", attributes: {Height: "300 cm (vine)", Fragrance: 45, Lifespan: "1 day", Toxicity: 6, Rarity: 5, Country: "Japan", Color: "Blue", "Bloom Season": "Summer", Difficulty: 3, "Pollinator Appeal": 7}},
+  {name: "Flower: Nasturtium", attributes: {Height: "30 cm", Fragrance: 35, Lifespan: "7 days", Toxicity: 0, Rarity: 3, Country: "Peru", Color: "Orange", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 8}},
+  {name: "Flower: Nerine", attributes: {Height: "60 cm", Fragrance: 55, Lifespan: "10 days", Toxicity: 4, Rarity: 6, Country: "South Africa", Color: "Pink", "Bloom Season": "Autumn", Difficulty: 5, "Pollinator Appeal": 5}},
+  {name: "Flower: Night-Blooming Jasmine", attributes: {Height: "300 cm", Fragrance: 100, Lifespan: "1 day", Toxicity: 4, Rarity: 6, Country: "India", Color: "Cream", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 9}},
+  {name: "Flower: Nigella damascena (Love-in-a-Mist)", attributes: {Height: "50 cm", Fragrance: 40, Lifespan: "7 days", Toxicity: 3, Rarity: 5, Country: "Turkey", Color: "Blue", "Bloom Season": "Spring", Difficulty: 3, "Pollinator Appeal": 6}},
+  {name: "Flower: Oleander", attributes: {Height: "250 cm", Fragrance: 75, Lifespan: "7 days", Toxicity: 10, Rarity: 5, Country: "Morocco", Color: "Pink", "Bloom Season": "Summer", Difficulty: 3, "Pollinator Appeal": 5}},
+  {name: "Flower: Orange Blossom", attributes: {Height: "400 cm (tree)", Fragrance: 100, Lifespan: "4 days", Toxicity: 1, Rarity: 5, Country: "Spain", Color: "White", "Bloom Season": "Spring", Difficulty: 4, "Pollinator Appeal": 8}},
+  {name: "Flower: Oriental Lily", attributes: {Height: "120 cm", Fragrance: 100, Lifespan: "12 days", Toxicity: 9, Rarity: 5, Country: "Japan", Color: "Pink-White", "Bloom Season": "Summer", Difficulty: 5, "Pollinator Appeal": 5}},
+  {name: "Flower: Osteospermum", attributes: {Height: "40 cm", Fragrance: 20, Lifespan: "15 days", Toxicity: 2, Rarity: 5, Country: "South Africa", Color: "Purple", "Bloom Season": "Spring", Difficulty: 3, "Pollinator Appeal": 6}},
+  {name: "Flower: Passion Flower", attributes: {Height: "600 cm (vine)", Fragrance: 85, Lifespan: "5 days", Toxicity: 4, Rarity: 6, Country: "Brazil", Color: "Purple-White", "Bloom Season": "Summer", Difficulty: 5, "Pollinator Appeal": 9}},
+  {name: "Flower: Peony", attributes: {Height: "90 cm", Fragrance: 85, Lifespan: "7 days", Toxicity: 2, Rarity: 5, Country: "China", Color: "Pink", "Bloom Season": "Spring", Difficulty: 4, "Pollinator Appeal": 6}},
+  {name: "Flower: Persian Buttercup", attributes: {Height: "45 cm", Fragrance: 60, Lifespan: "10 days", Toxicity: 5, Rarity: 4, Country: "Turkey", Color: "Red", "Bloom Season": "Spring", Difficulty: 4, "Pollinator Appeal": 6}},
+  {name: "Flower: Petunia", attributes: {Height: "35 cm", Fragrance: 45, Lifespan: "8 days", Toxicity: 1, Rarity: 3, Country: "Argentina", Color: "Purple", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 8}},
+  {name: "Flower: Phalaenopsis Orchid", attributes: {Height: "60 cm", Fragrance: 70, Lifespan: "30 days", Toxicity: 1, Rarity: 6, Country: "Philippines", Color: "White", "Bloom Season": "Winter", Difficulty: 6, "Pollinator Appeal": 4}},
+  {name: "Flower: Poppy (Opium Poppy)", attributes: {Height: "100 cm", Fragrance: 30, Lifespan: "7 days", Toxicity: 9, Rarity: 8, Country: "Turkey", Color: "Red", "Bloom Season": "Spring", Difficulty: 4, "Pollinator Appeal": 6}},
+  {name: "Flower: Primrose", attributes: {Height: "25 cm", Fragrance: 35, Lifespan: "7 days", Toxicity: 1, Rarity: 4, Country: "England", Color: "Yellow", "Bloom Season": "Spring", Difficulty: 2, "Pollinator Appeal": 7}},
+  {name: "Flower: Protea (King Protea)", attributes: {Height: "150 cm", Fragrance: 40, Lifespan: "30 days", Toxicity: 1, Rarity: 7, Country: "South Africa", Color: "Pink", "Bloom Season": "Spring", Difficulty: 6, "Pollinator Appeal": 7}},
+  {name: "Flower: Queen of the Night Cactus", attributes: {Height: "400 cm (vine)", Fragrance: 100, Lifespan: "1 night", Toxicity: 3, Rarity: 10, Country: "Mexico", Color: "White", "Bloom Season": "Summer", Difficulty: 8, "Pollinator Appeal": 8}},
+  {name: "Flower: Red Spider Lily", attributes: {Height: "60 cm", Fragrance: 50, Lifespan: "6 days", Toxicity: 8, Rarity: 7, Country: "Japan", Color: "Red", "Bloom Season": "Autumn", Difficulty: 5, "Pollinator Appeal": 5}},
+  {name: "Flower: Rhododendron", attributes: {Height: "250 cm", Fragrance: 55, Lifespan: "12 days", Toxicity: 8, Rarity: 5, Country: "Nepal", Color: "Pink", "Bloom Season": "Spring", Difficulty: 5, "Pollinator Appeal": 6}},
+  {name: "Flower: Rose (Damask)", attributes: {Height: "150 cm", Fragrance: 95, Lifespan: "10 days", Toxicity: 2, Rarity: 3, Country: "Syria", Color: "Pink", "Bloom Season": "Spring", Difficulty: 4, "Pollinator Appeal": 8}},
+  {name: "Flower: Salvia", attributes: {Height: "90 cm", Fragrance: 35, Lifespan: "12 days", Toxicity: 1, Rarity: 4, Country: "Mexico", Color: "Purple", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 9}},
+  {name: "Flower: Scabiosa", attributes: {Height: "80 cm", Fragrance: 30, Lifespan: "10 days", Toxicity: 0, Rarity: 5, Country: "Italy", Color: "Lavender", "Bloom Season": "Summer", Difficulty: 3, "Pollinator Appeal": 8}},
+  {name: "Flower: Sea Holly", attributes: {Height: "75 cm", Fragrance: 20, Lifespan: "20 days", Toxicity: 1, Rarity: 6, Country: "England", Color: "Steel Blue", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 7}},
+  {name: "Flower: Shasta Daisy", attributes: {Height: "90 cm", Fragrance: 25, Lifespan: "14 days", Toxicity: 0, Rarity: 3, Country: "United States", Color: "White", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 8}},
+  {name: "Flower: Snapdragon", attributes: {Height: "60 cm", Fragrance: 50, Lifespan: "14 days", Toxicity: 2, Rarity: 4, Country: "Spain", Color: "Pink", "Bloom Season": "Spring", Difficulty: 3, "Pollinator Appeal": 7}},
+  {name: "Flower: Snowdrop", attributes: {Height: "15 cm", Fragrance: 45, Lifespan: "5 days", Toxicity: 4, Rarity: 5, Country: "England", Color: "White", "Bloom Season": "Winter", Difficulty: 4, "Pollinator Appeal": 5}},
+  {name: "Flower: Starflower", attributes: {Height: "30 cm", Fragrance: 60, Lifespan: "10 days", Toxicity: 1, Rarity: 5, Country: "Sweden", Color: "Blue", "Bloom Season": "Spring", Difficulty: 3, "Pollinator Appeal": 6}},
+  {name: "Flower: Sunflower", attributes: {Height: "300 cm", Fragrance: 30, Lifespan: "20 days", Toxicity: 0, Rarity: 3, Country: "United States", Color: "Yellow", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 10}},
+  {name: "Flower: Sweet Alyssum", attributes: {Height: "20 cm", Fragrance: 80, Lifespan: "10 days", Toxicity: 0, Rarity: 4, Country: "Greece", Color: "White", "Bloom Season": "Spring", Difficulty: 2, "Pollinator Appeal": 9}},
+  {name: "Flower: Sweet Pea", attributes: {Height: "180 cm (vine)", Fragrance: 95, Lifespan: "7 days", Toxicity: 6, Rarity: 5, Country: "Italy", Color: "Pink", "Bloom Season": "Spring", Difficulty: 4, "Pollinator Appeal": 8}},
+  {name: "Flower: Tiger Lily", attributes: {Height: "150 cm", Fragrance: 60, Lifespan: "14 days", Toxicity: 9, Rarity: 5, Country: "China", Color: "Orange", "Bloom Season": "Summer", Difficulty: 4, "Pollinator Appeal": 6}},
+  {name: "Flower: Tuberose", attributes: {Height: "90 cm", Fragrance: 100, Lifespan: "14 days", Toxicity: 4, Rarity: 5, Country: "Mexico", Color: "White", "Bloom Season": "Summer", Difficulty: 5, "Pollinator Appeal": 7}},
+  {name: "Flower: Venus Flytrap Flower", attributes: {Height: "15 cm", Fragrance: 20, Lifespan: "5 days", Toxicity: 7, Rarity: 8, Country: "United States", Color: "White", "Bloom Season": "Spring", Difficulty: 8, "Pollinator Appeal": 3}},
+  {name: "Flower: Verbena", attributes: {Height: "40 cm", Fragrance: 35, Lifespan: "12 days", Toxicity: 0, Rarity: 3, Country: "Argentina", Color: "Purple", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 9}},
+  {name: "Flower: Veronica", attributes: {Height: "75 cm", Fragrance: 20, Lifespan: "11 days", Toxicity: 0, Rarity: 4, Country: "Russia", Color: "Blue", "Bloom Season": "Summer", Difficulty: 3, "Pollinator Appeal": 7}},
+  {name: "Flower: Water Lily (Victoria Amazonica)", attributes: {Height: "0 cm (floating)", Fragrance: 70, Lifespan: "3 days", Toxicity: 1, Rarity: 7, Country: "Brazil", Color: "White-Pink", "Bloom Season": "Summer", Difficulty: 8, "Pollinator Appeal": 6}},
+  {name: "Flower: Wisteria", attributes: {Height: "1,000 cm (vine)", Fragrance: 95, Lifespan: "14 days", Toxicity: 5, Rarity: 6, Country: "Japan", Color: "Lavender", "Bloom Season": "Spring", Difficulty: 5, "Pollinator Appeal": 8}},
+  {name: "Flower: Yarrow", attributes: {Height: "90 cm", Fragrance: 25, Lifespan: "18 days", Toxicity: 1, Rarity: 4, Country: "Germany", Color: "White", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 9}},
+  {name: "Flower: Yucca Flower", attributes: {Height: "180 cm", Fragrance: 60, Lifespan: "5 days", Toxicity: 1, Rarity: 6, Country: "Mexico", Color: "Cream", "Bloom Season": "Spring", Difficulty: 5, "Pollinator Appeal": 7}},
+  {name: "Flower: Zinnia", attributes: {Height: "90 cm", Fragrance: 30, Lifespan: "14 days", Toxicity: 0, Rarity: 3, Country: "Mexico", Color: "Magenta", "Bloom Season": "Summer", Difficulty: 2, "Pollinator Appeal": 9}},
+  ];
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    selectedCards.push(...mega);
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

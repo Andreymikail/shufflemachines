@@ -1,0 +1,418 @@
+<!-- No-Three-in-a-Line — versão segura para Squarespace (Code Block) -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap');
+
+  .ntl-app, .ntl-app *, .ntl-app *::before, .ntl-app *::after {
+    box-sizing: border-box;
+  }
+
+  .ntl-app {
+    /* tudo fica contido aqui — nada vaza para a página */
+    all: initial;
+    display: block;
+    width: 100%;
+    background: #0e0e10;
+    color: #e4e4e7;
+    font-family: 'DM Sans', sans-serif;
+    padding: 2rem 1rem;
+    border-radius: 12px;
+  }
+
+  .ntl-app .container {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .ntl-app header { text-align: center; }
+
+  .ntl-app h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.2rem;
+    color: #e4e4e7;
+  }
+
+  .ntl-app .subtitle {
+    font-size: 0.75rem;
+    color: #71717a;
+    font-family: 'Space Mono', monospace;
+    margin: 0;
+  }
+
+  .ntl-app .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.6rem 0.9rem;
+    background: #18181b;
+    border: 1px solid #2e2e34;
+    border-radius: 8px;
+  }
+
+  .ntl-app .counter {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    color: #71717a;
+    white-space: nowrap;
+  }
+  .ntl-app .counter span { color: #e4e4e7; font-weight: 700; }
+
+  .ntl-app .progress-wrap {
+    flex: 1;
+    height: 4px;
+    background: #2e2e34;
+    border-radius: 2px;
+  }
+  .ntl-app .progress-bar {
+    height: 100%;
+    background: #a78bfa;
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.2s ease;
+  }
+
+  .ntl-app #ntl-msg {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #71717a;
+    white-space: nowrap;
+  }
+  .ntl-app #ntl-msg.ok  { color: #34d399; }
+  .ntl-app #ntl-msg.err { color: #f87171; }
+  .ntl-app #ntl-msg.win { color: #a78bfa; }
+
+  .ntl-app .grid-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+
+  .ntl-app #ntl-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 60px);
+    grid-template-rows: repeat(5, 60px);
+    gap: 6px;
+  }
+
+  .ntl-app .cell {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    border: 1.5px solid #2e2e34;
+    background: #18181b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s, border-color 0.1s, transform 0.08s;
+  }
+
+  .ntl-app .cell:hover { background: #222226; border-color: #3f3f46; }
+  .ntl-app .cell:active { transform: scale(0.88); }
+
+  .ntl-app .cell::after {
+    content: '';
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: transparent;
+    transition: background 0.15s, box-shadow 0.15s;
+  }
+
+  .ntl-app .cell.marked {
+    background: rgba(167,139,250,0.12);
+    border-color: rgba(167,139,250,0.45);
+  }
+  .ntl-app .cell.marked::after {
+    background: #a78bfa;
+    box-shadow: 0 0 10px rgba(167,139,250,0.55);
+  }
+
+  .ntl-app .cell.invalid {
+    background: rgba(248,113,113,0.1);
+    border-color: rgba(248,113,113,0.45);
+    animation: ntl-shake 0.28s ease;
+  }
+
+  .ntl-app .cell.culprit {
+    background: rgba(251,191,36,0.15);
+    border-color: #fbbf24;
+    box-shadow: 0 0 10px rgba(251,191,36,0.4);
+  }
+  .ntl-app .cell.culprit::after {
+    background: #fbbf24;
+    box-shadow: 0 0 10px rgba(251,191,36,0.6);
+  }
+
+  .ntl-app .cell.hint-glow {
+    border-color: #fbbf24;
+    box-shadow: 0 0 10px rgba(251,191,36,0.4);
+  }
+
+  .ntl-app .cell.win-cell {
+    background: rgba(52,211,153,0.12);
+    border-color: rgba(52,211,153,0.45);
+  }
+  .ntl-app .cell.win-cell::after {
+    background: #34d399;
+    box-shadow: 0 0 10px rgba(52,211,153,0.55);
+  }
+
+  @keyframes ntl-shake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-5px); }
+    60%      { transform: translateX(5px); }
+    80%      { transform: translateX(-3px); }
+  }
+
+  .ntl-app .actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .ntl-app button {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 1px solid #3f3f46;
+    background: #18181b;
+    color: #e4e4e7;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .ntl-app button:hover { background: #222226; border-color: #71717a; }
+  .ntl-app button:active { transform: scale(0.96); }
+
+  .ntl-app button.primary {
+    background: rgba(167,139,250,0.12);
+    border-color: rgba(167,139,250,0.4);
+    color: #a78bfa;
+  }
+  .ntl-app button.primary:hover { background: rgba(167,139,250,0.2); }
+
+  .ntl-app .rules {
+    font-size: 0.74rem;
+    color: #52525b;
+    line-height: 1.7;
+    border-top: 1px solid #27272a;
+    padding-top: 1rem;
+    text-align: center;
+  }
+  .ntl-app .rules strong { color: #a1a1aa; font-weight: 600; }
+</style>
+
+<div class="ntl-app">
+  <div class="container">
+    <header>
+      <h1>No-Three-in-a-Line</h1>
+      <p class="subtitle">5×5 grid · mark 10 cells · no 3 collinear</p>
+    </header>
+
+    <div class="status-bar">
+      <div class="counter">Marked: <span id="ntl-cnt">0</span> / 10</div>
+      <div class="progress-wrap"><div class="progress-bar" id="ntl-progress"></div></div>
+      <div id="ntl-msg"></div>
+    </div>
+
+    <div class="grid-wrapper">
+      <div id="ntl-grid"></div>
+    </div>
+
+    <div class="actions">
+      <button id="ntl-resetBtn">Reset</button>
+      <button id="ntl-hintBtn">Hint</button>
+      <button id="ntl-solveBtn" class="primary">Show solution</button>
+    </div>
+
+    <div class="rules">
+      Mark <strong>10 cells</strong> so that <strong>no three are collinear</strong> —<br>
+      no three on the same line at any angle.
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const N = 5, GOAL = 10;
+  let marked = new Set();
+  let gameWon = false;
+  let solutionIndex = 0;
+
+  const SOLUTIONS = [
+    [[0,0],[0,1],[1,0],[1,3],[2,3],[2,4],[3,1],[3,2],[4,2],[4,4]],
+    [[0,0],[0,1],[1,1],[1,3],[2,0],[2,4],[3,2],[3,4],[4,2],[4,3]],
+    [[0,0],[0,2],[1,0],[1,1],[2,3],[2,4],[3,1],[3,4],[4,2],[4,3]],
+    [[0,0],[0,2],[1,1],[1,4],[2,3],[2,4],[3,0],[3,1],[4,2],[4,3]],
+    [[0,0],[0,2],[1,2],[1,3],[2,0],[2,1],[3,1],[3,4],[4,3],[4,4]],
+    [[0,0],[0,2],[1,2],[1,4],[2,0],[2,1],[3,3],[3,4],[4,1],[4,3]],
+    [[0,0],[0,3],[1,1],[1,3],[2,0],[2,4],[3,2],[3,4],[4,1],[4,2]],
+    [[0,1],[0,2],[1,0],[1,2],[2,0],[2,4],[3,1],[3,3],[4,3],[4,4]],
+    [[0,1],[0,2],[1,0],[1,3],[2,0],[2,1],[3,3],[3,4],[4,2],[4,4]],
+    [[0,1],[0,2],[1,0],[1,4],[2,3],[2,4],[3,0],[3,1],[4,2],[4,3]],
+    [[0,1],[0,2],[1,2],[1,4],[2,0],[2,4],[3,0],[3,3],[4,1],[4,3]],
+    [[0,1],[0,2],[1,2],[1,4],[2,0],[2,4],[3,1],[3,3],[4,0],[4,3]],
+    [[0,1],[0,2],[1,3],[1,4],[2,0],[2,1],[3,0],[3,3],[4,2],[4,4]],
+    [[0,1],[0,2],[1,3],[1,4],[2,0],[2,1],[3,0],[3,4],[4,2],[4,3]],
+    [[0,1],[0,3],[1,0],[1,1],[2,3],[2,4],[3,0],[3,2],[4,2],[4,4]],
+    [[0,1],[0,3],[1,0],[1,3],[2,0],[2,4],[3,2],[3,4],[4,1],[4,2]],
+    [[0,1],[0,3],[1,1],[1,4],[2,0],[2,4],[3,0],[3,2],[4,2],[4,3]],
+    [[0,1],[0,3],[1,3],[1,4],[2,0],[2,1],[3,2],[3,4],[4,0],[4,2]],
+    [[0,1],[0,4],[1,1],[1,3],[2,0],[2,4],[3,0],[3,2],[4,2],[4,3]],
+    [[0,2],[0,3],[1,0],[1,1],[2,3],[2,4],[3,0],[3,4],[4,1],[4,2]],
+    [[0,2],[0,3],[1,0],[1,1],[2,3],[2,4],[3,1],[3,4],[4,0],[4,2]],
+    [[0,2],[0,3],[1,0],[1,2],[2,0],[2,4],[3,1],[3,3],[4,1],[4,4]],
+    [[0,2],[0,3],[1,0],[1,2],[2,0],[2,4],[3,1],[3,4],[4,1],[4,3]],
+    [[0,2],[0,3],[1,0],[1,4],[2,0],[2,1],[3,3],[3,4],[4,1],[4,2]],
+    [[0,2],[0,3],[1,1],[1,4],[2,3],[2,4],[3,0],[3,1],[4,0],[4,2]],
+    [[0,2],[0,3],[1,2],[1,4],[2,0],[2,4],[3,1],[3,3],[4,0],[4,1]],
+    [[0,2],[0,4],[1,0],[1,2],[2,3],[2,4],[3,0],[3,1],[4,1],[4,3]],
+    [[0,2],[0,4],[1,0],[1,3],[2,0],[2,1],[3,3],[3,4],[4,1],[4,2]],
+    [[0,2],[0,4],[1,1],[1,2],[2,3],[2,4],[3,0],[3,3],[4,0],[4,1]],
+    [[0,2],[0,4],[1,3],[1,4],[2,0],[2,1],[3,0],[3,3],[4,1],[4,2]],
+    [[0,3],[0,4],[1,1],[1,3],[2,0],[2,4],[3,0],[3,2],[4,1],[4,2]],
+    [[0,3],[0,4],[1,1],[1,4],[2,0],[2,1],[3,2],[3,3],[4,0],[4,2]],
+  ];
+
+  function key(r, c) { return r * N + c; }
+  function rc(k)     { return [Math.floor(k / N), k % N]; }
+
+  function findCollinearCulprits(newR, newC, existingKeys) {
+    const pts = existingKeys.map(rc);
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const [r1, c1] = pts[i], [r2, c2] = pts[j];
+        if ((newR - r1) * (c2 - c1) === (r2 - r1) * (newC - c1))
+          return [existingKeys[i], existingKeys[j]];
+      }
+    }
+    return null;
+  }
+
+  let culpritTimeout = null;
+  function flashCulprits(k1, k2) {
+    if (culpritTimeout) clearTimeout(culpritTimeout);
+    for (let r = 0; r < N; r++)
+      for (let c = 0; c < N; c++)
+        cells[r][c].classList.remove('culprit');
+    const [r1, c1] = rc(k1), [r2, c2] = rc(k2);
+    cells[r1][c1].classList.add('culprit');
+    cells[r2][c2].classList.add('culprit');
+    culpritTimeout = setTimeout(() => {
+      cells[r1][c1].classList.remove('culprit');
+      cells[r2][c2].classList.remove('culprit');
+    }, 1200);
+  }
+
+  const gridEl = document.getElementById('ntl-grid');
+  const cells = [];
+  for (let r = 0; r < N; r++) {
+    cells[r] = [];
+    for (let c = 0; c < N; c++) {
+      const d = document.createElement('div');
+      d.className = 'cell';
+      d.addEventListener('click', () => toggle(r, c, d));
+      gridEl.appendChild(d);
+      cells[r][c] = d;
+    }
+  }
+
+  function updateUI() {
+    document.getElementById('ntl-cnt').textContent = marked.size;
+    document.getElementById('ntl-progress').style.width = (marked.size / GOAL * 100) + '%';
+  }
+
+  function setMsg(text, type = '') {
+    const m = document.getElementById('ntl-msg');
+    m.textContent = text;
+    m.className = type;
+  }
+
+  function toggle(r, c, el) {
+    if (gameWon) return;
+    const k = key(r, c);
+
+    if (marked.has(k)) {
+      marked.delete(k);
+      el.className = 'cell';
+      updateUI();
+      setMsg('');
+      return;
+    }
+
+    if (marked.size >= GOAL) {
+      setMsg('Remove a cell first.', 'err');
+      return;
+    }
+
+    const culprits = findCollinearCulprits(r, c, [...marked]);
+    if (culprits) {
+      el.classList.add('invalid');
+      setTimeout(() => el.classList.remove('invalid'), 400);
+      flashCulprits(culprits[0], culprits[1]);
+      setMsg('Three in a line!', 'err');
+      return;
+    }
+
+    marked.add(k);
+    el.classList.add('marked');
+    updateUI();
+
+    if (marked.size === GOAL) {
+      gameWon = true;
+      for (const k2 of marked) {
+        const [rr, cc] = rc(k2);
+        cells[rr][cc].className = 'cell win-cell';
+      }
+      setMsg('🎉 Solved!', 'win');
+    } else {
+      setMsg('');
+    }
+  }
+
+  function resetBoard() {
+    marked.clear();
+    gameWon = false;
+    for (let r = 0; r < N; r++)
+      for (let c = 0; c < N; c++)
+        cells[r][c].className = 'cell';
+    updateUI();
+    setMsg('');
+  }
+
+  document.getElementById('ntl-resetBtn').addEventListener('click', resetBoard);
+
+  document.getElementById('ntl-hintBtn').addEventListener('click', () => {
+    if (gameWon) return;
+    const sol = SOLUTIONS[solutionIndex % SOLUTIONS.length];
+    const remaining = sol.filter(([r, c]) => !marked.has(key(r, c)));
+    if (!remaining.length) { setMsg('All hint cells placed!', 'ok'); return; }
+    const [r, c] = remaining[Math.floor(Math.random() * remaining.length)];
+    const el = cells[r][c];
+    el.classList.add('hint-glow');
+    setTimeout(() => el.classList.remove('hint-glow'), 1800);
+    setMsg(`Hint: row ${r + 1}, col ${c + 1}`, 'ok');
+  });
+
+  document.getElementById('ntl-solveBtn').addEventListener('click', () => {
+    resetBoard();
+    const sol = SOLUTIONS[solutionIndex % SOLUTIONS.length];
+    solutionIndex++;
+    for (const [r, c] of sol) {
+      marked.add(key(r, c));
+      cells[r][c].className = 'cell win-cell';
+    }
+    gameWon = true;
+    updateUI();
+    setMsg('Solution shown.', 'win');
+  });
+})();
+</script>

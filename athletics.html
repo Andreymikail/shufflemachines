@@ -1,0 +1,415 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Athletics</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px;color: white;">
+    <label><input type="checkbox" id="athCheckbox"> Athletes</label><br>
+    <label><input type="checkbox" id="stdCheckbox"> Stadium</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+    
+  </div>
+</div>
+
+
+  
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = [
+"False Start: Opponent must discard their chosen card face-down (it leaves the game) and play the next card from the top of their deck instead.",
+"Lane Violation: Reduce one of the opponent's stats by 25% for this round (round down).",
+"Personal Best: Increase one stat on your active card by +20% for this round (round up).",
+"World Record: Set one stat on your active card to the highest value of that stat anywhere in the original deck for this round.",
+"Photo Finish: If the difference on the chosen stat is 1 or less, the round is a draw and both cards return to their owners' hands instead of being captured.",
+"Tailwind +2.0: Add +2 to every stat on your active card for this round, but if you win the round the card is marked 'wind-aided' and cannot be used in the final round of the game.",
+"Headwind: Subtract 2 from every stat on the opponent's active card for this round.",
+"Doping Test: Look at the top 3 cards of the opponent's deck. Set one of them aside out of the game; return the rest in the order you choose.",
+"Pacemaker: You — not the leading player — choose which stat is compared this round.",
+"Anchor Leg: Double the value of one stat on your active card for this round.",
+"Coaching Change: Swap one card from your hand with one card from the opponent's hand, chosen at random.",
+"Photo Day: The opponent reveals their entire hand to you for the rest of the round.",
+"Injury Timeout: The opponent's active card is set aside and skips this round (no winner is declared). It returns to the opponent's hand at the start of their next turn.",
+"Home Crowd: If you have already won a round in this game with a card of the same nationality, add +30% to the chosen stat (round up).",
+"Decathlon Mode: Compare the sum of all six stats instead of a single stat. Highest total wins the round.",
+"Steeplechase Surprise: The compared stat is chosen randomly (roll a six-sided die against the stat order).",
+"Comeback Kid: Add +40% to the chosen stat on your active card (round up).",
+"Veteran Wisdom: If your active card's 'career_years' is 15 or more, double the compared stat for this round.",
+"Sponsorship Deal: Draw 2 cards from your deck. Then discard 1 card from your hand.",
+"Olympic Torch: Cancel the effect of the action card just played. The cancelled card is removed from the game."
+  ];
+
+  
+const ath = [
+{"name": "Abebe Bikila", "attributes": {"nationality": "Ethiopia", "event": "Marathon", "era": "1960-1968", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 0, "career_years": 8, "legacy_score": 96, "notes": "Won Rome 1960 barefoot; first to retain Olympic marathon."}},
+{"name": "Al Oerter", "attributes": {"nationality": "USA", "event": "Discus", "era": "1956-1980", "olympic_golds": 4, "total_olympic_medals": 4, "world_records_set": 4, "world_championships_gold": 0, "career_years": 24, "legacy_score": 95, "notes": "Four consecutive Olympic DT titles."}},
+{"name": "Alberto Juantorena", "attributes": {"nationality": "Cuba", "event": "400m / 800m", "era": "1971-1984", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 0, "career_years": 13, "legacy_score": 92, "notes": "Montreal 1976 400m/800m double."}},
+{"name": "Allen Johnson", "attributes": {"nationality": "USA", "event": "110m hurdles", "era": "1991-2008", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 4, "career_years": 17, "legacy_score": 92, "notes": "Four-time world 110mH champion."}},
+{"name": "Allyson Felix", "attributes": {"nationality": "USA", "event": "200m / 400m", "era": "2003-2022", "olympic_golds": 7, "total_olympic_medals": 11, "world_records_set": 0, "world_championships_gold": 14, "career_years": 19, "legacy_score": 97, "notes": "Most decorated Olympic track athlete ever."}},
+{"name": "Almaz Ayana", "attributes": {"nationality": "Ethiopia", "event": "5000m / 10000m", "era": "2011-2022", "olympic_golds": 1, "total_olympic_medals": 3, "world_records_set": 1, "world_championships_gold": 1, "career_years": 11, "legacy_score": 90, "notes": "Rio 2016 10000m WR 29:17."}},
+{"name": "Andreas Thorkildsen", "attributes": {"nationality": "Norway", "event": "Javelin", "era": "2002-2014", "olympic_golds": 2, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 2, "career_years": 12, "legacy_score": 92, "notes": "Athens & Beijing JT champion."}},
+{"name": "Anita Włodarczyk", "attributes": {"nationality": "Poland", "event": "Hammer", "era": "2003-2026", "olympic_golds": 3, "total_olympic_medals": 3, "world_records_set": 6, "world_championships_gold": 4, "career_years": 23, "legacy_score": 98, "notes": "82.98m HT WR; three Olympic golds."}},
+{"name": "Aries Merritt", "attributes": {"nationality": "USA", "event": "110m hurdles", "era": "2004-2019", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 1, "world_championships_gold": 0, "career_years": 15, "legacy_score": 88, "notes": "12.80 110mH WR (2012)."}},
+{"name": "Armand Duplantis", "attributes": {"nationality": "Sweden", "event": "Pole vault", "era": "2014-2026", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 12, "world_championships_gold": 3, "career_years": 12, "legacy_score": 99, "notes": "12 outdoor PV WRs (to 6.30m); double Olympic gold."}},
+{"name": "Arshad Nadeem", "attributes": {"nationality": "Pakistan", "event": "Javelin", "era": "2015-2026", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 0, "career_years": 11, "legacy_score": 90, "notes": "Paris 2024 JT champion (92.97m OR)."}},
+{"name": "Ashton Eaton", "attributes": {"nationality": "USA", "event": "Decathlon", "era": "2008-2016", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 2, "world_championships_gold": 2, "career_years": 8, "legacy_score": 96, "notes": "9045 decathlon WR (2015); back-to-back Olympic gold."}},
+{"name": "Astrid Kumbernuss", "attributes": {"nationality": "Germany", "event": "Shot put", "era": "1989-2003", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 3, "career_years": 14, "legacy_score": 88, "notes": "Atlanta 1996 SP champion."}},
+{"name": "Athing Mu", "attributes": {"nationality": "USA", "event": "800m", "era": "2019-2026", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 1, "career_years": 7, "legacy_score": 90, "notes": "Tokyo 2020 800m champion at 19."}},
+{"name": "Bärbel Wöckel", "attributes": {"nationality": "East Germany", "event": "200m", "era": "1976-1986", "olympic_golds": 4, "total_olympic_medals": 4, "world_records_set": 0, "world_championships_gold": 0, "career_years": 10, "legacy_score": 88, "notes": "Two Olympic 200m titles."}},
+{"name": "Barbora Špotáková", "attributes": {"nationality": "Czech Republic", "event": "Javelin", "era": "2003-2024", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 2, "career_years": 21, "legacy_score": 95, "notes": "Two Olympic JT golds; 72.28m WR."}},
+{"name": "Beatrice Chepkoech", "attributes": {"nationality": "Kenya", "event": "3000m steeplechase", "era": "2010-2026", "olympic_golds": 0, "total_olympic_medals": 0, "world_records_set": 1, "world_championships_gold": 1, "career_years": 16, "legacy_score": 88, "notes": "8:44.32 steeplechase WR (2018)."}},
+{"name": "Bernard Lagat", "attributes": {"nationality": "Kenya/USA", "event": "1500m / 5000m", "era": "1996-2018", "olympic_golds": 0, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 2, "career_years": 22, "legacy_score": 90, "notes": "Multiple world titles across distances."}},
+{"name": "Betty Cuthbert", "attributes": {"nationality": "Australia", "event": "100m / 200m / 400m", "era": "1956-1964", "olympic_golds": 4, "total_olympic_medals": 4, "world_records_set": 4, "world_championships_gold": 0, "career_years": 8, "legacy_score": 90, "notes": "Only sprinter to win Olympic 100/200/400."}},
+{"name": "Blanka Vlašić", "attributes": {"nationality": "Croatia", "event": "High jump", "era": "2000-2017", "olympic_golds": 0, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 2, "career_years": 17, "legacy_score": 88, "notes": "Two-time world HJ champion."}},
+{"name": "Bob Beamon", "attributes": {"nationality": "USA", "event": "Long jump", "era": "1965-1973", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 1, "world_championships_gold": 0, "career_years": 8, "legacy_score": 95, "notes": "8.90m LJ at Mexico 1968 (stood 23 years)."}},
+{"name": "Bob Hayes", "attributes": {"nationality": "USA", "event": "100m", "era": "1962-1965", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 0, "career_years": 3, "legacy_score": 88, "notes": "Tokyo 1964 100m champion; later NFL Hall of Famer."}},
+{"name": "Bob Mathias", "attributes": {"nationality": "USA", "event": "Decathlon", "era": "1948-1956", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 0, "career_years": 8, "legacy_score": 92, "notes": "Olympic decathlon gold at 17 and 21."}},
+{"name": "Brigid Kosgei", "attributes": {"nationality": "Kenya", "event": "Marathon", "era": "2009-2026", "olympic_golds": 0, "total_olympic_medals": 1, "world_records_set": 1, "world_championships_gold": 0, "career_years": 17, "legacy_score": 90, "notes": "2:14:04 marathon WR (Chicago 2019)."}},
+{"name": "Brittney Reese", "attributes": {"nationality": "USA", "event": "Long jump", "era": "2007-2022", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 4, "career_years": 15, "legacy_score": 92, "notes": "Four-time world LJ champion."}},
+{"name": "Bryan Clay", "attributes": {"nationality": "USA", "event": "Decathlon", "era": "2002-2012", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 1, "career_years": 10, "legacy_score": 88, "notes": "Beijing 2008 decathlon champion."}},
+{"name": "Carl Lewis", "attributes": {"nationality": "USA", "event": "100m / 200m / Long Jump", "era": "1979-1996", "olympic_golds": 9, "total_olympic_medals": 10, "world_records_set": 4, "world_championships_gold": 8, "career_years": 17, "legacy_score": 99, "notes": "Nine Olympic golds across sprints and long jump; four straight Olympic LJ titles."}},
+{"name": "Carlos Lopes", "attributes": {"nationality": "Portugal", "event": "Marathon / 10000m", "era": "1968-1986", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 1, "career_years": 18, "legacy_score": 88, "notes": "LA 1984 marathon champion at 37."}},
+{"name": "Carolina Klüft", "attributes": {"nationality": "Sweden", "event": "Heptathlon", "era": "2000-2012", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 3, "career_years": 12, "legacy_score": 92, "notes": "Athens 2004 heptathlon champion; three world golds."}},
+{"name": "Caster Semenya", "attributes": {"nationality": "South Africa", "event": "800m", "era": "2008-2022", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 3, "career_years": 14, "legacy_score": 92, "notes": "Three world / two Olympic 800m titles."}},
+{"name": "Caterine Ibargüen", "attributes": {"nationality": "Colombia", "event": "Triple jump / HJ", "era": "2002-2021", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 2, "career_years": 19, "legacy_score": 90, "notes": "Rio 2016 TJ champion."}},
+{"name": "Cathy Freeman", "attributes": {"nationality": "Australia", "event": "400m", "era": "1990-2003", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 2, "career_years": 13, "legacy_score": 92, "notes": "Sydney 2000 400m champion."}},
+{"name": "Christian Taylor", "attributes": {"nationality": "USA", "event": "Triple jump", "era": "2009-2024", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 4, "career_years": 15, "legacy_score": 94, "notes": "Two-time Olympic TJ champion."}},
+{"name": "Colin Jackson", "attributes": {"nationality": "Great Britain", "event": "110m hurdles", "era": "1986-2003", "olympic_golds": 0, "total_olympic_medals": 1, "world_records_set": 1, "world_championships_gold": 2, "career_years": 17, "legacy_score": 88, "notes": "12.91 WR; long-running European star."}},
+{"name": "Daley Thompson", "attributes": {"nationality": "Great Britain", "event": "Decathlon", "era": "1975-1992", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 4, "world_championships_gold": 1, "career_years": 17, "legacy_score": 96, "notes": "Back-to-back Olympic decathlon gold (1980, 1984)."}},
+{"name": "Dalilah Muhammad", "attributes": {"nationality": "USA", "event": "400m hurdles", "era": "2010-2024", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 2, "world_championships_gold": 1, "career_years": 14, "legacy_score": 90, "notes": "Two-time WR holder in 400mH."}},
+{"name": "Damian Warner", "attributes": {"nationality": "Canada", "event": "Decathlon", "era": "2009-2026", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 1, "career_years": 17, "legacy_score": 90, "notes": "Tokyo 2020 decathlon champion."}},
+{"name": "Dan O'Brien", "attributes": {"nationality": "USA", "event": "Decathlon", "era": "1986-2002", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 1, "world_championships_gold": 3, "career_years": 16, "legacy_score": 92, "notes": "Three-time world decathlon champion; Atlanta 1996 gold."}},
+{"name": "Daniel Komen", "attributes": {"nationality": "Kenya", "event": "3000m / 5000m", "era": "1994-2003", "olympic_golds": 0, "total_olympic_medals": 0, "world_records_set": 3, "world_championships_gold": 1, "career_years": 9, "legacy_score": 90, "notes": "First man under 13:00 for two miles."}},
+{"name": "Daniel Ståhl", "attributes": {"nationality": "Sweden", "event": "Discus", "era": "2010-2026", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 2, "career_years": 16, "legacy_score": 88, "notes": "Tokyo 2020 DT champion."}},
+{"name": "David Rudisha", "attributes": {"nationality": "Kenya", "event": "800m", "era": "2006-2017", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 2, "world_championships_gold": 2, "career_years": 11, "legacy_score": 97, "notes": "1:40.91 800m WR at London 2012."}},
+{"name": "Derartu Tulu", "attributes": {"nationality": "Ethiopia", "event": "10000m", "era": "1991-2009", "olympic_golds": 2, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 0, "career_years": 18, "legacy_score": 92, "notes": "First Black African woman Olympic gold (Barcelona 1992)."}},
+{"name": "Dick Fosbury", "attributes": {"nationality": "USA", "event": "High jump", "era": "1965-1973", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 0, "career_years": 8, "legacy_score": 96, "notes": "Invented the Fosbury Flop; Mexico 1968 champion."}},
+{"name": "Dwight Phillips", "attributes": {"nationality": "USA", "event": "Long jump", "era": "2000-2013", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 4, "career_years": 13, "legacy_score": 90, "notes": "Four-time world LJ champion."}},
+{"name": "Edwin Moses", "attributes": {"nationality": "USA", "event": "400m hurdles", "era": "1976-1988", "olympic_golds": 2, "total_olympic_medals": 3, "world_records_set": 4, "world_championships_gold": 2, "career_years": 12, "legacy_score": 99, "notes": "122-race winning streak; transformed 400mH."}},
+{"name": "Elaine Thompson-Herah", "attributes": {"nationality": "Jamaica", "event": "100m / 200m", "era": "2013-2024", "olympic_golds": 5, "total_olympic_medals": 6, "world_records_set": 0, "world_championships_gold": 1, "career_years": 11, "legacy_score": 95, "notes": "Double-double sprint champion (Rio 2016 & Tokyo 2020)."}},
+{"name": "Eliud Kipchoge", "attributes": {"nationality": "Kenya", "event": "Marathon", "era": "2002-2025", "olympic_golds": 2, "total_olympic_medals": 3, "world_records_set": 2, "world_championships_gold": 1, "career_years": 23, "legacy_score": 99, "notes": "Two-time Olympic marathon champion; first sub-2:00 (unofficial)."}},
+{"name": "Emil Zátopek", "attributes": {"nationality": "Czechoslovakia", "event": "5000m / 10000m / Marathon", "era": "1944-1958", "olympic_golds": 4, "total_olympic_medals": 5, "world_records_set": 18, "world_championships_gold": 0, "career_years": 14, "legacy_score": 99, "notes": "Helsinki 1952 5k/10k/marathon treble."}},
+{"name": "Evelyn Ashford", "attributes": {"nationality": "USA", "event": "100m", "era": "1976-1992", "olympic_golds": 4, "total_olympic_medals": 5, "world_records_set": 1, "world_championships_gold": 0, "career_years": 16, "legacy_score": 90, "notes": "LA 1984 100m champion; 10.76 WR."}},
+{"name": "Ezekiel Kemboi", "attributes": {"nationality": "Kenya", "event": "3000m steeplechase", "era": "2000-2017", "olympic_golds": 2, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 4, "career_years": 17, "legacy_score": 92, "notes": "Two Olympic and four world steeplechase golds."}},
+{"name": "Faith Kipyegon", "attributes": {"nationality": "Kenya", "event": "1500m / 5000m", "era": "2010-2026", "olympic_golds": 4, "total_olympic_medals": 5, "world_records_set": 4, "world_championships_gold": 4, "career_years": 16, "legacy_score": 98, "notes": "Triple Olympic 1500m champion; 1500m / mile / 5000m WRs."}},
+{"name": "Fanny Blankers-Koen", "attributes": {"nationality": "Netherlands", "event": "100m / 200m / 80mH / Relay", "era": "1936-1955", "olympic_golds": 4, "total_olympic_medals": 4, "world_records_set": 12, "world_championships_gold": 0, "career_years": 19, "legacy_score": 95, "notes": "Four golds at London 1948 as a 30-year-old mother."}},
+{"name": "Femke Bol", "attributes": {"nationality": "Netherlands", "event": "400m / 400m hurdles", "era": "2018-2026", "olympic_golds": 0, "total_olympic_medals": 3, "world_records_set": 1, "world_championships_gold": 4, "career_years": 8, "legacy_score": 92, "notes": "World indoor 400m WR; 50.95 400mH PB."}},
+{"name": "Florence Griffith-Joyner", "attributes": {"nationality": "USA", "event": "100m / 200m", "era": "1980-1988", "olympic_golds": 3, "total_olympic_medals": 4, "world_records_set": 2, "world_championships_gold": 1, "career_years": 8, "legacy_score": 99, "notes": "10.49 / 21.34 world records still standing."}},
+{"name": "Frank Shorter", "attributes": {"nationality": "USA", "event": "Marathon", "era": "1969-1980", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 0, "career_years": 11, "legacy_score": 88, "notes": "Munich 1972 marathon champion."}},
+{"name": "Gabriela Szabo", "attributes": {"nationality": "Romania", "event": "1500m / 5000m", "era": "1992-2005", "olympic_golds": 1, "total_olympic_medals": 3, "world_records_set": 2, "world_championships_gold": 3, "career_years": 13, "legacy_score": 88, "notes": "Sydney 2000 5000m champion."}},
+{"name": "Gail Devers", "attributes": {"nationality": "USA", "event": "100m / 100m hurdles", "era": "1987-2004", "olympic_golds": 3, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 5, "career_years": 17, "legacy_score": 90, "notes": "Two Olympic 100m golds and three world 100mH titles."}},
+{"name": "Galina Chistyakova", "attributes": {"nationality": "Soviet Union", "event": "Long jump", "era": "1980-1996", "olympic_golds": 0, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 1, "career_years": 16, "legacy_score": 88, "notes": "7.52m LJ WR (1988) still stands."}},
+{"name": "Genzebe Dibaba", "attributes": {"nationality": "Ethiopia", "event": "1500m / 3000m / 5000m", "era": "2008-2023", "olympic_golds": 0, "total_olympic_medals": 1, "world_records_set": 6, "world_championships_gold": 4, "career_years": 15, "legacy_score": 92, "notes": "1500m WR 3:50.07 (2015)."}},
+{"name": "Gong Lijiao", "attributes": {"nationality": "China", "event": "Shot put", "era": "2005-2024", "olympic_golds": 1, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 2, "career_years": 19, "legacy_score": 90, "notes": "Tokyo 2020 SP champion."}},
+{"name": "Grant Holloway", "attributes": {"nationality": "USA", "event": "110m hurdles", "era": "2017-2026", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 3, "career_years": 9, "legacy_score": 92, "notes": "Paris 2024 110mH champion; 60mH WR."}},
+{"name": "Grete Waitz", "attributes": {"nationality": "Norway", "event": "5000m / Marathon", "era": "1973-1990", "olympic_golds": 0, "total_olympic_medals": 1, "world_records_set": 4, "world_championships_gold": 1, "career_years": 17, "legacy_score": 90, "notes": "Nine-time NYC Marathon winner."}},
+{"name": "Gwen Torrence", "attributes": {"nationality": "USA", "event": "200m", "era": "1984-1996", "olympic_golds": 3, "total_olympic_medals": 5, "world_records_set": 0, "world_championships_gold": 2, "career_years": 12, "legacy_score": 86, "notes": "Barcelona 1992 200m champion."}},
+{"name": "Haile Gebrselassie", "attributes": {"nationality": "Ethiopia", "event": "5000m / 10000m / Marathon", "era": "1992-2015", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 27, "world_championships_gold": 4, "career_years": 23, "legacy_score": 99, "notes": "27 world records across distances."}},
+{"name": "Hannes Kolehmainen", "attributes": {"nationality": "Finland", "event": "5000m / 10000m / Marathon", "era": "1912-1924", "olympic_golds": 4, "total_olympic_medals": 5, "world_records_set": 5, "world_championships_gold": 0, "career_years": 12, "legacy_score": 92, "notes": "Stockholm 1912 multi-event hero."}},
+{"name": "Heike Drechsler", "attributes": {"nationality": "Germany", "event": "Long Jump / 200m", "era": "1981-2004", "olympic_golds": 2, "total_olympic_medals": 4, "world_records_set": 2, "world_championships_gold": 2, "career_years": 23, "legacy_score": 94, "notes": "Two-time Olympic long jump champion."}},
+{"name": "Hellen Obiri", "attributes": {"nationality": "Kenya", "event": "5000m / Marathon", "era": "2008-2026", "olympic_golds": 0, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 2, "career_years": 18, "legacy_score": 90, "notes": "Two-time world 5000m champion; Boston/NYC marathon winner."}},
+{"name": "Herb Elliott", "attributes": {"nationality": "Australia", "event": "1500m / Mile", "era": "1956-1962", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 4, "world_championships_gold": 0, "career_years": 6, "legacy_score": 92, "notes": "Rome 1960 1500m champion; never lost a 1500/mile final."}},
+{"name": "Hicham El Guerrouj", "attributes": {"nationality": "Morocco", "event": "1500m / Mile", "era": "1992-2006", "olympic_golds": 2, "total_olympic_medals": 3, "world_records_set": 4, "world_championships_gold": 4, "career_years": 14, "legacy_score": 98, "notes": "1500m & mile WRs; Athens 2004 double."}},
+{"name": "Inessa Kravets", "attributes": {"nationality": "Ukraine", "event": "Triple jump", "era": "1985-2002", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 1, "career_years": 17, "legacy_score": 88, "notes": "15.50m TJ WR (1995) still stands."}},
+{"name": "Ingrid Kristiansen", "attributes": {"nationality": "Norway", "event": "5000m / 10000m / Marathon", "era": "1980-1990", "olympic_golds": 0, "total_olympic_medals": 0, "world_records_set": 4, "world_championships_gold": 1, "career_years": 10, "legacy_score": 88, "notes": "10000m WR; marathon dominator."}},
+{"name": "Iolanda Balaș", "attributes": {"nationality": "Romania", "event": "High jump", "era": "1954-1967", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 14, "world_championships_gold": 0, "career_years": 13, "legacy_score": 92, "notes": "14 world records; back-to-back Olympic golds."}},
+{"name": "Irena Szewińska", "attributes": {"nationality": "Poland", "event": "100m / 200m / 400m / LJ", "era": "1964-1980", "olympic_golds": 3, "total_olympic_medals": 7, "world_records_set": 10, "world_championships_gold": 0, "career_years": 16, "legacy_score": 95, "notes": "Seven Olympic medals across four events."}},
+{"name": "Iván Pedroso", "attributes": {"nationality": "Cuba", "event": "Long jump", "era": "1991-2004", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 4, "career_years": 13, "legacy_score": 92, "notes": "Four-time world LJ champion."}},
+{"name": "Jackie Joyner-Kersee", "attributes": {"nationality": "USA", "event": "LJ / Heptathlon", "era": "1981-2001", "olympic_golds": 3, "total_olympic_medals": 6, "world_records_set": 1, "world_championships_gold": 4, "career_years": 20, "legacy_score": 99, "notes": "Greatest female athlete debate; heptathlon WR 7291."}},
+{"name": "Jakob Ingebrigtsen", "attributes": {"nationality": "Norway", "event": "1500m / 5000m", "era": "2015-2026", "olympic_golds": 2, "total_olympic_medals": 4, "world_records_set": 0, "world_championships_gold": 4, "career_years": 11, "legacy_score": 95, "notes": "Tokyo 1500m and Paris 5000m champion."}},
+{"name": "Jan Železný", "attributes": {"nationality": "Czech Republic", "event": "Javelin", "era": "1986-2006", "olympic_golds": 3, "total_olympic_medals": 4, "world_records_set": 5, "world_championships_gold": 3, "career_years": 20, "legacy_score": 98, "notes": "98.48m JT WR (1996) still stands."}},
+{"name": "Jarmila Kratochvílová", "attributes": {"nationality": "Czechoslovakia", "event": "400m / 800m", "era": "1972-1987", "olympic_golds": 0, "total_olympic_medals": 1, "world_records_set": 2, "world_championships_gold": 2, "career_years": 15, "legacy_score": 90, "notes": "1:53.28 800m WR (1983) still stands."}},
+{"name": "Javier Sotomayor", "attributes": {"nationality": "Cuba", "event": "High jump", "era": "1984-2001", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 2, "world_championships_gold": 2, "career_years": 17, "legacy_score": 98, "notes": "2.45m HJ WR (1993) still stands."}},
+{"name": "Jefferson Pérez", "attributes": {"nationality": "Ecuador", "event": "20km walk", "era": "1994-2008", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 3, "career_years": 14, "legacy_score": 88, "notes": "Atlanta 1996 20km walk champion."}},
+{"name": "Jeremy Wariner", "attributes": {"nationality": "USA", "event": "400m", "era": "2003-2014", "olympic_golds": 3, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 3, "career_years": 11, "legacy_score": 86, "notes": "43.45 PB; dominant 2004-2007 quarter-miler."}},
+{"name": "Jesse Owens", "attributes": {"nationality": "USA", "event": "100m / 200m / Long Jump", "era": "1933-1936", "olympic_golds": 4, "total_olympic_medals": 4, "world_records_set": 6, "world_championships_gold": 0, "career_years": 4, "legacy_score": 99, "notes": "Four golds at Berlin 1936; six world records in 45 minutes (1935)."}},
+{"name": "Jessica Ennis-Hill", "attributes": {"nationality": "Great Britain", "event": "Heptathlon", "era": "2005-2016", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 2, "career_years": 11, "legacy_score": 92, "notes": "London 2012 heptathlon champion."}},
+{"name": "Joan Benoit Samuelson", "attributes": {"nationality": "USA", "event": "Marathon", "era": "1979-1998", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 0, "career_years": 19, "legacy_score": 90, "notes": "Won first Olympic women's marathon (LA 1984)."}},
+{"name": "Joe Kovacs", "attributes": {"nationality": "USA", "event": "Shot put", "era": "2010-2026", "olympic_golds": 0, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 2, "career_years": 16, "legacy_score": 90, "notes": "Two-time world SP champion."}},
+{"name": "Jonathan Edwards", "attributes": {"nationality": "Great Britain", "event": "Triple jump", "era": "1986-2003", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 2, "world_championships_gold": 2, "career_years": 17, "legacy_score": 96, "notes": "18.29m TJ WR (1995) still stands."}},
+{"name": "Joshua Cheptegei", "attributes": {"nationality": "Uganda", "event": "5000m / 10000m", "era": "2014-2026", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 4, "world_championships_gold": 4, "career_years": 12, "legacy_score": 92, "notes": "5000m and 10000m world records; Tokyo 5000m champion."}},
+{"name": "Jürgen Schult", "attributes": {"nationality": "East Germany", "event": "Discus", "era": "1981-1998", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 1, "world_championships_gold": 1, "career_years": 17, "legacy_score": 95, "notes": "74.08m DT WR (1986) still stands."}},
+{"name": "Karsten Warholm", "attributes": {"nationality": "Norway", "event": "400m hurdles", "era": "2013-2026", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 2, "world_championships_gold": 3, "career_years": 13, "legacy_score": 96, "notes": "45.94 400mH WR at Tokyo 2020."}},
+{"name": "Katarina Johnson-Thompson", "attributes": {"nationality": "Great Britain", "event": "Heptathlon", "era": "2010-2026", "olympic_golds": 0, "total_olympic_medals": 0, "world_records_set": 0, "world_championships_gold": 2, "career_years": 16, "legacy_score": 88, "notes": "Two-time world heptathlon champion."}},
+{"name": "Katerina Stefanidi", "attributes": {"nationality": "Greece", "event": "Pole vault", "era": "2007-2026", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 1, "career_years": 19, "legacy_score": 88, "notes": "Rio 2016 PV champion."}},
+{"name": "Keely Hodgkinson", "attributes": {"nationality": "Great Britain", "event": "800m", "era": "2019-2026", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 1, "career_years": 7, "legacy_score": 88, "notes": "Paris 2024 800m champion."}},
+{"name": "Kelly Holmes", "attributes": {"nationality": "Great Britain", "event": "800m / 1500m", "era": "1983-2005", "olympic_golds": 2, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 0, "career_years": 22, "legacy_score": 88, "notes": "Athens 2004 800m/1500m double."}},
+{"name": "Kelvin Kiptum", "attributes": {"nationality": "Kenya", "event": "Marathon", "era": "2018-2024", "olympic_golds": 0, "total_olympic_medals": 0, "world_records_set": 1, "world_championships_gold": 0, "career_years": 6, "legacy_score": 90, "notes": "2:00:35 marathon WR (Chicago 2023)."}},
+{"name": "Kenenisa Bekele", "attributes": {"nationality": "Ethiopia", "event": "5000m / 10000m / Marathon", "era": "2001-2024", "olympic_golds": 3, "total_olympic_medals": 5, "world_records_set": 6, "world_championships_gold": 5, "career_years": 23, "legacy_score": 98, "notes": "5000/10000m WRs; one of the greatest distance runners ever."}},
+{"name": "Kevin Mayer", "attributes": {"nationality": "France", "event": "Decathlon", "era": "2010-2026", "olympic_golds": 0, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 2, "career_years": 16, "legacy_score": 92, "notes": "9126 decathlon WR (2018)."}},
+{"name": "Kevin Young", "attributes": {"nationality": "USA", "event": "400m hurdles", "era": "1986-1996", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 1, "world_championships_gold": 1, "career_years": 10, "legacy_score": 92, "notes": "46.78 400mH WR stood 29 years."}},
+{"name": "Kip Keino", "attributes": {"nationality": "Kenya", "event": "1500m / 5000m", "era": "1962-1973", "olympic_golds": 2, "total_olympic_medals": 4, "world_records_set": 0, "world_championships_gold": 0, "career_years": 11, "legacy_score": 92, "notes": "Mexico 1968 1500m champion at altitude."}},
+{"name": "Lars Riedel", "attributes": {"nationality": "Germany", "event": "Discus", "era": "1985-2004", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 5, "career_years": 19, "legacy_score": 90, "notes": "Five-time world DT champion."}},
+{"name": "Lasse Virén", "attributes": {"nationality": "Finland", "event": "5000m / 10000m", "era": "1969-1980", "olympic_golds": 4, "total_olympic_medals": 4, "world_records_set": 2, "world_championships_gold": 0, "career_years": 11, "legacy_score": 94, "notes": "Double-double 5k/10k (Munich and Montreal)."}},
+{"name": "Letesenbet Gidey", "attributes": {"nationality": "Ethiopia", "event": "5000m / 10000m / HM", "era": "2017-2026", "olympic_golds": 0, "total_olympic_medals": 2, "world_records_set": 3, "world_championships_gold": 1, "career_years": 9, "legacy_score": 88, "notes": "5000m / 10000m / half marathon WRs."}},
+{"name": "Letsile Tebogo", "attributes": {"nationality": "Botswana", "event": "100m / 200m / 400m", "era": "2021-2026", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 1, "career_years": 5, "legacy_score": 88, "notes": "Paris 2024 200m champion; African 200m record."}},
+{"name": "Liu Hong", "attributes": {"nationality": "China", "event": "20km walk", "era": "2002-2024", "olympic_golds": 1, "total_olympic_medals": 3, "world_records_set": 3, "world_championships_gold": 3, "career_years": 22, "legacy_score": 92, "notes": "Rio 2016 20km walk champion; multiple WRs."}},
+{"name": "Liu Xiang", "attributes": {"nationality": "China", "event": "110m hurdles", "era": "1999-2014", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 1, "world_championships_gold": 1, "career_years": 15, "legacy_score": 92, "notes": "Athens 2004 champion; tied/broke WR."}},
+{"name": "Malaika Mihambo", "attributes": {"nationality": "Germany", "event": "Long jump", "era": "2011-2026", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 2, "career_years": 15, "legacy_score": 88, "notes": "Tokyo 2020 LJ champion."}},
+{"name": "Maria Mutola", "attributes": {"nationality": "Mozambique", "event": "800m", "era": "1988-2008", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 3, "career_years": 20, "legacy_score": 92, "notes": "Sydney 2000 800m champion; nine major-meet 800m medals."}},
+{"name": "Maria Pérez", "attributes": {"nationality": "Spain", "event": "20/35km walk", "era": "2015-2026", "olympic_golds": 0, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 2, "career_years": 11, "legacy_score": 88, "notes": "Two-time world champion (2023, 2025)."}},
+{"name": "Marie-José Pérec", "attributes": {"nationality": "France", "event": "200m / 400m", "era": "1988-2000", "olympic_golds": 3, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 2, "career_years": 12, "legacy_score": 92, "notes": "Atlanta 1996 200m/400m double."}},
+{"name": "Marita Koch", "attributes": {"nationality": "East Germany", "event": "200m / 400m", "era": "1977-1987", "olympic_golds": 1, "total_olympic_medals": 3, "world_records_set": 16, "world_championships_gold": 2, "career_years": 10, "legacy_score": 95, "notes": "47.60 400m WR (1985) still stands."}},
+{"name": "Mariya Lasitskene", "attributes": {"nationality": "Russia", "event": "High jump", "era": "2007-2024", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 3, "career_years": 17, "legacy_score": 90, "notes": "Three-time world HJ champion; Tokyo 2020 gold."}},
+{"name": "Mary Decker", "attributes": {"nationality": "USA", "event": "1500m / 3000m", "era": "1973-1997", "olympic_golds": 0, "total_olympic_medals": 0, "world_records_set": 6, "world_championships_gold": 2, "career_years": 25, "legacy_score": 88, "notes": "1983 world 1500m / 3000m double."}},
+{"name": "Mary Keitany", "attributes": {"nationality": "Kenya", "event": "Marathon / HM", "era": "2002-2019", "olympic_golds": 0, "total_olympic_medals": 0, "world_records_set": 2, "world_championships_gold": 0, "career_years": 17, "legacy_score": 88, "notes": "Women-only marathon WR 2:17:01."}},
+{"name": "Maurice Greene", "attributes": {"nationality": "USA", "event": "100m / 60m", "era": "1995-2008", "olympic_golds": 2, "total_olympic_medals": 4, "world_records_set": 1, "world_championships_gold": 5, "career_years": 14, "legacy_score": 89, "notes": "9.79 100m WR (1999); four-time world 100m champion."}},
+{"name": "Merlene Ottey", "attributes": {"nationality": "Jamaica/Slovenia", "event": "100m / 200m", "era": "1979-2012", "olympic_golds": 0, "total_olympic_medals": 9, "world_records_set": 0, "world_championships_gold": 3, "career_years": 33, "legacy_score": 92, "notes": "Nine Olympic medals; seven Olympic Games."}},
+{"name": "Meseret Defar", "attributes": {"nationality": "Ethiopia", "event": "5000m", "era": "2002-2016", "olympic_golds": 2, "total_olympic_medals": 4, "world_records_set": 4, "world_championships_gold": 2, "career_years": 14, "legacy_score": 92, "notes": "Two-time Olympic 5000m champion."}},
+{"name": "Michael Johnson", "attributes": {"nationality": "USA", "event": "200m / 400m", "era": "1988-2000", "olympic_golds": 4, "total_olympic_medals": 4, "world_records_set": 2, "world_championships_gold": 8, "career_years": 13, "legacy_score": 96, "notes": "19.32 / 43.18; only man to double Olympic 200m/400m."}},
+{"name": "Mike Powell", "attributes": {"nationality": "USA", "event": "Long jump", "era": "1984-2001", "olympic_golds": 0, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 2, "career_years": 17, "legacy_score": 92, "notes": "8.95m LJ WR (1991) still stands."}},
+{"name": "Miltiadis Tentoglou", "attributes": {"nationality": "Greece", "event": "Long jump", "era": "2017-2026", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 2, "career_years": 9, "legacy_score": 88, "notes": "Tokyo 2020 LJ champion."}},
+{"name": "Miruts Yifter", "attributes": {"nationality": "Ethiopia", "event": "5000m / 10000m", "era": "1971-1981", "olympic_golds": 2, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 0, "career_years": 10, "legacy_score": 88, "notes": "Moscow 1980 5k/10k double."}},
+{"name": "Mo Farah", "attributes": {"nationality": "Great Britain", "event": "5000m / 10000m", "era": "2001-2024", "olympic_golds": 4, "total_olympic_medals": 4, "world_records_set": 0, "world_championships_gold": 6, "career_years": 23, "legacy_score": 96, "notes": "Double-double Olympic champion (2012, 2016)."}},
+{"name": "Moses Kiptanui", "attributes": {"nationality": "Kenya", "event": "Steeplechase", "era": "1990-2000", "olympic_golds": 0, "total_olympic_medals": 1, "world_records_set": 4, "world_championships_gold": 3, "career_years": 10, "legacy_score": 92, "notes": "First man under 8:00 in steeplechase."}},
+{"name": "Mutaz Essa Barshim", "attributes": {"nationality": "Qatar", "event": "High jump", "era": "2009-2026", "olympic_golds": 1, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 3, "career_years": 17, "legacy_score": 95, "notes": "Tokyo 2020 shared gold; three-time world champ."}},
+{"name": "Nafissatou Thiam", "attributes": {"nationality": "Belgium", "event": "Heptathlon", "era": "2013-2026", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 2, "career_years": 13, "legacy_score": 94, "notes": "Back-to-back Olympic heptathlon champ."}},
+{"name": "Natalya Lisovskaya", "attributes": {"nationality": "Soviet Union", "event": "Shot put", "era": "1982-1992", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 4, "world_championships_gold": 1, "career_years": 10, "legacy_score": 88, "notes": "22.63m SP WR (1987) still stands."}},
+{"name": "Neeraj Chopra", "attributes": {"nationality": "India", "event": "Javelin", "era": "2016-2026", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 1, "career_years": 10, "legacy_score": 92, "notes": "Tokyo 2020 JT champion; first Indian T&F Olympic gold."}},
+{"name": "Noah Lyles", "attributes": {"nationality": "USA", "event": "100m / 200m", "era": "2016-2026", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 6, "career_years": 10, "legacy_score": 92, "notes": "Paris 2024 100m champion; three-time world 200m champion."}},
+{"name": "Noureddine Morceli", "attributes": {"nationality": "Algeria", "event": "1500m / Mile", "era": "1990-2000", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 4, "world_championships_gold": 3, "career_years": 10, "legacy_score": 92, "notes": "Atlanta 1996 1500m champion."}},
+{"name": "Osleidys Menéndez", "attributes": {"nationality": "Cuba", "event": "Javelin", "era": "1996-2009", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 2, "world_championships_gold": 2, "career_years": 13, "legacy_score": 88, "notes": "Athens 2004 JT champion; 71.70m WR."}},
+{"name": "Paavo Nurmi", "attributes": {"nationality": "Finland", "event": "1500m-10000m", "era": "1920-1934", "olympic_golds": 9, "total_olympic_medals": 12, "world_records_set": 22, "world_championships_gold": 0, "career_years": 14, "legacy_score": 99, "notes": "Nine Olympic golds; 22 world records."}},
+{"name": "Paul Tergat", "attributes": {"nationality": "Kenya", "event": "5000m-Marathon", "era": "1993-2010", "olympic_golds": 0, "total_olympic_medals": 2, "world_records_set": 2, "world_championships_gold": 0, "career_years": 17, "legacy_score": 92, "notes": "Five-time world cross country champion."}},
+{"name": "Paula Radcliffe", "attributes": {"nationality": "Great Britain", "event": "Marathon", "era": "1992-2015", "olympic_golds": 0, "total_olympic_medals": 0, "world_records_set": 3, "world_championships_gold": 2, "career_years": 23, "legacy_score": 92, "notes": "2:15:25 marathon WR stood 16 years."}},
+{"name": "Paweł Fajdek", "attributes": {"nationality": "Poland", "event": "Hammer", "era": "2009-2026", "olympic_golds": 0, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 5, "career_years": 17, "legacy_score": 92, "notes": "Five-time world HT champion."}},
+{"name": "Pedro Pichardo", "attributes": {"nationality": "Cuba/Portugal", "event": "Triple jump", "era": "2011-2026", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 2, "career_years": 15, "legacy_score": 90, "notes": "Tokyo 2020 TJ champion."}},
+{"name": "Peres Jepchirchir", "attributes": {"nationality": "Kenya", "event": "Marathon / HM", "era": "2009-2026", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 0, "career_years": 17, "legacy_score": 88, "notes": "Tokyo 2020 marathon champion."}},
+{"name": "Peter Snell", "attributes": {"nationality": "New Zealand", "event": "800m / 1500m", "era": "1958-1965", "olympic_golds": 3, "total_olympic_medals": 3, "world_records_set": 6, "world_championships_gold": 0, "career_years": 7, "legacy_score": 92, "notes": "Tokyo 1964 800m/1500m double."}},
+{"name": "Petra Felke", "attributes": {"nationality": "East Germany", "event": "Javelin", "era": "1980-1991", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 4, "world_championships_gold": 1, "career_years": 11, "legacy_score": 90, "notes": "Seoul 1988 JT champion."}},
+{"name": "Pietro Mennea", "attributes": {"nationality": "Italy", "event": "200m", "era": "1971-1988", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 1, "world_championships_gold": 0, "career_years": 17, "legacy_score": 88, "notes": "19.72 200m WR (1979) stood 17 years; Moscow 1980 champion."}},
+{"name": "Rai Benjamin", "attributes": {"nationality": "USA", "event": "400m hurdles", "era": "2017-2026", "olympic_golds": 1, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 1, "career_years": 9, "legacy_score": 92, "notes": "Paris 2024 400mH champion."}},
+{"name": "Ralph Boston", "attributes": {"nationality": "USA", "event": "Long jump", "era": "1958-1968", "olympic_golds": 1, "total_olympic_medals": 3, "world_records_set": 6, "world_championships_gold": 0, "career_years": 10, "legacy_score": 90, "notes": "Six LJ world records."}},
+{"name": "Randy Barnes", "attributes": {"nationality": "USA", "event": "Shot put", "era": "1986-1998", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 1, "career_years": 12, "legacy_score": 92, "notes": "23.12m SP WR (1990) still stands."}},
+{"name": "Renate Stecher", "attributes": {"nationality": "East Germany", "event": "100m / 200m", "era": "1969-1979", "olympic_golds": 2, "total_olympic_medals": 5, "world_records_set": 5, "world_championships_gold": 0, "career_years": 10, "legacy_score": 86, "notes": "Munich 1972 sprint double."}},
+{"name": "Renaud Lavillenie", "attributes": {"nationality": "France", "event": "Pole vault", "era": "2005-2024", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 1, "career_years": 19, "legacy_score": 92, "notes": "London 2012 PV champion; 6.16m indoor WR."}},
+{"name": "Robert Harting", "attributes": {"nationality": "Germany", "event": "Discus", "era": "2003-2018", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 3, "career_years": 15, "legacy_score": 88, "notes": "London 2012 DT champion."}},
+{"name": "Robert Korzeniowski", "attributes": {"nationality": "Poland", "event": "Race walk (20/50km)", "era": "1989-2004", "olympic_golds": 4, "total_olympic_medals": 4, "world_records_set": 0, "world_championships_gold": 3, "career_years": 15, "legacy_score": 92, "notes": "Four Olympic golds across walking distances."}},
+{"name": "Roger Bannister", "attributes": {"nationality": "Great Britain", "event": "Mile", "era": "1946-1954", "olympic_golds": 0, "total_olympic_medals": 0, "world_records_set": 1, "world_championships_gold": 0, "career_years": 8, "legacy_score": 90, "notes": "First sub-four-minute mile (3:59.4, 1954)."}},
+{"name": "Roger Kingdom", "attributes": {"nationality": "USA", "event": "110m hurdles", "era": "1981-1995", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 0, "career_years": 14, "legacy_score": 88, "notes": "Back-to-back Olympic 110mH (1984, 1988)."}},
+{"name": "Roman Šebrle", "attributes": {"nationality": "Czech Republic", "event": "Decathlon", "era": "1992-2013", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 1, "career_years": 21, "legacy_score": 90, "notes": "First man over 9000 points."}},
+{"name": "Rosa Mota", "attributes": {"nationality": "Portugal", "event": "Marathon", "era": "1980-1992", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 1, "career_years": 12, "legacy_score": 88, "notes": "Seoul 1988 marathon champion."}},
+{"name": "Ruth Chepngetich", "attributes": {"nationality": "Kenya", "event": "Marathon", "era": "2014-2026", "olympic_golds": 0, "total_olympic_medals": 0, "world_records_set": 1, "world_championships_gold": 1, "career_years": 12, "legacy_score": 90, "notes": "2:09:56 marathon WR (Chicago 2024)."}},
+{"name": "Ryan Crouser", "attributes": {"nationality": "USA", "event": "Shot put", "era": "2011-2026", "olympic_golds": 3, "total_olympic_medals": 3, "world_records_set": 3, "world_championships_gold": 2, "career_years": 15, "legacy_score": 98, "notes": "23.56m SP WR; three-time Olympic champ."}},
+{"name": "Saïd Aouita", "attributes": {"nationality": "Morocco", "event": "1500m-5000m", "era": "1983-1993", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 4, "world_championships_gold": 1, "career_years": 10, "legacy_score": 92, "notes": "LA 1984 5000m champion; first man under 13 minutes."}},
+{"name": "Saif Saaeed Shaheen", "attributes": {"nationality": "Qatar", "event": "3000m steeplechase", "era": "1998-2008", "olympic_golds": 0, "total_olympic_medals": 0, "world_records_set": 2, "world_championships_gold": 2, "career_years": 10, "legacy_score": 88, "notes": "7:53.63 steeplechase WR (2004)."}},
+{"name": "Sally Pearson", "attributes": {"nationality": "Australia", "event": "100m hurdles", "era": "2003-2019", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 2, "career_years": 16, "legacy_score": 88, "notes": "London 2012 100mH champion."}},
+{"name": "Sam Kendricks", "attributes": {"nationality": "USA", "event": "Pole vault", "era": "2014-2026", "olympic_golds": 0, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 2, "career_years": 12, "legacy_score": 90, "notes": "Two-time world PV champion."}},
+{"name": "Sandra Perković", "attributes": {"nationality": "Croatia", "event": "Discus", "era": "2006-2026", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 2, "career_years": 20, "legacy_score": 92, "notes": "Two Olympic DT golds."}},
+{"name": "Sanya Richards-Ross", "attributes": {"nationality": "USA", "event": "400m", "era": "2002-2016", "olympic_golds": 4, "total_olympic_medals": 5, "world_records_set": 0, "world_championships_gold": 1, "career_years": 14, "legacy_score": 90, "notes": "London 2012 400m gold."}},
+{"name": "Sebastian Coe", "attributes": {"nationality": "Great Britain", "event": "800m / 1500m", "era": "1976-1989", "olympic_golds": 2, "total_olympic_medals": 4, "world_records_set": 11, "world_championships_gold": 0, "career_years": 13, "legacy_score": 96, "notes": "Back-to-back Olympic 1500m titles; multiple world records."}},
+{"name": "Sergey Bubka", "attributes": {"nationality": "Ukraine", "event": "Pole vault", "era": "1981-2001", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 35, "world_championships_gold": 6, "career_years": 20, "legacy_score": 99, "notes": "35 world records; six-time world champion."}},
+{"name": "Sergey Litvinov", "attributes": {"nationality": "Soviet Union", "event": "Hammer", "era": "1980-1992", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 3, "world_championships_gold": 1, "career_years": 12, "legacy_score": 88, "notes": "Seoul 1988 HT champion."}},
+{"name": "Sha'Carri Richardson", "attributes": {"nationality": "USA", "event": "100m / 200m", "era": "2019-2026", "olympic_golds": 1, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 2, "career_years": 7, "legacy_score": 90, "notes": "2023 world 100m champion; Paris 2024 relay gold."}},
+{"name": "Shelly-Ann Fraser-Pryce", "attributes": {"nationality": "Jamaica", "event": "100m / 200m", "era": "2007-2024", "olympic_golds": 3, "total_olympic_medals": 8, "world_records_set": 0, "world_championships_gold": 10, "career_years": 17, "legacy_score": 97, "notes": "Olympic 100m champion 2008 & 2012; five-time world 100m champion."}},
+{"name": "Sifan Hassan", "attributes": {"nationality": "Netherlands", "event": "1500m-Marathon", "era": "2013-2026", "olympic_golds": 3, "total_olympic_medals": 6, "world_records_set": 3, "world_championships_gold": 4, "career_years": 13, "legacy_score": 96, "notes": "Tokyo 5000/10000m golds; Paris 2024 marathon gold."}},
+{"name": "Soufiane El Bakkali", "attributes": {"nationality": "Morocco", "event": "3000m steeplechase", "era": "2014-2026", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 2, "career_years": 12, "legacy_score": 92, "notes": "Back-to-back Olympic steeplechase titles."}},
+{"name": "Stacy Dragila", "attributes": {"nationality": "USA", "event": "Pole vault", "era": "1996-2008", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 9, "world_championships_gold": 2, "career_years": 12, "legacy_score": 88, "notes": "First Olympic women's PV champion (Sydney 2000)."}},
+{"name": "Stefka Kostadinova", "attributes": {"nationality": "Bulgaria", "event": "High jump", "era": "1984-1999", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 2, "career_years": 15, "legacy_score": 95, "notes": "2.09m HJ WR (1987) still stands."}},
+{"name": "Steve Backley", "attributes": {"nationality": "Great Britain", "event": "Javelin", "era": "1989-2004", "olympic_golds": 0, "total_olympic_medals": 3, "world_records_set": 4, "world_championships_gold": 0, "career_years": 15, "legacy_score": 88, "notes": "Set JT WR three times."}},
+{"name": "Steve Cram", "attributes": {"nationality": "Great Britain", "event": "1500m / Mile", "era": "1979-1994", "olympic_golds": 0, "total_olympic_medals": 1, "world_records_set": 3, "world_championships_gold": 1, "career_years": 15, "legacy_score": 87, "notes": "1985 mile WR; world 1500m champion."}},
+{"name": "Steve Ovett", "attributes": {"nationality": "Great Britain", "event": "800m / 1500m / Mile", "era": "1972-1986", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 5, "world_championships_gold": 0, "career_years": 14, "legacy_score": 90, "notes": "Moscow 1980 800m champion."}},
+{"name": "Svetlana Masterkova", "attributes": {"nationality": "Russia", "event": "800m / 1500m", "era": "1988-2000", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 2, "world_championships_gold": 0, "career_years": 12, "legacy_score": 88, "notes": "Atlanta 1996 800m/1500m double."}},
+{"name": "Sydney McLaughlin-Levrone", "attributes": {"nationality": "USA", "event": "400m hurdles / 400m", "era": "2014-2026", "olympic_golds": 3, "total_olympic_medals": 4, "world_records_set": 6, "world_championships_gold": 1, "career_years": 12, "legacy_score": 98, "notes": "50.37 400mH WR; Paris 2024 double gold."}},
+{"name": "Tara Davis-Woodhall", "attributes": {"nationality": "USA", "event": "Long jump", "era": "2017-2026", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 0, "world_championships_gold": 1, "career_years": 9, "legacy_score": 88, "notes": "Paris 2024 LJ champion."}},
+{"name": "Tatyana Kazankina", "attributes": {"nationality": "Soviet Union", "event": "800m / 1500m", "era": "1972-1984", "olympic_golds": 3, "total_olympic_medals": 3, "world_records_set": 5, "world_championships_gold": 0, "career_years": 12, "legacy_score": 92, "notes": "Three Olympic golds across 800/1500m."}},
+{"name": "Tatyana Lebedeva", "attributes": {"nationality": "Russia", "event": "LJ / TJ", "era": "1995-2013", "olympic_golds": 1, "total_olympic_medals": 4, "world_records_set": 0, "world_championships_gold": 4, "career_years": 18, "legacy_score": 90, "notes": "Athens 2004 LJ champion; multi-event star."}},
+{"name": "Tianna Bartoletta", "attributes": {"nationality": "USA", "event": "LJ / 100m", "era": "2002-2020", "olympic_golds": 3, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 2, "career_years": 18, "legacy_score": 90, "notes": "Two-time Olympic LJ champion."}},
+{"name": "Tigist Assefa", "attributes": {"nationality": "Ethiopia", "event": "Marathon", "era": "2014-2026", "olympic_golds": 0, "total_olympic_medals": 1, "world_records_set": 1, "world_championships_gold": 0, "career_years": 12, "legacy_score": 88, "notes": "Set marathon WR in Berlin 2023 (2:11:53)."}},
+{"name": "Tirunesh Dibaba", "attributes": {"nationality": "Ethiopia", "event": "5000m / 10000m", "era": "2003-2017", "olympic_golds": 3, "total_olympic_medals": 5, "world_records_set": 1, "world_championships_gold": 5, "career_years": 14, "legacy_score": 95, "notes": "Triple Olympic gold (5k x1, 10k x2)."}},
+{"name": "Tobi Amusan", "attributes": {"nationality": "Nigeria", "event": "100m hurdles", "era": "2013-2026", "olympic_golds": 0, "total_olympic_medals": 0, "world_records_set": 1, "world_championships_gold": 1, "career_years": 13, "legacy_score": 88, "notes": "12.12 100mH WR (Eugene 2022)."}},
+{"name": "Tomáš Dvořák", "attributes": {"nationality": "Czech Republic", "event": "Decathlon", "era": "1989-2008", "olympic_golds": 0, "total_olympic_medals": 1, "world_records_set": 1, "world_championships_gold": 3, "career_years": 19, "legacy_score": 88, "notes": "Three-time world decathlon champion."}},
+{"name": "Tomas Walsh", "attributes": {"nationality": "New Zealand", "event": "Shot put", "era": "2010-2026", "olympic_golds": 0, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 1, "career_years": 16, "legacy_score": 88, "notes": "2017 world SP champion."}},
+{"name": "Tomasz Majewski", "attributes": {"nationality": "Poland", "event": "Shot put", "era": "2000-2016", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 0, "career_years": 16, "legacy_score": 88, "notes": "Back-to-back Olympic SP gold (2008, 2012)."}},
+{"name": "Tommie Smith", "attributes": {"nationality": "USA", "event": "200m", "era": "1964-1968", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 11, "world_championships_gold": 0, "career_years": 5, "legacy_score": 88, "notes": "Mexico 1968 200m gold; iconic raised-fist podium."}},
+{"name": "Ulf Timmermann", "attributes": {"nationality": "East Germany", "event": "Shot put", "era": "1980-1996", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 3, "world_championships_gold": 0, "career_years": 16, "legacy_score": 88, "notes": "Seoul 1988 SP champion."}},
+{"name": "Usain Bolt", "attributes": {"nationality": "Jamaica", "event": "100m / 200m", "era": "2002-2017", "olympic_golds": 8, "total_olympic_medals": 8, "world_records_set": 3, "world_championships_gold": 11, "career_years": 15, "legacy_score": 100, "notes": "Triple-triple Olympic champion; 9.58 100m & 19.19 200m world records."}},
+{"name": "Valarie Allman", "attributes": {"nationality": "USA", "event": "Discus", "era": "2014-2026", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 0, "world_championships_gold": 1, "career_years": 12, "legacy_score": 90, "notes": "Two Olympic DT golds (Tokyo + Paris)."}},
+{"name": "Valerie Adams", "attributes": {"nationality": "New Zealand", "event": "Shot put", "era": "2001-2022", "olympic_golds": 2, "total_olympic_medals": 4, "world_records_set": 0, "world_championships_gold": 4, "career_years": 21, "legacy_score": 96, "notes": "Two Olympic golds; four-time world SP champion."}},
+{"name": "Valerie Brisco-Hooks", "attributes": {"nationality": "USA", "event": "200m / 400m", "era": "1979-1988", "olympic_golds": 3, "total_olympic_medals": 4, "world_records_set": 0, "world_championships_gold": 0, "career_years": 9, "legacy_score": 86, "notes": "Three golds at LA 1984."}},
+{"name": "Valeriy Borzov", "attributes": {"nationality": "Soviet Union", "event": "100m / 200m", "era": "1969-1980", "olympic_golds": 2, "total_olympic_medals": 4, "world_records_set": 0, "world_championships_gold": 0, "career_years": 11, "legacy_score": 86, "notes": "Munich 1972 sprint double."}},
+{"name": "Veronica Campbell-Brown", "attributes": {"nationality": "Jamaica", "event": "100m / 200m", "era": "2000-2017", "olympic_golds": 3, "total_olympic_medals": 8, "world_records_set": 0, "world_championships_gold": 3, "career_years": 17, "legacy_score": 92, "notes": "Two-time Olympic 200m champion (2004, 2008)."}},
+{"name": "Virgilijus Alekna", "attributes": {"nationality": "Lithuania", "event": "Discus", "era": "1990-2014", "olympic_golds": 2, "total_olympic_medals": 3, "world_records_set": 0, "world_championships_gold": 2, "career_years": 24, "legacy_score": 92, "notes": "Two Olympic DT golds (2000, 2004)."}},
+{"name": "Vivian Cheruiyot", "attributes": {"nationality": "Kenya", "event": "5000m / 10000m / Marathon", "era": "2000-2020", "olympic_golds": 1, "total_olympic_medals": 4, "world_records_set": 0, "world_championships_gold": 4, "career_years": 20, "legacy_score": 90, "notes": "Rio 2016 5000m champion."}},
+{"name": "Vladimir Kuts", "attributes": {"nationality": "Soviet Union", "event": "5000m / 10000m", "era": "1953-1959", "olympic_golds": 2, "total_olympic_medals": 2, "world_records_set": 5, "world_championships_gold": 0, "career_years": 6, "legacy_score": 90, "notes": "Melbourne 1956 5k/10k double."}},
+{"name": "Wang Junxia", "attributes": {"nationality": "China", "event": "1500m / 3000m / 10000m", "era": "1991-1997", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 4, "world_championships_gold": 0, "career_years": 6, "legacy_score": 88, "notes": "10000m WR 29:31 (1993) stood 23 years."}},
+{"name": "Wayde van Niekerk", "attributes": {"nationality": "South Africa", "event": "400m", "era": "2012-2024", "olympic_golds": 1, "total_olympic_medals": 1, "world_records_set": 1, "world_championships_gold": 2, "career_years": 12, "legacy_score": 90, "notes": "43.03 400m WR at Rio 2016."}},
+{"name": "Wilma Rudolph", "attributes": {"nationality": "USA", "event": "100m / 200m", "era": "1956-1962", "olympic_golds": 3, "total_olympic_medals": 4, "world_records_set": 1, "world_championships_gold": 0, "career_years": 6, "legacy_score": 95, "notes": "Rome 1960 triple sprint champion."}},
+{"name": "Wilson Kipketer", "attributes": {"nationality": "Denmark", "event": "800m", "era": "1990-2005", "olympic_golds": 0, "total_olympic_medals": 1, "world_records_set": 3, "world_championships_gold": 3, "career_years": 15, "legacy_score": 92, "notes": "1:41.11 WR stood 13 years."}},
+{"name": "Yaroslava Mahuchikh", "attributes": {"nationality": "Ukraine", "event": "High jump", "era": "2017-2026", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 1, "world_championships_gold": 1, "career_years": 9, "legacy_score": 92, "notes": "Paris 2024 champion; 2.10m HJ WR (2024)."}},
+{"name": "Yelena Isinbayeva", "attributes": {"nationality": "Russia", "event": "Pole vault", "era": "1998-2016", "olympic_golds": 2, "total_olympic_medals": 3, "world_records_set": 28, "world_championships_gold": 3, "career_years": 18, "legacy_score": 96, "notes": "28 WRs; three-time world champion; 5.06m PB."}},
+{"name": "Yordanka Donkova", "attributes": {"nationality": "Bulgaria", "event": "100m hurdles", "era": "1981-1992", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 4, "world_championships_gold": 0, "career_years": 11, "legacy_score": 88, "notes": "12.21 100mH WR (1988) stood 28 years."}},
+{"name": "Yulimar Rojas", "attributes": {"nationality": "Venezuela", "event": "Triple jump", "era": "2014-2026", "olympic_golds": 1, "total_olympic_medals": 2, "world_records_set": 2, "world_championships_gold": 3, "career_years": 12, "legacy_score": 95, "notes": "15.74m TJ WR; three-time world champion."}},
+{"name": "Yuriy Sedykh", "attributes": {"nationality": "Soviet Union", "event": "Hammer", "era": "1976-1991", "olympic_golds": 2, "total_olympic_medals": 3, "world_records_set": 6, "world_championships_gold": 1, "career_years": 15, "legacy_score": 96, "notes": "86.74m HT WR (1986) still stands."}},
+  ];
+
+const std = [
+{"name": "Athens Olympic Stadium (Spyros Louis)", "attributes": {"city": "Athens", "country": "Greece", "year_hosted": 2004, "capacity": 75000, "year_hosted": 2004, "world_records_set": 1, "olympic_athletics_events_held": 46, "stadium_age_years": 22, "legacy_score": 88, "notes": "Calatrava-arched roof; the Games returned to their birthplace."}},
+{"name": "Beijing National Stadium (Bird's Nest)", "attributes": {"city": "Beijing", "country": "China", "year_hosted": 2008, "capacity": 91000, "year_hosted": 2008, "world_records_set": 5, "olympic_athletics_events_held": 47, "stadium_age_years": 0, "legacy_score": 98, "notes": "Bolt's 9.69/19.30 explosion; one of the most architecturally iconic stadiums ever built."}},
+{"name": "Centennial Olympic Stadium", "attributes": {"city": "Atlanta", "country": "USA", "year_hosted": 1996, "capacity": 85000, "year_hosted": 1996, "world_records_set": 2, "olympic_athletics_events_held": 44, "stadium_age_years": 0, "legacy_score": 88, "notes": "100th anniversary Games; Michael Johnson's 19.32 200m and gold-shoes 200/400 double."}},
+{"name": "Croix-Catelan / Bois de Boulogne", "attributes": {"city": "Paris", "country": "France", "year_hosted": 1900, "capacity": 5000, "year_hosted": 1900, "world_records_set": 0, "olympic_athletics_events_held": 23, "stadium_age_years": 0, "legacy_score": 50, "notes": "Athletics held on an uneven grass track in a park; the most makeshift Olympic 'stadium' in history."}},
+{"name": "Estadi Olimpic Lluis Companys", "attributes": {"city": "Barcelona", "country": "Spain", "year_hosted": 1992, "capacity": 56000, "year_hosted": 1992, "world_records_set": 2, "olympic_athletics_events_held": 43, "stadium_age_years": 63, "legacy_score": 90, "notes": "Mountain-perched stadium overlooking the city; full participation after Cold War."}},
+{"name": "Estadio Olimpico Nilton Santos", "attributes": {"city": "Rio de Janeiro", "country": "Brazil", "year_hosted": 2016, "capacity": 60000, "year_hosted": 2016, "world_records_set": 1, "olympic_athletics_events_held": 47, "stadium_age_years": 9, "legacy_score": 90, "notes": "Bolt's farewell triple-triple; Elaine Thompson's sprint double; Almaz Ayana's 10000m WR."}},
+{"name": "Estadio Olimpico Universitario", "attributes": {"city": "Mexico City", "country": "Mexico", "year_hosted": 1968, "capacity": 80000, "year_hosted": 1968, "world_records_set": 8, "olympic_athletics_events_held": 36, "stadium_age_years": 16, "legacy_score": 96, "notes": "Altitude games: Beamon's 8.90m long jump, Hines' first sub-10, Smith-Carlos podium."}},
+{"name": "Francis Field", "attributes": {"city": "St. Louis", "country": "USA", "year_hosted": 1904, "capacity": 19000, "year_hosted": 1904, "world_records_set": 0, "olympic_athletics_events_held": 25, "stadium_age_years": 2, "legacy_score": 55, "notes": "Washington University's football field hosted a sparse, poorly attended athletics meet."}},
+{"name": "Helsinki Olympic Stadium", "attributes": {"city": "Helsinki", "country": "Finland", "year_hosted": 1952, "capacity": 70000, "year_hosted": 1952, "world_records_set": 3, "olympic_athletics_events_held": 33, "stadium_age_years": 14, "legacy_score": 92, "notes": "Tower-topped Functionalist venue; site of Emil Zatopek's 5k/10k/marathon treble."}},
+{"name": "Japan National Stadium", "attributes": {"city": "Tokyo", "country": "Japan", "year_hosted": 2020, "capacity": 68000, "year_hosted": 2020, "world_records_set": 3, "olympic_athletics_events_held": 48, "stadium_age_years": 1, "legacy_score": 90, "notes": "COVID-era Games with no spectators; Warholm/Benjamin/dos Santos 400mH masterpiece."}},
+{"name": "London Olympic Stadium", "attributes": {"city": "London", "country": "Great Britain", "year_hosted": 2012, "capacity": 80000, "year_hosted": 2012, "world_records_set": 1, "olympic_athletics_events_held": 47, "stadium_age_years": 0, "legacy_score": 96, "notes": "Rudisha's 1:40.91 800m WR; Bolt's second sprint double; 'Super Saturday' for Team GB."}},
+{"name": "Los Angeles Memorial Coliseum", "attributes": {"city": "Los Angeles", "country": "USA", "year_hosted": 1984, "capacity": 92000, "year_hosted": 1984, "world_records_set": 2, "olympic_athletics_events_held": 41, "stadium_age_years": 61, "legacy_score": 92, "notes": "Carl Lewis matched Jesse Owens' four golds; Soviet boycott; the Games turned commercial."}},
+{"name": "Luzhniki Stadium", "attributes": {"city": "Moscow", "country": "Soviet Union", "year_hosted": 1980, "capacity": 103000, "year_hosted": 1980, "world_records_set": 3, "olympic_athletics_events_held": 38, "stadium_age_years": 24, "legacy_score": 76, "notes": "US-boycotted Games; Coe vs Ovett 800/1500m and Pietro Mennea's 200m gold."}},
+{"name": "Melbourne Cricket Ground", "attributes": {"city": "Melbourne", "country": "Australia", "year_hosted": 1956, "capacity": 103000, "year_hosted": 1956, "world_records_set": 4, "olympic_athletics_events_held": 33, "stadium_age_years": 103, "legacy_score": 86, "notes": "First Olympics outside Europe and North America; cricket's cathedral lent for athletics."}},
+{"name": "National Stadium (old)", "attributes": {"city": "Tokyo", "country": "Japan", "year_hosted": 1964, "capacity": 71600, "year_hosted": 1964, "world_records_set": 6, "olympic_athletics_events_held": 36, "stadium_age_years": 6, "legacy_score": 90, "notes": "First Asian Olympics; Bob Hayes' 100m demolition and Peter Snell's 800/1500 double."}},
+{"name": "Olympiastadion Munchen", "attributes": {"city": "Munich", "country": "West Germany", "year_hosted": 1972, "capacity": 80000, "year_hosted": 1972, "world_records_set": 6, "olympic_athletics_events_held": 38, "stadium_age_years": 0, "legacy_score": 90, "notes": "Frei Otto's tented roof; Valeri Borzov's sprint double and Lasse Viren's distance era begins."}},
+{"name": "Olympiastadion", "attributes": {"city": "Berlin", "country": "Germany", "year_hosted": 1936, "capacity": 110000, "year_hosted": 1936, "world_records_set": 5, "olympic_athletics_events_held": 29, "stadium_age_years": 0, "legacy_score": 95, "notes": "Stage of Jesse Owens' four golds; an architectural monument with a deeply contested legacy."}},
+{"name": "Olympisch Stadion", "attributes": {"city": "Amsterdam", "country": "Netherlands", "year_hosted": 1928, "capacity": 31600, "year_hosted": 1928, "world_records_set": 5, "olympic_athletics_events_held": 27, "stadium_age_years": 0, "legacy_score": 80, "notes": "First Games with women's athletics; designed by Jan Wils, a brick masterpiece."}},
+{"name": "Olympisch Stadion", "attributes": {"city": "Antwerp", "country": "Belgium", "year_hosted": 1920, "capacity": 30000, "year_hosted": 1920, "world_records_set": 2, "olympic_athletics_events_held": 29, "stadium_age_years": 0, "legacy_score": 70, "notes": "First post-WWI Games; Paavo Nurmi's Olympic debut; the Olympic flag premiered here."}},
+{"name": "Panathenaic Stadium", "attributes": {"city": "Athens", "country": "Greece", "year_hosted": 1896, "capacity": 50000, "year_hosted": 1896, "world_records_set": 0, "olympic_athletics_events_held": 12, "stadium_age_years": 0, "legacy_score": 95, "notes": "Marble-clad ancient venue refurbished for the first modern Olympics; first home of athletics in the modern era."}},
+{"name": "Seoul Olympic Stadium", "attributes": {"city": "Seoul", "country": "South Korea", "year_hosted": 1988, "capacity": 100000, "year_hosted": 1988, "world_records_set": 4, "olympic_athletics_events_held": 42, "stadium_age_years": 4, "legacy_score": 92, "notes": "Florence Griffith-Joyner's still-standing 100/200m world records; Ben Johnson scandal."}},
+{"name": "Stade de France", "attributes": {"city": "Paris", "country": "France", "year_hosted": 2024, "capacity": 80000, "year_hosted": 2024, "world_records_set": 2, "olympic_athletics_events_held": 48, "stadium_age_years": 26, "legacy_score": 92, "notes": "Purple track sensation; Tebogo's 200m, Sydney McLaughlin's 400mH dominance, Duplantis 6.25m."}},
+{"name": "Stade Olympique de Colombes", "attributes": {"city": "Paris", "country": "France", "year_hosted": 1924, "capacity": 60000, "year_hosted": 1924, "world_records_set": 5, "olympic_athletics_events_held": 27, "stadium_age_years": 17, "legacy_score": 84, "notes": "Setting of 'Chariots of Fire'; Nurmi won five golds in six days."}},
+{"name": "Stade Olympique", "attributes": {"city": "Montreal", "country": "Canada", "year_hosted": 1976, "capacity": 70000, "year_hosted": 1976, "world_records_set": 4, "olympic_athletics_events_held": 37, "stadium_age_years": 0, "legacy_score": 84, "notes": "Tower-and-mast venue; Alberto Juantorena's 400/800 double and Viren's repeat double."}},
+{"name": "Stadio Olimpico", "attributes": {"city": "Rome", "country": "Italy", "year_hosted": 1960, "capacity": 65000, "year_hosted": 1960, "world_records_set": 5, "olympic_athletics_events_held": 34, "stadium_age_years": 23, "legacy_score": 90, "notes": "Abebe Bikila ran the marathon barefoot to gold; Wilma Rudolph's triple."}},
+{"name": "Stadium Australia", "attributes": {"city": "Sydney", "country": "Australia", "year_hosted": 2000, "capacity": 110000, "year_hosted": 2000, "world_records_set": 3, "olympic_athletics_events_held": 46, "stadium_age_years": 1, "legacy_score": 94, "notes": "Cathy Freeman's 400m gold under home pressure; Maurice Greene's 100m crown."}},
+{"name": "Stockholms Olympiastadion", "attributes": {"city": "Stockholm", "country": "Sweden", "year_hosted": 1912, "capacity": 22000, "year_hosted": 1912, "world_records_set": 9, "olympic_athletics_events_held": 30, "stadium_age_years": 0, "legacy_score": 90, "notes": "Brick-and-tower stadium of the 'Jim Thorpe Games'; multiple WRs and the first electric timing."}},
+{"name": "Wembley Stadium", "attributes": {"city": "London", "country": "Great Britain", "year_hosted": 1948, "capacity": 100000, "year_hosted": 1948, "world_records_set": 1, "olympic_athletics_events_held": 33, "stadium_age_years": 25, "legacy_score": 84, "notes": "Austerity Games staged in a football stadium with a temporary cinder track; Blankers-Koen's four golds."}},
+{"name": "White City Stadium", "attributes": {"city": "London", "country": "Great Britain", "year_hosted": 1908, "capacity": 68000, "year_hosted": 1908, "world_records_set": 0, "olympic_athletics_events_held": 26, "stadium_age_years": 0, "legacy_score": 78, "notes": "First purpose-built Olympic stadium; introduced the standard 365-yard track and the 26.2-mile marathon."}},
+  ];
+  
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('athCheckbox').checked) selectedCards.push(...ath);
+    if (document.getElementById('stdCheckbox').checked) selectedCards.push(...std);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomRule = deck[Math.floor(Math.random() * deck.length)];
+  
+  // Substitui as quebras de linha por <br> para o HTML
+  const formattedRule = randomRule.replace(/\n/g, '<br>');
+
+  // Exibe a regra com as quebras de linha no HTML
+  document.getElementById(resultId).innerHTML = formattedRule;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+		body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

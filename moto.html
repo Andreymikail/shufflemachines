@@ -1,0 +1,281 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Moto</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="mtrcyCheckbox"> Motorcycle</label><br>
+    <label><input type="checkbox" id="mtcrssCheckbox"> Motocross</label><br>
+    <label><input type="checkbox" id="fmxCheckbox"> FMX</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Slipstream: Add +10 to any single numeric attribute on your current rider card for this round only.",
+"Holeshot: You choose which attribute to compare this round, regardless of whose turn it is to call.",
+"Backflip: If your rider card has world_firsts ≥ 1, add +15 to legacy_score for this round only.",
+"Block Pass: Force your opponent to use the attribute with their lowest value this round, chosen by you after seeing their card.",
+"Rain Gamble: Before the round resolves, declare 'all in'. If you win the round, take 2 cards from your opponent's won pile in addition to the normal prize. If you lose, give 2 cards from your own won pile to your opponent.",
+"Tire Strategy: After the attribute for this round is called, you may switch it to any other attribute of your choice before values are revealed.",
+"Rhythm Section: Link this round and the next round together. The player who wins both rounds takes all four cards. If each player wins one round, both keep their own cards.",
+"Superman Seat Grab: If you win this round, take 1 extra card from your opponent's hand (not their won pile) in addition to the normal prize.",
+"Scrub: Add +10 to career_wins or major_race_wins (whichever applies to your deck) on your current card for this round.",
+"Crowd Favorite: If you lose this round, you keep your rider card instead of giving it to your opponent. Discard it face-down instead. The opponent still wins the round.",
+"Safety Car: Declare a neutral round: both players keep their current cards and return them to the bottom of their decks. No cards change hands. The same player calls the attribute next round.",
+"Qualifying Lap: Before this round, look at your opponent's top card without showing yours. You then choose which attribute to compare.",
+"Whip: Both players discard their current top cards face-down and draw new ones for this round. The attribute in play remains the same.",
+"Tabletop: Cancel this round entirely. Both players keep their cards. The opponent calls the attribute next round as if they had won.",
+"Mechanical Failure: Your opponent must skip their next turn: they reveal their card but cannot call an attribute. You call instead, and if you win, you take both cards normally.",
+"Last Corner Overtake: After both attribute values are revealed but before the winner is decided, you may reverse the result: the lower value wins this round instead of the higher.",
+"Nitro Boost: Add +20 to any single attribute on your current rider card for this round. Cannot be combined with other Boost cards in the same round.",
+"Factory Upgrade: Choose one attribute. For the rest of the game, add +5 to that attribute on every rider card you play. Place this card face-up as a reminder.",
+"Rut Master: For the next 3 rounds, you always choose which attribute to compare, regardless of who wins each round.",
+"Double Backflip: Automatically win this round regardless of attribute values. Take both cards normally. Cannot be countered by Shield cards.",
+"Crash and Burn: Declare before the round: if you win, take 3 extra cards from your opponent's won pile. If you lose, give 3 cards from your won pile to your opponent AND your rider card.",
+"Pit Stop: Draw 3 extra cards from the deck into your hand. You may look at them and choose to place them anywhere in your deck order.",
+"Head-to-Head: Both players compare ALL attributes on their current cards simultaneously. The player who wins the most individual attribute comparisons takes both cards. Ties on individual attributes are ignored.",
+"Electric Doom: If your current rider card has world_firsts ≥ 1, that value counts as tripled for this round only. If world_firsts is 0, this card has no effect and is discarded.",
+"Wild Card: Copy the effect of any action card that was played in the previous 3 rounds (by either player). Declare which card you are copying before resolving the effect.",
+"Shield Wall: Negate the effect of any single action card played by your opponent this round or next round. The opponent's action card is discarded without effect. You may hold this card and play it in response to an opponent's action.",
+"Perfect Season: Add +25 to legacy_score on your current rider card for this round. If your rider already has a legacy_score of 90 or higher, add +30 instead.",
+"Legend's Ghost: Discard your current rider card and replace it with any card from your won pile for this round only. After the round resolves, return the borrowed card to your won pile.",
+"Triple Backflip: Automatically win this round AND the next round, taking all cards from both rounds. Neither win can be cancelled by Shield cards or other action cards.",
+"Nitro Circus: LEGENDARY — Only one copy exists in the full combined deck. When played: (1) You immediately win the current round. (2) Draw 3 cards from the deck. (3) For the next 5 rounds, you always choose the attribute regardless of who wins each round. (4) All opponent action cards played during those 5 rounds have no effect. This card cannot be negated by any other card."
+
+];
+  
+const mtrcy = [
+    {"name": "Alex Crivillé", "attributes": {"Category": "Motorcycle", "nickname": "El Niño de Seva", "nationality": "Spain", "era": "1989–2000", "primary class": "500cc GP", "world titles": 1, "premier class wins": 15, "career wins": 18, "podiums": 37, "pole positions": 7, "legacy score": 73, "fun fact": "Spain's first ever 500cc world champion in 1999, Crivillé paved the way for the extraordinary Spanish dominance that followed in MotoGP."}},
+{"name": "Angel Nieto", "attributes": {"Category": "Motorcycle", "nickname": "El 12+1", "nationality": "Spain", "era": "1964–1986", "primary class": "125cc GP", "world titles": 13, "premier class wins": 90, "career wins": 90, "podiums": 139, "pole positions": 71, "legacy score": 95, "fun fact": "Superstitiously refused to say '13', calling himself 12+1. Won 13 world titles in the 50cc and 125cc classes."}},
+{"name": "Anton Mang", "attributes": {"Category": "Motorcycle", "nickname": "König Anton", "nationality": "Germany", "era": "1976–1988", "primary class": "250cc GP", "world titles": 5, "premier class wins": 42, "career wins": 42, "podiums": 68, "pole positions": 38, "legacy score": 79, "fun fact": "Germany's most successful Grand Prix motorcycle racer, Mang dominated the 250cc and 350cc classes in the late 1970s and 1980s."}},
+{"name": "Barry Sheene", "attributes": {"Category": "Motorcycle", "nickname": "Bazza", "nationality": "United Kingdom", "era": "1971–1984", "primary class": "500cc GP", "world titles": 2, "premier class wins": 23, "career wins": 23, "podiums": 52, "pole positions": 28, "legacy score": 84, "fun fact": "Survived a 270 km/h crash at Daytona in 1975 and was back racing within weeks. Britain's first true motorcycle racing superstar and pop culture icon."}},
+{"name": "Carl Fogarty", "attributes": {"Category": "Motorcycle", "nickname": "Foggy", "nationality": "United Kingdom", "era": "1988–2000", "primary class": "World Superbike", "world titles": 4, "premier class wins": 59, "career wins": 59, "podiums": 109, "pole positions": 44, "legacy score": 85, "fun fact": "The king of World Superbikes, Fogarty won four WSBK titles and turned Ducati into a cultural icon, attracting mass audiences never seen before in the series."}},
+{"name": "Carlo Ubbiali", "attributes": {"Category": "Motorcycle", "nickname": "Il Ragno", "nationality": "Italy", "era": "1949–1960", "primary class": "125cc GP", "world titles": 9, "premier class wins": 39, "career wins": 39, "podiums": 57, "pole positions": 35, "legacy score": 87, "fun fact": "Dominated the small-displacement classes in the 1950s, winning nine world titles in 125cc and 250cc for MV Agusta."}},
+{"name": "Casey Stoner", "attributes": {"Category": "Motorcycle", "nickname": "The Tornado", "nationality": "Australia", "era": "2006–2012", "primary class": "MotoGP", "world titles": 2, "premier class wins": 45, "career wins": 45, "podiums": 82, "pole positions": 58, "legacy score": 88, "fun fact": "Stoner was the only rider to tame the notoriously difficult Ducati Desmosedici, winning the 2007 title in a style others described as impossible."}},
+{"name": "Dani Pedrosa", "attributes": {"Category": "Motorcycle", "nickname": "The Little Samurai", "nationality": "Spain", "era": "2001–2018", "primary class": "MotoGP", "world titles": 3, "premier class wins": 54, "career wins": 57, "podiums": 112, "pole positions": 29, "legacy score": 86, "fun fact": "Never won the MotoGP title despite 54 premier class wins — more than many champions — making him the greatest rider never to take the top prize."}},
+{"name": "Eddie Lawson", "attributes": {"Category": "Motorcycle", "nickname": "Steady Eddie", "nationality": "USA", "era": "1983–1992", "primary class": "500cc GP", "world titles": 4, "premier class wins": 31, "career wins": 31, "podiums": 58, "pole positions": 31, "legacy score": 90, "fun fact": "The only rider to win the 500cc world title on two different manufacturers (Yamaha and Honda), Lawson was renowned for metronomic consistency."}},
+{"name": "Freddie Spencer", "attributes": {"Category": "Motorcycle", "nickname": "Fast Freddie", "nationality": "USA", "era": "1982–1993", "primary class": "500cc GP", "world titles": 2, "premier class wins": 20, "career wins": 27, "podiums": 40, "pole positions": 19, "legacy score": 83, "fun fact": "In 1985, Spencer became the only rider in history to win both the 250cc and 500cc world championships in the same season — a feat never equalled."}},
+{"name": "Geoff Duke", "attributes": {"Category": "Motorcycle", "nickname": "The Duke", "nationality": "United Kingdom", "era": "1950–1959", "primary class": "500cc GP", "world titles": 6, "premier class wins": 28, "career wins": 33, "podiums": 45, "pole positions": 25, "legacy score": 84, "fun fact": "The first superstar of motorcycle racing, Duke introduced the one-piece leather suit and was so fast that the FIM suspended him for supporting a rider strike in 1955."}},
+{"name": "Giacomo Agostini", "attributes": {"Category": "Motorcycle", "nickname": "Ago", "nationality": "Italy", "era": "1965–1977", "primary class": "500cc GP", "world titles": 15, "premier class wins": 68, "career wins": 122, "podiums": 159, "pole positions": 117, "legacy score": 100, "fun fact": "The most decorated motorcycle racer in history, winning 15 world titles across 350cc and 500cc — a record that still stands."}},
+{"name": "Hugh Anderson", "attributes": {"Category": "Motorcycle", "nickname": "The Kiwi", "nationality": "New Zealand", "era": "1962–1967", "primary class": "125cc GP", "world titles": 4, "premier class wins": 25, "career wins": 25, "podiums": 38, "pole positions": 20, "legacy score": 73, "fun fact": "The first New Zealander to win a motorcycle world championship, Anderson won four titles for Suzuki in the 50cc and 125cc classes."}},
+{"name": "Jim Redman", "attributes": {"Category": "Motorcycle", "nickname": "Steady Jim", "nationality": "Zimbabwe", "era": "1961–1966", "primary class": "250cc GP", "world titles": 6, "premier class wins": 45, "career wins": 45, "podiums": 58, "pole positions": 36, "legacy score": 82, "fun fact": "Honda's lead rider in the 1960s, Redman won six world titles in 250cc and 350cc and was instrumental in establishing Japan's dominance in Grand Prix racing."}},
+{"name": "John Surtees", "attributes": {"Category": "Motorcycle", "nickname": "Il Grande John", "nationality": "United Kingdom", "era": "1955–1960", "primary class": "500cc GP", "world titles": 4, "premier class wins": 22, "career wins": 38, "podiums": 48, "pole positions": 24, "legacy score": 83, "fun fact": "The only person in history to win world championships on both two and four wheels, taking four motorcycle titles before becoming Formula 1 world champion in 1964."}},
+{"name": "Jorge Lorenzo", "attributes": {"Category": "Motorcycle", "nickname": "The Spartan", "nationality": "Spain", "era": "2002–2019", "primary class": "MotoGP", "world titles": 5, "premier class wins": 47, "career wins": 68, "podiums": 114, "pole positions": 68, "legacy score": 88, "fun fact": "A master of smooth, precise riding, Lorenzo won three MotoGP titles and was the only rider to beat Rossi consistently over a full season on the same bike."}},
+{"name": "Jorge Martínez Aspar", "attributes": {"Category": "Motorcycle", "nickname": "Aspar", "nationality": "Spain", "era": "1982–1997", "primary class": "125cc GP", "world titles": 4, "premier class wins": 41, "career wins": 41, "podiums": 65, "pole positions": 30, "legacy score": 76, "fun fact": "Spain's first motorcycle world champion, Aspar opened the door for a generation of Spanish racers and later became one of MotoGP's most prominent team owners."}},
+{"name": "Kenny Roberts Sr.", "attributes": {"Category": "Motorcycle", "nickname": "King Kenny", "nationality": "USA", "era": "1978–1983", "primary class": "500cc GP", "world titles": 3, "premier class wins": 24, "career wins": 24, "podiums": 46, "pole positions": 22, "legacy score": 89, "fun fact": "Revolutionised cornering technique by introducing the slide style from American flat-track racing, winning three straight 500cc titles on arrival in GPs."}},
+{"name": "Kevin Schwantz", "attributes": {"Category": "Motorcycle", "nickname": "Showtime", "nationality": "USA", "era": "1988–1995", "primary class": "500cc GP", "world titles": 1, "premier class wins": 25, "career wins": 25, "podiums": 46, "pole positions": 29, "legacy score": 82, "fun fact": "The most spectacular racer of his era, Schwantz's number 34 was retired by Suzuki — the only permanent number retirement in MotoGP history."}},
+{"name": "Marc Márquez", "attributes": {"Category": "Motorcycle", "nickname": "The Ant", "nationality": "Spain", "era": "2010–present", "primary class": "MotoGP", "world titles": 8, "premier class wins": 90, "career wins": 116, "podiums": 176, "pole positions": 103, "legacy score": 97, "fun fact": "The most pole positions in MotoGP history, with six premier class titles claimed before the age of 28."}},
+{"name": "Max Biaggi", "attributes": {"Category": "Motorcycle", "nickname": "The Roman Emperor", "nationality": "Italy", "era": "1992–2012", "primary class": "MotoGP / WSBK", "world titles": 5, "premier class wins": 13, "career wins": 55, "podiums": 98, "pole positions": 36, "legacy score": 81, "fun fact": "Won four consecutive 250cc titles then reinvented himself to claim the 2010 World Superbike Championship at 39 — one of motorcycle racing's most complete careers."}},
+{"name": "Mick Doohan", "attributes": {"Category": "Motorcycle", "nickname": "Mighty Mick", "nationality": "Australia", "era": "1989–1999", "primary class": "500cc GP", "world titles": 5, "premier class wins": 54, "career wins": 54, "podiums": 95, "pole positions": 58, "legacy score": 93, "fun fact": "Won five consecutive 500cc world titles despite suffering a near-career-ending leg injury in 1992 that would have stopped most riders permanently."}},
+{"name": "Mike Hailwood", "attributes": {"Category": "Motorcycle", "nickname": "Mike the Bike", "nationality": "United Kingdom", "era": "1958–1967", "primary class": "500cc GP", "world titles": 9, "premier class wins": 37, "career wins": 76, "podiums": 98, "pole positions": 65, "legacy score": 96, "fun fact": "Won four consecutive 500cc titles and simultaneously raced in Formula 1 — widely regarded as the greatest natural talent motorcycling has ever seen."}},
+{"name": "Nicky Hayden", "attributes": {"Category": "Motorcycle", "nickname": "The Kentucky Kid", "nationality": "USA", "era": "2003–2016", "primary class": "MotoGP", "world titles": 1, "premier class wins": 3, "career wins": 3, "podiums": 30, "pole positions": 1, "legacy score": 72, "fun fact": "Hayden edged out Rossi by just five points in 2006 in one of MotoGP's greatest title fights, becoming a beloved champion known for his bravery and sportsmanship."}},
+{"name": "Phil Read", "attributes": {"Category": "Motorcycle", "nickname": "The Prince of Speed", "nationality": "United Kingdom", "era": "1964–1975", "primary class": "500cc GP", "world titles": 7, "premier class wins": 8, "career wins": 52, "podiums": 66, "pole positions": 48, "legacy score": 85, "fun fact": "The first man to win world titles in three different classes, Read was a fierce rival to Agostini and a champion in 125cc, 250cc, and 500cc."}},
+{"name": "Sito Pons", "attributes": {"Category": "Motorcycle", "nickname": "Sito", "nationality": "Spain", "era": "1983–1992", "primary class": "250cc GP", "world titles": 2, "premier class wins": 15, "career wins": 15, "podiums": 28, "pole positions": 12, "legacy score": 68, "fun fact": "A two-time 250cc world champion who became one of MotoGP's most respected team principals, helping launch the careers of riders such as Alex Barros and Sete Gibernau."}},
+{"name": "Stefan Dörflinger", "attributes": {"Category": "Motorcycle", "nickname": "The Swiss Flier", "nationality": "Switzerland", "era": "1982–1987", "primary class": "80cc GP", "world titles": 4, "premier class wins": 22, "career wins": 22, "podiums": 35, "pole positions": 18, "legacy score": 70, "fun fact": "Switzerland's greatest motorcycle racer, Dörflinger won four world titles in the tiny 50cc and 80cc classes with extraordinary mechanical sensitivity."}},
+{"name": "Troy Bayliss", "attributes": {"Category": "Motorcycle", "nickname": "Bayliss the Menace", "nationality": "Australia", "era": "1997–2008", "primary class": "World Superbike", "world titles": 3, "premier class wins": 52, "career wins": 52, "podiums": 94, "pole positions": 31, "legacy score": 80, "fun fact": "Came out of retirement in 2008 for a one-off wildcard ride at Valencia and won — one of the most stunning single-race performances in Superbike history."}},
+{"name": "Valentino Rossi", "attributes": {"Category": "Motorcycle", "nickname": "The Doctor", "nationality": "Italy", "era": "1996–2021", "primary class": "MotoGP", "world titles": 9, "premier class wins": 89, "career wins": 115, "podiums": 235, "pole positions": 65, "legacy score": 99, "fun fact": "The most beloved rider in history, Rossi holds the record for most MotoGP premier class wins and podiums, spanning four different engine eras."}},
+{"name": "Wayne Rainey", "attributes": {"Category": "Motorcycle", "nickname": "Rain Man", "nationality": "USA", "era": "1988–1993", "primary class": "500cc GP", "world titles": 3, "premier class wins": 24, "career wins": 24, "podiums": 44, "pole positions": 29, "legacy score": 87, "fun fact": "Won three consecutive 500cc world titles and was on course for a fourth when a crash at Misano in 1993 left him paralysed from the chest down."}},
+  ];
+
+  const mtcrss = [
+{"name": "Antonio Cairoli", "attributes": {"Category": "Motorcross", "nickname": "TC222", "nationality": "Italy", "era": "2004–2021", "primary circuit": "FIM", "fim world titles": 9, "ama titles": 0, "total major titles": 9, "major race wins": 93, "career span": 93, "career span": 17, "legacy score": 97, "fun fact": "Sicily's greatest sporting export, Cairoli won nine FIM World titles across MX2 and MXGP, becoming the benchmark of smooth yet fast technical riding in modern motocross."}},
+{"name": "Bob Hannah", "attributes": {"Category": "Motorcross", "nickname": "Hurricane", "nationality": "USA", "era": "1976–1989", "primary circuit": "AMA", "fim world titles": 0, "ama titles": 6, "total major titles": 6, "major race wins": 40, "career span": 13, "legacy score": 80, "fun fact": "The first true American motocross superstar, Hannah won six AMA titles in the late 1970s with an aggressive riding style that earned him the 'Hurricane' nickname."}},
+{"name": "Brad Lackey", "attributes": {"Category": "Motorcross", "nickname": "Hollywood", "nationality": "USA", "era": "1970–1982", "primary circuit": "FIM", "fim world titles": 1, "ama titles": 2, "total major titles": 3, "major race wins": 15, "career span": 12, "legacy score": 75, "fun fact": "The first American to win the FIM 500cc World Championship (1982), Lackey spent years racing in Europe before claiming the title that opened the door for American riders on the world stage."}},
+{"name": "Christophe Pourcel", "attributes": {"Category": "Motorcross", "nickname": "CP377", "nationality": "France", "era": "2006–2017", "primary circuit": "FIM / AMA", "fim world titles": 1, "ama titles": 2, "total major titles": 3, "major race wins": 20, "career span": 11, "legacy score": 70, "fun fact": "A rare talent who succeeded on both sides of the Atlantic, Pourcel won the FIM MX2 title in 2009 and multiple AMA championships with a silky smooth yet devastatingly fast style."}},
+{"name": "Davey Strijbos", "attributes": {"Category": "Motorcross", "nickname": "The Flying Dutchman", "nationality": "Netherlands", "era": "1984–1996", "primary circuit": "FIM", "fim world titles": 1, "ama titles": 0, "total major titles": 1, "major race wins": 12, "career span": 12, "legacy score": 69, "fun fact": "The Netherlands' greatest motocross champion, Strijbos won the 1986 FIM 125cc World title and put Dutch motocross on the map, paving the way for a rich tradition of Dutch off-road talent."}},
+{"name": "David Bailey", "attributes": {"Category": "Motorcross", "nickname": "DB", "nationality": "USA", "era": "1983–1987", "primary circuit": "AMA", "fim world titles": 0, "ama titles": 4, "total major titles": 4, "major race wins": 25, "career span": 6, "legacy score": 74, "fun fact": "Considered the most naturally talented American rider of the 1980s, Bailey's career was cut short by a paralyzing accident in 1987 — he had only just begun to show his true potential."}},
+{"name": "Eli Tomac", "attributes": {"Category": "Motorcross", "nickname": "E3", "nationality": "USA", "era": "2011–present", "primary circuit": "AMA", "fim world titles": 0, "ama titles": 7, "total major titles": 7, "major race wins": 55, "career span": 12, "legacy score": 84, "fun fact": "One of the most naturally gifted riders of the modern era, Tomac's explosive pace and late-race charges made him the most exciting racer of his generation in AMA competition."}},
+{"name": "Eric Geboers", "attributes": {"Category": "Motorcross", "nickname": "The Flying Belgian", "nationality": "Belgium", "era": "1981–1991", "primary circuit": "FIM", "fim world titles": 3, "ama titles": 0, "total major titles": 3, "major race wins": 28, "career span": 11, "legacy score": 88, "fun fact": "The only rider in history to win FIM World Championship titles in three different classes — 125cc (1982), 250cc (1987), and 500cc (1988) — a feat of versatility never matched."}},
+{"name": "Gaston Rahier", "attributes": {"Category": "Motorcross", "nickname": "Le Gantois", "nationality": "Belgium", "era": "1973–1984", "primary circuit": "FIM", "fim world titles": 3, "ama titles": 0, "total major titles": 3, "major race wins": 22, "career span": 11, "legacy score": 78, "fun fact": "Three-time 125cc world champion who then went on to win the Dakar Rally twice — one of the most versatile off-road talents in the history of motorsport."}},
+{"name": "Georges Jobé", "attributes": {"Category": "Motorcross", "nickname": "Jeuje", "nationality": "Belgium", "era": "1978–1990", "primary circuit": "FIM", "fim world titles": 2, "ama titles": 0, "total major titles": 2, "major race wins": 18, "career span": 12, "legacy score": 73, "fun fact": "A two-time 500cc world champion who bridged the gap between the Lackey era and Belgian dominance of the 1990s, Jobé was known for his immense physical power."}},
+{"name": "Greg Albertyn", "attributes": {"Category": "Motorcross", "nickname": "Albee", "nationality": "South Africa", "era": "1990–2001", "primary circuit": "FIM / AMA", "fim world titles": 2, "ama titles": 0, "total major titles": 2, "major race wins": 15, "career span": 11, "legacy score": 71, "fun fact": "Africa's greatest motocross champion, Albertyn won back-to-back 250cc FIM World titles (1993–1994) and later competed in AMA, inspiring generations of African riders."}},
+{"name": "Harry Everts", "attributes": {"Category": "Motorcross", "nickname": "The Bulldog", "nationality": "Belgium", "era": "1971–1982", "primary circuit": "FIM", "fim world titles": 3, "ama titles": 0, "total major titles": 3, "major race wins": 25, "career span": 11, "legacy score": 83, "fun fact": "Three-time FIM World Champion and father of the legendary Stefan Everts, Harry forged one of the most remarkable sporting dynasties in motorsport history."}},
+{"name": "Heikki Mikkola", "attributes": {"Category": "Motorcross", "nickname": "The Flying Finn", "nationality": "Finland", "era": "1970–1982", "primary circuit": "FIM", "fim world titles": 3, "ama titles": 0, "total major titles": 3, "major race wins": 22, "career span": 12, "legacy score": 82, "fun fact": "Three-time FIM World Champion who was the first Finn to dominate motocross, riding for Husqvarna and Yamaha in an era of raw, powerful 500cc machines."}},
+{"name": "Jacky Martens", "attributes": {"Category": "Motorcross", "nickname": "Lucky", "nationality": "Belgium", "era": "1986–1998", "primary circuit": "FIM", "fim world titles": 2, "ama titles": 0, "total major titles": 2, "major race wins": 18, "career span": 12, "legacy score": 72, "fun fact": "Two-time 500cc world champion who later became an influential team manager, Martens was part of the golden era of Belgian motocross that produced Everts and Smets."}},
+{"name": "James Stewart", "attributes": {"Category": "Motorcross", "nickname": "Bubba", "nationality": "USA", "era": "2002–2016", "primary circuit": "AMA", "fim world titles": 0, "ama titles": 5, "total major titles": 5, "major race wins": 50, "career span": 14, "legacy score": 88, "fun fact": "The fastest rider of his generation on his day, Stewart's explosive, fearless style redefined what was physically possible on a motocross bike, inspiring an entire generation of racers."}},
+{"name": "Jeff Emig", "attributes": {"Category": "Motorcross", "nickname": "Chicken", "nationality": "USA", "era": "1991–2000", "primary circuit": "AMA", "fim world titles": 0, "ama titles": 3, "total major titles": 3, "major race wins": 20, "career span": 9, "legacy score": 71, "fun fact": "A three-time AMA national champion who was one of the few Americans to directly battle Carmichael at his peak, Emig was notorious for his fearless race-day aggression."}},
+{"name": "Jeff Stanton", "attributes": {"Category": "Motorcross", "nickname": "The Machine", "nationality": "USA", "era": "1988–1996", "primary circuit": "AMA", "fim world titles": 0, "ama titles": 5, "total major titles": 5, "major race wins": 35, "career span": 9, "legacy score": 76, "fun fact": "Honda's workhorse in the early 1990s, Stanton won five AMA national titles and was famous for his unrelenting physical fitness and determination — earning the nickname 'The Machine'."}},
+{"name": "Jeremy McGrath", "attributes": {"Category": "Motorcross", "nickname": "King of Supercross", "nationality": "USA", "era": "1991–2006", "primary circuit": "AMA", "fim world titles": 0, "ama titles": 8, "total major titles": 8, "major race wins": 72, "career span": 15, "legacy score": 91, "fun fact": "Holder of seven AMA Supercross championships, McGrath invented modern supercross technique and turned the discipline into a mainstream American sport in the 1990s."}},
+{"name": "Joel Robert", "attributes": {"Category": "Motorcross", "nickname": "Mr. Motocross", "nationality": "Belgium", "era": "1962–1975", "primary circuit": "FIM", "fim world titles": 6, "ama titles": 0, "total major titles": 6, "major race wins": 50, "career span": 13, "legacy score": 93, "fun fact": "The pioneer of Belgian motocross dominance, Robert won six 250cc world titles and is credited with transforming motocross from a rugged sport into a technical art form."}},
+{"name": "Joël Smets", "attributes": {"Category": "Motorcross", "nickname": "The Terminator", "nationality": "Belgium", "era": "1990–2003", "primary circuit": "FIM", "fim world titles": 5, "ama titles": 0, "total major titles": 5, "major race wins": 35, "career span": 13, "legacy score": 87, "fun fact": "Five-time 500cc/MX1 world champion whose career was almost ended by a horrific accident in 1996 — he came back to win three more titles, making his recovery one of sport's greatest comebacks."}},
+{"name": "Ken Roczen", "attributes": {"Category": "Motorcross", "nickname": "Hollywood", "nationality": "Germany", "era": "2010–present", "primary circuit": "AMA / FIM", "fim world titles": 1, "ama titles": 3, "total major titles": 4, "major race wins": 35, "career span": 13, "legacy score": 82, "fun fact": "Germany's greatest motocross export, Roczen bounced back from a devastating arm injury in 2017 that nearly cost him the limb, returning to win multiple AMA championships."}},
+{"name": "Paul Friedrichs", "attributes": {"Category": "Motorcross", "nickname": "The East German", "nationality": "East Germany", "era": "1963–1970", "primary circuit": "FIM", "fim world titles": 3, "ama titles": 0, "total major titles": 3, "major race wins": 25, "career span": 8, "legacy score": 77, "fun fact": "One of the Iron Curtain's greatest sporting ambassadors, Friedrichs won three consecutive 500cc FIM World titles (1966–1968) on a CZ motorcycle despite limited resources."}},
+{"name": "Ricky Carmichael", "attributes": {"Category": "Motorcross", "nickname": "The GOAT", "nationality": "USA", "era": "1997–2007", "primary circuit": "AMA", "fim world titles": 0, "ama titles": 15, "total major titles": 15, "major race wins": 150, "career span": 11, "legacy score": 100, "fun fact": "The undisputed Greatest of All Time in motocross. Won 15 AMA national championship titles including back-to-back perfect season scores — something never done before or since."}},
+{"name": "Roger De Coster", "attributes": {"Category": "Motorcross", "nickname": "The Man", "nationality": "Belgium", "era": "1964–1980", "primary circuit": "FIM", "fim world titles": 5, "ama titles": 0, "total major titles": 5, "major race wins": 40, "career span": 16, "legacy score": 92, "fun fact": "Five-time 500cc world champion, De Coster later became the most successful team manager in AMA and MX history, shaping the careers of Carmichael, Dungey, and Roczen."}},
+{"name": "Rolf Tibblin", "attributes": {"Category": "Motorcross", "nickname": "The Bear", "nationality": "Sweden", "era": "1958–1966", "primary circuit": "FIM", "fim world titles": 2, "ama titles": 0, "total major titles": 2, "major race wins": 15, "career span": 9, "legacy score": 68, "fun fact": "A pioneer of the sport, Tibblin won two FIM 500cc World Championships in 1962 and 1963, helping to establish Sweden as one of motocross's founding nations alongside Belgium."}},
+{"name": "Ryan Dungey", "attributes": {"Category": "Motorcross", "nickname": "The Dunge", "nationality": "USA", "era": "2006–2017", "primary circuit": "AMA / FIM", "fim world titles": 1, "ama titles": 6, "total major titles": 7, "major race wins": 45, "career span": 11, "legacy score": 85, "fun fact": "One of the rare riders to claim both an FIM World title and multiple AMA championships, Dungey was the embodiment of consistency — rarely brilliant but almost never beaten over a full season."}},
+{"name": "Ryan Villopoto", "attributes": {"Category": "Motorcross", "nickname": "RV2", "nationality": "USA", "era": "2006–2015", "primary circuit": "AMA", "fim world titles": 0, "ama titles": 8, "total major titles": 8, "major race wins": 60, "career span": 9, "legacy score": 86, "fun fact": "Won four consecutive AMA Supercross titles (2011–2014) and four AMA Motocross titles, all while battling a series of injuries that would have ended most careers."}},
+{"name": "Stefan Everts", "attributes": {"Category": "Motorcross", "nickname": "The Legend", "nationality": "Belgium", "era": "1990–2006", "primary circuit": "FIM", "fim world titles": 10, "ama titles": 0, "total major titles": 10, "major race wins": 101, "career span": 17, "legacy score": 99, "fun fact": "Europe's answer to Carmichael: 10 FIM World Championship titles and 101 GP victories, both all-time records. Son of champion Harry Everts, he redefined what dominance looks like in MXGP."}},
+{"name": "Tim Gajser", "attributes": {"Category": "Motorcross", "nickname": "Tiga", "nationality": "Slovenia", "era": "2014–present", "primary circuit": "FIM", "fim world titles": 5, "ama titles": 0, "total major titles": 5, "major race wins": 65, "career span": 10, "legacy score": 89, "fun fact": "Slovenia's greatest sporting icon, Gajser's five MXGP world titles place him among the all-time greats, with a riding style combining raw speed with extraordinary smoothness."}},
+{"name": "Torsten Hallman", "attributes": {"Category": "Motorcross", "nickname": "Toffe", "nationality": "Sweden", "era": "1960–1969", "primary circuit": "FIM", "fim world titles": 4, "ama titles": 0, "total major titles": 4, "major race wins": 30, "career span": 10, "legacy score": 81, "fun fact": "Four-time 250cc world champion who later co-founded ÖDIS — the company that became Fox Racing — transforming motocross gear into a global industry."}},
+  ];
+
+const fmx = [
+{"name": "Adam Jones", "attributes": {"Category": "FMX", "nickname": "AJ", "nationality": "USA", "era": "2000–2016", "x games golds": 3, "world firsts": 1, "total x games medals": 9, "major event wins": 24, "career span": 16, "legacy score": 80, "fun fact": "Three-time X Games gold medalist whose smooth, controlled riding style was the antithesis of the raw aggression seen from Metal Mulisha riders, proving that precision and flow could win just as often as raw danger."}},
+{"name": "André Villa", "attributes": {"Category": "FMX", "nickname": "AV", "nationality": "Norway", "era": "2007–2018", "x games golds": 1, "world firsts": 0, "total x games medals": 4, "major event wins": 14, "career span": 11, "legacy score": 70, "fun fact": "Scandinavia's breakthrough FMX star, Villa brought a Viking spirit to the circuit and became Norway's first-ever X Games gold medalist, proving that action sports talent could emerge from the most unlikely of countries."}},
+{"name": "Blake Williams", "attributes": {"Category": "FMX", "nickname": "BW", "nationality": "USA", "era": "2005–2016", "x games golds": 1, "world firsts": 0, "total x games medals": 3, "major event wins": 11, "career span": 11, "legacy score": 66, "fun fact": "A Best Trick specialist who pushed the limits of what judges rewarded at X Games, Williams represented the second generation of American FMX riders who built on the foundation laid by Metzger, Deegan, and Pastrana."}},
+{"name": "Brian Deegan", "attributes": {"Category": "FMX", "nickname": "The General", "nationality": "USA", "era": "1996–2014", "x games golds": 3, "world firsts": 1, "total x games medals": 10, "major event wins": 26, "career span": 18, "legacy score": 84, "fun fact": "Co-founder of the Metal Mulisha — the crew that defined FMX culture in the late 1990s and 2000s — Deegan was the sport's original rebel, winning three X Games golds while building motocross into a lifestyle brand."}},
+{"name": "Brice Izzo", "attributes": {"Category": "FMX", "nickname": "Briceman", "nationality": "France", "era": "2007–2020", "x games golds": 1, "world firsts": 0, "total x games medals": 4, "major event wins": 13, "career span": 13, "legacy score": 68, "fun fact": "One of France's most successful FMX exports, Izzo was a regular at X Games and a major force on the European circuit, helping to elevate the profile of French action sports alongside teammate Tom Pagès."}},
+{"name": "Cam Sinclair", "attributes": {"Category": "FMX", "nickname": "The Comeback Kid", "nationality": "Australia", "era": "2003–2020", "x games golds": 1, "world firsts": 0, "total x games medals": 4, "major event wins": 15, "career span": 17, "legacy score": 72, "fun fact": "Sinclair survived a near-fatal crash at X Games Asia 2010 that left him in a coma, but returned to competition and won X Games Freestyle gold in 2012 — one of the most extraordinary comebacks in action sports history."}},
+{"name": "Carey Hart", "attributes": {"Category": "FMX", "nickname": "Inked", "nationality": "USA", "era": "1997–2007", "x games golds": 1, "world firsts": 1, "total x games medals": 4, "major event wins": 15, "career span": 10, "legacy score": 80, "fun fact": "At X Games 2000, Hart attempted the first backflip in major competition — crashing on landing but proving the trick was possible. That attempt opened the door for every backflip that followed and earned him permanent status as a pioneer of the sport."}},
+{"name": "Clinton Moore", "attributes": {"Category": "FMX", "nickname": "Clinto", "nationality": "Australia", "era": "2008–present", "x games golds": 2, "world firsts": 0, "total x games medals": 6, "major event wins": 17, "career span": 15, "legacy score": 72, "fun fact": "A key part of the Australian FMX revolution, Moore's technical precision in Best Trick events earned him X Games gold and established him as one of the most reliable high-pressure performers in the sport."}},
+{"name": "Dany Torres", "attributes": {"Category": "FMX", "nickname": "El Maestro", "nationality": "Spain", "era": "2005–2018", "x games golds": 2, "world firsts": 0, "total x games medals": 7, "major event wins": 20, "career span": 13, "legacy score": 74, "fun fact": "Spain's FMX ambassador and two-time X Games gold medalist, Torres became the most prominent European freestyle rider of his generation, bringing a flamboyant Latin style to a sport dominated by Americans and Australians."}},
+{"name": "Edgar Torronteras", "attributes": {"Category": "FMX", "nickname": "El Pistolero", "nationality": "Spain", "era": "1997–2010", "x games golds": 0, "world firsts": 0, "total x games medals": 3, "major event wins": 10, "career span": 13, "legacy score": 65, "fun fact": "The original Spanish FMX pioneer who competed in X Games from their earliest editions, Torronteras built the foundations for Spanish action sports long before Torres and Melero made it a powerhouse, and was a regular at the sport's biggest events worldwide."}},
+{"name": "Jackson Strong", "attributes": {"Category": "FMX", "nickname": "Action Jackson", "nationality": "Australia", "era": "2008–present", "x games golds": 2, "world firsts": 0, "total x games medals": 6, "major event wins": 18, "career span": 16, "legacy score": 76, "fun fact": "Part of the Australian FMX wave that took over the sport in the 2010s, Strong's explosive amplitude and consistency in Best Trick earned him two X Games golds and a reputation as one of the highest-flying riders in history."}},
+{"name": "Javier Villegas", "attributes": {"Category": "FMX", "nickname": "Javito", "nationality": "Chile", "era": "2006–2018", "x games golds": 0, "world firsts": 0, "total x games medals": 3, "major event wins": 12, "career span": 12, "legacy score": 67, "fun fact": "South America's greatest FMX rider, Villegas won multiple X Games medals and became a hero across Latin America, inspiring an entire continent to take up freestyle motocross and proving the sport had global reach beyond North America and Europe."}},
+{"name": "Jeremy Lusk", "attributes": {"Category": "FMX", "nickname": "Lusk", "nationality": "USA", "era": "2003–2009", "x games golds": 1, "world firsts": 0, "total x games medals": 4, "major event wins": 18, "career span": 6, "legacy score": 79, "fun fact": "The 2008 IFMXF World Champion and one of the most naturally gifted riders of his era, Lusk tragically lost his life in competition in Costa Rica in February 2009. He is remembered as one of the greatest talents the sport never got to see fully realised."}},
+{"name": "Jeremy Stenberg", "attributes": {"Category": "FMX", "nickname": "Twitch", "nationality": "USA", "era": "1998–2015", "x games golds": 2, "world firsts": 1, "total x games medals": 7, "major event wins": 20, "career span": 17, "legacy score": 83, "fun fact": "The most stylish rider of his generation, Stenberg's 'Twitch' nickname came from his convulsive trick style. A co-founder of Metal Mulisha and a major video game culture figure, his influence on FMX aesthetics outlasted his competition career."}},
+{"name": "Josh Sheehan", "attributes": {"Category": "FMX", "nickname": "Pelican", "nationality": "Australia", "era": "2007–present", "x games golds": 2, "world firsts": 1, "total x games medals": 6, "major event wins": 22, "career span": 17, "legacy score": 83, "fun fact": "In 2015 at the Nitro World Games, Sheehan became the first human being to land a triple backflip on a motorcycle — arguably the most technically difficult trick ever performed in action sports."}},
+{"name": "Kyle Loza", "attributes": {"Category": "FMX", "nickname": "The Monster", "nationality": "USA", "era": "2004–2014", "x games golds": 2, "world firsts": 1, "total x games medals": 5, "major event wins": 16, "career span": 10, "legacy score": 75, "fun fact": "Creator of the 'Electric Doom' — a no-handed, no-footed backflip variation so complex it was named after him — Loza won two X Games Best Trick golds with moves that other riders still struggle to replicate."}},
+{"name": "Larry Linkogle", "attributes": {"Category": "FMX", "nickname": "Link", "nationality": "USA", "era": "1996–2006", "x games golds": 1, "world firsts": 1, "total x games medals": 3, "major event wins": 12, "career span": 10, "legacy score": 74, "fun fact": "Co-founder of the Metal Mulisha alongside Brian Deegan, Linkogle was one of the original outlaw figures of FMX and helped define the rebellious subculture that turned freestyle motocross from a sideshow into a mainstream sport."}},
+{"name": "Levi Sherwood", "attributes": {"Category": "FMX", "nickname": "The Kiwi Sensation", "nationality": "New Zealand", "era": "2008–present", "x games golds": 2, "world firsts": 0, "total x games medals": 7, "major event wins": 20, "career span": 16, "legacy score": 78, "fun fact": "New Zealand's greatest FMX export, Sherwood won the 2013 X Games Freestyle gold in Austin and multiple IFMXF World Championship medals, bringing Antipodean flair to the traditionally American-dominated discipline."}},
+{"name": "Libor Podmol", "attributes": {"Category": "FMX", "nickname": "LP", "nationality": "Czech Republic", "era": "2006–2020", "x games golds": 2, "world firsts": 0, "total x games medals": 6, "major event wins": 18, "career span": 14, "legacy score": 73, "fun fact": "The Czech Republic's greatest FMX champion and two-time X Games medalist, Podmol made history as the first Eastern European rider to consistently challenge for X Games podiums, representing a new global expansion of the sport."}},
+{"name": "Maikel Melero", "attributes": {"Category": "FMX", "nickname": "El Matador", "nationality": "Spain", "era": "2010–present", "x games golds": 1, "world firsts": 1, "total x games medals": 4, "major event wins": 14, "career span": 14, "legacy score": 71, "fun fact": "One of the most innovative trick creators of the current generation, Melero's 'Cordova' — a one-handed cliffhanger backflip — was named after his hometown and became one of the most recognised tricks in modern FMX."}},
+{"name": "Mat Rebeaud", "attributes": {"Category": "FMX", "nickname": "Mat", "nationality": "Switzerland", "era": "2003–2018", "x games golds": 2, "world firsts": 1, "total x games medals": 6, "major event wins": 18, "career span": 15, "legacy score": 76, "fun fact": "Switzerland's greatest action sports export and one of the most progressive trick creators in FMX history, Rebeaud won multiple X Games medals and was among the first riders to consistently push the backflip combination era."}},
+{"name": "Mike Metzger", "attributes": {"Category": "FMX", "nickname": "The Godfather", "nationality": "USA", "era": "1996–2012", "x games golds": 3, "world firsts": 2, "total x games medals": 8, "major event wins": 28, "career span": 16, "legacy score": 92, "fun fact": "Rightly called 'The Godfather of FMX', Metzger was the first rider to successfully execute a backflip in X Games Best Trick competition (2002) — the trick that changed freestyle motocross forever. Also completed a backflip over the fountains at Caesar's Palace in Las Vegas."}},
+{"name": "Nate Adams", "attributes": {"Category": "FMX", "nickname": "The Naterator", "nationality": "USA", "era": "2001–2018", "x games golds": 5, "world firsts": 1, "total x games medals": 12, "major event wins": 32, "career span": 17, "legacy score": 88, "fun fact": "Five-time X Games gold medalist and one of the sport's most consistent champions throughout the 2000s. Adams was famous for combining flawless technical execution with creative trick selection, setting the standard for FMX Freestyle competition."}},
+{"name": "Robbie Maddison", "attributes": {"Category": "FMX", "nickname": "Maddo", "nationality": "Australia", "era": "2002–present", "x games golds": 3, "world firsts": 3, "total x games medals": 7, "major event wins": 22, "career span": 20, "legacy score": 87, "fun fact": "The world's greatest motorcycle stunt performer: set the world distance jump record (106m), ramp-jumped the open drawbridge in London, and in 2015 became the first person to surf ocean waves on a dirt bike in Tahiti — an image that went around the world."}},
+{"name": "Ronnie Renner", "attributes": {"Category": "FMX", "nickname": "The Godfather of Step Up", "nationality": "USA", "era": "2000–2016", "x games golds": 6, "world firsts": 1, "total x games medals": 13, "major event wins": 30, "career span": 16, "legacy score": 82, "fun fact": "The undisputed king of X Games Moto X Step Up, Renner won six golds in the high-jump discipline and set multiple world records for motorcycle altitude — including clearing over 11 metres."}},
+{"name": "Steve Boniface", "attributes": {"Category": "FMX", "nickname": "Bonnie", "nationality": "United Kingdom", "era": "2003–2016", "x games golds": 0, "world firsts": 0, "total x games medals": 2, "major event wins": 10, "career span": 13, "legacy score": 65, "fun fact": "Britain's most successful FMX rider and the highest-placed European in the sport's formative years, Boniface carried the Union Jack to X Games podiums and became an ambassador for the sport across the UK."}},
+{"name": "Taka Higashino", "attributes": {"Category": "FMX", "nickname": "Taka", "nationality": "Japan", "era": "2003–2016", "x games golds": 1, "world firsts": 0, "total x games medals": 4, "major event wins": 13, "career span": 13, "legacy score": 69, "fun fact": "Japan's FMX pioneer and the first Asian rider to win an X Games medal, Higashino opened an entirely new market for the sport in Asia and remains the benchmark for technical Japanese freestyle riding."}},
+{"name": "Todd Potter", "attributes": {"Category": "FMX", "nickname": "T-Pot", "nationality": "USA", "era": "1998–2012", "x games golds": 1, "world firsts": 0, "total x games medals": 5, "major event wins": 16, "career span": 14, "legacy score": 70, "fun fact": "One of the foundational figures of FMX's early era, Potter's style and competitive success in the early 2000s helped shape what professional freestyle motocross looked like before the backflip revolution took hold."}},
+{"name": "Tom Pagès", "attributes": {"Category": "FMX", "nickname": "TP", "nationality": "France", "era": "2006–present", "x games golds": 5, "world firsts": 2, "total x games medals": 14, "major event wins": 35, "career span": 18, "legacy score": 89, "fun fact": "The most innovative trick creator of the modern FMX era, Pagès introduced multiple combinations never seen in competition and won five X Games golds. His willingness to push technical boundaries makes him the sport's most consistently progressive rider."}},
+{"name": "Travis Pastrana", "attributes": {"Category": "FMX", "nickname": "TP199", "nationality": "USA", "era": "1999–present", "x games golds": 17, "world firsts": 4, "total x games medals": 29, "major event wins": 55, "career span": 25, "legacy score": 100, "fun fact": "The most decorated X Games athlete in history with 17 gold medals across MX Freestyle, Rally Car Racing, and more. In 2006 he performed the first-ever double backflip in competition at X Games 12 — considered the single greatest moment in FMX history. Also founded Nitro Circus, transforming action sports into global entertainment."}},
+  ];
+
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('mtrcyCheckbox').checked) selectedCards.push(...mtrcy);
+    if (document.getElementById('mtcrssCheckbox').checked) selectedCards.push(...mtcrss);
+    if (document.getElementById('fmxCheckbox').checked) selectedCards.push(...fmx);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

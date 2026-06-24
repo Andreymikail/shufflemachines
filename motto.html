@@ -1,0 +1,76 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Motto</h2>
+
+  <div style="margin-top: 20px;">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div style="margin-bottom: 20px;">
+        <p id="actionResult" style="color: white;">-</p>
+        <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const actions = [
+    "Float like a butterfly, sting like a bee. The hands can't hit what the eyes can't see. Muhammad Ali",
+    "One good thing about music, when it hits you, you feel no pain. Bob Marley",
+    "I'm not interested in doing the same thing that's always been done. I'm interested in evolution. Kelly Slater",
+    "I've missed more than 9000 shots... and that is why I succeed. MJ23",
+    "When the power of love overcomes the love of power, the world will know peace. Jimi Hendrix",
+    "My biggest mistake was not being able to score 3,000 goals. Pelé",
+    "The next album has to be three times better. It can't just be good, because that would be disappointing. So I took my time and tried to do it right. MJ before releasing Thriller",
+    "Life is challenging, but I'm always up for a challenge. Venus Williams",
+    "I seek, I pursue, my heart is in it. Vincent van Gogh",
+    "No matter how good you get, you can always get better—and that's the exciting part. Tiger Woods",
+    "Put your head down and work hard. Never wait things to happen, make them happen for yourself through hard graft and not giving up. Gordon Ramsay",
+    "Winners, I am convinced, imagine their dreams first. They want it with all their heart and expect it to come true. There is, I believe, no other way to live. Joe Montana",
+    "The greatest journeys I've ever taken were within myself. Sebastião Salgado",
+    "Baseball is the most perfect of games, solid, true, pure and precious as diamonds. If only life were so simple. Within the baselines anything can happen. Tides can reverse; oceans can open. That's why they say, we don't stop playing because we get old. We get old because we stop playing. Satchel Paige",
+    "If a straight line is the shortest path between two points, a curve is what makes concrete reach for infinity. Oscar Niemayer",
+    "I skate to where the puck is going to be, not where it has been. Wayne Gretzky",
+    "I like words like transformation, reinvention, and chameleon. Because one word I don't like is predictable. Naomi Campbell",
+    "When it comes to commitment, dedication, and effort, there's no middle ground. You either do something well or you don't do it at all. Ayrton Senna",
+    "The most lost day in our life is the day we don't laugh. Charlie Chaplin",
+    "A champion is forged in the crucible of hardships, emerging stronger with every trial. Ma Long",
+    "The noblest pleasure is the joy of understanding. Leonardo da Vinci",
+    "I will run against anybody. Usain Bolt",
+    "Play before you get good, because by the time you get good, you're too old to play. Joey Ramone",
+    "Titles were often decided on details. So, the more we work, the more we give ourselves a chance for the details to be on our side. Nikola Karabatic",
+    "I have a saying. 'Never judge a book by its cover'. I say that because I don't even know who Ozzy is. I wake up a new person every day. Ozzy Osbourne",
+  ];
+
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  document.getElementById('shuffleActionButton').addEventListener('click', function () {
+    shuffleDeck(actions, 'actionResult');
+  });
+</script>
+
+<style>
+  body {
+    background-color: black;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+</style>

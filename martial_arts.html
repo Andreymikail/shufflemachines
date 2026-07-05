@@ -1,0 +1,376 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Martial Arts</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="jjtCheckbox"> Brazilian Jiu-Jitsu</label><br>
+    <label><input type="checkbox" id="judoCheckbox"> Judo</label><br>
+    <label><input type="checkbox" id="wresCheckbox"> Wrestling (Freestyle)</label><br>
+    <label><input type="checkbox" id="mmaCheckbox"> MMA</label><br>
+    <label><input type="checkbox" id="muayCheckbox"> Muay Thai</label><br>
+    <label><input type="checkbox" id="taekCheckbox"> Taekwondo</label><br>
+    <label><input type="checkbox" id="karaCheckbox"> Karate</label><br>
+    <label><input type="checkbox" id="kickCheckbox"> Kickboxing</label><br>
+    <label><input type="checkbox" id="kungCheckbox"> Kung Fu / Jeet Kune Do</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Iron Fist: Double your Power stat for this round.",
+"Lightning Strike: Double your Speed stat for this round.",
+"Perfect Form: Add 20 points to your Technique for this round.",
+"Iron Will: Add 20 points to your Endurance for this round.",
+"Legend's Aura: Add 15 points to your Legacy for this round.",
+"Championship Hunger: Add 3 to your Titles and 30 to your Wins for this round.",
+"Peak Performance: Add 10 points to every stat for this round.",
+"Guard Break: Reduce your opponent's Power by 25 for this round.",
+"Footwork: Reduce your opponent's Speed by 25 for this round.",
+"Expose Weakness: Reduce your opponent's Technique by 20 for this round.",
+"Wear Down: Reduce your opponent's Endurance by 25 for this round.",
+"Blind Spot: Reduce your opponent's chosen stat by 30 for this round.",
+"Disqualify: Remove your opponent's highest stat from play for this round; they must compete with the remaining stats.",
+"Scout: Reveal your opponent's card before choosing your stat category this round.",
+"Wild Card: You choose the stat category for this round instead of the active player.",
+"Swap: Exchange your value in one stat category with your opponent's value in the same category for this round.",
+"Double Down: If you win this round, take 2 cards from your opponent instead of 1.",
+"Submission: Skip the stat comparison — you automatically win this round. Can only be played once per game.",
+"Counterstrike: Cancel your opponent's action card. Your chosen stat gains +15 for this round.",
+"Clone: Copy your opponent's highest stat and add that value to the same category on your card for this round.",
+"Rematch: If you lose this round, the round is replayed. Neither player may use the same action card again in the rematch.",
+"Clinch: If the chosen category is Power or Endurance, add 30 to your stat. Playable only with cards from Muay Thai, Wrestling, or Judo.",
+"Armbar: Force your opponent to compare using their lowest stat, regardless of the category chosen. Playable only with BJJ, Judo, or MMA cards.",
+"High Kick: If the chosen category is Speed or Technique, add 25 to your stat. Playable only with Taekwondo, Kickboxing, or Muay Thai cards.",
+"Ground Game: Change the stat category to Endurance, regardless of what was originally chosen. Playable only with Wrestling, BJJ, or MMA cards.",
+"Kata Mastery: Add 25 to both Technique and Legacy for this round. Playable only with Karate or Kung Fu / JKD cards.",
+"Flying Knee: Add 20 to Power and 20 to Speed for this round. Playable only with Muay Thai, MMA, or Kickboxing cards.",
+"Underdog Spirit: If your card's combined stats total less than your opponent's, add 25 to the chosen stat for this round.",
+"Champion's Heart: If you currently hold fewer cards than your opponent, add 20 to all stats for this round.",
+"Training Arc: Add 20 to all stats for this round. Can only be played once per game.",
+"Home Crowd: Discard the current stat category and draw a new one at random. Can only be played once per game.",
+"Legendary Clash: Both players reveal their Legacy values. The player with the higher Legacy wins the round, regardless of the originally chosen stat.",
+"Gender Barrier Broken: If you play a female card against a male card, add 15 to all your stats for this round.",
+"Cross-Discipline Master: If the two cards in play belong to different disciplines, add 20 to your Technique for this round.",
+];
+  
+const jjt = [
+{"name": "Rickson Gracie", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "male", "country": "Brazil", "nickname": "The Legend", "power": 82, "speed": 80, "technique": 100, "endurance": 90, "titles": 8, "wins": 11, "legacy": 100 }},
+{"name": "Roger Gracie", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "male", "country": "Brazil", "nickname": "The King", "power": 88, "speed": 78, "technique": 99, "endurance": 88, "titles": 12, "wins": 35, "legacy": 97 }},
+{"name": "Marcelo Garcia", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "male", "country": "Brazil", "nickname": "MG", "power": 80, "speed": 85, "technique": 98, "endurance": 92, "titles": 9, "wins": 48, "legacy": 96 }},
+{"name": "Gordon Ryan", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "male", "country": "USA", "nickname": "The King", "power": 85, "speed": 82, "technique": 97, "endurance": 89, "titles": 8, "wins": 52, "legacy": 85 }},
+{"name": "Marcus Almeida", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "male", "country": "Brazil", "nickname": "Buchecha", "power": 90, "speed": 80, "technique": 93, "endurance": 87, "titles": 14, "wins": 60, "legacy": 88 }},
+{"name": "Andre Galvao", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "male", "country": "Brazil", "nickname": "Galvao", "power": 86, "speed": 82, "technique": 94, "endurance": 91, "titles": 12, "wins": 55, "legacy": 87 }},
+{"name": "Rubens Charles", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "male", "country": "Brazil", "nickname": "Cobrinha", "power": 75, "speed": 90, "technique": 96, "endurance": 88, "titles": 7, "wins": 42, "legacy": 85 }},
+{"name": "Bernardo Faria", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "male", "country": "Brazil", "nickname": "The Duke", "power": 85, "speed": 72, "technique": 93, "endurance": 86, "titles": 5, "wins": 38, "legacy": 80 }},
+{"name": "Leandro Lo", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "male", "country": "Brazil", "nickname": "Lo", "power": 82, "speed": 84, "technique": 95, "endurance": 87, "titles": 8, "wins": 45, "legacy": 82 }},
+{"name": "Romulo Barral", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "male", "country": "Brazil", "nickname": "Romulo", "power": 83, "speed": 79, "technique": 92, "endurance": 85, "titles": 6, "wins": 40, "legacy": 78 }},
+{"name": "Beatriz Mesquita", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "female", "country": "Brazil", "nickname": "Bia", "power": 78, "speed": 85, "technique": 98, "endurance": 90, "titles": 8, "wins": 55, "legacy": 96 }},
+{"name": "Gabi Garcia", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "female", "country": "Brazil", "nickname": "The Ogre", "power": 88, "speed": 78, "technique": 93, "endurance": 86, "titles": 12, "wins": 65, "legacy": 90 }},
+{"name": "Mackenzie Dern", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "female", "country": "USA", "nickname": "The Submission Queen", "power": 76, "speed": 80, "technique": 93, "endurance": 84, "titles": 3, "wins": 40, "legacy": 78 }},
+{"name": "Michelle Nicolini", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "female", "country": "Brazil", "nickname": "Nicolini", "power": 72, "speed": 85, "technique": 96, "endurance": 85, "titles": 6, "wins": 48, "legacy": 82 }},
+{"name": "Kyra Gracie", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "female", "country": "Brazil", "nickname": "The Princess", "power": 74, "speed": 82, "technique": 94, "endurance": 84, "titles": 4, "wins": 38, "legacy": 80 }},
+{"name": "Luanna Alzuguir", "attributes": { "discipline": "Brazilian Jiu-Jitsu", "gender": "female", "country": "Brazil", "nickname": "Alzuguir", "power": 74, "speed": 80, "technique": 92, "endurance": 83, "titles": 5, "wins": 42, "legacy": 75 }},
+
+  ];
+
+const judo = [
+{"name": "Teddy Riner", "attributes": { "discipline": "Judo", "gender": "male", "country": "France", "nickname": "Teddy", "power": 96, "speed": 82, "technique": 94, "endurance": 90, "titles": 14, "wins": 154, "legacy": 98 }},
+{"name": "Yasuhiro Yamashita", "attributes": { "discipline": "Judo", "gender": "male", "country": "Japan", "nickname": "The Last Samurai", "power": 94, "speed": 78, "technique": 96, "endurance": 88, "titles": 5, "wins": 203, "legacy": 97 }},
+{"name": "Nomura Tadahiro", "attributes": { "discipline": "Judo", "gender": "male", "country": "Japan", "nickname": "Triple Olympic Champion", "power": 75, "speed": 92, "technique": 97, "endurance": 88, "titles": 6, "wins": 120, "legacy": 95 }},
+{"name": "Anton Geesink", "attributes": { "discipline": "Judo", "gender": "male", "country": "Netherlands", "nickname": "The Giant", "power": 93, "speed": 75, "technique": 88, "endurance": 85, "titles": 4, "wins": 180, "legacy": 92 }},
+{"name": "Kosei Inoue", "attributes": { "discipline": "Judo", "gender": "male", "country": "Japan", "nickname": "Tsunami", "power": 88, "speed": 85, "technique": 96, "endurance": 88, "titles": 4, "wins": 95, "legacy": 88 }},
+{"name": "David Douillet", "attributes": { "discipline": "Judo", "gender": "male", "country": "France", "nickname": "The Bulldozer", "power": 92, "speed": 78, "technique": 90, "endurance": 87, "titles": 4, "wins": 85, "legacy": 90 }},
+{"name": "Shohei Ono", "attributes": { "discipline": "Judo", "gender": "male", "country": "Japan", "nickname": "Shohei", "power": 82, "speed": 88, "technique": 97, "endurance": 90, "titles": 5, "wins": 75, "legacy": 87 }},
+{"name": "Ilias Iliadis", "attributes": { "discipline": "Judo", "gender": "male", "country": "Greece", "nickname": "The Greek Warrior", "power": 88, "speed": 86, "technique": 90, "endurance": 87, "titles": 3, "wins": 70, "legacy": 78 }},
+{"name": "Isao Okano", "attributes": { "discipline": "Judo", "gender": "male", "country": "Japan", "nickname": "Okano", "power": 82, "speed": 84, "technique": 93, "endurance": 88, "titles": 2, "wins": 90, "legacy": 82 }},
+{"name": "Peter Seisenbacher", "attributes": { "discipline": "Judo", "gender": "male", "country": "Austria", "nickname": "The Golden Austrian", "power": 84, "speed": 82, "technique": 89, "endurance": 86, "titles": 3, "wins": 65, "legacy": 80 }},
+{"name": "Ryoko Tani", "attributes": { "discipline": "Judo", "gender": "female", "country": "Japan", "nickname": "Yawara-chan", "power": 78, "speed": 92, "technique": 99, "endurance": 90, "titles": 9, "wins": 180, "legacy": 100 }},
+{"name": "Clarisse Agbegnenou", "attributes": { "discipline": "Judo", "gender": "female", "country": "France", "nickname": "The Tigress", "power": 82, "speed": 88, "technique": 94, "endurance": 88, "titles": 4, "wins": 90, "legacy": 85 }},
+{"name": "Kayla Harrison", "attributes": { "discipline": "Judo", "gender": "female", "country": "USA", "nickname": "KH", "power": 84, "speed": 84, "technique": 92, "endurance": 88, "titles": 4, "wins": 80, "legacy": 82 }},
+{"name": "Idalys Ortiz", "attributes": { "discipline": "Judo", "gender": "female", "country": "Cuba", "nickname": "The Tower", "power": 86, "speed": 80, "technique": 90, "endurance": 85, "titles": 3, "wins": 75, "legacy": 78 }},
+{"name": "Ingrid Berghmans", "attributes": { "discipline": "Judo", "gender": "female", "country": "Belgium", "nickname": "The Golden Girl", "power": 80, "speed": 80, "technique": 92, "endurance": 85, "titles": 6, "wins": 120, "legacy": 85 }},
+{"name": "Driulis González", "attributes": { "discipline": "Judo", "gender": "female", "country": "Cuba", "nickname": "La Pequeña Guerrera", "power": 78, "speed": 84, "technique": 90, "endurance": 86, "titles": 5, "wins": 95, "legacy": 80 }},
+
+  ];
+
+const wres = [
+{"name": "Alexander Medved", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "male", "country": "USSR", "nickname": "The Bear", "power": 88, "speed": 84, "technique": 97, "endurance": 92, "titles": 10, "wins": 130, "legacy": 99 }},
+{"name": "Buvaisar Saitiev", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "male", "country": "Russia", "nickname": "The Surgeon", "power": 85, "speed": 88, "technique": 96, "endurance": 91, "titles": 9, "wins": 115, "legacy": 96 }},
+{"name": "John Smith", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "male", "country": "USA", "nickname": "The Leg Lace King", "power": 80, "speed": 90, "technique": 98, "endurance": 89, "titles": 8, "wins": 100, "legacy": 94 }},
+{"name": "Arsen Fadzaev", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "male", "country": "USSR", "nickname": "Fadzaev", "power": 83, "speed": 86, "technique": 94, "endurance": 89, "titles": 8, "wins": 100, "legacy": 90 }},
+{"name": "Cael Sanderson", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "male", "country": "USA", "nickname": "The Unbeatable", "power": 86, "speed": 88, "technique": 95, "endurance": 90, "titles": 5, "wins": 172, "legacy": 88 }},
+{"name": "Sergei Beloglazov", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "male", "country": "USSR", "nickname": "Beloglazov", "power": 80, "speed": 87, "technique": 95, "endurance": 88, "titles": 8, "wins": 95, "legacy": 88 }},
+{"name": "Jordan Burroughs", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "male", "country": "USA", "nickname": "JB", "power": 84, "speed": 92, "technique": 94, "endurance": 90, "titles": 5, "wins": 85, "legacy": 85 }},
+{"name": "Bruce Baumgartner", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "male", "country": "USA", "nickname": "The Baumgartner", "power": 92, "speed": 78, "technique": 88, "endurance": 86, "titles": 5, "wins": 85, "legacy": 82 }},
+{"name": "Abdulrashid Sadulaev", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "male", "country": "Russia", "nickname": "The Russian Tank", "power": 94, "speed": 85, "technique": 93, "endurance": 89, "titles": 6, "wins": 75, "legacy": 80 }},
+{"name": "Kyle Snyder", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "male", "country": "USA", "nickname": "The Captain", "power": 90, "speed": 83, "technique": 90, "endurance": 88, "titles": 4, "wins": 65, "legacy": 72 }},
+{"name": "Saori Yoshida", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "female", "country": "Japan", "nickname": "The Goddess", "power": 78, "speed": 88, "technique": 98, "endurance": 92, "titles": 16, "wins": 190, "legacy": 100 }},
+{"name": "Kaori Icho", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "female", "country": "Japan", "nickname": "The Iron Woman", "power": 80, "speed": 86, "technique": 97, "endurance": 90, "titles": 14, "wins": 170, "legacy": 98 }},
+{"name": "Adeline Gray", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "female", "country": "USA", "nickname": "The GOAT", "power": 84, "speed": 82, "technique": 93, "endurance": 88, "titles": 6, "wins": 90, "legacy": 82 }},
+{"name": "Helen Maroulis", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "female", "country": "USA", "nickname": "The Phenom", "power": 76, "speed": 86, "technique": 92, "endurance": 87, "titles": 3, "wins": 75, "legacy": 78 }},
+{"name": "Natalia Vorobeva", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "female", "country": "Russia", "nickname": "Vorobeva", "power": 82, "speed": 82, "technique": 90, "endurance": 86, "titles": 2, "wins": 65, "legacy": 72 }},
+{"name": "Yui Susaki", "attributes": { "discipline": "Wrestling (Freestyle)", "gender": "female", "country": "Japan", "nickname": "The Undefeated", "power": 76, "speed": 90, "technique": 95, "endurance": 89, "titles": 4, "wins": 80, "legacy": 75 }},
+
+ ];
+
+
+const mma = [
+{"name": "Georges St-Pierre", "attributes": { "discipline": "MMA", "gender": "male", "country": "Canada", "nickname": "GSP / Rush", "power": 84, "speed": 88, "technique": 98, "endurance": 94, "titles": 3, "wins": 26, "legacy": 98 }},
+{"name": "Anderson Silva", "attributes": { "discipline": "MMA", "gender": "male", "country": "Brazil", "nickname": "The Spider", "power": 86, "speed": 88, "technique": 97, "endurance": 84, "titles": 2, "wins": 34, "legacy": 97 }},
+{"name": "Fedor Emelianenko", "attributes": { "discipline": "MMA", "gender": "male", "country": "Russia", "nickname": "The Last Emperor", "power": 94, "speed": 84, "technique": 93, "endurance": 88, "titles": 4, "wins": 40, "legacy": 97 }},
+{"name": "Jon Jones", "attributes": { "discipline": "MMA", "gender": "male", "country": "USA", "nickname": "Bones", "power": 88, "speed": 87, "technique": 96, "endurance": 88, "titles": 3, "wins": 27, "legacy": 96 }},
+{"name": "Khabib Nurmagomedov", "attributes": { "discipline": "MMA", "gender": "male", "country": "Russia", "nickname": "The Eagle", "power": 88, "speed": 84, "technique": 96, "endurance": 95, "titles": 1, "wins": 29, "legacy": 95 }},
+{"name": "Demetrious Johnson", "attributes": { "discipline": "MMA", "gender": "male", "country": "USA", "nickname": "Mighty Mouse", "power": 75, "speed": 96, "technique": 97, "endurance": 93, "titles": 2, "wins": 30, "legacy": 90 }},
+{"name": "José Aldo", "attributes": { "discipline": "MMA", "gender": "male", "country": "Brazil", "nickname": "Scarface", "power": 84, "speed": 88, "technique": 93, "endurance": 88, "titles": 2, "wins": 31, "legacy": 85 }},
+{"name": "Chuck Liddell", "attributes": { "discipline": "MMA", "gender": "male", "country": "USA", "nickname": "The Iceman", "power": 92, "speed": 82, "technique": 82, "endurance": 82, "titles": 1, "wins": 21, "legacy": 82 }},
+{"name": "BJ Penn", "attributes": { "discipline": "MMA", "gender": "male", "country": "USA", "nickname": "The Prodigy", "power": 82, "speed": 84, "technique": 94, "endurance": 78, "titles": 3, "wins": 16, "legacy": 82 }},
+{"name": "Stipe Miocic", "attributes": { "discipline": "MMA", "gender": "male", "country": "USA", "nickname": "The Croatian Sensation", "power": 90, "speed": 80, "technique": 85, "endurance": 90, "titles": 3, "wins": 20, "legacy": 80 }},
+{"name": "Amanda Nunes", "attributes": { "discipline": "MMA", "gender": "female", "country": "Brazil", "nickname": "The Lioness", "power": 88, "speed": 86, "technique": 94, "endurance": 90, "titles": 3, "wins": 22, "legacy": 100 }},
+{"name": "Valentina Shevchenko", "attributes": { "discipline": "MMA", "gender": "female", "country": "Kyrgyzstan", "nickname": "Bullet", "power": 82, "speed": 88, "technique": 96, "endurance": 88, "titles": 2, "wins": 23, "legacy": 92 }},
+{"name": "Cris Cyborg", "attributes": { "discipline": "MMA", "gender": "female", "country": "Brazil", "nickname": "Cyborg", "power": 90, "speed": 82, "technique": 86, "endurance": 88, "titles": 5, "wins": 26, "legacy": 88 }},
+{"name": "Ronda Rousey", "attributes": { "discipline": "MMA", "gender": "female", "country": "USA", "nickname": "Rowdy", "power": 82, "speed": 82, "technique": 88, "endurance": 82, "titles": 2, "wins": 12, "legacy": 90 }},
+{"name": "Joanna Jedrzejczyk", "attributes": { "discipline": "MMA", "gender": "female", "country": "Poland", "nickname": "JJ", "power": 78, "speed": 88, "technique": 92, "endurance": 90, "titles": 2, "wins": 16, "legacy": 82 }},
+{"name": "Zhang Weili", "attributes": { "discipline": "MMA", "gender": "female", "country": "China", "nickname": "Magnum", "power": 82, "speed": 85, "technique": 90, "endurance": 90, "titles": 2, "wins": 24, "legacy": 78 }},
+
+ ];
+
+
+const muay = [
+{"name": "Samart Payakaroon", "attributes": { "discipline": "Muay Thai", "gender": "male", "country": "Thailand", "nickname": "The Genius", "power": 80, "speed": 94, "technique": 100, "endurance": 88, "titles": 5, "wins": 150, "legacy": 100 }},
+{"name": "Dieselnoi Chor Thanasukarn", "attributes": { "discipline": "Muay Thai", "gender": "male", "country": "Thailand", "nickname": "Sky-Piercing Knee", "power": 92, "speed": 85, "technique": 93, "endurance": 96, "titles": 2, "wins": 120, "legacy": 96 }},
+{"name": "Saenchai", "attributes": { "discipline": "Muay Thai", "gender": "male", "country": "Thailand", "nickname": "Saenchai", "power": 78, "speed": 96, "technique": 98, "endurance": 88, "titles": 8, "wins": 300, "legacy": 97 }},
+{"name": "Buakaw Banchamek", "attributes": { "discipline": "Muay Thai", "gender": "male", "country": "Thailand", "nickname": "White Lotus", "power": 88, "speed": 90, "technique": 90, "endurance": 92, "titles": 10, "wins": 242, "legacy": 88 }},
+{"name": "Yodsanklai Fairtex", "attributes": { "discipline": "Muay Thai", "gender": "male", "country": "Thailand", "nickname": "The Boxing Computer", "power": 84, "speed": 88, "technique": 96, "endurance": 88, "titles": 8, "wins": 175, "legacy": 87 }},
+{"name": "Ramon Dekkers", "attributes": { "discipline": "Muay Thai", "gender": "male", "country": "Netherlands", "nickname": "The Diamond", "power": 90, "speed": 86, "technique": 88, "endurance": 90, "titles": 9, "wins": 200, "legacy": 85 }},
+{"name": "Namsaknoi Yudthagarngamtorn", "attributes": { "discipline": "Muay Thai", "gender": "male", "country": "Thailand", "nickname": "Elbow Hunter of Muang Surin", "power": 80, "speed": 88, "technique": 95, "endurance": 90, "titles": 3, "wins": 165, "legacy": 80 }},
+{"name": "Superlek Kiatmoo9", "attributes": { "discipline": "Muay Thai", "gender": "male", "country": "Thailand", "nickname": "The Kryptonite", "power": 82, "speed": 90, "technique": 95, "endurance": 88, "titles": 6, "wins": 180, "legacy": 82 }},
+{"name": "Rodtang Jitmuangnon", "attributes": { "discipline": "Muay Thai", "gender": "male", "country": "Thailand", "nickname": "The Iron Man", "power": 88, "speed": 87, "technique": 88, "endurance": 96, "titles": 4, "wins": 270, "legacy": 78 }},
+{"name": "Tongchai Tor Silachai", "attributes": { "discipline": "Muay Thai", "gender": "male", "country": "Thailand", "nickname": "The Heavyweight Legend", "power": 90, "speed": 80, "technique": 88, "endurance": 86, "titles": 4, "wins": 140, "legacy": 75 }},
+{"name": "Stamp Fairtex", "attributes": { "discipline": "Muay Thai", "gender": "female", "country": "Thailand", "nickname": "Stamp", "power": 78, "speed": 90, "technique": 94, "endurance": 88, "titles": 5, "wins": 72, "legacy": 88 }},
+{"name": "Anissa Meksen", "attributes": { "discipline": "Muay Thai", "gender": "female", "country": "France", "nickname": "C18", "power": 76, "speed": 92, "technique": 95, "endurance": 88, "titles": 12, "wins": 95, "legacy": 85 }},
+{"name": "Jorina Baars", "attributes": { "discipline": "Muay Thai", "gender": "female", "country": "Netherlands", "nickname": "The Goddess of War", "power": 78, "speed": 86, "technique": 90, "endurance": 88, "titles": 4, "wins": 45, "legacy": 78 }},
+{"name": "Tiffany Van Soest", "attributes": { "discipline": "Muay Thai", "gender": "female", "country": "USA", "nickname": "The Warrior Princess", "power": 76, "speed": 86, "technique": 90, "endurance": 86, "titles": 6, "wins": 40, "legacy": 72 }},
+{"name": "Sawsing Sor Sopit", "attributes": { "discipline": "Muay Thai", "gender": "female", "country": "Thailand", "nickname": "Sawsing", "power": 74, "speed": 84, "technique": 88, "endurance": 86, "titles": 3, "wins": 80, "legacy": 68 }},
+{"name": "Loma Lookboonmee", "attributes": { "discipline": "Muay Thai", "gender": "female", "country": "Thailand", "nickname": "The Muay Thai Fighter", "power": 74, "speed": 86, "technique": 87, "endurance": 85, "titles": 3, "wins": 30, "legacy": 65 }},
+  ];
+
+
+const taek = [
+{"name": "Steven Lopez", "attributes": { "discipline": "Taekwondo", "gender": "male", "country": "USA", "nickname": "The Lopez", "power": 80, "speed": 94, "technique": 97, "endurance": 90, "titles": 6, "wins": 95, "legacy": 95 }},
+{"name": "Hadi Saei", "attributes": { "discipline": "Taekwondo", "gender": "male", "country": "Iran", "nickname": "The Iranian Tiger", "power": 78, "speed": 92, "technique": 93, "endurance": 88, "titles": 5, "wins": 85, "legacy": 90 }},
+{"name": "Moon Dae-sung", "attributes": { "discipline": "Taekwondo", "gender": "male", "country": "South Korea", "nickname": "Moon", "power": 82, "speed": 88, "technique": 94, "endurance": 88, "titles": 5, "wins": 80, "legacy": 85 }},
+{"name": "Servet Tazegul", "attributes": { "discipline": "Taekwondo", "gender": "male", "country": "Turkey", "nickname": "The Turkish Eagle", "power": 82, "speed": 91, "technique": 90, "endurance": 87, "titles": 3, "wins": 75, "legacy": 78 }},
+{"name": "Lee Dae-hoon", "attributes": { "discipline": "Taekwondo", "gender": "male", "country": "South Korea", "nickname": "Lightning Lee", "power": 78, "speed": 94, "technique": 95, "endurance": 90, "titles": 5, "wins": 90, "legacy": 82 }},
+{"name": "Cha Dong-min", "attributes": { "discipline": "Taekwondo", "gender": "male", "country": "South Korea", "nickname": "Cha", "power": 80, "speed": 88, "technique": 91, "endurance": 86, "titles": 2, "wins": 70, "legacy": 75 }},
+{"name": "Rafael Alba", "attributes": { "discipline": "Taekwondo", "gender": "male", "country": "Cuba", "nickname": "The Cuban Tornado", "power": 80, "speed": 90, "technique": 90, "endurance": 86, "titles": 3, "wins": 65, "legacy": 70 }},
+{"name": "Wu Jingyu", "attributes": { "discipline": "Taekwondo", "gender": "female", "country": "China", "nickname": "Lightning", "power": 72, "speed": 97, "technique": 95, "endurance": 87, "titles": 5, "wins": 85, "legacy": 87 }},
+{"name": "Hwang Kyung-seon", "attributes": { "discipline": "Taekwondo", "gender": "female", "country": "South Korea", "nickname": "Queen of TKD", "power": 76, "speed": 93, "technique": 94, "endurance": 88, "titles": 5, "wins": 82, "legacy": 85 }},
+{"name": "Jade Jones", "attributes": { "discipline": "Taekwondo", "gender": "female", "country": "United Kingdom", "nickname": "The Headhunter", "power": 75, "speed": 96, "technique": 93, "endurance": 88, "titles": 4, "wins": 80, "legacy": 85 }},
+{"name": "Bianca Walkden", "attributes": { "discipline": "Taekwondo", "gender": "female", "country": "United Kingdom", "nickname": "The Hurricane", "power": 80, "speed": 88, "technique": 91, "endurance": 87, "titles": 5, "wins": 85, "legacy": 80 }},
+{"name": "Lijun Zhou", "attributes": { "discipline": "Taekwondo", "gender": "female", "country": "China", "nickname": "Zhou", "power": 74, "speed": 92, "technique": 92, "endurance": 87, "titles": 3, "wins": 75, "legacy": 72 }},
+
+  ];
+
+
+const kara = [
+{"name": "Rafael Aghayev", "attributes": { "discipline": "Karate", "gender": "male", "country": "Azerbaijan", "nickname": "The Terminator", "power": 82, "speed": 94, "technique": 97, "endurance": 90, "titles": 5, "wins": 95, "legacy": 97 }},
+{"name": "Luigi Busa", "attributes": { "discipline": "Karate", "gender": "male", "country": "Italy", "nickname": "Busa", "power": 80, "speed": 88, "technique": 93, "endurance": 88, "titles": 4, "wins": 75, "legacy": 82 }},
+{"name": "Sajad Ganjzadeh", "attributes": { "discipline": "Karate", "gender": "male", "country": "Iran", "nickname": "The Giant", "power": 90, "speed": 85, "technique": 90, "endurance": 88, "titles": 4, "wins": 75, "legacy": 80 }},
+{"name": "Steven Da Costa", "attributes": { "discipline": "Karate", "gender": "male", "country": "France", "nickname": "Golden Boy", "power": 82, "speed": 91, "technique": 93, "endurance": 88, "titles": 3, "wins": 70, "legacy": 78 }},
+{"name": "Antonio Diaz", "attributes": { "discipline": "Karate", "gender": "male", "country": "Venezuela", "nickname": "El Samurai Venezolano", "power": 80, "speed": 88, "technique": 94, "endurance": 88, "titles": 5, "wins": 80, "legacy": 82 }},
+{"name": "Luca Valdesi", "attributes": { "discipline": "Karate", "gender": "male", "country": "Italy", "nickname": "The Maestro", "power": 72, "speed": 88, "technique": 99, "endurance": 85, "titles": 5, "wins": 85, "legacy": 82 }},
+{"name": "Vito Dell'Aquila", "attributes": { "discipline": "Karate", "gender": "male", "country": "Italy", "nickname": "Vito", "power": 78, "speed": 94, "technique": 91, "endurance": 88, "titles": 3, "wins": 65, "legacy": 72 }},
+{"name": "Stanislav Horuna", "attributes": { "discipline": "Karate", "gender": "male", "country": "Ukraine", "nickname": "The Ukrainian Fighter", "power": 82, "speed": 88, "technique": 90, "endurance": 88, "titles": 3, "wins": 70, "legacy": 72 }},
+{"name": "Michael Milon", "attributes": { "discipline": "Karate", "gender": "male", "country": "France", "nickname": "Milon", "power": 80, "speed": 90, "technique": 92, "endurance": 86, "titles": 4, "wins": 70, "legacy": 75 }},
+{"name": "Enes Erkan", "attributes": { "discipline": "Karate", "gender": "male", "country": "Turkey", "nickname": "The Turkish Champion", "power": 78, "speed": 87, "technique": 89, "endurance": 85, "titles": 2, "wins": 65, "legacy": 65 }},
+{"name": "Sandra Sanchez", "attributes": { "discipline": "Karate", "gender": "female", "country": "Spain", "nickname": "The Samurai", "power": 70, "speed": 88, "technique": 100, "endurance": 86, "titles": 8, "wins": 90, "legacy": 97 }},
+{"name": "Kiyou Shimizu", "attributes": { "discipline": "Karate", "gender": "female", "country": "Japan", "nickname": "Kiyou", "power": 68, "speed": 86, "technique": 99, "endurance": 84, "titles": 5, "wins": 80, "legacy": 82 }},
+{"name": "Bettina Plank", "attributes": { "discipline": "Karate", "gender": "female", "country": "Austria", "nickname": "Plank", "power": 68, "speed": 84, "technique": 97, "endurance": 83, "titles": 3, "wins": 65, "legacy": 72 }},
+{"name": "Serap Ozcelik Arapoglu", "attributes": { "discipline": "Karate", "gender": "female", "country": "Turkey", "nickname": "The Turkish Warrior", "power": 74, "speed": 88, "technique": 90, "endurance": 85, "titles": 3, "wins": 70, "legacy": 70 }},
+{"name": "Sara Cardin", "attributes": { "discipline": "Karate", "gender": "female", "country": "Italy", "nickname": "Cardin", "power": 72, "speed": 86, "technique": 90, "endurance": 84, "titles": 3, "wins": 65, "legacy": 68 }},
+{"name": "Alizée Agier", "attributes": { "discipline": "Karate", "gender": "female", "country": "France", "nickname": "Agier", "power": 72, "speed": 86, "technique": 88, "endurance": 84, "titles": 2, "wins": 60, "legacy": 65 }},
+
+  ];
+
+
+const kick = [
+{"name": "Giorgio Petrosyan", "attributes": { "discipline": "Kickboxing", "gender": "male", "country": "Italy", "nickname": "The Doctor", "power": 80, "speed": 96, "technique": 99, "endurance": 90, "titles": 8, "wins": 103, "legacy": 98 }},
+{"name": "Ernesto Hoost", "attributes": { "discipline": "Kickboxing", "gender": "male", "country": "Netherlands", "nickname": "Mr. Perfect", "power": 84, "speed": 86, "technique": 96, "endurance": 90, "titles": 5, "wins": 110, "legacy": 96 }},
+{"name": "Semmy Schilt", "attributes": { "discipline": "Kickboxing", "gender": "male", "country": "Netherlands", "nickname": "The Ramp", "power": 90, "speed": 78, "technique": 88, "endurance": 88, "titles": 5, "wins": 117, "legacy": 90 }},
+{"name": "Peter Aerts", "attributes": { "discipline": "Kickboxing", "gender": "male", "country": "Netherlands", "nickname": "The Dutch Lumberjack", "power": 92, "speed": 83, "technique": 88, "endurance": 88, "titles": 4, "wins": 100, "legacy": 92 }},
+{"name": "Andy Hug", "attributes": { "discipline": "Kickboxing", "gender": "male", "country": "Switzerland", "nickname": "The Swiss Samurai", "power": 86, "speed": 86, "technique": 92, "endurance": 88, "titles": 2, "wins": 55, "legacy": 90 }},
+{"name": "Remy Bonjasky", "attributes": { "discipline": "Kickboxing", "gender": "male", "country": "Netherlands", "nickname": "The Flying Gentleman", "power": 80, "speed": 88, "technique": 92, "endurance": 90, "titles": 4, "wins": 80, "legacy": 85 }},
+{"name": "Mirko Cro Cop", "attributes": { "discipline": "Kickboxing", "gender": "male", "country": "Croatia", "nickname": "Cro Cop", "power": 96, "speed": 84, "technique": 86, "endurance": 82, "titles": 2, "wins": 111, "legacy": 85 }},
+{"name": "Badr Hari", "attributes": { "discipline": "Kickboxing", "gender": "male", "country": "Netherlands", "nickname": "The Golden Boy", "power": 96, "speed": 88, "technique": 86, "endurance": 82, "titles": 5, "wins": 108, "legacy": 82 }},
+{"name": "Raymond Daniels", "attributes": { "discipline": "Kickboxing", "gender": "male", "country": "USA", "nickname": "The Blade", "power": 82, "speed": 95, "technique": 96, "endurance": 87, "titles": 4, "wins": 45, "legacy": 75 }},
+{"name": "Gokhan Saki", "attributes": { "discipline": "Kickboxing", "gender": "male", "country": "Netherlands", "nickname": "The Turkish Tornado", "power": 92, "speed": 86, "technique": 86, "endurance": 86, "titles": 4, "wins": 90, "legacy": 78 }},
+{"name": "Anissa Meksen", "attributes": { "discipline": "Kickboxing", "gender": "female", "country": "France", "nickname": "C18", "power": 76, "speed": 92, "technique": 95, "endurance": 88, "titles": 10, "wins": 90, "legacy": 90 }},
+{"name": "Jorina Baars", "attributes": { "discipline": "Kickboxing", "gender": "female", "country": "Netherlands", "nickname": "The Goddess of War", "power": 78, "speed": 86, "technique": 90, "endurance": 88, "titles": 5, "wins": 50, "legacy": 82 }},
+{"name": "Tiffany Van Soest", "attributes": { "discipline": "Kickboxing", "gender": "female", "country": "USA", "nickname": "The Warrior Princess", "power": 76, "speed": 86, "technique": 90, "endurance": 86, "titles": 6, "wins": 42, "legacy": 75 }},
+{"name": "Julie Kitchen", "attributes": { "discipline": "Kickboxing", "gender": "female", "country": "United Kingdom", "nickname": "The Queen", "power": 74, "speed": 84, "technique": 88, "endurance": 84, "titles": 4, "wins": 55, "legacy": 70 }},
+{"name": "Martine Michieletto", "attributes": { "discipline": "Kickboxing", "gender": "female", "country": "Italy", "nickname": "Michieletto", "power": 72, "speed": 82, "technique": 86, "endurance": 84, "titles": 3, "wins": 45, "legacy": 62 }},
+
+  ];
+
+
+const kung = [
+{"name": "Bruce Lee", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "male", "country": "USA", "nickname": "The Dragon", "power": 82, "speed": 100, "technique": 98, "endurance": 88, "titles": 0, "wins": 5, "legacy": 100 }},
+{"name": "Ip Man", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "male", "country": "China", "nickname": "The Grandmaster", "power": 75, "speed": 88, "technique": 100, "endurance": 78, "titles": 0, "wins": 8, "legacy": 97 }},
+{"name": "Wong Fei-hung", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "male", "country": "China", "nickname": "The Tiger of Canton", "power": 85, "speed": 82, "technique": 98, "endurance": 86, "titles": 0, "wins": 20, "legacy": 95 }},
+{"name": "Jet Li", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "male", "country": "China", "nickname": "The Fearless One", "power": 80, "speed": 94, "technique": 97, "endurance": 88, "titles": 5, "wins": 45, "legacy": 85 }},
+{"name": "Zhao Changjun", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "male", "country": "China", "nickname": "King of Wushu", "power": 78, "speed": 90, "technique": 96, "endurance": 88, "titles": 6, "wins": 55, "legacy": 78 }},
+{"name": "Wong Shun Leung", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "male", "country": "Hong Kong", "nickname": "The Gong Sau King", "power": 78, "speed": 86, "technique": 95, "endurance": 84, "titles": 0, "wins": 60, "legacy": 80 }},
+{"name": "Wu Jing", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "male", "country": "China", "nickname": "Wolf Warrior", "power": 82, "speed": 92, "technique": 92, "endurance": 88, "titles": 4, "wins": 40, "legacy": 72 }},
+{"name": "Donnie Yen", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "male", "country": "Hong Kong", "nickname": "The Real Deal", "power": 80, "speed": 88, "technique": 90, "endurance": 86, "titles": 0, "wins": 5, "legacy": 70 }},
+{"name": "Lau Kar-leung", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "male", "country": "Hong Kong", "nickname": "The Iron Monkey", "power": 80, "speed": 82, "technique": 95, "endurance": 80, "titles": 0, "wins": 15, "legacy": 75 }},
+{"name": "Yuan Wen Qing", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "male", "country": "China", "nickname": "The Wushu Prince", "power": 76, "speed": 90, "technique": 94, "endurance": 87, "titles": 4, "wins": 35, "legacy": 65 }},
+{"name": "Michelle Yeoh", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "female", "country": "Malaysia", "nickname": "The Action Star", "power": 70, "speed": 84, "technique": 88, "endurance": 80, "titles": 0, "wins": 0, "legacy": 82 }},
+{"name": "Nannan Xu", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "female", "country": "China", "nickname": "Nannan", "power": 68, "speed": 88, "technique": 96, "endurance": 84, "titles": 4, "wins": 35, "legacy": 70 }},
+{"name": "Li Jing", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "female", "country": "China", "nickname": "Li Jing", "power": 70, "speed": 86, "technique": 94, "endurance": 84, "titles": 5, "wins": 40, "legacy": 68 }},
+{"name": "Carmen Castro", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "female", "country": "Spain", "nickname": "The Spanish Dragon", "power": 68, "speed": 82, "technique": 90, "endurance": 82, "titles": 3, "wins": 28, "legacy": 62 }},
+{"name": "Yin Shuying", "attributes": { "discipline": "Kung Fu / Jeet Kune Do", "gender": "female", "country": "China", "nickname": "Yin", "power": 68, "speed": 85, "technique": 92, "endurance": 83, "titles": 4, "wins": 32, "legacy": 65 }},
+
+  ];
+
+
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('jjtCheckbox').checked) selectedCards.push(...jjt);
+    if (document.getElementById('judoCheckbox').checked) selectedCards.push(...judo);
+    if (document.getElementById('wresCheckbox').checked) selectedCards.push(...wres);
+    if (document.getElementById('mmaCheckbox').checked) selectedCards.push(...mma);
+    if (document.getElementById('muayCheckbox').checked) selectedCards.push(...muay);
+    if (document.getElementById('taekCheckbox').checked) selectedCards.push(...taek);
+    if (document.getElementById('karaCheckbox').checked) selectedCards.push(...kara);
+    if (document.getElementById('kickCheckbox').checked) selectedCards.push(...kick);
+    if (document.getElementById('kungCheckbox').checked) selectedCards.push(...kung);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

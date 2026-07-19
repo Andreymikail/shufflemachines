@@ -1,0 +1,208 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Swim</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="swimmCheckbox"> Swimmers</label><br>
+    <label><input type="checkbox" id="poolCheckbox"> Pools</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["False Start: Force your opponent to skip picking the category this round; you choose instead.",
+"Photo Finish: If this round ends in a tie, win the pot immediately without a rematch round.",
+"Personal Best: Add +5 to one stat on your active card for this round only.",
+"Relay Swap: Trade your top card with the card directly beneath it before revealing.",
+"Golden Goggles: Peek at your opponent's top card before choosing your category.",
+"Disqualified: Cancel your opponent's chosen category and force them to pick a different one.",
+"Second Wind: If you lose this round, replay the same category immediately with your next card.",
+"Split Time: Compare two categories at once this round; you win if you're higher in at least one.",
+"Lane Rope: Block one opponent from playing an action card this round.",
+"Taper Week: Sit out this round without playing a card or losing your turn order.",
+"Dive Reaction: Win the round instantly if the category is World Records Set and your value is 20 or higher.",
+"Record Pace: Reveal your card's Legend Score to all players before anyone selects a category.",
+"Cap and Goggles: Protect your top card from being taken this round, even if you lose it.",
+"Wall Touch: On an exact tie in value, you win by default instead of splitting the pot.",
+"Backstroke Flags: See the category your opponent is about to pick before committing to yours.",
+];
+  
+const swimm = [
+    {"name": "Aaron Peirsol", "attributes": {"Gender": "male", "Nationality": "USA", "Born": 1983, "Active Years": "2000–2009", "Signature Event": "200m Backstroke", "Olympic Golds": 5, "Olympic Medals Total": 7, "World Championship Golds": 8, "World Records Broken": 4, "Career Longevity Years": 9, "Legend Score": 75, "Fun Fact": "Considered the greatest backstroker of his era, dominant for nearly a decade."}},
+{"name": "Adam Peaty", "attributes": {"Gender": "male", "Nationality": "Great Britain", "Born": 1994, "Active Years": "2014–present", "Signature Event": "100m Breaststroke", "Olympic Golds": 3, "Olympic Medals Total": 6, "World Championship Golds": 8, "World Records Broken": 7, "Career Longevity Years": 12, "Legend Score": 81, "Fun Fact": "Undefeated in individual 100m breaststroke competition for years, redefining the event."}},
+{"name": "Alexander Popov", "attributes": {"Gender": "male", "Nationality": "Russia", "Born": 1971, "Active Years": "1992–2004", "Signature Event": "100m Freestyle", "Olympic Golds": 4, "Olympic Medals Total": 9, "World Championship Golds": 6, "World Records Broken": 5, "Career Longevity Years": 12, "Legend Score": 79, "Fun Fact": "Known as the 'Tsar of the Pool' for his dominance in sprint freestyle through the 1990s."}},
+{"name": "Ariarne Titmus", "attributes": {"Gender": "female", "Nationality": "Australia", "Born": 2000, "Active Years": "2018–present", "Signature Event": "400m Freestyle", "Olympic Golds": 4, "Olympic Medals Total": 8, "World Championship Golds": 5, "World Records Broken": 2, "Career Longevity Years": 8, "Legend Score": 82, "Fun Fact": "Nicknamed 'The Terminator' for ending Katie Ledecky's unbeaten 400m freestyle streak."}},
+{"name": "Caeleb Dressel", "attributes": {"Gender": "male", "Nationality": "USA", "Born": 1996, "Active Years": "2016–2024", "Signature Event": "50m/100m Freestyle", "Olympic Golds": 9, "Olympic Medals Total": 10, "World Championship Golds": 13, "World Records Broken": 8, "Career Longevity Years": 8, "Legend Score": 86, "Fun Fact": "Won 7 gold medals at the 2019 World Championships alone."}},
+{"name": "César Cielo", "attributes": {"Gender": "male", "Nationality": "Brazil", "Born": 1987, "Active Years": "2004–2016", "Signature Event": "50m Freestyle", "Olympic Golds": 1, "Olympic Medals Total": 3, "World Championship Golds": 6, "World Records Broken": 2, "Career Longevity Years": 12, "Legend Score": 68, "Fun Fact": "First man to swim the 100m freestyle under 47 seconds."}},
+{"name": "Dawn Fraser", "attributes": {"Gender": "female", "Nationality": "Australia", "Born": 1937, "Active Years": "1956–1964", "Signature Event": "100m Freestyle", "Olympic Golds": 4, "Olympic Medals Total": 8, "World Championship Golds": 0, "World Records Broken": 27, "Career Longevity Years": 8, "Legend Score": 79, "Fun Fact": "First swimmer, male or female, to win the same individual event at three consecutive Olympics."}},
+{"name": "Emma McKeon", "attributes": {"Gender": "female", "Nationality": "Australia", "Born": 1994, "Active Years": "2012–present", "Signature Event": "100m Freestyle", "Olympic Golds": 6, "Olympic Medals Total": 14, "World Championship Golds": 4, "World Records Broken": 0, "Career Longevity Years": 12, "Legend Score": 82, "Fun Fact": "Tied with Katie Ledecky as the most decorated female Olympic swimmer of all time with 14 medals."}},
+{"name": "Federica Pellegrini", "attributes": {"Gender": "female", "Nationality": "Italy", "Born": 1988, "Active Years": "2004–2021", "Signature Event": "200m Freestyle", "Olympic Golds": 1, "Olympic Medals Total": 2, "World Championship Golds": 6, "World Records Broken": 9, "Career Longevity Years": 17, "Legend Score": 76, "Fun Fact": "Medaled in the 200m freestyle at five consecutive Olympic Games."}},
+{"name": "Gary Hall Jr.", "attributes": {"Gender": "male", "Nationality": "USA", "Born": 1969, "Active Years": "1996–2004", "Signature Event": "50m Freestyle", "Olympic Golds": 5, "Olympic Medals Total": 10, "World Championship Golds": 3, "World Records Broken": 2, "Career Longevity Years": 8, "Legend Score": 72, "Fun Fact": "Won Olympic sprint medals across three consecutive Games while managing Type 1 diabetes."}},
+{"name": "Grant Hackett", "attributes": {"Gender": "male", "Nationality": "Australia", "Born": 1980, "Active Years": "1998–2008", "Signature Event": "1500m Freestyle", "Olympic Golds": 3, "Olympic Medals Total": 7, "World Championship Golds": 10, "World Records Broken": 2, "Career Longevity Years": 10, "Legend Score": 76, "Fun Fact": "Held the 1500m freestyle world record for a decade before Sun Yang broke it."}},
+{"name": "Ian Thorpe", "attributes": {"Gender": "male", "Nationality": "Australia", "Born": 1982, "Active Years": "1998–2004", "Signature Event": "400m Freestyle", "Olympic Golds": 5, "Olympic Medals Total": 9, "World Championship Golds": 11, "World Records Broken": 13, "Career Longevity Years": 6, "Legend Score": 83, "Fun Fact": "Nicknamed 'Thorpedo' for his dominance in freestyle events in the early 2000s."}},
+{"name": "Janet Evans", "attributes": {"Gender": "female", "Nationality": "USA", "Born": 1971, "Active Years": "1987–1996", "Signature Event": "800m Freestyle", "Olympic Golds": 4, "Olympic Medals Total": 5, "World Championship Golds": 3, "World Records Broken": 7, "Career Longevity Years": 9, "Legend Score": 78, "Fun Fact": "Her 800m freestyle world record stood unbroken for 19 years, through four Olympic Games."}},
+{"name": "Jenny Thompson", "attributes": {"Gender": "female", "Nationality": "USA", "Born": 1973, "Active Years": "1992–2004", "Signature Event": "100m Freestyle / Relays", "Olympic Golds": 8, "Olympic Medals Total": 12, "World Championship Golds": 8, "World Records Broken": 4, "Career Longevity Years": 12, "Legend Score": 80, "Fun Fact": "Won 8 Olympic gold medals, mostly anchoring dominant US relay teams."}},
+{"name": "Johnny Weissmuller", "attributes": {"Gender": "male", "Nationality": "USA", "Born": 1904, "Active Years": "1921–1928", "Signature Event": "100m Freestyle", "Olympic Golds": 5, "Olympic Medals Total": 5, "World Championship Golds": 0, "World Records Broken": 67, "Career Longevity Years": 7, "Legend Score": 77, "Fun Fact": "Never lost a race in his amateur career; later became famous as Hollywood's Tarzan."}},
+{"name": "Katie Ledecky", "attributes": {"Gender": "female", "Nationality": "USA", "Born": 1997, "Active Years": "2012–present", "Signature Event": "800m Freestyle", "Olympic Golds": 9, "Olympic Medals Total": 14, "World Championship Golds": 21, "World Records Broken": 15, "Career Longevity Years": 14, "Legend Score": 97, "Fun Fact": "The most decorated female swimmer in Olympic history, tied at 14 medals with Emma McKeon."}},
+{"name": "Kaylee McKeown", "attributes": {"Gender": "female", "Nationality": "Australia", "Born": 2001, "Active Years": "2018–present", "Signature Event": "200m Backstroke", "Olympic Golds": 5, "Olympic Medals Total": 9, "World Championship Golds": 6, "World Records Broken": 3, "Career Longevity Years": 8, "Legend Score": 80, "Fun Fact": "Swept both backstroke events at consecutive Olympic Games."}},
+{"name": "Kornelia Ender", "attributes": {"Gender": "female", "Nationality": "East Germany", "Born": 1958, "Active Years": "1973–1976", "Signature Event": "100m Freestyle", "Olympic Golds": 4, "Olympic Medals Total": 8, "World Championship Golds": 4, "World Records Broken": 10, "Career Longevity Years": 4, "Legend Score": 77, "Fun Fact": "Swept 4 gold medals at the 1976 Montreal Olympics alone."}},
+{"name": "Kristin Otto", "attributes": {"Gender": "female", "Nationality": "East Germany", "Born": 1966, "Active Years": "1982–1988", "Signature Event": "100m Butterfly", "Olympic Golds": 6, "Olympic Medals Total": 6, "World Championship Golds": 3, "World Records Broken": 3, "Career Longevity Years": 7, "Legend Score": 76, "Fun Fact": "Won 6 gold medals across 6 different events at a single Olympics (Seoul 1988) — still a record."}},
+{"name": "Kristóf Milák", "attributes": {"Gender": "male", "Nationality": "Hungary", "Born": 2000, "Active Years": "2019–present", "Signature Event": "200m Butterfly", "Olympic Golds": 2, "Olympic Medals Total": 4, "World Championship Golds": 3, "World Records Broken": 1, "Career Longevity Years": 7, "Legend Score": 74, "Fun Fact": "Smashed Michael Phelps' long-standing 200m butterfly world record in 2019."}},
+{"name": "Léon Marchand", "attributes": {"Gender": "male", "Nationality": "France", "Born": 2002, "Active Years": "2021–present", "Signature Event": "400m Individual Medley", "Olympic Golds": 4, "Olympic Medals Total": 5, "World Championship Golds": 5, "World Records Broken": 1, "Career Longevity Years": 5, "Legend Score": 85, "Fun Fact": "Won 4 individual gold medals on home soil at the 2024 Paris Olympics."}},
+{"name": "Mark Spitz", "attributes": {"Gender": "male", "Nationality": "USA", "Born": 1950, "Active Years": "1968–1972", "Signature Event": "100m Butterfly", "Olympic Golds": 9, "Olympic Medals Total": 11, "World Championship Golds": 0, "World Records Broken": 33, "Career Longevity Years": 5, "Legend Score": 88, "Fun Fact": "Won 7 gold medals at the 1972 Munich Olympics, a record that stood for 36 years."}},
+{"name": "Matt Biondi", "attributes": {"Gender": "male", "Nationality": "USA", "Born": 1965, "Active Years": "1984–1992", "Signature Event": "100m Freestyle", "Olympic Golds": 8, "Olympic Medals Total": 11, "World Championship Golds": 6, "World Records Broken": 13, "Career Longevity Years": 8, "Legend Score": 82, "Fun Fact": "Won 7 medals (5 gold) at the 1988 Seoul Olympics alone."}},
+{"name": "Michael Phelps", "attributes": {"Gender": "male", "Nationality": "USA", "Born": 1985, "Active Years": "2000–2016", "Signature Event": "200m Individual Medley", "Olympic Golds": 23, "Olympic Medals Total": 28, "World Championship Golds": 26, "World Records Broken": 39, "Career Longevity Years": 16, "Legend Score": 100, "Fun Fact": "Most decorated Olympian in history across any sport, with 28 total Olympic medals."}},
+{"name": "Pieter van den Hoogenband", "attributes": {"Gender": "male", "Nationality": "Netherlands", "Born": 1978, "Active Years": "1996–2008", "Signature Event": "100m Freestyle", "Olympic Golds": 4, "Olympic Medals Total": 9, "World Championship Golds": 0, "World Records Broken": 2, "Career Longevity Years": 12, "Legend Score": 74, "Fun Fact": "First swimmer to break the 48-second barrier in the 100m freestyle."}},
+{"name": "Ryan Lochte", "attributes": {"Gender": "male", "Nationality": "USA", "Born": 1984, "Active Years": "2004–2016", "Signature Event": "200m Individual Medley", "Olympic Golds": 6, "Olympic Medals Total": 12, "World Championship Golds": 11, "World Records Broken": 5, "Career Longevity Years": 12, "Legend Score": 80, "Fun Fact": "One of the most successful IM swimmers of all time, second only to Phelps for a generation."}},
+{"name": "Ryan Murphy", "attributes": {"Gender": "male", "Nationality": "USA", "Born": 1995, "Active Years": "2016–present", "Signature Event": "100m Backstroke", "Olympic Golds": 5, "Olympic Medals Total": 9, "World Championship Golds": 3, "World Records Broken": 1, "Career Longevity Years": 10, "Legend Score": 74, "Fun Fact": "Swept the backstroke double at the 2016 Rio Olympics."}},
+{"name": "Sarah Sjöström", "attributes": {"Gender": "female", "Nationality": "Sweden", "Born": 1993, "Active Years": "2008–present", "Signature Event": "50m/100m Butterfly", "Olympic Golds": 2, "Olympic Medals Total": 6, "World Championship Golds": 15, "World Records Broken": 8, "Career Longevity Years": 17, "Legend Score": 83, "Fun Fact": "Holds the record for most individual medals at long-course World Championships of any swimmer, male or female."}},
+{"name": "Summer McIntosh", "attributes": {"Gender": "female", "Nationality": "Canada", "Born": 2006, "Active Years": "2021–present", "Signature Event": "400m Individual Medley", "Olympic Golds": 3, "Olympic Medals Total": 4, "World Championship Golds": 6, "World Records Broken": 9, "Career Longevity Years": 5, "Legend Score": 84, "Fun Fact": "Won 3 golds and 1 silver at the 2024 Paris Olympics before turning 18, and continues breaking world records."}},
+{"name": "Sun Yang", "attributes": {"Gender": "male", "Nationality": "China", "Born": 1991, "Active Years": "2011–2019", "Signature Event": "1500m Freestyle", "Olympic Golds": 3, "Olympic Medals Total": 6, "World Championship Golds": 11, "World Records Broken": 3, "Career Longevity Years": 8, "Legend Score": 78, "Fun Fact": "First swimmer to win Olympic titles across the 200m, 400m, and 1500m freestyle."}},
+  ];
+
+const pool = [
+{"name": "Duna Arena", "attributes": {"City": "Budapest", "Country": "Hungary", "Year Opened": 2017, "Capacity": 15000, "World Records Set": 7, "Major Events Hosted": 2, "Prestige Score": 85, "Marquee Event": "2017 World Aquatics Championships", "Fun Fact": "Built specifically for the 2017 Worlds and reused for the 2022 Championships."}},
+{"name": "Kazan Arena", "attributes": {"City": "Kazan", "Country": "Russia", "Year Opened": 2013, "Capacity": 15000, "World Records Set": 12, "Major Events Hosted": 1, "Prestige Score": 80, "Marquee Event": "2015 World Aquatics Championships", "Fun Fact": "A football stadium converted for swimming, with two temporary 50m pools built on the pitch."}},
+{"name": "London Aquatics Centre", "attributes": {"City": "London", "Country": "United Kingdom", "Year Opened": 2011, "Capacity": 17500, "World Records Set": 9, "Major Events Hosted": 1, "Prestige Score": 88, "Marquee Event": "2012 London Olympics", "Fun Fact": "Designed by Zaha Hadid; its wave-like roof became one of London's Olympic Park icons."}},
+{"name": "National Aquatics Center (Water Cube)", "attributes": {"City": "Beijing", "Country": "China", "Year Opened": 2008, "Capacity": 17000, "World Records Set": 25, "Major Events Hosted": 1, "Prestige Score": 96, "Marquee Event": "2008 Beijing Olympics", "Fun Fact": "Widely considered the fastest pool ever built; 25 world records fell here in a single Games."}},
+{"name": "Olympia-Schwimmhalle", "attributes": {"City": "Munich", "Country": "Germany", "Year Opened": 1972, "Capacity": 9000, "World Records Set": 20, "Major Events Hosted": 1, "Prestige Score": 92, "Marquee Event": "1972 Munich Olympics", "Fun Fact": "The stage for Mark Spitz's historic 7 golds in 7 world-record swims."}},
+{"name": "Olympic Aquatics Stadium", "attributes": {"City": "Rio de Janeiro", "Country": "Brazil", "Year Opened": 2016, "Capacity": 18000, "World Records Set": 8, "Major Events Hosted": 1, "Prestige Score": 82, "Marquee Event": "2016 Rio Olympics", "Fun Fact": "A fully temporary venue; after the Games it was dismantled and rebuilt as two public sports centers."}},
+{"name": "Paris La Défense Arena", "attributes": {"City": "Nanterre (Paris)", "Country": "France", "Year Opened": 2017, "Capacity": 17000, "World Records Set": 4, "Major Events Hosted": 1, "Prestige Score": 84, "Marquee Event": "2024 Paris Olympics", "Fun Fact": "Normally a concert and rugby arena; a temporary 50m pool was installed on its floor in 36 days."}},
+{"name": "Stadio Olimpico del Nuoto (Foro Italico)", "attributes": {"City": "Rome", "Country": "Italy", "Year Opened": 1960, "Capacity": 12000, "World Records Set": 43, "Major Events Hosted": 3, "Prestige Score": 94, "Marquee Event": "2009 World Aquatics Championships", "Fun Fact": "Host of the 'super-suit era' meet where 43 world records fell, more than any single Championships in history."}},
+{"name": "Sydney International Aquatic Centre", "attributes": {"City": "Sydney", "Country": "Australia", "Year Opened": 1994, "Capacity": 17000, "World Records Set": 14, "Major Events Hosted": 1, "Prestige Score": 89, "Marquee Event": "2000 Sydney Olympics", "Fun Fact": "Temporary seating tripled the venue's normal capacity for the 2000 Games."}},
+{"name": "Tokyo Aquatics Centre", "attributes": {"City": "Tokyo", "Country": "Japan", "Year Opened": 2020, "Capacity": 15000, "World Records Set": 6, "Major Events Hosted": 1, "Prestige Score": 83, "Marquee Event": "2020 Tokyo Olympics", "Fun Fact": "Hosted the pandemic-delayed 2020 Games in front of empty stands due to COVID-19 restrictions."}},
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('swimmCheckbox').checked) selectedCards.push(...swimm);
+    if (document.getElementById('poolCheckbox').checked) selectedCards.push(...pool);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

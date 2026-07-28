@@ -1,0 +1,213 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Opera</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="playersCheckbox"> Singers</label><br>
+    <label><input type="checkbox" id="playsCheckbox"> Plays</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Toscanini's Baton: Play before an attribute is named. You choose the attribute for this duel instead of the leader.",
+"Bravi! Bravi!: Play after the attribute is named. Add +15 to your card's value in that attribute for this duel.",
+"The Loggionisti: Play after the attribute is named. Subtract 20 from one opponent's value in that attribute — the gallery has decided they are not up to it.",
+"Understudy Steps In: Play before cards are revealed. Swap the card you are about to play for any other card in your hand.",
+"The Prompter's Box: Look at the top card of any one opponent's pile, then return it. You may immediately name the attribute for the next duel.",
+"Encore!: Play immediately after winning a duel. Fight a second duel using the same attribute before play passes on.",
+"High C: Play when a duel is tied. You win the tie and take every card in the centre.",
+"Regietheater: The director has reimagined everything. Swap any two attribute values on your own card for the rest of the round.",
+"Transposed Down a Semitone: Play on any card in the duel. Its two highest attributes drop by 10 — easier to sing, less impressive to hear.",
+"The Diva Cancels: Choose an opponent. They discard the top card of their pile face down without playing it, and skip naming the attribute this round.",
+"Vocal Rest: Sit out this duel entirely. You lose nothing and draw one card from the bottom of the centre pile.",
+"The Claque: Pay one card from your pile to the centre. You automatically win the current duel regardless of the values.",
+"Opening Night Fiasco: Play against the Super Trump card. It loses this duel outright — even legends have disastrous premieres.",
+"The Censor's Veto: Cancel any action card the moment it is played. It has no effect and goes straight to the discard pile.",
+"Rival Houses: Name a group (A–E). Every player holding a card from that group must reveal it. The highest influence among them takes all the others.",
+"Recording Contract: Copy one attribute value from any card revealed in this duel and use it as your own for this duel only.",
+"Bayreuth Invitation: Look through your discard pile and take back the card with the highest influence. Add it to the bottom of your pile.",
+"Sold-Out Run: Win this duel and you take two extra cards from the centre pile instead of one. Lose it and you take nothing.",
+"Intermission: All players pass the top card of their pile to the player on their left. Then the round continues as normal.",
+"Final Curtain: Play at any time to end the round immediately. All cards in the centre go to whoever currently holds the fewest cards.",
+];
+  
+const players = [
+    {"name": "Adelina Patti", "attributes": {"group": "Golden Age Pioneers", "full name": "Adela Juana María Patti", "born": 1843, "died": 1919, "nationality": "Italian (born in Madrid)", "voice type": "Coloratura soprano", "era": "Romantic / bel canto", "signature role": "Amina in La sonnambula", "house landmark": "Covent Garden debut, 1861 — sang there for 25 consecutive seasons", "influence": 87, "power": 68, "agility": 96, "acting": 62, "legacy": 80, "fun fact": "The highest-paid performer of the 19th century — up to $5,000 in gold per night, paid before the curtain rose. Her contract forbade her name being printed smaller than anyone else's."}},
+{"name": "Birgit Nilsson", "attributes": {"group": "The Superstar Era", "full name": "Märta Birgit Nilsson", "born": 1918, "died": 2005, "nationality": "Swedish", "voice type": "Dramatic soprano", "era": "Wagner / Strauss", "signature role": "Brünnhilde in the Ring cycle", "house landmark": "Bayreuth from 1954; Metropolitan Opera debut, 1959", "influence": 90, "power": 100, "agility": 62, "acting": 78, "legacy": 89, "fun fact": "The loudest voice ever measured in an opera house — she could cut through a full Wagner orchestra without visible effort, and famously kept her sense of humour about it."}},
+{"name": "Cecilia Bartoli", "attributes": {"group": "Modern Icons", "full name": "Cecilia Bartoli", "born": 1966, "died": null, "nationality": "Italian", "voice type": "Coloratura mezzo-soprano", "era": "Baroque / Rossini revival", "signature role": "Rosina in Il barbiere di Siviglia", "house landmark": "Artistic director of the Salzburg Whitsun Festival since 2012", "influence": 80, "power": 66, "agility": 98, "acting": 88, "legacy": 86, "fun fact": "She turned musicology into platinum records — her Vivaldi, Salieri and castrato-repertoire albums sold in the millions and dragged forgotten 18th-century scores back into the concert hall."}},
+{"name": "Dietrich Fischer-Dieskau", "attributes": {"group": "Postwar Legends", "full name": "Albert Dietrich Fischer-Dieskau", "born": 1925, "died": 2012, "nationality": "German", "voice type": "Lyric baritone", "era": "20th century / German repertoire", "signature role": "Wozzeck", "house landmark": "Berlin Städtische Oper from 1948; premiered Britten's War Requiem, 1962", "influence": 91, "power": 74, "agility": 84, "acting": 85, "legacy": 92, "fun fact": "He recorded essentially the entire German lieder repertoire for male voice — over 3,000 songs — and remains the most extensively recorded classical singer in history."}},
+{"name": "Enrico Caruso", "attributes": {"group": "Golden Age Pioneers", "full name": "Enrico Caruso", "born": 1873, "died": 1921, "nationality": "Italian", "voice type": "Tenor", "era": "Verismo", "signature role": "Canio in Pagliacci", "house landmark": "Metropolitan Opera debut, 1903; 863 performances with the company", "influence": 98, "power": 87, "agility": 70, "acting": 82, "legacy": 99, "fun fact": "His 1907 'Vesti la giubba' is widely credited as the first record to sell a million copies — he made the gramophone respectable and the gramophone made him global."}},
+{"name": "Farinelli", "attributes": {"group": "Golden Age Pioneers", "full name": "Carlo Maria Broschi", "born": 1705, "died": 1782, "nationality": "Italian", "voice type": "Castrato soprano", "era": "Baroque", "signature role": "Arbace / Porpora and Hasse concert arias", "house landmark": "Debut in Naples, 1720; London rival to Handel's company, 1734", "influence": 92, "power": 70, "agility": 100, "acting": 65, "legacy": 88, "fun fact": "For 22 years he sang the same handful of arias nightly to soothe the melancholy of Philip V of Spain, and effectively ran court policy from the royal bedchamber."}},
+{"name": "Feodor Chaliapin", "attributes": {"group": "Golden Age Pioneers", "full name": "Feodor Ivanovich Chaliapin", "born": 1873, "died": 1938, "nationality": "Russian", "voice type": "Bass", "era": "Late Romantic", "signature role": "Boris Godunov", "house landmark": "Mamontov's Private Opera, Moscow, 1896; Bolshoi and La Scala thereafter", "influence": 89, "power": 94, "agility": 55, "acting": 99, "legacy": 84, "fun fact": "A self-taught peasant's son who invented the modern singing actor — Stanislavski studied him, and every Boris since is measured against his."}},
+{"name": "Joan Sutherland", "attributes": {"group": "The Superstar Era", "full name": "Dame Joan Alston Sutherland", "born": 1926, "died": 2010, "nationality": "Australian", "voice type": "Dramatic coloratura soprano", "era": "Bel canto", "signature role": "Lucia in Lucia di Lammermoor", "house landmark": "Covent Garden, 1959 — the Lucia that made her career overnight", "influence": 93, "power": 85, "agility": 99, "acting": 64, "legacy": 91, "fun fact": "Venice crowned her 'La Stupenda' in 1960 and the name stuck for fifty years. With her conductor husband Richard Bonynge she recorded dozens of forgotten bel canto operas back into the repertoire."}},
+{"name": "Jussi Björling", "attributes": {"group": "Interwar Titans", "full name": "Johan Jonatan Björling", "born": 1911, "died": 1960, "nationality": "Swedish", "voice type": "Lyric tenor", "era": "Italian / French repertoire", "signature role": "Rodolfo in La bohème", "house landmark": "Royal Swedish Opera, 1930; Metropolitan Opera debut, 1938", "influence": 83, "power": 82, "agility": 76, "acting": 61, "legacy": 87, "fun fact": "He toured as a child in his father's family quartet and recorded at nine years old. Conductors valued him for near-flawless intonation — the tenor other tenors listened to."}},
+{"name": "Kirsten Flagstad", "attributes": {"group": "Interwar Titans", "full name": "Kirsten Målfrid Flagstad", "born": 1895, "died": 1962, "nationality": "Norwegian", "voice type": "Dramatic soprano", "era": "Wagnerian", "signature role": "Isolde in Tristan und Isolde", "house landmark": "Metropolitan Opera debut, 1935 — an unknown at 39 who became an overnight sensation", "influence": 88, "power": 96, "agility": 58, "acting": 74, "legacy": 90, "fun fact": "Her Met debut broadcasts are said to have single-handedly rescued the company from Depression-era bankruptcy. She later became the first director of the Norwegian National Opera."}},
+{"name": "Leontyne Price", "attributes": {"group": "The Superstar Era", "full name": "Mary Violet Leontyne Price", "born": 1927, "died": null, "nationality": "American", "voice type": "Lyric-spinto soprano", "era": "Verdi / 20th century", "signature role": "Aida", "house landmark": "Metropolitan Opera debut, 1961 (Il trovatore) — a 42-minute ovation", "influence": 94, "power": 91, "agility": 72, "acting": 79, "legacy": 93, "fun fact": "Samuel Barber wrote Cleopatra for her, and she opened the new Met at Lincoln Center in 1966 — the first Black singer to become an international opera superstar on her own terms."}},
+{"name": "Luciano Pavarotti", "attributes": {"group": "Modern Icons", "full name": "Luciano Pavarotti", "born": 1935, "died": 2007, "nationality": "Italian", "voice type": "Lyric tenor", "era": "Italian repertoire", "signature role": "Nemorino in L'elisir d'amore", "house landmark": "Metropolitan Opera, 1972 — nine high Cs in La fille du régiment", "influence": 97, "power": 89, "agility": 80, "acting": 68, "legacy": 98, "fun fact": "'King of the High Cs'. The 1990 Three Tenors concert made 'Nessun dorma' a World Cup anthem and produced the best-selling classical album ever recorded."}},
+{"name": "Maria Callas", "attributes": {"group": "Postwar Legends", "full name": "Maria Anna Cecilia Sofia Kalogeropoulos", "born": 1923, "died": 1977, "nationality": "American-born Greek", "voice type": "Soprano sfogato", "era": "Bel canto revival", "signature role": "Norma", "house landmark": "La Scala, 1951–1958 — the defining prima donna assoluta of the era", "influence": 100, "power": 84, "agility": 94, "acting": 100, "legacy": 100, "fun fact": "She resurrected an entire lost repertoire — Bellini, Donizetti, Cherubini — by proving those roles were tragedies, not vocal displays. Opera is still divided into before and after her."}},
+{"name": "Marian Anderson", "attributes": {"group": "Interwar Titans", "full name": "Marian Anderson", "born": 1897, "died": 1993, "nationality": "American", "voice type": "Contralto", "era": "20th century", "signature role": "Ulrica in Un ballo in maschera", "house landmark": "Metropolitan Opera debut, 1955 — the first African American soloist in the company's history", "influence": 95, "power": 79, "agility": 60, "acting": 66, "legacy": 97, "fun fact": "Barred from Constitution Hall in 1939, she sang instead on the steps of the Lincoln Memorial to 75,000 people — a moment that belongs as much to civil rights history as to music."}},
+{"name": "Marilyn Horne", "attributes": {"group": "The Superstar Era", "full name": "Marilyn Bernice Horne", "born": 1934, "died": null, "nationality": "American", "voice type": "Mezzo-soprano", "era": "Rossini revival", "signature role": "Arsace in Semiramide", "house landmark": "Metropolitan Opera debut, 1970, opposite Sutherland", "influence": 86, "power": 81, "agility": 97, "acting": 75, "legacy": 83, "fun fact": "At 20 she dubbed the singing voice of Dorothy Dandridge in the film Carmen Jones. She later led the Rossini renaissance almost single-handedly, restoring the heroic mezzo to the stage."}},
+{"name": "Montserrat Caballé", "attributes": {"group": "Modern Icons", "full name": "María de Montserrat Bibiana Concepción Caballé i Folch", "born": 1933, "died": 2018, "nationality": "Spanish (Catalan)", "voice type": "Lyric soprano", "era": "Bel canto / Verdi", "signature role": "Lucrezia Borgia", "house landmark": "Carnegie Hall, 1965 — a last-minute substitution that made her famous overnight", "influence": 82, "power": 83, "agility": 90, "acting": 70, "legacy": 79, "fun fact": "Her floated pianissimo was considered the most beautiful sound in opera. In 1988 she recorded 'Barcelona' with Freddie Mercury, introducing herself to an audience that had never bought an opera ticket."}},
+{"name": "Plácido Domingo", "attributes": {"group": "Modern Icons", "full name": "José Plácido Domingo Embil", "born": 1941, "died": null, "nationality": "Spanish", "voice type": "Tenor (later baritone)", "era": "Late 20th century", "signature role": "Otello", "house landmark": "Metropolitan Opera debut, 1968; over 150 roles — more than any singer in history", "influence": 96, "power": 86, "agility": 74, "acting": 90, "legacy": 94, "fun fact": "Also a conductor and opera-house director, he has sung more different roles than anyone on record and moved down to the baritone repertoire in his seventies rather than retire."}},
+{"name": "Renata Tebaldi", "attributes": {"group": "Postwar Legends", "full name": "Renata Ersilia Clotilde Tebaldi", "born": 1922, "died": 2004, "nationality": "Italian", "voice type": "Lyric-spinto soprano", "era": "Verdi / Puccini", "signature role": "Mimì in La bohème", "house landmark": "Sang at the reopening of the rebuilt La Scala, 1946, under Toscanini", "influence": 84, "power": 88, "agility": 68, "acting": 72, "legacy": 85, "fun fact": "Toscanini called her 'voce d'angelo'. Her rivalry with Callas split the opera world into warring camps for a decade — though the two later reconciled warmly."}},
+{"name": "Rosa Ponselle", "attributes": {"group": "Interwar Titans", "full name": "Rosa Melba Ponzillo", "born": 1897, "died": 1981, "nationality": "American", "voice type": "Dramatic soprano", "era": "Verdi / bel canto", "signature role": "Norma", "house landmark": "Metropolitan Opera debut, 1918, opposite Caruso in La forza del destino", "influence": 85, "power": 90, "agility": 82, "acting": 80, "legacy": 81, "fun fact": "She went straight from singing in vaudeville houses to the Met stage with no European apprenticeship — unheard of then. Callas and Tullio Serafin both called her voice the greatest they had heard."}},
+{"name": "Tito Gobbi", "attributes": {"group": "Postwar Legends", "full name": "Tito Gobbi", "born": 1913, "died": 1984, "nationality": "Italian", "voice type": "Baritone", "era": "Verdi / verismo", "signature role": "Scarpia in Tosca", "house landmark": "La Scala and Covent Garden; over 100 roles in his repertoire", "influence": 81, "power": 80, "agility": 66, "acting": 97, "legacy": 82, "fun fact": "His Scarpia opposite Callas is the most famous villain in recorded opera — a performance so detailed that the 1964 Covent Garden Act II was filmed and is still used to teach stagecraft."}},
+  ];
+
+const plays = [
+{"name": "Aida", "attributes": {"group": "Italian Romanticism", "composer": "Giuseppe Verdi", "librettist": "Antonio Ghislanzoni", "premiere year": 1871, "premiere house": "Khedivial Opera House, Cairo", "language": "Italian", "acts": "4 acts", "runtime minutes": 150, "famous number": "Celeste Aida / Triumphal March", "influence": 86, "popularity": 91, "vocal difficulty": 93, "dramatic impact": 88, "scale": 98, "fun fact": "Commissioned for Cairo and delayed because the sets were stuck in Paris under Prussian siege. The Triumphal Scene — elephants optional — defined what 'grand opera' means to the public."}},
+{"name": "Boris Godunov", "attributes": {"group": "Wagner & the National Schools", "composer": "Modest Mussorgsky", "librettist": "Modest Mussorgsky, after Pushkin", "premiere year": 1874, "premiere house": "Mariinsky Theatre, St Petersburg", "language": "Russian", "acts": "Prologue + 4 acts", "runtime minutes": 195, "famous number": "Boris's Death Scene", "influence": 88, "popularity": 72, "vocal difficulty": 83, "dramatic impact": 97, "scale": 94, "fun fact": "Rejected by the Mariinsky for having no leading female role. Mussorgsky built the vocal lines out of spoken Russian rather than Italian melody — a method Debussy and Janáček took straight from him."}},
+{"name": "Carmen", "attributes": {"group": "Wagner & the National Schools", "composer": "Georges Bizet", "librettist": "Henri Meilhac & Ludovic Halévy", "premiere year": 1875, "premiere house": "Opéra-Comique, Paris", "language": "French", "acts": "4 acts", "runtime minutes": 160, "famous number": "L'amour est un oiseau rebelle (Habanera)", "influence": 94, "popularity": 99, "vocal difficulty": 81, "dramatic impact": 98, "scale": 86, "fun fact": "Scandalous in 1875 for putting cigarette girls, smugglers and an onstage murder in a family theatre. Bizet died three months after the premiere, convinced it had failed."}},
+{"name": "Der Ring des Nibelungen", "attributes": {"group": "Wagner & the National Schools", "composer": "Richard Wagner", "librettist": "Richard Wagner", "premiere year": 1876, "premiere house": "Bayreuth Festspielhaus (first complete cycle)", "language": "German", "acts": "4 operas", "runtime minutes": 900, "famous number": "Ride of the Valkyries / Siegfried's Funeral March", "influence": 97, "popularity": 82, "vocal difficulty": 97, "dramatic impact": 92, "scale": 100, "fun fact": "Twenty-six years of work, fifteen hours of music, and a purpose-built theatre with a hidden orchestra to house it. Wagner also invented the leitmotif system that every film composer now uses."}},
+{"name": "Dido and Aeneas", "attributes": {"group": "Origins & Baroque", "composer": "Henry Purcell", "librettist": "Nahum Tate", "premiere year": 1689, "premiere house": "Josias Priest's girls' school, Chelsea, London", "language": "English", "acts": "3 acts", "runtime minutes": 60, "famous number": "When I am laid in earth (Dido's Lament)", "influence": 81, "popularity": 64, "vocal difficulty": 70, "dramatic impact": 87, "scale": 40, "fun fact": "The only true opera Purcell ever completed, written for schoolgirls and lasting barely an hour — yet its descending-bass lament is the most imitated aria in English music."}},
+{"name": "Die Zauberflöte", "attributes": {"group": "Classical & Bel Canto", "composer": "Wolfgang Amadeus Mozart", "librettist": "Emanuel Schikaneder", "premiere year": 1791, "premiere house": "Theater auf der Wieden, Vienna", "language": "German", "acts": "2 acts", "runtime minutes": 160, "famous number": "Der Hölle Rache kocht in meinem Herzen", "influence": 93, "popularity": 95, "vocal difficulty": 89, "dramatic impact": 80, "scale": 82, "fun fact": "A popular suburban Singspiel with Masonic symbolism, premiered ten weeks before Mozart died. The Queen of the Night's high F remains the most famous note a soprano can be asked to sing."}},
+{"name": "Don Giovanni", "attributes": {"group": "Classical & Bel Canto", "composer": "Wolfgang Amadeus Mozart", "librettist": "Lorenzo da Ponte", "premiere year": 1787, "premiere house": "National Theatre, Prague", "language": "Italian", "acts": "2 acts", "runtime minutes": 170, "famous number": "Madamina, il catalogo è questo / Là ci darem la mano", "influence": 100, "popularity": 92, "vocal difficulty": 84, "dramatic impact": 91, "scale": 74, "fun fact": "Billed as a comedy, it ends with a man dragged to hell by a statue. E.T.A. Hoffmann called it 'the opera of all operas', and no work has been argued over more by philosophers."}},
+{"name": "Giulio Cesare in Egitto", "attributes": {"group": "Origins & Baroque", "composer": "George Frideric Handel", "librettist": "Nicola Francesco Haym", "premiere year": 1724, "premiere house": "King's Theatre, Haymarket, London", "language": "Italian", "acts": "3 acts", "runtime minutes": 240, "famous number": "V'adoro, pupille", "influence": 83, "popularity": 62, "vocal difficulty": 95, "dramatic impact": 78, "scale": 80, "fun fact": "The summit of opera seria and the work that carried the whole Baroque revival on its back — its Cleopatra has eight arias, the most demanding role Handel ever wrote."}},
+{"name": "Il barbiere di Siviglia", "attributes": {"group": "Classical & Bel Canto", "composer": "Gioachino Rossini", "librettist": "Cesare Sterbini", "premiere year": 1816, "premiere house": "Teatro Argentina, Rome", "language": "Italian", "acts": "2 acts", "runtime minutes": 165, "famous number": "Largo al factotum / Una voce poco fa", "influence": 87, "popularity": 94, "vocal difficulty": 90, "dramatic impact": 76, "scale": 64, "fun fact": "Written in about three weeks and booed off the stage on opening night — a cat wandered on, a singer tripped, the audience jeered. It became the most performed comic opera ever written."}},
+{"name": "L'Orfeo", "attributes": {"group": "Origins & Baroque", "composer": "Claudio Monteverdi", "librettist": "Alessandro Striggio", "premiere year": 1607, "premiere house": "Ducal Palace, Mantua", "language": "Italian", "acts": "Prologue + 5 acts", "runtime minutes": 110, "famous number": "Possente spirto", "influence": 98, "popularity": 55, "vocal difficulty": 76, "dramatic impact": 84, "scale": 62, "fun fact": "The earliest opera still regularly staged, and the first to specify its orchestra instrument by instrument — Monteverdi essentially invented the idea that scoring is part of the drama."}},
+{"name": "La bohème", "attributes": {"group": "The Modern Era", "composer": "Giacomo Puccini", "librettist": "Giuseppe Giacosa & Luigi Illica", "premiere year": 1896, "premiere house": "Teatro Regio, Turin", "language": "Italian", "acts": "4 acts", "runtime minutes": 110, "famous number": "Che gelida manina / Sì, mi chiamano Mimì", "influence": 85, "popularity": 98, "vocal difficulty": 80, "dramatic impact": 90, "scale": 68, "fun fact": "Conducted at its premiere by the young Toscanini, and coolly received. It has since become the opera most often chosen for first-timers — and the source of the musical Rent."}},
+{"name": "La traviata", "attributes": {"group": "Italian Romanticism", "composer": "Giuseppe Verdi", "librettist": "Francesco Maria Piave", "premiere year": 1853, "premiere house": "Teatro La Fenice, Venice", "language": "Italian", "acts": "3 acts", "runtime minutes": 135, "famous number": "Sempre libera / Libiamo ne' lieti calici", "influence": 91, "popularity": 100, "vocal difficulty": 88, "dramatic impact": 94, "scale": 66, "fun fact": "A flop at its premiere, partly because the audience laughed at a plump soprano dying of consumption. It is now the most performed opera in the world, year after year."}},
+{"name": "Le nozze di Figaro", "attributes": {"group": "Classical & Bel Canto", "composer": "Wolfgang Amadeus Mozart", "librettist": "Lorenzo da Ponte", "premiere year": 1786, "premiere house": "Burgtheater, Vienna", "language": "Italian", "acts": "4 acts", "runtime minutes": 180, "famous number": "Non più andrai / Voi che sapete", "influence": 96, "popularity": 97, "vocal difficulty": 82, "dramatic impact": 89, "scale": 72, "fun fact": "Adapted from a play banned in Vienna for mocking the aristocracy. Its Act II finale — twenty minutes of continuous music for an ever-growing cast — is still the model for the operatic ensemble."}},
+{"name": "Norma", "attributes": {"group": "Italian Romanticism", "composer": "Vincenzo Bellini", "librettist": "Felice Romani", "premiere year": 1831, "premiere house": "Teatro alla Scala, Milan", "language": "Italian", "acts": "2 acts", "runtime minutes": 165, "famous number": "Casta diva", "influence": 84, "popularity": 78, "vocal difficulty": 100, "dramatic impact": 86, "scale": 76, "fun fact": "The Everest of the soprano repertoire — it demands bel canto line, coloratura, dramatic weight and tragic acting in one voice. Callas sang it 89 times; few others have dared at all."}},
+{"name": "Orfeo ed Euridice", "attributes": {"group": "Origins & Baroque", "composer": "Christoph Willibald Gluck", "librettist": "Ranieri de' Calzabigi", "premiere year": 1762, "premiere house": "Burgtheater, Vienna", "language": "Italian (later French version, 1774)", "acts": "3 acts", "runtime minutes": 110, "famous number": "Che farò senza Euridice", "influence": 92, "popularity": 66, "vocal difficulty": 78, "dramatic impact": 82, "scale": 60, "fun fact": "Gluck's 'reform opera' — he stripped away the vocal showing-off that had strangled opera seria and made the music serve the story. Everything Mozart and Wagner later did starts here."}},
+{"name": "Rigoletto", "attributes": {"group": "Italian Romanticism", "composer": "Giuseppe Verdi", "librettist": "Francesco Maria Piave", "premiere year": 1851, "premiere house": "Teatro La Fenice, Venice", "language": "Italian", "acts": "3 acts", "runtime minutes": 120, "famous number": "La donna è mobile", "influence": 89, "popularity": 93, "vocal difficulty": 86, "dramatic impact": 93, "scale": 70, "fun fact": "Verdi fought the censors for months over a plot in which a king is a predator and a hunchback his pimp. He kept 'La donna è mobile' secret until the dress rehearsal so nobody could leak the tune."}},
+{"name": "Salome", "attributes": {"group": "The Modern Era", "composer": "Richard Strauss", "librettist": "Richard Strauss, after Oscar Wilde", "premiere year": 1905, "premiere house": "Semperoper, Dresden", "language": "German", "acts": "1 act", "runtime minutes": 100, "famous number": "Dance of the Seven Veils / Final Scene", "influence": 90, "popularity": 70, "vocal difficulty": 96, "dramatic impact": 99, "scale": 90, "fun fact": "Banned in London, pulled after one performance at the Met, and a sensation everywhere else — the fees let Strauss build his villa at Garmisch. The title role needs a teenage dancer with a Wagnerian voice."}},
+{"name": "Tosca", "attributes": {"group": "The Modern Era", "composer": "Giacomo Puccini", "librettist": "Giuseppe Giacosa & Luigi Illica", "premiere year": 1900, "premiere house": "Teatro Costanzi, Rome", "language": "Italian", "acts": "3 acts", "runtime minutes": 120, "famous number": "Vissi d'arte / E lucevan le stelle", "influence": 82, "popularity": 96, "vocal difficulty": 85, "dramatic impact": 95, "scale": 78, "fun fact": "A critic dismissed it as a 'shabby little shocker'. Torture, murder, a firing squad and a leap from a battlement in two hours — and the tightest thriller structure in the repertoire."}},
+{"name": "Tristan und Isolde", "attributes": {"group": "Wagner & the National Schools", "composer": "Richard Wagner", "librettist": "Richard Wagner", "premiere year": 1865, "premiere house": "Nationaltheater, Munich", "language": "German", "acts": "3 acts", "runtime minutes": 240, "famous number": "Liebestod (Mild und leise)", "influence": 99, "popularity": 80, "vocal difficulty": 98, "dramatic impact": 96, "scale": 92, "fun fact": "Its opening 'Tristan chord' refuses to resolve for four hours and is usually credited with cracking open tonality itself — the single most consequential harmony in Western music."}},
+{"name": "Wozzeck", "attributes": {"group": "The Modern Era", "composer": "Alban Berg", "librettist": "Alban Berg, after Georg Büchner", "premiere year": 1925, "premiere house": "Staatsoper, Berlin", "language": "German", "acts": "3 acts (15 scenes)", "runtime minutes": 95, "famous number": "Interlude in D minor / Marie's Lullaby", "influence": 95, "popularity": 58, "vocal difficulty": 92, "dramatic impact": 100, "scale": 84, "fun fact": "Atonal, built on hidden classical forms — a passacaglia, a symphony, a suite — and about a bullied soldier who murders his partner. The first modernist opera to enter the permanent repertoire."}},
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('playersCheckbox').checked) selectedCards.push(...players);
+    if (document.getElementById('playsCheckbox').checked) selectedCards.push(...plays);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

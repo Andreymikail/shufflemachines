@@ -1,0 +1,244 @@
+<div style="text-align: center;">
+  <h2 id="pageTitle" style="color: white;">Ballet</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+  
+<!-- Theme Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;">
+    <label><input type="checkbox" id="dancCheckbox"> Dancers</label><br>
+    <label><input type="checkbox" id="movCheckbox"> Movements</label><br>
+    <label><input type="checkbox" id="playsCheckbox"> Plays</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div style="text-align: left; margin: 20px auto; width: 300px; color: white;>
+    <label for="cardsPerPageInput">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5"><br><br>
+  </div>
+  
+  
+
+<div style="margin-top: 20px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 20px;">
+      <h3>Action</h3>
+      <p id="actionResult" style="color: white;">-</p>
+      <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const actions = ["Standing Ovation: Win this round automatically, whatever the stats say. You must then play your next card face up.",
+"Bravo!: Steal one card at random from any opponent's hand.",
+"Encore: The same stat must be used again for the next round. Nobody may change it.",
+"The Director's Choice: You choose the stat for this round, even if it is not your turn to call.",
+"Ballet Master's Correction: Cancel the stat just called and name a different one instead.",
+"Barre Warm-Up: Add 10 points to any one stat on your card for this round only.",
+"Cold Muscles: Subtract 15 points from one opponent's stat for this round only.",
+"Prima Ballerina: Your card wins all ties this round, and you take every card in the middle.",
+"Understudy: Before stats are compared, swap the card you are about to play for the next one in your deck.",
+"Dress Rehearsal: Look at the top card of every opponent's deck, then decide whether to play or pass.",
+"Notes from the Choreographer: Look at the top three cards of your own deck and put them back in any order.",
+"Stage Fright: Choose an opponent. They must play the card at the bottom of their deck this round.",
+"Sprained Ankle: One opponent of your choice sits out the entire round and cannot win the cards.",
+"Broken Pointe Shoe: An opponent must discard their top card face up, out of the game.",
+"Spotlight: Every player reveals their top card before the stat is chosen. Play the round normally.",
+"The Critic: After the round is won, the lowest-scoring card is removed from the game entirely.",
+"Rosin Box: Replay the round from the start. All cards return to their owners and a new stat is called.",
+"Fouetté Fever: Win or lose, you keep the turn and call the next round as well.",
+"Swan Dive: Declare this before stats are compared. Win and you take double the cards; lose and you give away two.",
+"Pas de Deux: Team up with one opponent for this round. You compare your best stat and split the winnings.",
+"Corps de Ballet: If your card ties with anyone, both of you keep your own cards instead of going to the middle.",
+"Grand Défilé: Every player passes their top three cards to the player on their left.",
+"Intermission: The round is cancelled. All cards in play go back to their owners and turn passes left.",
+"Diaghilev's Patronage: Draw two cards from the discard pile and add them to the bottom of your deck.",
+"Defection: Trade one card of your choice with any opponent. They cannot refuse.",
+"Curtain Call: Play at any time: take back the last card you lost this game.",
+];
+  
+const danc = [
+{"name": "Alicia Alonso", "attributes": {"gender": "female", "nationality": "Cuban", "born": 1920, "died": 2019, "era": "Mid-20th century", "main company": "Ballet Nacional de Cuba", "signature role": "Giselle", "technique": 91, "artistry": 95, "elevation": 76, "turns": 88, "legacy": 90, "career years": 57, "trivia": "Danced for decades while nearly blind, using lights and her partners' voices to find her place on stage."}},
+{"name": "Anna Pavlova", "attributes": {"gender": "female", "nationality": "Russian", "born": 1881, "died": 1931, "era": "Imperial / early 20th century", "main company": "Mariinsky Ballet, then her own touring company", "signature role": "The Dying Swan", "technique": 88, "artistry": 99, "elevation": 78, "turns": 80, "legacy": 99, "career years": 32, "trivia": "Toured the globe relentlessly, bringing ballet to audiences who had never seen it — and got a dessert named after her."}},
+{"name": "Auguste Vestris", "attributes": {"gender": "male", "nationality": "French", "born": 1760, "died": 1842, "era": "Pre-Romantic (1770s–1810s)", "main company": "Paris Opera Ballet", "signature role": "Virtuoso solo variations of the Noverre era", "technique": 96, "artistry": 88, "elevation": 97, "turns": 90, "legacy": 82, "career years": 44, "trivia": "Nicknamed 'the god of the dance'; his teaching shaped Bournonville, Perrot and Taglioni."}},
+{"name": "Carlos Acosta", "attributes": {"gender": "male", "nationality": "Cuban-British", "born": 1973, "died": null, "era": "1990s–2010s", "main company": "The Royal Ballet", "signature role": "Basilio in Don Quixote; Spartacus", "technique": 95, "artistry": 90, "elevation": 97, "turns": 96, "legacy": 89, "career years": 25, "trivia": "Sent to ballet school by his father to keep him off the streets of Havana; became The Royal Ballet's first black Romeo."}},
+{"name": "David Hallberg", "attributes": {"gender": "male", "nationality": "American", "born": 1982, "died": null, "era": "2000s–2020s", "main company": "American Ballet Theatre / Bolshoi Ballet", "signature role": "Prince Siegfried; Albrecht", "technique": 94, "artistry": 93, "elevation": 86, "turns": 87, "legacy": 84, "career years": 23, "trivia": "The first American ever made a premier dancer of the Bolshoi Ballet."}},
+{"name": "Erik Bruhn", "attributes": {"gender": "male", "nationality": "Danish", "born": 1928, "died": 1986, "era": "Mid-20th century", "main company": "Royal Danish Ballet / American Ballet Theatre", "signature role": "James in La Sylphide; Albrecht", "technique": 99, "artistry": 92, "elevation": 88, "turns": 90, "legacy": 85, "career years": 25, "trivia": "Widely called the most technically perfect male dancer of his generation — the Bournonville style incarnate."}},
+{"name": "Galina Ulanova", "attributes": {"gender": "female", "nationality": "Soviet/Russian", "born": 1910, "died": 1998, "era": "Soviet golden age", "main company": "Bolshoi Ballet", "signature role": "Juliet in Romeo and Juliet", "technique": 90, "artistry": 100, "elevation": 75, "turns": 80, "legacy": 92, "career years": 32, "trivia": "The most decorated Soviet dancer ever; her 1956 London season reduced the audience to stunned silence before the ovation."}},
+{"name": "Margot Fonteyn", "attributes": {"gender": "female", "nationality": "British", "born": 1919, "died": 1991, "era": "Mid-20th century", "main company": "The Royal Ballet", "signature role": "Aurora in The Sleeping Beauty; Marguerite", "technique": 92, "artistry": 99, "elevation": 74, "turns": 82, "legacy": 97, "career years": 45, "trivia": "Her partnership with Nureyev, begun when she was 42, became the most famous in ballet history."}},
+{"name": "Marie Taglioni", "attributes": {"gender": "female", "nationality": "Swedish-Italian", "born": 1804, "died": 1884, "era": "Romantic (1820s–1840s)", "main company": "Paris Opera Ballet", "signature role": "The Sylph in La Sylphide", "technique": 90, "artistry": 95, "elevation": 92, "turns": 78, "legacy": 88, "career years": 25, "trivia": "Popularised dancing en pointe and the white romantic tutu; fans in Russia reportedly cooked and ate a pair of her shoes."}},
+{"name": "Maya Plisetskaya", "attributes": {"gender": "female", "nationality": "Soviet/Russian", "born": 1925, "died": 2015, "era": "Soviet golden age", "main company": "Bolshoi Ballet", "signature role": "Odette/Odile in Swan Lake; Carmen", "technique": 94, "artistry": 97, "elevation": 93, "turns": 85, "legacy": 96, "career years": 47, "trivia": "Famous for her arms and her leap; she was still performing in her seventies."}},
+{"name": "Mikhail Baryshnikov", "attributes": {"gender": "male", "nationality": "Latvian-born, American", "born": 1948, "died": null, "era": "1970s–present", "main company": "Kirov, then American Ballet Theatre / New York City Ballet", "signature role": "Basilio; Albrecht; The Prodigal Son", "technique": 100, "artistry": 95, "elevation": 98, "turns": 99, "legacy": 99, "career years": 45, "trivia": "Defected in Toronto in 1974; later crossed into film, Broadway and postmodern dance."}},
+{"name": "Misty Copeland", "attributes": {"gender": "female", "nationality": "American", "born": 1982, "died": null, "era": "2000s–present", "main company": "American Ballet Theatre", "signature role": "Odette/Odile; Juliet; The Firebird", "technique": 86, "artistry": 88, "elevation": 82, "turns": 84, "legacy": 91, "career years": 25, "trivia": "Started ballet at 13 and in 2015 became the first Black female principal in ABT's 75-year history."}},
+{"name": "Natalia Osipova", "attributes": {"gender": "female", "nationality": "Russian", "born": 1986, "died": null, "era": "2000s–present", "main company": "Bolshoi Ballet, then The Royal Ballet", "signature role": "Giselle; Kitri in Don Quixote", "technique": 93, "artistry": 92, "elevation": 100, "turns": 91, "legacy": 88, "career years": 22, "trivia": "Her jump is often described as the highest of any ballerina alive."}},
+{"name": "Roberto Bolle", "attributes": {"gender": "male", "nationality": "Italian", "born": 1975, "died": null, "era": "1990s–present", "main company": "La Scala Ballet / American Ballet Theatre", "signature role": "Prince Siegfried; Romeo", "technique": 90, "artistry": 88, "elevation": 85, "turns": 84, "legacy": 87, "career years": 30, "trivia": "Chosen by Nureyev for a role at 15; became one of ballet's few genuine mainstream celebrities in Italy."}},
+{"name": "Rudolf Nureyev", "attributes": {"gender": "male", "nationality": "Soviet-born, Austrian/British", "born": 1938, "died": 1993, "era": "1960s–1980s", "main company": "Kirov, then The Royal Ballet / Paris Opera Ballet", "signature role": "Albrecht in Giselle; Basilio in Don Quixote", "technique": 93, "artistry": 97, "elevation": 96, "turns": 92, "legacy": 100, "career years": 34, "trivia": "Defected at Paris–Le Bourget airport in 1961 and turned the male dancer from a porter into a star."}},
+{"name": "Sergei Polunin", "attributes": {"gender": "male", "nationality": "Ukrainian", "born": 1989, "died": null, "era": "2010s–present", "main company": "The Royal Ballet (former), freelance", "signature role": "Solor; the 'Take Me to Church' film", "technique": 92, "artistry": 85, "elevation": 94, "turns": 93, "legacy": 83, "career years": 19, "trivia": "The Royal Ballet's youngest ever male principal at 19 — and quit two years later."}},
+{"name": "Svetlana Zakharova", "attributes": {"gender": "female", "nationality": "Ukrainian-Russian", "born": 1979, "died": null, "era": "2000s–present", "main company": "Bolshoi Ballet", "signature role": "Odette/Odile; Nikiya in La Bayadère", "technique": 96, "artistry": 90, "elevation": 88, "turns": 89, "legacy": 86, "career years": 29, "trivia": "Known for extraordinary extension and hyper-flexible line; a prima at the Mariinsky by 18."}},
+{"name": "Sylvie Guillem", "attributes": {"gender": "female", "nationality": "French", "born": 1965, "died": null, "era": "1980s–2015", "main company": "Paris Opera Ballet / The Royal Ballet", "signature role": "Odette/Odile; In the Middle, Somewhat Elevated", "technique": 98, "artistry": 94, "elevation": 95, "turns": 90, "legacy": 93, "career years": 34, "trivia": "A former gymnast whose six-o'clock extension redefined what a ballet body could do; nicknamed 'Mademoiselle Non'."}},
+{"name": "Vaslav Nijinsky", "attributes": {"gender": "male", "nationality": "Polish-Russian", "born": 1889, "died": 1950, "era": "Ballets Russes", "main company": "Ballets Russes", "signature role": "The Faun in L'Après-midi d'un faune; The Spectre of the Rose", "technique": 95, "artistry": 98, "elevation": 100, "turns": 88, "legacy": 98, "career years": 12, "trivia": "Said to hover at the top of his jump; his career was cut short by mental illness at just 29."}},
+{"name": "Vladimir Vasiliev", "attributes": {"gender": "male", "nationality": "Soviet/Russian", "born": 1940, "died": null, "era": "Soviet golden age", "main company": "Bolshoi Ballet", "signature role": "Spartacus", "technique": 96, "artistry": 93, "elevation": 99, "turns": 94, "legacy": 88, "career years": 30, "trivia": "His Spartacus jump became the emblem of Soviet ballet's heroic style."}},
+ ];
+
+const mov = [
+{"name": "Arabesque Penchée", "attributes": {"category": "Position", "translation": "Leaning arabesque", "description": "An arabesque tilted forward until the body approaches a vertical split, the back leg climbing towards the ceiling.", "difficulty": 72, "elevation": 25, "speed": 10, "control": 95, "spectacle": 78, "years to master": 8, "famous example": "Odette's penchée in the Swan Lake white act"}},
+{"name": "Assemblé", "attributes": {"category": "Jump", "translation": "Assembled", "description": "One leg brushes out, the dancer pushes off the other, and the feet assemble in fifth position in the air before landing together.", "difficulty": 40, "elevation": 45, "speed": 60, "control": 62, "spectacle": 35, "years to master": 3, "famous example": "Bluebird variation, The Sleeping Beauty"}},
+{"name": "Attitude", "attributes": {"category": "Position", "translation": "Attitude / bearing", "description": "Standing on one leg with the other lifted behind or in front, knee bent at roughly 90 degrees.", "difficulty": 55, "elevation": 20, "speed": 15, "control": 85, "spectacle": 58, "years to master": 5, "famous example": "Carlo Blasis based it on the statue of Mercury by Giambologna"}},
+{"name": "Battement Tendu", "attributes": {"category": "Fundamental", "translation": "Stretched beat", "description": "The working leg brushes along the floor until the foot is fully pointed, without lifting. The building block of all footwork.", "difficulty": 25, "elevation": 3, "speed": 30, "control": 75, "spectacle": 4, "years to master": 10, "famous example": "Balanchine: 'If you can do tendu, you can do anything.'"}},
+{"name": "Brisé Volé", "attributes": {"category": "Beaten jump", "translation": "Flying broken step", "description": "A darting beaten jump that travels forward and back, the body folding and opening like a bird's wings.", "difficulty": 82, "elevation": 60, "speed": 90, "control": 82, "spectacle": 78, "years to master": 7, "famous example": "The Bluebird variation, The Sleeping Beauty"}},
+{"name": "Cabriole", "attributes": {"category": "Beaten jump", "translation": "Caper", "description": "One leg is thrown into the air and the second leg beats against it, propelling it higher before the landing.", "difficulty": 80, "elevation": 78, "speed": 75, "control": 78, "spectacle": 80, "years to master": 7, "famous example": "Albrecht's despairing solo in Giselle, Act II"}},
+{"name": "Développé", "attributes": {"category": "Adage", "translation": "Developed", "description": "The working leg unfolds slowly from retiré to full extension and holds there. Pure strength disguised as calm.", "difficulty": 60, "elevation": 20, "speed": 12, "control": 92, "spectacle": 60, "years to master": 7, "famous example": "The Rose Adagio, The Sleeping Beauty"}},
+{"name": "Entrechat Six", "attributes": {"category": "Beaten jump", "translation": "Interweaving, six", "description": "A vertical jump in which the legs cross and change three times before landing. Six leg movements in a fraction of a second.", "difficulty": 85, "elevation": 70, "speed": 95, "control": 80, "spectacle": 82, "years to master": 8, "famous example": "Nijinsky was said to manage an entrechat dix"}},
+{"name": "Fish Dive", "attributes": {"category": "Partnering", "translation": "Poisson", "description": "The ballerina is caught head-down and angled towards the floor, held only by her partner, her body curved like a leaping fish.", "difficulty": 90, "elevation": 55, "speed": 40, "control": 96, "spectacle": 92, "years to master": 10, "famous example": "The three fish dives in the Sleeping Beauty grand pas de deux"}},
+{"name": "Fouetté Rond de Jambe en Tournant", "attributes": {"category": "Turn", "translation": "Whipped circle of the leg, turning", "description": "A turn on one leg driven by the whipping action of the other, repeated on the spot. Traditionally performed 32 times in a row.", "difficulty": 95, "elevation": 25, "speed": 92, "control": 98, "spectacle": 98, "years to master": 9, "famous example": "Odile's 32 fouettés in Act III of Swan Lake, first done by Pierina Legnani in 1893"}},
+{"name": "Glissade", "attributes": {"category": "Linking step", "translation": "Glide", "description": "A travelling gliding step that carries the dancer into a bigger jump. Rarely noticed, always essential.", "difficulty": 22, "elevation": 15, "speed": 55, "control": 60, "spectacle": 10, "years to master": 2, "famous example": "The launchpad before nearly every grand jeté in the repertoire"}},
+{"name": "Grand Jeté", "attributes": {"category": "Jump", "translation": "Big thrown step", "description": "A huge leap from one leg to the other with the legs opening to a split at the peak. The image most people picture when they hear the word ballet.", "difficulty": 78, "elevation": 95, "speed": 80, "control": 72, "spectacle": 95, "years to master": 6, "famous example": "Nijinsky's exit leap in Le Spectre de la Rose"}},
+{"name": "Pas de Bourrée Couru", "attributes": {"category": "Pointe work", "translation": "Running bourrée", "description": "Tiny rapid steps on pointe with the feet almost glued together, so the dancer appears to float across the stage without walking.", "difficulty": 45, "elevation": 8, "speed": 60, "control": 85, "spectacle": 55, "years to master": 6, "famous example": "Giselle's ghostly entrance in Act II"}},
+{"name": "Pas de Chat", "attributes": {"category": "Jump", "translation": "Step of the cat", "description": "A sideways springing jump with the knees lifted and opened, imitating a cat's leap.", "difficulty": 45, "elevation": 50, "speed": 70, "control": 60, "spectacle": 50, "years to master": 3, "famous example": "The Dance of the Cygnets and the White Cat in The Sleeping Beauty"}},
+{"name": "Piqué Turns en Manège", "attributes": {"category": "Turn", "translation": "Pricked turns in a ring", "description": "A chain of turns stepping directly onto a straight pointed leg while travelling in a large circle around the stage.", "difficulty": 76, "elevation": 20, "speed": 96, "control": 88, "spectacle": 86, "years to master": 5, "famous example": "Kitri's coda in Don Quixote"}},
+{"name": "Pirouette en Dehors", "attributes": {"category": "Turn", "translation": "Turn outwards", "description": "A turn on one leg away from the supporting side, the other foot in retiré, held over a single spot with spotting of the head.", "difficulty": 70, "elevation": 30, "speed": 85, "control": 90, "spectacle": 75, "years to master": 5, "famous example": "The currency of every male variation and coda"}},
+{"name": "Plié", "attributes": {"category": "Fundamental", "translation": "Bent / bending", "description": "A smooth bend of the knees over the toes, in demi or grand. The engine behind every jump and the shock absorber behind every landing.", "difficulty": 20, "elevation": 5, "speed": 15, "control": 70, "spectacle": 5, "years to master": 12, "famous example": "The first exercise at the barre in every class on earth"}},
+{"name": "Saut de Basque", "attributes": {"category": "Jump", "translation": "Basque jump", "description": "A travelling jump with a full turn in the air, one leg pulled into retiré while the body flies sideways across the stage.", "difficulty": 84, "elevation": 85, "speed": 82, "control": 76, "spectacle": 85, "years to master": 7, "famous example": "The male coda in the Le Corsaire pas de deux"}},
+{"name": "Sissonne", "attributes": {"category": "Jump", "translation": "Named after its 17th-century inventor", "description": "A jump from two feet landing on one, splitting the legs open in the air. Comes in fermée, ouverte, and a dozen other flavours.", "difficulty": 50, "elevation": 65, "speed": 65, "control": 65, "spectacle": 55, "years to master": 4, "famous example": "The Sylph's airborne entrances in La Sylphide"}},
+{"name": "Tour en l'Air", "attributes": {"category": "Turn", "translation": "Turn in the air", "description": "A jump straight up from fifth position with a full double or triple rotation, landing cleanly back in fifth.", "difficulty": 88, "elevation": 80, "speed": 88, "control": 85, "spectacle": 88, "years to master": 8, "famous example": "The finish of almost every classical male coda"}},
+ ];
+  
+const plays = [
+{"name": "Apollo", "attributes": {"premiere year": 1928, "composer": "Igor Stravinsky", "choreographer": "George Balanchine", "original company": "Ballets Russes", "acts": 1, "style": "Neoclassical", "fame": 72, "technical demand": 84, "spectacle": 30, "score power": 89, "emotional impact": 68, "runtime minutes": 30, "synopsis": "The young god Apollo is born, is taught by three muses, and ascends to Parnassus.", "trivia": "Balanchine called it the turning point of his life — the moment he learned that he could leave things out."}},
+{"name": "Cinderella", "attributes": {"premiere year": 1945, "composer": "Sergei Prokofiev", "choreographer": "Rostislav Zakharov; Ashton version 1948", "original company": "Bolshoi Ballet", "acts": 3, "style": "Classical / comic", "fame": 78, "technical demand": 80, "spectacle": 84, "score power": 88, "emotional impact": 65, "runtime minutes": 140, "synopsis": "The familiar tale, with the seasons as fairies and a clock that runs out at midnight.", "trivia": "In Ashton's English version the stepsisters are played by men — a nod to pantomime tradition."}},
+{"name": "Coppélia", "attributes": {"premiere year": 1870, "composer": "Léo Delibes", "choreographer": "Arthur Saint-Léon", "original company": "Paris Opera Ballet", "acts": 3, "style": "Classical / comic", "fame": 80, "technical demand": 72, "spectacle": 70, "score power": 85, "emotional impact": 48, "runtime minutes": 110, "synopsis": "A village girl impersonates the life-size doll her fiancé has fallen in love with, and outwits the toymaker Dr Coppélius.", "trivia": "Tchaikovsky admired the score so much that it shaped how he approached writing Swan Lake."}},
+{"name": "Don Quixote", "attributes": {"premiere year": 1869, "composer": "Ludwig Minkus", "choreographer": "Marius Petipa", "original company": "Bolshoi Ballet", "acts": 3, "style": "Classical", "fame": 84, "technical demand": 93, "spectacle": 82, "score power": 70, "emotional impact": 55, "runtime minutes": 130, "synopsis": "The innkeeper's daughter Kitri elopes with the barber Basilio while Don Quixote wanders through their story.", "trivia": "The wedding pas de deux, with its one-handed lifts and 32 fouettés, is the most-danced gala number in ballet."}},
+{"name": "Giselle", "attributes": {"premiere year": 1841, "composer": "Adolphe Adam", "choreographer": "Jean Coralli and Jules Perrot", "original company": "Paris Opera Ballet", "acts": 2, "style": "Romantic", "fame": 90, "technical demand": 88, "spectacle": 72, "score power": 78, "emotional impact": 95, "runtime minutes": 110, "synopsis": "A peasant girl dies of a broken heart and, as a vengeful spirit, saves the man who betrayed her from being danced to death.", "trivia": "Considered the ultimate test of a ballerina: Act I demands an actress, Act II demands a ghost."}},
+{"name": "La Bayadère", "attributes": {"premiere year": 1877, "composer": "Ludwig Minkus", "choreographer": "Marius Petipa", "original company": "Imperial Ballet, St Petersburg", "acts": 4, "style": "Classical", "fame": 82, "technical demand": 97, "spectacle": 90, "score power": 72, "emotional impact": 80, "runtime minutes": 150, "synopsis": "The temple dancer Nikiya is murdered for loving the warrior Solor, who then sees her again in an opium vision.", "trivia": "The Kingdom of the Shades — 32 dancers entering one by one in identical arabesques — is the hardest corps sequence in ballet."}},
+{"name": "La Sylphide", "attributes": {"premiere year": 1832, "composer": "Jean-Madeleine Schneitzhoeffer / Herman Løvenskiold (1836)", "choreographer": "Filippo Taglioni / August Bournonville", "original company": "Paris Opera Ballet / Royal Danish Ballet", "acts": 2, "style": "Romantic", "fame": 76, "technical demand": 82, "spectacle": 62, "score power": 60, "emotional impact": 78, "runtime minutes": 90, "synopsis": "A Scottish farmer abandons his wedding to chase a woodland spirit, and destroys her by trying to hold on to her.", "trivia": "The ballet that invented the white tutu, pointe work as an image of the supernatural, and the whole Romantic era."}},
+{"name": "Le Corsaire", "attributes": {"premiere year": 1856, "composer": "Adolphe Adam, with additions by Delibes, Drigo and others", "choreographer": "Joseph Mazilier / Marius Petipa", "original company": "Paris Opera Ballet", "acts": 3, "style": "Classical", "fame": 74, "technical demand": 94, "spectacle": 85, "score power": 62, "emotional impact": 50, "runtime minutes": 140, "synopsis": "Pirates, a slave market, a shipwreck and a rescue, loosely after Byron.", "trivia": "Its pas de deux is a virtuoso showpiece performed far more often than the full ballet."}},
+{"name": "Les Sylphides (Chopiniana)", "attributes": {"premiere year": 1909, "composer": "Frédéric Chopin, orchestrated", "choreographer": "Michel Fokine", "original company": "Ballets Russes", "acts": 1, "style": "Neo-Romantic", "fame": 68, "technical demand": 75, "spectacle": 45, "score power": 88, "emotional impact": 60, "runtime minutes": 30, "synopsis": "No plot at all: a poet dances among white-clad spirits in the moonlight.", "trivia": "The first great plotless ballet, and the ancestor of everything Balanchine later did."}},
+{"name": "Manon", "attributes": {"premiere year": 1974, "composer": "Jules Massenet, arranged by Leighton Lucas", "choreographer": "Kenneth MacMillan", "original company": "The Royal Ballet", "acts": 3, "style": "Dramatic", "fame": 71, "technical demand": 90, "spectacle": 76, "score power": 80, "emotional impact": 96, "runtime minutes": 135, "synopsis": "A girl torn between love and money is deported to Louisiana and dies in a swamp.", "trivia": "Its three pas de deux are among the most demanding partnering ever choreographed."}},
+{"name": "Onegin", "attributes": {"premiere year": 1965, "composer": "Tchaikovsky, arranged by Kurt-Heinz Stolze", "choreographer": "John Cranko", "original company": "Stuttgart Ballet", "acts": 3, "style": "Dramatic", "fame": 69, "technical demand": 87, "spectacle": 70, "score power": 82, "emotional impact": 94, "runtime minutes": 130, "synopsis": "After Pushkin: a bored aristocrat rejects a girl's love letter, kills his friend in a duel, and returns years too late.", "trivia": "Cranko refused to use a note from Tchaikovsky's Eugene Onegin opera, assembling the score from other works instead."}},
+{"name": "Petrushka", "attributes": {"premiere year": 1911, "composer": "Igor Stravinsky", "choreographer": "Michel Fokine", "original company": "Ballets Russes", "acts": 1, "style": "Ballets Russes", "fame": 75, "technical demand": 70, "spectacle": 80, "score power": 92, "emotional impact": 85, "runtime minutes": 35, "synopsis": "Three puppets at a Russian fair come alive; the sawdust one has a soul, and it destroys him.", "trivia": "Nijinsky's greatest acting role — danced entirely on turned-in legs and collapsed wrists."}},
+{"name": "Romeo and Juliet", "attributes": {"premiere year": 1940, "composer": "Sergei Prokofiev", "choreographer": "Leonid Lavrovsky; MacMillan version 1965", "original company": "Kirov Ballet", "acts": 3, "style": "Dramatic / Soviet", "fame": 91, "technical demand": 85, "spectacle": 88, "score power": 95, "emotional impact": 98, "runtime minutes": 155, "synopsis": "Shakespeare's lovers, the feud that kills them, and a city of swords and market crowds.", "trivia": "Prokofiev first wrote a happy ending because 'dead people cannot dance'. It was rejected."}},
+{"name": "Serenade", "attributes": {"premiere year": 1934, "composer": "Pyotr Ilyich Tchaikovsky", "choreographer": "George Balanchine", "original company": "School of American Ballet / American Ballet", "acts": 1, "style": "Neoclassical", "fame": 70, "technical demand": 78, "spectacle": 40, "score power": 90, "emotional impact": 82, "runtime minutes": 33, "synopsis": "Seventeen women in blue, moonlight, and a wordless drama that forms and dissolves.", "trivia": "Balanchine's first American ballet; a student's fall in rehearsal was kept in the choreography forever."}},
+{"name": "Spartacus", "attributes": {"premiere year": 1968, "composer": "Aram Khachaturian", "choreographer": "Yuri Grigorovich", "original company": "Bolshoi Ballet", "acts": 3, "style": "Soviet heroic", "fame": 73, "technical demand": 92, "spectacle": 94, "score power": 84, "emotional impact": 80, "runtime minutes": 145, "synopsis": "The slave Spartacus leads a revolt against Rome and is crucified on the legionaries' spears.", "trivia": "Built around enormous male jumps; the Bolshoi's calling card for decades."}},
+{"name": "Swan Lake", "attributes": {"premiere year": 1877, "composer": "Pyotr Ilyich Tchaikovsky", "choreographer": "Julius Reisinger; definitive version by Petipa and Ivanov (1895)", "original company": "Bolshoi Ballet", "acts": 4, "style": "Classical", "fame": 99, "technical demand": 95, "spectacle": 90, "score power": 99, "emotional impact": 88, "runtime minutes": 150, "synopsis": "A prince swears love to a swan-maiden, then is tricked into pledging himself to her sorcerer's double.", "trivia": "The 1877 premiere was a flop; the ballet only became immortal after Tchaikovsky's death."}},
+{"name": "The Firebird", "attributes": {"premiere year": 1910, "composer": "Igor Stravinsky", "choreographer": "Michel Fokine", "original company": "Ballets Russes", "acts": 1, "style": "Ballets Russes", "fame": 79, "technical demand": 74, "spectacle": 88, "score power": 94, "emotional impact": 72, "runtime minutes": 45, "synopsis": "Prince Ivan captures a magical bird, who helps him destroy the immortal ogre Kashchei.", "trivia": "Stravinsky was 27 and unknown when Diaghilev commissioned it; he woke up famous."}},
+{"name": "The Nutcracker", "attributes": {"premiere year": 1892, "composer": "Pyotr Ilyich Tchaikovsky", "choreographer": "Lev Ivanov", "original company": "Imperial Ballet, St Petersburg", "acts": 2, "style": "Classical", "fame": 100, "technical demand": 70, "spectacle": 92, "score power": 97, "emotional impact": 70, "runtime minutes": 95, "synopsis": "On Christmas Eve a girl's toy soldier comes to life, defeats the Mouse King and leads her to the Land of Sweets.", "trivia": "For many companies its December run funds the rest of the season."}},
+{"name": "The Rite of Spring", "attributes": {"premiere year": 1913, "composer": "Igor Stravinsky", "choreographer": "Vaslav Nijinsky", "original company": "Ballets Russes", "acts": 1, "style": "Modernist", "fame": 88, "technical demand": 80, "spectacle": 70, "score power": 100, "emotional impact": 90, "runtime minutes": 35, "synopsis": "A pagan tribe selects a girl and she dances herself to death as a sacrifice to spring.", "trivia": "The Paris premiere caused a riot; the original choreography was lost for 70 years and reconstructed in 1987."}},
+{"name": "The Sleeping Beauty", "attributes": {"premiere year": 1890, "composer": "Pyotr Ilyich Tchaikovsky", "choreographer": "Marius Petipa", "original company": "Imperial Ballet, St Petersburg", "acts": 3, "style": "Classical", "fame": 92, "technical demand": 96, "spectacle": 96, "score power": 96, "emotional impact": 72, "runtime minutes": 180, "synopsis": "Princess Aurora is cursed by the fairy Carabosse, sleeps for a hundred years, and is woken into a court celebration.", "trivia": "The Rose Adagio, with its four balances in attitude on pointe, is the most feared four minutes in classical ballet."}},
+  ];
+
+  // Shuffle array
+  function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  // Function to gather selected decks and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    
+    // Gather selected decks
+    if (document.getElementById('dancCheckbox').checked) selectedCards.push(...danc);
+    if (document.getElementById('movCheckbox').checked) selectedCards.push(...mov);
+    if (document.getElementById('playsCheckbox').checked) selectedCards.push(...plays);
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one theme!");
+      return;
+    }
+
+    // Shuffle selected cards
+    const shuffledCards = shuffleArray(selectedCards);
+
+    // Display shuffled cards with pagination
+    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = ''; // Clear previous content
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Function to shuffle Action and Rules
+  function shuffleDeck(deck, resultId) {
+    const randomElement = deck[Math.floor(Math.random() * deck.length)];
+    document.getElementById(resultId).textContent = randomElement;
+  }
+
+  // Event listeners for the Shuffle buttons
+  document.getElementById('shuffleActionButton').addEventListener('click', function() {
+    shuffleDeck(actions, 'actionResult');
+  });
+
+  // Event listener for the ALL button
+  document.getElementById('startButton').addEventListener('click', function() {
+    shuffleCards(); // Only shuffles cards, not Action and Rules
+  });
+</script>
+
+<style>
+	body {
+  background-color: black;
+}
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

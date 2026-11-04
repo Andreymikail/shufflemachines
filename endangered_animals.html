@@ -1,0 +1,400 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Endangered Animals</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+
+  <!-- Group Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 320px; color: white;">
+    <label><input type="checkbox" id="catsCheckbox"> Big Cats & Wild Dogs</label><br>
+    <label><input type="checkbox" id="primatesCheckbox"> Primates</label><br>
+    <label><input type="checkbox" id="marineCheckbox"> Marine Mammals</label><br>
+    <label><input type="checkbox" id="giantsCheckbox"> Elephants, Rhinos & Giants</label><br>
+    <label><input type="checkbox" id="birdsCheckbox"> Birds</label><br>
+    <label><input type="checkbox" id="reptilesCheckbox"> Reptiles & Amphibians</label><br>
+    <label><input type="checkbox" id="fishCheckbox"> Sharks & Fish</label><br>
+    <label><input type="checkbox" id="bearsCheckbox"> Bears, Pandas & Small Mammals</label><br>
+    <label><input type="checkbox" id="hoofedCheckbox"> Hoofed Mammals</label><br>
+    <label><input type="checkbox" id="invertsCheckbox"> Invertebrates & Oddities</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5" min="1"><br><br>
+  </div>
+
+  <div style="margin-top: 20px;">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div style="margin-bottom: 20px;">
+        <h3 style="color: white;">Action</h3>
+        <p id="actionResult" style="color: white;">-</p>
+        <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  // General actions: always in the action deck
+  const actions = [
+"Wildlife Sanctuary: Protect one of your cards; it can't be taken this round",
+"Captive Breeding: Take back the last card you lost and place it at the bottom of your deck",
+"Reintroduction Program: Swap your current card with the top card of your deck before attributes are revealed",
+"Protected Area: Your card wins any tie this round",
+"Anti-Poaching Patrol: Cancel one Threat action played against you",
+"Habitat Restoration: Add +1 to your card's Danger Level this round",
+"Seed Bank: Look at the top 3 cards of your deck and put them back in any order",
+"Scientific Census: Look at your opponent's card before choosing an attribute",
+"Global Treaty: Every player must compare Danger Level this round",
+"Poaching: The opponent discards the top card of their deck",
+"Climate Change: Halve the Top Speed of every card in play",
+"Illegal Wildlife Trade: Steal one random card from your opponent",
+"Plastic Pollution: The opponent's Lifespan is reduced by -10 years",
+"Invasive Species: The opponent chooses the attribute this round",
+"Habitat Loss: The opponent can't use Wild Population this round",
+"Disease Outbreak: Both players discard their card; no one wins the round",
+"Rediscovery: Bring one discarded card back to your hand",
+"Extinction Alert: The card with the lowest Wild Population wins automatically",
+"Migration Season: All players pass their current card to the player on their left",
+"Drought: The lowest value wins this round",
+"Red List Update: Change any card's Danger Level by +1 or -1 this round",
+"Conservation Win: Cancel the Super Trunfo effect this round",
+"Last of Its Kind: If your card's Wild Population is under 100, it can't lose this round",
+  ];
+
+  // Group actions: enter the action deck when their group is selected
+  const catsActions = [
+"Pack Hunt: A Big Cats & Wild Dogs card gains +20 Top Speed",
+"Apex Predator: A Big Cats & Wild Dogs card beats any Birds or Hoofed Mammals card this round",
+"Camera Trap: Look at your opponent's card before choosing an attribute",
+"Territory Loss: The opponent's Big Cats & Wild Dogs card loses -15 kg of Weight",
+  ];
+
+  const primatesActions = [
+"Tool Use: Choose the attribute after seeing your opponent's card",
+"Family Troop: A Primates card gains +10 years of Lifespan",
+"Canopy Escape: Your Primates card cannot lose on Top Speed",
+"Palm Oil Expansion: The opponent's Primates card loses half its Weight",
+  ];
+
+  const marineActions = [
+"Whale Song: A Marine Mammals card has its Length doubled",
+"Deep Dive: A Marine Mammals card gains +20 years of Lifespan",
+"Ship Strike: The opponent's Marine Mammals card loses -10 Top Speed",
+"Marine Reserve: Your Marine Mammals card cannot be defeated by Weight",
+  ];
+
+  const giantsActions = [
+"Stampede: An Elephants, Rhinos & Giants card gains +1,000 kg of Weight",
+"Ivory Ban: Cancel a Threat action played against you",
+"Horn Poaching: The opponent discards an Elephants, Rhinos & Giants card",
+"Elephant Memory: Recover the last card you lost",
+  ];
+
+  const birdsActions = [
+"Migration Flight: A Birds card has its Top Speed doubled",
+"Nest Protection: A Birds card has its Wild Population counted as half",
+"Power Lines: The opponent's Birds card loses -30 Top Speed",
+"Dawn Chorus: Choose two attributes and compare their sum",
+  ];
+
+  const reptilesActions = [
+"Ancient Survivor: A Reptiles & Amphibians card gains +25 years of Lifespan",
+"Regeneration: Restore all attributes to their original values",
+"Cold Snap: The opponent's card loses -10 Top Speed",
+"Hatchling Boom: The opponent's Wild Population is doubled this round",
+  ];
+
+  const fishActions = [
+"Feeding Frenzy: A Sharks & Fish card gains +15 Top Speed",
+"Finning Ban: Cancel a Threat action played against you",
+"Overfishing: The opponent's Sharks & Fish card loses half its Weight",
+"Deep Sea: The lowest attribute wins this round",
+  ];
+
+  const bearsActions = [
+"Hibernation: Skip this round without losing your card",
+"Bamboo Feast: A Bears, Pandas & Small Mammals card gains +50 kg of Weight",
+"Melting Ice: Bears and Marine Mammals cards lose -20 Top Speed",
+"Cuteness Factor: Your card wins any tie this round",
+  ];
+
+  const hoofedActions = [
+"Herd Defense: A Hoofed Mammals card gains +200 kg of Weight",
+"Desert Endurance: A Hoofed Mammals card gains +10 years of Lifespan",
+"Fence Barrier: The opponent's Hoofed Mammals card loses -20 Top Speed",
+"Back from the Brink: Your card's Wild Population counts as 10 this round",
+  ];
+
+  const invertsActions = [
+"Swarm: Wild Population is ignored this round",
+"Pollination: Your card gains +1 Danger Level this round",
+"Metamorphosis: Swap your card with the top card of your deck",
+"Pesticide Spray: The opponent's Invertebrates & Oddities card is discarded",
+  ];
+
+  // A - Big Cats & Wild Dogs
+  const cats = [
+{"name": "Amur Leopard", "attributes": {"Status": "CR", "Weight (kg)": 48, "Length (cm)": 120, "Lifespan (years)": 15, "Top Speed (km/h)": 58, "Wild Population": 120, "Danger Level": 3}},
+{"name": "Sumatran Tiger", "attributes": {"Status": "CR", "Weight (kg)": 110, "Length (cm)": 230, "Lifespan (years)": 15, "Top Speed (km/h)": 60, "Wild Population": 400, "Danger Level": 3}},
+{"name": "Bengal Tiger", "attributes": {"Status": "EN", "Weight (kg)": 220, "Length (cm)": 290, "Lifespan (years)": 15, "Top Speed (km/h)": 65, "Wild Population": 3700, "Danger Level": 2}},
+{"name": "Snow Leopard", "attributes": {"Status": "VU", "Weight (kg)": 45, "Length (cm)": 115, "Lifespan (years)": 15, "Top Speed (km/h)": 64, "Wild Population": 5000, "Danger Level": 1}},
+{"name": "Iberian Lynx", "attributes": {"Status": "VU", "Weight (kg)": 12, "Length (cm)": 90, "Lifespan (years)": 13, "Top Speed (km/h)": 50, "Wild Population": 2400, "Danger Level": 1}},
+{"name": "Cheetah", "attributes": {"Status": "VU", "Weight (kg)": 50, "Length (cm)": 130, "Lifespan (years)": 12, "Top Speed (km/h)": 110, "Wild Population": 6500, "Danger Level": 1}},
+{"name": "African Wild Dog", "attributes": {"Status": "EN", "Weight (kg)": 25, "Length (cm)": 100, "Lifespan (years)": 11, "Top Speed (km/h)": 66, "Wild Population": 6600, "Danger Level": 2}},
+{"name": "Red Wolf", "attributes": {"Status": "CR", "Weight (kg)": 27, "Length (cm)": 120, "Lifespan (years)": 7, "Top Speed (km/h)": 45, "Wild Population": 20, "Danger Level": 3}},
+{"name": "Ethiopian Wolf", "attributes": {"Status": "EN", "Weight (kg)": 16, "Length (cm)": 95, "Lifespan (years)": 10, "Top Speed (km/h)": 50, "Wild Population": 500, "Danger Level": 2}},
+{"name": "Asiatic Lion", "attributes": {"Status": "EN", "Weight (kg)": 160, "Length (cm)": 200, "Lifespan (years)": 16, "Top Speed (km/h)": 80, "Wild Population": 890, "Danger Level": 2}},
+  ];
+
+  // B - Primates
+  const primates = [
+{"name": "Mountain Gorilla", "attributes": {"Status": "EN", "Weight (kg)": 160, "Length (cm)": 170, "Lifespan (years)": 40, "Top Speed (km/h)": 40, "Wild Population": 1060, "Danger Level": 2}},
+{"name": "Western Lowland Gorilla", "attributes": {"Status": "CR", "Weight (kg)": 140, "Length (cm)": 160, "Lifespan (years)": 35, "Top Speed (km/h)": 32, "Wild Population": 360000, "Danger Level": 3}},
+{"name": "Bornean Orangutan", "attributes": {"Status": "CR", "Weight (kg)": 75, "Length (cm)": 130, "Lifespan (years)": 35, "Top Speed (km/h)": 4, "Wild Population": 104700, "Danger Level": 3}},
+{"name": "Sumatran Orangutan", "attributes": {"Status": "CR", "Weight (kg)": 70, "Length (cm)": 130, "Lifespan (years)": 45, "Top Speed (km/h)": 4, "Wild Population": 14000, "Danger Level": 3}},
+{"name": "Tapanuli Orangutan", "attributes": {"Status": "CR", "Weight (kg)": 60, "Length (cm)": 130, "Lifespan (years)": 40, "Top Speed (km/h)": 4, "Wild Population": 800, "Danger Level": 3}},
+{"name": "Chimpanzee", "attributes": {"Status": "EN", "Weight (kg)": 50, "Length (cm)": 120, "Lifespan (years)": 40, "Top Speed (km/h)": 40, "Wild Population": 250000, "Danger Level": 2}},
+{"name": "Bonobo", "attributes": {"Status": "EN", "Weight (kg)": 40, "Length (cm)": 110, "Lifespan (years)": 40, "Top Speed (km/h)": 30, "Wild Population": 20000, "Danger Level": 2}},
+{"name": "Golden Lion Tamarin", "attributes": {"Status": "EN", "Weight (kg)": 0.6, "Length (cm)": 25, "Lifespan (years)": 15, "Top Speed (km/h)": 12, "Wild Population": 4800, "Danger Level": 2}},
+{"name": "Cross River Gorilla", "attributes": {"Status": "CR", "Weight (kg)": 150, "Length (cm)": 160, "Lifespan (years)": 35, "Top Speed (km/h)": 32, "Wild Population": 250, "Danger Level": 3}},
+{"name": "Hainan Gibbon", "attributes": {"Status": "CR", "Weight (kg)": 8, "Length (cm)": 50, "Lifespan (years)": 30, "Top Speed (km/h)": 55, "Wild Population": 42, "Danger Level": 3}},
+  ];
+
+  // C - Marine Mammals
+  const marine = [
+{"name": "Blue Whale ★ SUPER TRUNFO", "attributes": {"Status": "EN", "Weight (kg)": 150000, "Length (cm)": 2500, "Lifespan (years)": 90, "Top Speed (km/h)": 50, "Wild Population": 15000, "Danger Level": 2}},
+{"name": "Vaquita", "attributes": {"Status": "CR", "Weight (kg)": 45, "Length (cm)": 140, "Lifespan (years)": 20, "Top Speed (km/h)": 20, "Wild Population": 10, "Danger Level": 3}},
+{"name": "North Atlantic Right Whale", "attributes": {"Status": "CR", "Weight (kg)": 63500, "Length (cm)": 1500, "Lifespan (years)": 70, "Top Speed (km/h)": 15, "Wild Population": 370, "Danger Level": 3}},
+{"name": "Fin Whale", "attributes": {"Status": "VU", "Weight (kg)": 70000, "Length (cm)": 2000, "Lifespan (years)": 90, "Top Speed (km/h)": 40, "Wild Population": 100000, "Danger Level": 1}},
+{"name": "Sei Whale", "attributes": {"Status": "EN", "Weight (kg)": 20000, "Length (cm)": 1600, "Lifespan (years)": 70, "Top Speed (km/h)": 50, "Wild Population": 50000, "Danger Level": 2}},
+{"name": "Hawaiian Monk Seal", "attributes": {"Status": "EN", "Weight (kg)": 250, "Length (cm)": 220, "Lifespan (years)": 30, "Top Speed (km/h)": 30, "Wild Population": 1600, "Danger Level": 2}},
+{"name": "Mediterranean Monk Seal", "attributes": {"Status": "VU", "Weight (kg)": 300, "Length (cm)": 250, "Lifespan (years)": 40, "Top Speed (km/h)": 20, "Wild Population": 800, "Danger Level": 1}},
+{"name": "Dugong", "attributes": {"Status": "VU", "Weight (kg)": 400, "Length (cm)": 300, "Lifespan (years)": 70, "Top Speed (km/h)": 22, "Wild Population": 85000, "Danger Level": 1}},
+{"name": "Indus River Dolphin", "attributes": {"Status": "EN", "Weight (kg)": 85, "Length (cm)": 200, "Lifespan (years)": 30, "Top Speed (km/h)": 15, "Wild Population": 2000, "Danger Level": 2}},
+{"name": "Yangtze Finless Porpoise", "attributes": {"Status": "CR", "Weight (kg)": 50, "Length (cm)": 155, "Lifespan (years)": 20, "Top Speed (km/h)": 22, "Wild Population": 1250, "Danger Level": 3}},
+  ];
+
+  // D - Elephants, Rhinos & Giants
+  const giants = [
+{"name": "African Forest Elephant", "attributes": {"Status": "CR", "Weight (kg)": 2700, "Length (cm)": 500, "Lifespan (years)": 60, "Top Speed (km/h)": 40, "Wild Population": 100000, "Danger Level": 3}},
+{"name": "African Savanna Elephant", "attributes": {"Status": "EN", "Weight (kg)": 6000, "Length (cm)": 650, "Lifespan (years)": 70, "Top Speed (km/h)": 40, "Wild Population": 350000, "Danger Level": 2}},
+{"name": "Asian Elephant", "attributes": {"Status": "EN", "Weight (kg)": 4000, "Length (cm)": 600, "Lifespan (years)": 60, "Top Speed (km/h)": 40, "Wild Population": 50000, "Danger Level": 2}},
+{"name": "Sumatran Rhino", "attributes": {"Status": "CR", "Weight (kg)": 700, "Length (cm)": 280, "Lifespan (years)": 35, "Top Speed (km/h)": 40, "Wild Population": 40, "Danger Level": 3}},
+{"name": "Javan Rhino", "attributes": {"Status": "CR", "Weight (kg)": 1800, "Length (cm)": 320, "Lifespan (years)": 40, "Top Speed (km/h)": 30, "Wild Population": 50, "Danger Level": 3}},
+{"name": "Black Rhino", "attributes": {"Status": "CR", "Weight (kg)": 1100, "Length (cm)": 330, "Lifespan (years)": 40, "Top Speed (km/h)": 55, "Wild Population": 6400, "Danger Level": 3}},
+{"name": "Greater One-horned Rhino", "attributes": {"Status": "VU", "Weight (kg)": 2200, "Length (cm)": 360, "Lifespan (years)": 40, "Top Speed (km/h)": 55, "Wild Population": 4000, "Danger Level": 1}},
+{"name": "Grévy's Zebra", "attributes": {"Status": "EN", "Weight (kg)": 400, "Length (cm)": 270, "Lifespan (years)": 20, "Top Speed (km/h)": 64, "Wild Population": 3000, "Danger Level": 2}},
+{"name": "Okapi", "attributes": {"Status": "EN", "Weight (kg)": 250, "Length (cm)": 230, "Lifespan (years)": 25, "Top Speed (km/h)": 60, "Wild Population": 20000, "Danger Level": 2}},
+{"name": "Wild Bactrian Camel", "attributes": {"Status": "CR", "Weight (kg)": 600, "Length (cm)": 320, "Lifespan (years)": 40, "Top Speed (km/h)": 65, "Wild Population": 950, "Danger Level": 3}},
+  ];
+
+  // E - Birds
+  const birds = [
+{"name": "Kākāpō", "attributes": {"Status": "CR", "Weight (kg)": 3, "Length (cm)": 60, "Lifespan (years)": 60, "Top Speed (km/h)": 5, "Wild Population": 240, "Danger Level": 3}},
+{"name": "California Condor", "attributes": {"Status": "CR", "Weight (kg)": 9, "Length (cm)": 130, "Lifespan (years)": 60, "Top Speed (km/h)": 90, "Wild Population": 350, "Danger Level": 3}},
+{"name": "Philippine Eagle", "attributes": {"Status": "CR", "Weight (kg)": 6, "Length (cm)": 100, "Lifespan (years)": 45, "Top Speed (km/h)": 60, "Wild Population": 800, "Danger Level": 3}},
+{"name": "Whooping Crane", "attributes": {"Status": "EN", "Weight (kg)": 7, "Length (cm)": 150, "Lifespan (years)": 30, "Top Speed (km/h)": 60, "Wild Population": 840, "Danger Level": 2}},
+{"name": "Great Indian Bustard", "attributes": {"Status": "CR", "Weight (kg)": 15, "Length (cm)": 120, "Lifespan (years)": 15, "Top Speed (km/h)": 60, "Wild Population": 150, "Danger Level": 3}},
+{"name": "Hyacinth Macaw", "attributes": {"Status": "VU", "Weight (kg)": 1.5, "Length (cm)": 100, "Lifespan (years)": 50, "Top Speed (km/h)": 56, "Wild Population": 6500, "Danger Level": 1}},
+{"name": "African Penguin", "attributes": {"Status": "CR", "Weight (kg)": 3, "Length (cm)": 65, "Lifespan (years)": 20, "Top Speed (km/h)": 20, "Wild Population": 20000, "Danger Level": 3}},
+{"name": "Rüppell's Vulture", "attributes": {"Status": "CR", "Weight (kg)": 7, "Length (cm)": 95, "Lifespan (years)": 40, "Top Speed (km/h)": 35, "Wild Population": 22000, "Danger Level": 3}},
+{"name": "Steller's Sea Eagle", "attributes": {"Status": "VU", "Weight (kg)": 7, "Length (cm)": 100, "Lifespan (years)": 25, "Top Speed (km/h)": 65, "Wild Population": 4000, "Danger Level": 1}},
+{"name": "Kea", "attributes": {"Status": "EN", "Weight (kg)": 1, "Length (cm)": 48, "Lifespan (years)": 20, "Top Speed (km/h)": 60, "Wild Population": 5000, "Danger Level": 2}},
+  ];
+
+  // F - Reptiles & Amphibians
+  const reptiles = [
+{"name": "Komodo Dragon", "attributes": {"Status": "EN", "Weight (kg)": 70, "Length (cm)": 260, "Lifespan (years)": 30, "Top Speed (km/h)": 20, "Wild Population": 3000, "Danger Level": 2}},
+{"name": "Hawksbill Sea Turtle", "attributes": {"Status": "CR", "Weight (kg)": 70, "Length (cm)": 90, "Lifespan (years)": 50, "Top Speed (km/h)": 25, "Wild Population": 23000, "Danger Level": 3}},
+{"name": "Leatherback Sea Turtle", "attributes": {"Status": "VU", "Weight (kg)": 500, "Length (cm)": 180, "Lifespan (years)": 50, "Top Speed (km/h)": 35, "Wild Population": 35000, "Danger Level": 1}},
+{"name": "Kemp's Ridley Sea Turtle", "attributes": {"Status": "CR", "Weight (kg)": 45, "Length (cm)": 70, "Lifespan (years)": 50, "Top Speed (km/h)": 25, "Wild Population": 7000, "Danger Level": 3}},
+{"name": "Gharial", "attributes": {"Status": "CR", "Weight (kg)": 160, "Length (cm)": 450, "Lifespan (years)": 50, "Top Speed (km/h)": 15, "Wild Population": 650, "Danger Level": 3}},
+{"name": "Chinese Alligator", "attributes": {"Status": "CR", "Weight (kg)": 36, "Length (cm)": 170, "Lifespan (years)": 50, "Top Speed (km/h)": 15, "Wild Population": 300, "Danger Level": 3}},
+{"name": "Philippine Crocodile", "attributes": {"Status": "CR", "Weight (kg)": 15, "Length (cm)": 200, "Lifespan (years)": 50, "Top Speed (km/h)": 12, "Wild Population": 100, "Danger Level": 3}},
+{"name": "Axolotl", "attributes": {"Status": "CR", "Weight (kg)": 0.2, "Length (cm)": 23, "Lifespan (years)": 12, "Top Speed (km/h)": 1, "Wild Population": 1000, "Danger Level": 3}},
+{"name": "Blue Iguana", "attributes": {"Status": "EN", "Weight (kg)": 10, "Length (cm)": 150, "Lifespan (years)": 60, "Top Speed (km/h)": 30, "Wild Population": 1000, "Danger Level": 2}},
+{"name": "Ploughshare Tortoise", "attributes": {"Status": "CR", "Weight (kg)": 15, "Length (cm)": 45, "Lifespan (years)": 80, "Top Speed (km/h)": 0.3, "Wild Population": 100, "Danger Level": 3}},
+  ];
+
+  // G - Sharks & Fish
+  const fish = [
+{"name": "Whale Shark", "attributes": {"Status": "EN", "Weight (kg)": 15000, "Length (cm)": 1200, "Lifespan (years)": 80, "Top Speed (km/h)": 5, "Wild Population": 120000, "Danger Level": 2}},
+{"name": "Great White Shark", "attributes": {"Status": "VU", "Weight (kg)": 1100, "Length (cm)": 450, "Lifespan (years)": 70, "Top Speed (km/h)": 56, "Wild Population": 20000, "Danger Level": 1}},
+{"name": "Great Hammerhead", "attributes": {"Status": "CR", "Weight (kg)": 230, "Length (cm)": 450, "Lifespan (years)": 44, "Top Speed (km/h)": 40, "Wild Population": 100000, "Danger Level": 3}},
+{"name": "Oceanic Whitetip Shark", "attributes": {"Status": "CR", "Weight (kg)": 80, "Length (cm)": 300, "Lifespan (years)": 25, "Top Speed (km/h)": 30, "Wild Population": 100000, "Danger Level": 3}},
+{"name": "Basking Shark", "attributes": {"Status": "EN", "Weight (kg)": 4000, "Length (cm)": 900, "Lifespan (years)": 50, "Top Speed (km/h)": 6, "Wild Population": 10000, "Danger Level": 2}},
+{"name": "Giant Manta Ray", "attributes": {"Status": "EN", "Weight (kg)": 1400, "Length (cm)": 700, "Lifespan (years)": 45, "Top Speed (km/h)": 24, "Wild Population": 10000, "Danger Level": 2}},
+{"name": "Beluga Sturgeon", "attributes": {"Status": "CR", "Weight (kg)": 300, "Length (cm)": 400, "Lifespan (years)": 100, "Top Speed (km/h)": 10, "Wild Population": 10000, "Danger Level": 3}},
+{"name": "Mekong Giant Catfish", "attributes": {"Status": "CR", "Weight (kg)": 200, "Length (cm)": 270, "Lifespan (years)": 60, "Top Speed (km/h)": 10, "Wild Population": 1000, "Danger Level": 3}},
+{"name": "Smalltooth Sawfish", "attributes": {"Status": "CR", "Weight (kg)": 350, "Length (cm)": 550, "Lifespan (years)": 30, "Top Speed (km/h)": 20, "Wild Population": 5000, "Danger Level": 3}},
+{"name": "Devils Hole Pupfish", "attributes": {"Status": "CR", "Weight (kg)": 0.0003, "Length (cm)": 2.5, "Lifespan (years)": 1, "Top Speed (km/h)": 2, "Wild Population": 200, "Danger Level": 3}},
+  ];
+
+  // H - Bears, Pandas & Small Mammals
+  const bears = [
+{"name": "Red Panda", "attributes": {"Status": "EN", "Weight (kg)": 5, "Length (cm)": 60, "Lifespan (years)": 12, "Top Speed (km/h)": 40, "Wild Population": 10000, "Danger Level": 2}},
+{"name": "Giant Panda", "attributes": {"Status": "VU", "Weight (kg)": 100, "Length (cm)": 170, "Lifespan (years)": 20, "Top Speed (km/h)": 32, "Wild Population": 1864, "Danger Level": 1}},
+{"name": "Sunda Pangolin", "attributes": {"Status": "CR", "Weight (kg)": 6, "Length (cm)": 50, "Lifespan (years)": 20, "Top Speed (km/h)": 5, "Wild Population": 50000, "Danger Level": 3}},
+{"name": "Black-footed Ferret", "attributes": {"Status": "EN", "Weight (kg)": 1, "Length (cm)": 50, "Lifespan (years)": 4, "Top Speed (km/h)": 16, "Wild Population": 370, "Danger Level": 2}},
+{"name": "Tasmanian Devil", "attributes": {"Status": "EN", "Weight (kg)": 8, "Length (cm)": 65, "Lifespan (years)": 6, "Top Speed (km/h)": 25, "Wild Population": 20000, "Danger Level": 2}},
+{"name": "Northern Hairy-nosed Wombat", "attributes": {"Status": "CR", "Weight (kg)": 30, "Length (cm)": 100, "Lifespan (years)": 30, "Top Speed (km/h)": 40, "Wild Population": 400, "Danger Level": 3}},
+{"name": "Koala", "attributes": {"Status": "VU", "Weight (kg)": 9, "Length (cm)": 75, "Lifespan (years)": 13, "Top Speed (km/h)": 30, "Wild Population": 300000, "Danger Level": 1}},
+{"name": "Sea Otter", "attributes": {"Status": "EN", "Weight (kg)": 30, "Length (cm)": 130, "Lifespan (years)": 20, "Top Speed (km/h)": 9, "Wild Population": 125000, "Danger Level": 2}},
+{"name": "Polar Bear", "attributes": {"Status": "VU", "Weight (kg)": 450, "Length (cm)": 220, "Lifespan (years)": 25, "Top Speed (km/h)": 40, "Wild Population": 26000, "Danger Level": 1}},
+{"name": "Giant Otter", "attributes": {"Status": "EN", "Weight (kg)": 30, "Length (cm)": 140, "Lifespan (years)": 12, "Top Speed (km/h)": 15, "Wild Population": 5000, "Danger Level": 2}},
+  ];
+
+  // I - Hoofed Mammals
+  const hoofed = [
+{"name": "Saola", "attributes": {"Status": "CR", "Weight (kg)": 90, "Length (cm)": 150, "Lifespan (years)": 15, "Top Speed (km/h)": 30, "Wild Population": 100, "Danger Level": 3}},
+{"name": "Addax", "attributes": {"Status": "CR", "Weight (kg)": 100, "Length (cm)": 150, "Lifespan (years)": 19, "Top Speed (km/h)": 40, "Wild Population": 100, "Danger Level": 3}},
+{"name": "Arabian Oryx", "attributes": {"Status": "VU", "Weight (kg)": 70, "Length (cm)": 160, "Lifespan (years)": 20, "Top Speed (km/h)": 60, "Wild Population": 1200, "Danger Level": 1}},
+{"name": "Scimitar-horned Oryx", "attributes": {"Status": "EN", "Weight (kg)": 180, "Length (cm)": 170, "Lifespan (years)": 20, "Top Speed (km/h)": 50, "Wild Population": 600, "Danger Level": 2}},
+{"name": "Tamaraw", "attributes": {"Status": "CR", "Weight (kg)": 250, "Length (cm)": 220, "Lifespan (years)": 25, "Top Speed (km/h)": 40, "Wild Population": 600, "Danger Level": 3}},
+{"name": "Wild Yak", "attributes": {"Status": "VU", "Weight (kg)": 800, "Length (cm)": 300, "Lifespan (years)": 25, "Top Speed (km/h)": 40, "Wild Population": 10000, "Danger Level": 1}},
+{"name": "Hirola", "attributes": {"Status": "CR", "Weight (kg)": 75, "Length (cm)": 150, "Lifespan (years)": 15, "Top Speed (km/h)": 65, "Wild Population": 500, "Danger Level": 3}},
+{"name": "Mountain Bongo", "attributes": {"Status": "CR", "Weight (kg)": 300, "Length (cm)": 230, "Lifespan (years)": 20, "Top Speed (km/h)": 70, "Wild Population": 150, "Danger Level": 3}},
+{"name": "Przewalski's Horse", "attributes": {"Status": "EN", "Weight (kg)": 300, "Length (cm)": 220, "Lifespan (years)": 25, "Top Speed (km/h)": 60, "Wild Population": 2000, "Danger Level": 2}},
+{"name": "Pygmy Hippopotamus", "attributes": {"Status": "EN", "Weight (kg)": 230, "Length (cm)": 160, "Lifespan (years)": 40, "Top Speed (km/h)": 30, "Wild Population": 2500, "Danger Level": 2}},
+  ];
+
+  // J - Invertebrates & Oddities
+  const inverts = [
+{"name": "Giant Clam", "attributes": {"Status": "VU", "Weight (kg)": 200, "Length (cm)": 120, "Lifespan (years)": 100, "Top Speed (km/h)": 0, "Wild Population": 100000, "Danger Level": 1}},
+{"name": "Coconut Crab", "attributes": {"Status": "VU", "Weight (kg)": 4, "Length (cm)": 40, "Lifespan (years)": 60, "Top Speed (km/h)": 1, "Wild Population": 1000000, "Danger Level": 1}},
+{"name": "Atlantic Horseshoe Crab", "attributes": {"Status": "VU", "Weight (kg)": 2.5, "Length (cm)": 60, "Lifespan (years)": 20, "Top Speed (km/h)": 0.5, "Wild Population": 30000000, "Danger Level": 1}},
+{"name": "Lord Howe Island Stick Insect", "attributes": {"Status": "CR", "Weight (kg)": 0.003, "Length (cm)": 15, "Lifespan (years)": 1.5, "Top Speed (km/h)": 0.1, "Wild Population": 40, "Danger Level": 3}},
+{"name": "Queen Alexandra's Birdwing", "attributes": {"Status": "EN", "Weight (kg)": 0.012, "Length (cm)": 28, "Lifespan (years)": 0.4, "Top Speed (km/h)": 20, "Wild Population": 1000, "Danger Level": 2}},
+{"name": "Monarch Butterfly (Migratory)", "attributes": {"Status": "VU", "Weight (kg)": 0.0005, "Length (cm)": 10, "Lifespan (years)": 0.7, "Top Speed (km/h)": 40, "Wild Population": 100000000, "Danger Level": 1}},
+{"name": "Rusty Patched Bumble Bee", "attributes": {"Status": "CR", "Weight (kg)": 0.0006, "Length (cm)": 2, "Lifespan (years)": 1, "Top Speed (km/h)": 25, "Wild Population": 100000, "Danger Level": 3}},
+{"name": "Freshwater Pearl Mussel", "attributes": {"Status": "EN", "Weight (kg)": 0.2, "Length (cm)": 14, "Lifespan (years)": 100, "Top Speed (km/h)": 0, "Wild Population": 10000000, "Danger Level": 2}},
+{"name": "European Eel", "attributes": {"Status": "CR", "Weight (kg)": 1.5, "Length (cm)": 80, "Lifespan (years)": 20, "Top Speed (km/h)": 10, "Wild Population": 100000000, "Danger Level": 3}},
+{"name": "Noble Pen Shell", "attributes": {"Status": "CR", "Weight (kg)": 1, "Length (cm)": 100, "Lifespan (years)": 20, "Top Speed (km/h)": 0, "Wild Population": 10000, "Danger Level": 3}},
+  ];
+
+  // Links each checkbox to its cards and actions
+  const groups = [
+    { checkbox: "catsCheckbox", cards: cats, actions: catsActions },
+    { checkbox: "primatesCheckbox", cards: primates, actions: primatesActions },
+    { checkbox: "marineCheckbox", cards: marine, actions: marineActions },
+    { checkbox: "giantsCheckbox", cards: giants, actions: giantsActions },
+    { checkbox: "birdsCheckbox", cards: birds, actions: birdsActions },
+    { checkbox: "reptilesCheckbox", cards: reptiles, actions: reptilesActions },
+    { checkbox: "fishCheckbox", cards: fish, actions: fishActions },
+    { checkbox: "bearsCheckbox", cards: bears, actions: bearsActions },
+    { checkbox: "hoofedCheckbox", cards: hoofed, actions: hoofedActions },
+    { checkbox: "invertsCheckbox", cards: inverts, actions: invertsActions }
+  ];
+
+  // Shuffle array (Fisher-Yates)
+  function shuffleArray(array) {
+    const copy = [...array];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  function selectedGroups() {
+    return groups.filter(g => document.getElementById(g.checkbox).checked);
+  }
+
+  // Function to gather selected groups and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    selectedGroups().forEach(g => selectedCards.push(...g.cards));
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one animal group!");
+      return;
+    }
+
+    const shuffledCards = shuffleArray(selectedCards);
+    const cardsPerPage = Math.max(1, parseInt(document.getElementById('cardsPerPageInput').value, 10) || 5);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = '';
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) =>
+          `${key}: ${typeof value === 'number' ? value.toLocaleString('en-US') : value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Draws one action: general actions + actions of the selected groups
+  // (if no group is selected, every action can be drawn)
+  function shuffleAction() {
+    const chosen = selectedGroups();
+    const pool = [...actions];
+    (chosen.length ? chosen : groups).forEach(g => pool.push(...g.actions));
+    const randomAction = pool[Math.floor(Math.random() * pool.length)];
+    document.getElementById('actionResult').innerHTML = randomAction.replace(/\n/g, '<br>');
+  }
+
+  document.getElementById('shuffleActionButton').addEventListener('click', shuffleAction);
+  document.getElementById('startButton').addEventListener('click', shuffleCards);
+</script>
+
+<style>
+  body {
+    background-color: black;
+  }
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

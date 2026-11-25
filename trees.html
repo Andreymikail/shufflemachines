@@ -1,0 +1,283 @@
+<div style="text-align: center;">
+  <h2 style="color: white;">Trees</h2>
+  <!-- ALL Button -->
+  <button id="startButton" class="round-button">Start</button>
+
+  <!-- Group Selection -->
+  <div style="text-align: left; margin: 20px auto; width: 320px; color: white;">
+    <label><input type="checkbox" id="africaCheckbox"> Africa & Middle East</label><br>
+    <label><input type="checkbox" id="northamCheckbox"> North America</label><br>
+    <label><input type="checkbox" id="latamCheckbox"> Latin America</label><br>
+    <label><input type="checkbox" id="asiaCheckbox"> Asia</label><br>
+    <label><input type="checkbox" id="oceaniaCheckbox"> Oceania & Europe</label><br>
+  </div>
+
+  <!-- Cards per page selection -->
+  <div>
+    <label for="cardsPerPageInput" style="color: white;">Cards per Page:</label><br>
+    <input type="number" id="cardsPerPageInput" value="5" min="1"><br><br>
+  </div>
+
+  <div style="margin-top: 20px;">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div style="margin-bottom: 20px;">
+        <h3 style="color: white;">Action</h3>
+        <p id="actionResult" style="color: white;">-</p>
+        <button id="shuffleActionButton" class="shuffle-button">Shuffle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards Display -->
+  <div id="cardsContainer" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  // General actions: always in the action deck
+  const actions = [
+"Protected Forest: Protect one of your cards; it can't be taken this round",
+"Reforestation: Take back the last card you lost and place it at the bottom of your deck",
+"Seed Bank: Look at the top 3 cards of your deck and put them back in any order",
+"Old-Growth Status: Your card wins any tie this round",
+"Forest Ranger: Cancel one Threat action played against you",
+"Dendrochronology: Look at your opponent's card before choosing an attribute",
+"Canopy Survey: Every player must compare Height this round",
+"Champion Tree: Add +10 m to your card's Height",
+"Heartwood: Add +200 kg/m³ to your card's Wood Density",
+"Living Fossil: Your card's Lifespan is doubled this round",
+"Root Network: Choose two attributes and compare their sum",
+"Mast Year: Draw 2 extra cards",
+"Illegal Logging: The opponent discards the top card of their deck",
+"Lightning Strike: The opponent's card loses -10 m of Height",
+"Wildfire: Halve the Crown Spread of every card in play",
+"Bark Beetle Outbreak: Conifer cards lose -20 m of Height this round",
+"Storm: The opponent chooses the attribute this round",
+"Fungal Disease: Both players discard their card; no one wins the round",
+"Drought: The lowest value wins this round",
+"Seed Dispersal: All players pass their current card to the player on their left",
+"Forest Recovery: Restore all attributes to their original values",
+  ];
+
+  // Group actions: enter the action deck when their group is selected
+  const africaActions = [
+"Water Storage: An Africa & Middle East card cannot lose during a Drought action",
+"Savanna Giant: An Africa & Middle East card gains +3 m of Trunk Diameter",
+"Timber Export: The opponent's Africa & Middle East card loses -200 kg/m³ of Wood Density",
+"Elephant Browsing: The opponent's card loses -10 m of Crown Spread",
+  ];
+
+  const northamActions = [
+"Fire-Resistant Bark: Your North America card is immune to Wildfire",
+"Redwood Grove: A North America card gains +20 m of Height",
+"Bark Beetle Swarm: The opponent's North America card loses -500 years of Lifespan",
+"Bristlecone Patience: Lifespan decides this round",
+  ];
+
+  const latamActions = [
+"Amazon Canopy: A Latin America card gains +15 m of Crown Spread",
+"Brazil Nut Harvest: Draw 1 extra card",
+"Deforestation Arc: The opponent's Latin America card loses -20 m of Height",
+"Indigenous Guardians: Cancel a Threat action played against you",
+  ];
+
+  const asiaActions = [
+"Sacred Temple Tree: Your Asia card cannot lose on Lifespan",
+"Monsoon Growth: An Asia card gains +10 m of Height",
+"Palm Oil Plantation: The opponent discards an Asia card",
+"Aerial Roots: An Asia card doubles its Crown Spread",
+  ];
+
+  const oceaniaActions = [
+"Eucalyptus Sprint: An Oceania & Europe card gains +15 m of Height",
+"Kauri Dieback: The opponent's Oceania & Europe card loses -500 years of Lifespan",
+"Royal Oak: Your Oceania & Europe card wins any tie this round",
+"Bushfire: All cards lose -10 m of Crown Spread this round",
+  ];
+
+  // A - Africa & Middle East
+  const africa = [
+{"name": "African Baobab", "attributes": {"Type": "Broadleaf", "Height (m)": 25, "Trunk Diameter (m)": 10, "Lifespan (years)": 2500, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 200}},
+{"name": "Grandidier's Baobab", "attributes": {"Type": "Broadleaf", "Height (m)": 30, "Trunk Diameter (m)": 3, "Lifespan (years)": 800, "Crown Spread (m)": 15, "Wood Density (kg/m³)": 200}},
+{"name": "Giant Mahogany (Entandrophragma excelsum)", "attributes": {"Type": "Broadleaf", "Height (m)": 81, "Trunk Diameter (m)": 2.5, "Lifespan (years)": 600, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 600}},
+{"name": "Sapele", "attributes": {"Type": "Broadleaf", "Height (m)": 60, "Trunk Diameter (m)": 2.5, "Lifespan (years)": 500, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 640}},
+{"name": "Moabi", "attributes": {"Type": "Broadleaf", "Height (m)": 70, "Trunk Diameter (m)": 5, "Lifespan (years)": 700, "Crown Spread (m)": 40, "Wood Density (kg/m³)": 870}},
+{"name": "Iroko", "attributes": {"Type": "Broadleaf", "Height (m)": 50, "Trunk Diameter (m)": 3, "Lifespan (years)": 500, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 650}},
+{"name": "African Ebony", "attributes": {"Type": "Broadleaf", "Height (m)": 25, "Trunk Diameter (m)": 1, "Lifespan (years)": 300, "Crown Spread (m)": 15, "Wood Density (kg/m³)": 1050}},
+{"name": "Okoume", "attributes": {"Type": "Broadleaf", "Height (m)": 40, "Trunk Diameter (m)": 2, "Lifespan (years)": 300, "Crown Spread (m)": 25, "Wood Density (kg/m³)": 430}},
+{"name": "Cedar of Lebanon", "attributes": {"Type": "Conifer", "Height (m)": 40, "Trunk Diameter (m)": 2.5, "Lifespan (years)": 1500, "Crown Spread (m)": 25, "Wood Density (kg/m³)": 560}},
+{"name": "Sycamore Fig", "attributes": {"Type": "Broadleaf", "Height (m)": 20, "Trunk Diameter (m)": 3, "Lifespan (years)": 600, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 500}},
+  ];
+
+  // B - North America
+  const northam = [
+{"name": "Coast Redwood", "attributes": {"Type": "Conifer", "Height (m)": 116, "Trunk Diameter (m)": 8, "Lifespan (years)": 2200, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 420}},
+{"name": "Giant Sequoi", "attributes": {"Type": "Conifer", "Height (m)": 95, "Trunk Diameter (m)": 11, "Lifespan (years)": 3200, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 380}},
+{"name": "Douglas Fir", "attributes": {"Type": "Conifer", "Height (m)": 100, "Trunk Diameter (m)": 4.5, "Lifespan (years)": 1300, "Crown Spread (m)": 20, "Wood Density (kg/m³)": 530}},
+{"name": "Sitka Spruce", "attributes": {"Type": "Conifer", "Height (m)": 100, "Trunk Diameter (m)": 5, "Lifespan (years)": 800, "Crown Spread (m)": 20, "Wood Density (kg/m³)": 450}},
+{"name": "Western Red Cedar", "attributes": {"Type": "Conifer", "Height (m)": 70, "Trunk Diameter (m)": 6, "Lifespan (years)": 1500, "Crown Spread (m)": 20, "Wood Density (kg/m³)": 370}},
+{"name": "Great Basin Bristlecone Pine", "attributes": {"Type": "Conifer", "Height (m)": 16, "Trunk Diameter (m)": 3.6, "Lifespan (years)": 4900, "Crown Spread (m)": 10, "Wood Density (kg/m³)": 590}},
+{"name": "Sugar Pine", "attributes": {"Type": "Conifer", "Height (m)": 83, "Trunk Diameter (m)": 3.5, "Lifespan (years)": 500, "Crown Spread (m)": 20, "Wood Density (kg/m³)": 400}},
+{"name": "Noble Fir", "attributes": {"Type": "Conifer", "Height (m)": 90, "Trunk Diameter (m)": 2.7, "Lifespan (years)": 600, "Crown Spread (m)": 15, "Wood Density (kg/m³)": 420}},
+{"name": "Southern Live Oak", "attributes": {"Type": "Broadleaf", "Height (m)": 20, "Trunk Diameter (m)": 2.5, "Lifespan (years)": 500, "Crown Spread (m)": 50, "Wood Density (kg/m³)": 980}},
+{"name": "Bald Cypress", "attributes": {"Type": "Conifer", "Height (m)": 45, "Trunk Diameter (m)": 4, "Lifespan (years)": 2600, "Crown Spread (m)": 20, "Wood Density (kg/m³)": 510}},
+  ];
+
+  // C - Latin America
+  const latam = [
+{"name": "Brazil Nut Tree", "attributes": {"Type": "Broadleaf", "Height (m)": 50, "Trunk Diameter (m)": 3, "Lifespan (years)": 1000, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 750}},
+{"name": "Kapok Tree (Samaúma)", "attributes": {"Type": "Broadleaf", "Height (m)": 70, "Trunk Diameter (m)": 3, "Lifespan (years)": 300, "Crown Spread (m)": 50, "Wood Density (kg/m³)": 300}},
+{"name": "Red Angelim", "attributes": {"Type": "Broadleaf", "Height (m)": 88, "Trunk Diameter (m)": 3.2, "Lifespan (years)": 600, "Crown Spread (m)": 40, "Wood Density (kg/m³)": 1000}},
+{"name": "Jequitibá-rosa", "attributes": {"Type": "Broadleaf", "Height (m)": 50, "Trunk Diameter (m)": 4, "Lifespan (years)": 3000, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 560}},
+{"name": "Big-leaf Mahogany", "attributes": {"Type": "Broadleaf", "Height (m)": 50, "Trunk Diameter (m)": 2, "Lifespan (years)": 350, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 600}},
+{"name": "Montezuma Cypress", "attributes": {"Type": "Conifer", "Height (m)": 40, "Trunk Diameter (m)": 14, "Lifespan (years)": 2000, "Crown Spread (m)": 35, "Wood Density (kg/m³)": 500}},
+{"name": "Paraná Pine (Araucária)", "attributes": {"Type": "Conifer", "Height (m)": 50, "Trunk Diameter (m)": 2.5, "Lifespan (years)": 700, "Crown Spread (m)": 20, "Wood Density (kg/m³)": 550}},
+{"name": "Alerce (Patagonian Cypress)", "attributes": {"Type": "Conifer", "Height (m)": 70, "Trunk Diameter (m)": 5, "Lifespan (years)": 3600, "Crown Spread (m)": 15, "Wood Density (kg/m³)": 420}},
+{"name": "Jatobá", "attributes": {"Type": "Broadleaf", "Height (m)": 40, "Trunk Diameter (m)": 2, "Lifespan (years)": 600, "Crown Spread (m)": 25, "Wood Density (kg/m³)": 910}},
+{"name": "Cumaru", "attributes": {"Type": "Broadleaf", "Height (m)": 50, "Trunk Diameter (m)": 2, "Lifespan (years)": 1000, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 1070}},
+  ];
+
+  // D - Asia
+  const asia = [
+{"name": "Yellow Meranti", "attributes": {"Type": "Broadleaf", "Height (m)": 100, "Trunk Diameter (m)": 2.5, "Lifespan (years)": 400, "Crown Spread (m)": 40, "Wood Density (kg/m³)": 500}},
+{"name": "Tualang", "attributes": {"Type": "Broadleaf", "Height (m)": 88, "Trunk Diameter (m)": 3, "Lifespan (years)": 500, "Crown Spread (m)": 40, "Wood Density (kg/m³)": 800}},
+{"name": "Sacred Fig (Bodhi Tree)", "attributes": {"Type": "Broadleaf", "Height (m)": 30, "Trunk Diameter (m)": 3, "Lifespan (years)": 2300, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 550}},
+{"name": "Banyan", "attributes": {"Type": "Broadleaf", "Height (m)": 25, "Trunk Diameter (m)": 3, "Lifespan (years)": 500, "Crown Spread (m)": 150, "Wood Density (kg/m³)": 580}},
+{"name": "Japanese Cedar (Sugi)", "attributes": {"Type": "Conifer", "Height (m)": 60, "Trunk Diameter (m)": 5, "Lifespan (years)": 2000, "Crown Spread (m)": 20, "Wood Density (kg/m³)": 380}},
+{"name": "Ginkgo", "attributes": {"Type": "Ginkgo", "Height (m)": 40, "Trunk Diameter (m)": 4, "Lifespan (years)": 3000, "Crown Spread (m)": 15, "Wood Density (kg/m³)": 550}},
+{"name": "Teak", "attributes": {"Type": "Broadleaf", "Height (m)": 45, "Trunk Diameter (m)": 2.5, "Lifespan (years)": 500, "Crown Spread (m)": 20, "Wood Density (kg/m³)": 650}},
+{"name": "Camphor Tree", "attributes": {"Type": "Broadleaf", "Height (m)": 30, "Trunk Diameter (m)": 7, "Lifespan (years)": 1500, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 550}},
+{"name": "Deodar Cedar", "attributes": {"Type": "Conifer", "Height (m)": 60, "Trunk Diameter (m)": 3, "Lifespan (years)": 1000, "Crown Spread (m)": 20, "Wood Density (kg/m³)": 560}},
+{"name": "Formosan Cypress", "attributes": {"Type": "Conifer", "Height (m)": 60, "Trunk Diameter (m)": 6, "Lifespan (years)": 2500, "Crown Spread (m)": 20, "Wood Density (kg/m³)": 470}},
+  ];
+
+  // E - Oceania & Europe
+  const oceania = [
+{"name": "Mountain Ash", "attributes": {"Type": "Broadleaf", "Height (m)": 100, "Trunk Diameter (m)": 5, "Lifespan (years)": 500, "Crown Spread (m)": 25, "Wood Density (kg/m³)": 650}},
+{"name": "Kauri", "attributes": {"Type": "Conifer", "Height (m)": 50, "Trunk Diameter (m)": 5, "Lifespan (years)": 2000, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 480}},
+{"name": "Karri", "attributes": {"Type": "Broadleaf", "Height (m)": 90, "Trunk Diameter (m)": 3, "Lifespan (years)": 350, "Crown Spread (m)": 25, "Wood Density (kg/m³)": 900}},
+{"name": "Tasmanian Blue Gum", "attributes": {"Type": "Broadleaf", "Height (m)": 90, "Trunk Diameter (m)": 4, "Lifespan (years)": 400, "Crown Spread (m)": 25, "Wood Density (kg/m³)": 800}},
+{"name": "Moreton Bay Fig", "attributes": {"Type": "Broadleaf", "Height (m)": 50, "Trunk Diameter (m)": 2.5, "Lifespan (years)": 300, "Crown Spread (m)": 50, "Wood Density (kg/m³)": 450}},
+{"name": "Wollemi Pine", "attributes": {"Type": "Conifer", "Height (m)": 40, "Trunk Diameter (m)": 1.2, "Lifespan (years)": 1000, "Crown Spread (m)": 10, "Wood Density (kg/m³)": 450}},
+{"name": "Huon Pine", "attributes": {"Type": "Conifer", "Height (m)": 40, "Trunk Diameter (m)": 2, "Lifespan (years)": 3000, "Crown Spread (m)": 10, "Wood Density (kg/m³)": 520}},
+{"name": "English Oak", "attributes": {"Type": "Broadleaf", "Height (m)": 40, "Trunk Diameter (m)": 4, "Lifespan (years)": 1000, "Crown Spread (m)": 30, "Wood Density (kg/m³)": 720}},
+{"name": "European Yew", "attributes": {"Type": "Conifer", "Height (m)": 20, "Trunk Diameter (m)": 4, "Lifespan (years)": 3000, "Crown Spread (m)": 15, "Wood Density (kg/m³)": 670}},
+{"name": "Sweet Chestnut", "attributes": {"Type": "Broadleaf", "Height (m)": 35, "Trunk Diameter (m)": 7, "Lifespan (years)": 2000, "Crown Spread (m)": 25, "Wood Density (kg/m³)": 560}},
+  ];
+
+  // Links each checkbox to its cards and actions
+  const groups = [
+    { checkbox: "africaCheckbox", cards: africa, actions: africaActions },
+    { checkbox: "northamCheckbox", cards: northam, actions: northamActions },
+    { checkbox: "latamCheckbox", cards: latam, actions: latamActions },
+    { checkbox: "asiaCheckbox", cards: asia, actions: asiaActions },
+    { checkbox: "oceaniaCheckbox", cards: oceania, actions: oceaniaActions }
+  ];
+
+  // Shuffle array (Fisher-Yates)
+  function shuffleArray(array) {
+    const copy = [...array];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  function selectedGroups() {
+    return groups.filter(g => document.getElementById(g.checkbox).checked);
+  }
+
+  // Function to gather selected groups and shuffle
+  function shuffleCards() {
+    const selectedCards = [];
+    selectedGroups().forEach(g => selectedCards.push(...g.cards));
+
+    if (selectedCards.length === 0) {
+      alert("Please select at least one tree group!");
+      return;
+    }
+
+    const shuffledCards = shuffleArray(selectedCards);
+    const cardsPerPage = Math.max(1, parseInt(document.getElementById('cardsPerPageInput').value, 10) || 5);
+    displayPaginatedCards(shuffledCards, cardsPerPage);
+  }
+
+  // Function to display paginated cards
+  function displayPaginatedCards(cards, cardsPerPage) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = '';
+
+    for (let i = 0; i < cards.length; i += cardsPerPage) {
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
+      const cardHtml = cards.slice(i, i + cardsPerPage).map(card => `
+        <h3>${card.name}</h3>
+        <p>${Object.entries(card.attributes).map(([key, value]) =>
+          `${key}: ${typeof value === 'number' ? value.toLocaleString('en-US') : value}`).join(' | ')}</p>
+      `).join('<br>');
+
+      pageDiv.innerHTML = `<h3>Page ${(i / cardsPerPage) + 1}</h3>${cardHtml}`;
+      cardsContainer.appendChild(pageDiv);
+    }
+  }
+
+  // Draws one action: general actions + actions of the selected groups
+  // (if no group is selected, every action can be drawn)
+  function shuffleAction() {
+    const chosen = selectedGroups();
+    const pool = [...actions];
+    (chosen.length ? chosen : groups).forEach(g => pool.push(...g.actions));
+    const randomAction = pool[Math.floor(Math.random() * pool.length)];
+    document.getElementById('actionResult').innerHTML = randomAction.replace(/\n/g, '<br>');
+  }
+
+  document.getElementById('shuffleActionButton').addEventListener('click', shuffleAction);
+  document.getElementById('startButton').addEventListener('click', shuffleCards);
+</script>
+
+<style>
+  body {
+    background-color: black;
+  }
+  .round-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 50px;
+    transition: background-color 0.3s;
+    margin: 20px 0;
+  }
+  .round-button:hover {
+    background-color: #6E1919;
+  }
+  .shuffle-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background-color: #E4C58A;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+  }
+  .shuffle-button:hover {
+    background-color: #6E1919;
+  }
+  .page {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+</style>

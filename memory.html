@@ -56,7 +56,10 @@
   // Function to shuffle the icons and fill the grid
   function initializeGrid(pairs) {
     const iconPairs = icons.slice(0, pairs).concat(icons.slice(0, pairs)); // Create pairs
-    iconPairs.sort(() => 0.5 - Math.random()); // Shuffle the icons
+    for (let i = iconPairs.length - 1; i > 0; i--) { // Shuffle the icons
+      const j = Math.floor(Math.random() * (i + 1));
+      [iconPairs[i], iconPairs[j]] = [iconPairs[j], iconPairs[i]];
+    }
     cols = pairs; // Number of columns matches the number of pairs
 
     grid = [];

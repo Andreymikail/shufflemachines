@@ -35,8 +35,11 @@
       const stones = parseInt(stonesInput.value, 10);
       const safeStones = Number.isFinite(stones) ? stones : 75;
 
-      deck = Array.from({ length: safeStones }, (_, i) => i + 1)
-        .sort(() => Math.random() - 0.5);
+      deck = Array.from({ length: safeStones }, (_, i) => i + 1);
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
 
       drawn = [];
       initialized = true;

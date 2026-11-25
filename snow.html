@@ -502,7 +502,12 @@ const slope = [
 
   // Shuffle array
   function shuffleArray(array) {
-    return array.sort(() => Math.random() - 0.5);
+    const copy = [...array];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
   }
 
   // Function to gather selected decks and shuffle
@@ -524,7 +529,7 @@ const slope = [
     const shuffledCards = shuffleArray(selectedCards);
 
     // Display shuffled cards with pagination
-    const cardsPerPage = parseInt(document.getElementById('cardsPerPageInput').value, 10);
+    const cardsPerPage = Math.max(1, parseInt(document.getElementById('cardsPerPageInput').value, 10) || 5);
     displayPaginatedCards(shuffledCards, cardsPerPage);
   }
 
